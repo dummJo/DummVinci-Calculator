@@ -87,6 +87,7 @@ export default function UnifiedPage() {
   const [install, setInstall] = useState<Install>("tray");
   const [ambient, setAmbient] = useState("35");
   const [fault, setFault] = useState("10");
+  const [variant, setVariant] = useState<"01" | "04" | "07">("01");
   const [result, setResult] = useState<UnifiedResult | null>(null);
 
   const calculate = () => {
@@ -102,6 +103,7 @@ export default function UnifiedPage() {
       ambientC: parseFloat(ambient) || 0,
       faultCurrentKa: parseFloat(fault) || 0,
       panelDeltaT: 10,
+      driveVariant: variant,
     });
     setResult(res);
   };
@@ -142,6 +144,14 @@ export default function UnifiedPage() {
           <FieldToggle
             label={tu.heavy} checked={heavy} onChange={setHeavy}
             hint={t.vsd.heavyHint}
+          />
+          <FieldSelect
+            label={tu.driveVariant} value={variant} onChange={v => setVariant(v as any)}
+            options={[
+              { value: "01", label: t.vsd.constWall },
+              { value: "04", label: t.vsd.constModule },
+              { value: "07", label: t.vsd.constCabinet },
+            ]}
           />
 
           <div className="sec-label" style={{ marginTop: 24 }}><span>{t.cable.secInstall}</span></div>

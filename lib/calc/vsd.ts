@@ -19,10 +19,12 @@ export interface VsdInput {
   dutyHeavy: boolean;        // crane / conveyor high-inertia → oversize
   panelDeltaT: number;       // allowed ΔT inside panel vs ambient (K), typical 10–15
   ambientC?: number;         // Ambient temperature outside panel (°C), base 40°C
+  variant: "01" | "04" | "07"; 
 }
 
 interface DriveFrame {
   family: "ACQ580" | "ACS880";
+  variant: string;
   code: string;
   frame: string;
   voltage: number;
@@ -36,6 +38,7 @@ interface DriveFrame {
 
 export interface VsdResult {
   family: "ACQ580" | "ACS880";
+  variant: string;
   partCode: string;
   frame: string;
   nominalA: number;
@@ -67,7 +70,7 @@ export function sizeVsd(input: VsdInput): VsdResult {
       const deratedA = d.nominalA * tempDerate;
       // Rough kW check after derating (matching A/kW ratio)
       const deratedKw = d.ratedKw * tempDerate;
-      return d.family === family && d.voltage === input.voltage && deratedKw >= targetKw;
+      return d.family === family && d.variant === input.variant && d.voltage === input.voltage && deratedKw >= targetKw;
     })
     .sort((a, b) => a.ratedKw - b.ratedKw);
 
@@ -76,10 +79,11 @@ export function sizeVsd(input: VsdInput): VsdResult {
 
   if (!pick) {
     return {
-      family, partCode: "—", frame: "—", nominalA: 0, ratedKw: 0, plossW: 0,
+      family, variant: input.variant, partCode: "—", frame: "—", nominalA: 0, ratedKw: 0, plossW: 0,
       heatsinkAirflow: 0, panelAirflowRequired: 0,
-      recommendation: `No ${family} @ ${input.voltage}V matches ${targetKw.toFixed(1)} kW. Check catalog / use HV.`,
-      warnings: ["Motor kW exceeds listed frames"],
+      h: 0, w: 0, d: 0, fuseA: 0,
+      recommendation: `No ${family}-${input.variant} @ ${input.voltage}V matches ${targetKw.toFixed(1)} kW.`,
+      warnings: ["Motor kW exceeds listed frames for this variant"],
       keyFeatures: [],
     };
   }
@@ -109,6 +113,7 @@ export function sizeVsd(input: VsdInput): VsdResult {
 
   return {
     family: pick.family,
+    variant: pick.variant,
     partCode: pick.code,
     frame: pick.frame,
     nominalA: pick.nominalA,

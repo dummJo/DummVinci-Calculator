@@ -23,6 +23,7 @@ export default function VsdPage() {
   const [heavy,   setHeavy]   = useState(false);
   const [deltaT,  setDeltaT]  = useState("12");
   const [ambient, setAmbient] = useState("35");
+  const [variant, setVariant] = useState<"01" | "04" | "07">("01");
 
   const [result, setResult] = useState<VsdResult | null>(null);
 
@@ -34,6 +35,7 @@ export default function VsdPage() {
       dutyHeavy:    heavy,
       panelDeltaT:  parseFloat(deltaT)  || 12,
       ambientC:     parseFloat(ambient) || 40,
+      variant:      variant,
     });
     setResult(r);
   }
@@ -89,6 +91,14 @@ export default function VsdPage() {
             label={tv.ambient} unit="°C"
             value={ambient} onChange={setAmbient}
             min={10} max={55} step={1} hint={tv.ambientHint}
+          />
+          <FieldSelect
+            label={tv.construction} value={variant} onChange={v => setVariant(v as any)}
+            options={[
+              { value: "01", label: tv.constWall },
+              { value: "04", label: tv.constModule },
+              { value: "07", label: tv.constCabinet },
+            ]}
           />
         </div>
 
