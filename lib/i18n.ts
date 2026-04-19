@@ -31,6 +31,7 @@ export const T = {
     nav: {
       home: "Home", unified: "Fast", cable: "Cable", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Brake", panel: "Panel", support: "ABB Hub",
+      more: "More", close: "Close",
     },
     common: {
       resultLabel: "◈ Result",
@@ -267,6 +268,7 @@ export const T = {
     nav: {
       home: "Beranda", unified: "Fast", cable: "Kabel", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Resistor", panel: "Panel", support: "ABB Hub",
+      more: "Lainnya", close: "Tutup",
     },
     common: {
       resultLabel: "◈ Hasil Seleksi",
