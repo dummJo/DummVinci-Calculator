@@ -206,6 +206,7 @@ export default function HomePage() {
                 textDecoration: "none",
                 display: "block",
                 borderRadius: "var(--r-2xl)",
+                backgroundImage: "none",
               }}
             >
               <div
