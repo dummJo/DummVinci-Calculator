@@ -20,26 +20,15 @@ export default function TopBar() {
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icon.svg" alt="DummVinci" width={28} height={28} style={{ opacity: 0.9 }} />
-        <div>
-          <div style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "var(--fs-md)",
-            color: "var(--accent)",
-            letterSpacing: "-0.01em",
-            lineHeight: 1.1,
-          }}>
-            DummVinci Calculator
-          </div>
-          <div style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 9,
-            color: "var(--muted)",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-          }}>
-            Engineered by dummJo
-          </div>
+        <img src="/dummjo-icon.svg" alt="DummVinci" width={32} height={32} style={{ borderRadius: 6 }} />
+        <div style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "var(--fs-md)",
+          color: "var(--accent)",
+          letterSpacing: "-0.01em",
+          lineHeight: 1.1,
+        }}>
+          DummVinci Calculator
         </div>
       </div>
       <ThemeToggle />

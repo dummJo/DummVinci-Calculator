@@ -1,0 +1,23 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="#0e0d0b"/>
+  <!-- Vitruvian circle -->
+  <circle cx="16" cy="16" r="12" stroke="#c9a96e" stroke-width="1.2"/>
+  <!-- Vitruvian square -->
+  <rect x="5.5" y="5.5" width="21" height="21" stroke="#c9a96e" stroke-width="0.8"/>
+  <!-- Figure body -->
+  <line x1="16" y1="9" x2="16" y2="24" stroke="#c9a96e" stroke-width="1.4"/>
+  <!-- Arms extended -->
+  <line x1="8" y1="14" x2="24" y2="14" stroke="#c9a96e" stroke-width="1.2"/>
+  <!-- Head -->
+  <circle cx="16" cy="7.5" r="2.2" stroke="#c9a96e" stroke-width="1" fill="#0e0d0b"/>
+  <!-- Legs -->
+  <line x1="12" y1="25.5" x2="16" y2="19" stroke="#c9a96e" stroke-width="0.9"/>
+  <line x1="20" y1="25.5" x2="16" y2="19" stroke="#c9a96e" stroke-width="0.9"/>
+  <!-- Diagonal arms (vitruvian pose) -->
+  <line x1="8.5" y1="10" x2="16" y2="14" stroke="#c9a96e" stroke-width="0.7" opacity="0.6"/>
+  <line x1="23.5" y1="10" x2="16" y2="14" stroke="#c9a96e" stroke-width="0.7" opacity="0.6"/>
+  <!-- Diagonal legs -->
+  <line x1="9" y1="25" x2="16" y2="19" stroke="#c9a96e" stroke-width="0.7" opacity="0.6"/>
+  <line x1="23" y1="25" x2="16" y2="19" stroke="#c9a96e" stroke-width="0.7" opacity="0.6"/>
+</svg>
