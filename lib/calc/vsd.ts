@@ -19,11 +19,11 @@ export interface VsdInput {
   dutyHeavy: boolean;        // crane / conveyor high-inertia → oversize
   panelDeltaT: number;       // allowed ΔT inside panel vs ambient (K), typical 10–15
   ambientC?: number;         // Ambient temperature outside panel (°C), base 40°C
-  variant: "01" | "04" | "07" | "31"; 
+  variant: "01" | "02" | "04" | "07" | "31"; 
 }
 
 interface DriveFrame {
-  family: "ACQ580" | "ACS880";
+  family: "ACQ580" | "ACS880" | "ACS380";
   variant: string;
   code: string;
   frame: string;
@@ -37,7 +37,7 @@ interface DriveFrame {
 }
 
 export interface VsdResult {
-  family: "ACQ580" | "ACS880";
+  family: "ACQ580" | "ACS880" | "ACS380";
   variant: string;
   partCode: string;
   frame: string;
@@ -57,7 +57,8 @@ const LIST = drives as DriveFrame[];
 
 export function sizeVsd(input: VsdInput): VsdResult {
   const heavy = input.dutyHeavy || input.app === "crane" || input.app === "conveyor";
-  const family: "ACQ580" | "ACS880" = heavy ? "ACS880" : "ACQ580";
+  const isMachinery = input.app === "conveyor" && input.motorKw <= 11;
+  const family: "ACQ580" | "ACS880" | "ACS380" = heavy ? "ACS880" : (isMachinery ? "ACS380" : "ACQ580");
   const oversize = heavy ? 1.2 : 1.05;
   const targetKw = input.motorKw * oversize;
   const ambient = input.ambientC ?? 40;
@@ -103,13 +104,29 @@ export function sizeVsd(input: VsdInput): VsdResult {
       "Integrated EMC C2 Filter & DC Choke",
       "Coated circuit boards as standard",
     ]
-    : [
-      "Direct Torque Control (DTC) technology",
-      "Integrated Safe Torque Off (STO) SIL3",
-      "Built-in Brake Chopper (up to R4 frames)",
-      "Supports various fieldbus adapters",
-      "Optimized for heavy-duty applications",
-    ];
+    : pick.family === "ACS380"
+      ? [
+        "Pre-configured for machinery applications",
+        "Cost-effective with built-in STO SIL3",
+        "Adaptive programming for custom logic",
+        "Optimized for high-volume cabinet building",
+        "Coated boards & unified control panel"
+      ]
+      : [
+        "Direct Torque Control (DTC) technology",
+        "Integrated Safe Torque Off (STO) SIL3",
+        "Built-in Brake Chopper (up to R4 frames)",
+        "Supports various fieldbus adapters",
+        "Optimized for heavy-duty applications",
+      ];
+
+  if (pick.variant === "02") {
+    keyFeatures.push(
+      "Compact open-module design for cabinet builders",
+      "Flexible mounting options in shallow panels",
+      "Easily integrated I/O and motor cable exits"
+    );
+  }
 
   if (pick.variant === "31") {
     keyFeatures.push(
@@ -143,6 +160,10 @@ function recommendation(d: DriveFrame, app: DriveApp): string {
   
   if (d.variant === "31") {
     note = "ULH: Perfect for clean power grids. THDi < 3%. Built-in active supply eliminates harmonics without external filters. Boost voltage if needed.";
+  } else if (d.variant === "02") {
+    note = "Compact Module: Ideal for panel builders. Provides flexible mounting for shallow enclosures.";
+  } else if (d.family === "ACS380") {
+    note = "Machinery: Cost-optimized drive for conveyors/packaging. Ensure STO wiring is integrated.";
   } else if (app === "crane") {
     note = "Crane: enable brake chopper + connect STAHL BR to R+/R-. Safety STO via FSO-12.";
   } else if (app === "pump" || app === "fan") {

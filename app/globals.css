@@ -27,8 +27,10 @@
 
   /* Typography */
   --font-display: var(--font-display), 'Instrument Serif', Georgia, serif;
-  --font-sans:    var(--font-sans), 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  --font-mono:    var(--font-mono), 'JetBrains Mono', 'IBM Plex Mono', monospace;
+  --font-heading: var(--font-heading), 'Bricolage Grotesque', sans-serif;
+  --font-sans:    var(--font-heading), 'Bricolage Grotesque', sans-serif;
+  --font-body:    var(--font-body), 'Inter', sans-serif;
+  --font-mono:    var(--font-mono), 'JetBrains Mono', monospace;
 
   --fs-xs:  11px;
   --fs-sm:  13px;
@@ -168,14 +170,25 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; overflow-x: hidden; }
-body { overflow-x: hidden; }
+html { 
+  scroll-behavior: smooth; 
+  height: -webkit-fill-available;
+}
+
+body { 
+  overflow-x: hidden; 
+  width: 100vw;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
 
 body {
   background: var(--bg);
   color: var(--fg);
   transition: background 0.3s ease, color 0.3s ease;
-  font-family: var(--font-sans), 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-body);
   font-size: var(--fs-base);
   line-height: var(--lh-loose);
   -webkit-font-smoothing: antialiased;
@@ -310,6 +323,9 @@ a:hover {
       transparent 70%
     );
   -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -560,4 +576,4 @@ a:hover {
 /* ─── Hide number input spinners ─── */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-input[type="number"] { -moz-appearance: textfield; }
+input[type="number"] { -moz-appearance: textfield; appearance: textfield; }

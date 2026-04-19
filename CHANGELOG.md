@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] — 2026-04-20
+
+### Added
+- **Module-Centric Engine Expansion**: Fully integrated the **ACS880-02 Compact Module** series and **ACS380 Machinery Drive** family into the VSD and Unified sizing calculators.
+- **Enhanced Drive Catalog**: Expanded `abb-drives.json` with 40+ new industrial ratings, including ACQ580-04/07 module variants and detailed physical specs (H×W×D).
+- **Portfolio-Grade Typography**: Upgraded the design system to sync with dummJo's signature portfolio, featuring **Bricolage Grotesque** (Headings/UI) and **Outfit** (Premium Sans).
+
+### Changed
+- **Taskbar Visibility Boost**: Increased "Ghost" navigation opacity to **70%** and enabled perennial labels at 50% opacity for improved accessibility and discoverability.
+- **Fluid Dock Physics**: Refined the Gooey SVG filter and transition curves (`0.5s elastic`) for a cleaner, high-precision liquid effect.
+
+### Fixed
+- **Mobile Scroll Trapping**: Resolved "sticky" vertical scrolling on iOS/Mobile by optimizing overflow-x logic and implementing `-webkit-overflow-scrolling: touch`.
+- **Safe Area Compliance**: Updated `app-root` padding to dynamically account for mobile safe areas (`env(safe-area-inset-bottom)`), preventing the taskbar from covering content.
+- **Animation Stability**: Added a resize listener to the taskbar dock to maintain perfect blob alignment during viewport shifts.
+
 ## [2.1.0] — 2026-04-19
 
 ### Added

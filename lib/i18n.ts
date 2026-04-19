@@ -31,7 +31,7 @@ export const T = {
     nav: {
       home: "Home", unified: "Fast", cable: "Cable", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Brake", panel: "Panel", support: "ABB Hub",
-      more: "More", close: "Close",
+      more: "More", close: "Close", changelog: "What's New",
     },
     common: {
       resultLabel: "◈ Result",
@@ -116,7 +116,7 @@ export const T = {
       panelDt: "Panel ΔT", panelDtHint: "Allowed temp rise inside panel (typically 10–15 K)",
       ambient: "Ambient Temp", ambientHint: "Operating temp outside panel (°C) — base 40°C",
       construction: "Construction Type",
-      constWall: "-01 Wall-mounted", constModule: "-04 Drive Module", constCabinet: "-07 Cabinet-built",
+      constWall: "-01 Wall-mounted", constCompact: "-02 Compact Module", constModule: "-04 Drive Module", constCabinet: "-07 Cabinet-built",
       constUlh: "-31 Ultra-Low Harmonic",
       heavy: "Heavy Duty / High Inertia — Crane",
       heavyHint: "Forces ACS880, 20% oversizing margin, braking resistor note",
@@ -268,7 +268,7 @@ export const T = {
     nav: {
       home: "Beranda", unified: "Fast", cable: "Kabel", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Resistor", panel: "Panel", support: "ABB Hub",
-      more: "Lainnya", close: "Tutup",
+      more: "Lainnya", close: "Tutup", changelog: "Info Update",
     },
     common: {
       resultLabel: "◈ Hasil Seleksi",
@@ -355,7 +355,7 @@ export const T = {
       heavyHint: "Mewajibkan ACS880, margin daya 20%, dan pertimbangan resistor pengereman",
       ambient: "Suhu Sekitar", ambientHint: "Suhu operasional luar panel (°C) — dasar 40°C",
       construction: "Tipe Konstruksi",
-      constWall: "-01 Wall-mounted", constModule: "-04 Drive Module", constCabinet: "-07 Cabinet-built",
+      constWall: "-01 Wall-mounted", constCompact: "-02 Modul Kompak", constModule: "-04 Drive Module", constCabinet: "-07 Cabinet-built",
       constUlh: "-31 Ultra-Low Harmonic (ULH)",
       craneNote: "◈ Mode Crane/Tugas Berat: Wajib menggunakan ACS880. Harap tentukan kapasitas braking resistor melalui kalkulator khusus.",
       resTitle: "Hasil Seleksi Drive",

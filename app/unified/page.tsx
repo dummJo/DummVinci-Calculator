@@ -17,7 +17,7 @@ function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: an
   const specs = [
     { label: tu.colCode, value: result.vsd.partCode },
     { label: tu.colKw, value: result.vsd.ratedKw },
-    { label: tu.colFuse, value: (result.vsd as any).fuseA || "—" },
+    { label: tu.colFuse, value: result.vsd.fuseA || "—" },
     { label: tu.colBreaker, value: result.breaker.partCode.split(" ")[0] },
     { label: tu.colCable, value: result.cable.suggestion.split(" ")[1] }, // simpler string
     { label: tu.colAir, value: result.vsd.panelAirflowRequired },
@@ -94,7 +94,7 @@ export default function UnifiedPage() {
   const [install, setInstall] = useState<Install>("tray");
   const [ambient, setAmbient] = useState("35");
   const [fault, setFault] = useState("10");
-  const [variant, setVariant] = useState<"01" | "04" | "07">("01");
+  const [variant, setVariant] = useState<"01" | "02" | "04" | "07" | "31">("01");
   const [result, setResult] = useState<UnifiedResult | null>(null);
 
   const calculate = () => {
@@ -156,6 +156,7 @@ export default function UnifiedPage() {
             label={tu.driveVariant} value={variant} onChange={v => setVariant(v as any)}
             options={[
               { value: "01", label: t.vsd.constWall },
+              { value: "02", label: t.vsd.constCompact },
               { value: "04", label: t.vsd.constModule },
               { value: "07", label: t.vsd.constCabinet },
               { value: "31", label: t.vsd.constUlh },
