@@ -72,12 +72,15 @@ export default function BottomTabBar() {
           top: 8px;
           bottom: 8px;
           left: 0;
-          background: linear-gradient(135deg, rgba(201, 168, 76, 0.15) 0%, rgba(201, 168, 76, 0.05) 100%);
+          background: linear-gradient(135deg, rgba(201, 168, 76, 0.25) 0%, rgba(201, 168, 76, 0.08) 100%);
           border-radius: 20px;
           z-index: 0;
-          transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1.1);
+          /* Super elastic spring transition */
+          transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
           pointer-events: none;
-          box-shadow: 0 4px 12px rgba(201,168,76,0.1);
+          box-shadow: 
+            0 4px 12px rgba(201,168,76,0.15),
+            inset 0 1px 0 rgba(255,255,255,0.1);
         }
         .tab-item {
           position: relative;
@@ -98,8 +101,18 @@ export default function BottomTabBar() {
           transition: filter 0.3s ease, color 0.3s ease;
         }
         .active-glow {
-          filter: drop-shadow(0 0 8px rgba(201, 168, 76, 0.5));
+          filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.6));
           color: var(--accent) !important;
+          animation: spring-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes spring-pop {
+          0% { transform: scale(1); }
+          40% { transform: scale(1.25); }
+          70% { transform: scale(0.9); }
+          100% { transform: scale(1); }
+        }
+        .liquid-blob {
+          will-change: transform, width;
         }
         .more-overlay {
           position: fixed;
