@@ -5,6 +5,7 @@ import CursorGlow from "@/components/CursorGlow";
 import DaVinciAscii from "@/components/DaVinciAscii";
 import BottomTabBar from "@/components/nav/BottomTabBar";
 import TopBar from "@/components/nav/TopBar";
+import DynamicIconManager from "@/components/DynamicIconManager";
 import "./globals.css";
 
 const displayFont = Instrument_Serif({ variable: "--font-display", subsets: ["latin"], weight: "400" });
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
       </head>
       <body style={{ position: "relative" }}>
+        <DynamicIconManager />
         <CursorGlow />
         <DaVinciAscii />
         <TopBar />
