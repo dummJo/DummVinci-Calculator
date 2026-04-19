@@ -14,6 +14,7 @@ export default function BottomTabBar() {
   const { t, lang } = useLang();
   const [showMore, setShowMore] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
+  const [hoverPos, setHoverPos] = useState<{ x: number, width: number } | null>(null);
 
   const MAIN_TABS = [
     { href: "/",            key: "home",    Icon: LayoutGrid },
@@ -51,11 +52,23 @@ export default function BottomTabBar() {
     }
   }, [path, showMore]);
 
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const target = (e.target as HTMLElement).closest(".tab-item") as HTMLElement;
+    if (target) {
+      setHoverPos({
+        x: target.offsetLeft + 6,
+        width: target.offsetWidth - 12
+      });
+    } else {
+      setHoverPos(null);
+    }
+  };
+
   return (
     <>
       <style>{`
         .liquid-container {
-          filter: url('#gooey');
+          filter: url('#gooey-dock');
           position: relative;
           display: flex;
           align-items: center;
@@ -63,19 +76,18 @@ export default function BottomTabBar() {
           height: 100%;
         }
         .liquid-glass {
-          background: rgba(13, 16, 22, 0.7);
-          backdrop-filter: blur(40px) saturate(200%);
-          -webkit-backdrop-filter: blur(40px) saturate(200%);
+          background: rgba(13, 16, 22, 0.4);
+          backdrop-filter: blur(50px) saturate(200%);
+          -webkit-backdrop-filter: blur(50px) saturate(200%);
           border: 1px solid rgba(255, 255, 255, 0.08);
-          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
         }
         .liquid-blob {
           position: absolute;
           top: 6px;
           bottom: 6px;
           left: 0;
-          /* Iridescent Holographic Background */
-          background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 50%),
+          background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 60%),
                       linear-gradient(135deg, #c9a84c 0%, #ffdf9e 40%, #c9a84c 70%, #8c6510 100%);
           background-size: 200% 200%;
           border-radius: 24px;
@@ -84,10 +96,21 @@ export default function BottomTabBar() {
             transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
             width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
           pointer-events: none;
-          box-shadow: 
-            0 0 20px rgba(201, 168, 76, 0.3),
-            inset 0 0 12px rgba(255, 255, 255, 0.2);
-          will-change: transform, width;
+          box-shadow: 0 0 30px rgba(201, 168, 76, 0.4);
+        }
+        .hover-follower {
+          position: absolute;
+          top: 8px;
+          bottom: 8px;
+          left: 0;
+          background: rgba(255, 255, 255, 0.08);
+          border-radius: 20px;
+          z-index: 0;
+          transition: 
+            transform 0.3s cubic-bezier(0.2, 0, 0, 1),
+            width 0.3s cubic-bezier(0.2, 0, 0, 1),
+            opacity 0.2s ease;
+          pointer-events: none;
         }
         .tab-item {
           position: relative;
@@ -100,31 +123,39 @@ export default function BottomTabBar() {
           height: 100%;
           text-decoration: none;
           -webkit-tap-highlight-color: transparent;
+          transition: all 0.3s ease;
         }
         .active-icon {
-          color: #0d1016 !important; /* Cut-out effect */
+          color: #0d1016 !important;
           transform: scale(1.15);
           filter: drop-shadow(0 0 2px rgba(255,255,255,0.4));
-          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          opacity: 1 !important;
         }
         .inactive-icon {
-          color: rgba(255,255,255,0.4);
-          transition: all 0.3s ease;
+          color: white;
+          opacity: 0 !important; /* Invisible before selected */
+          transform: scale(0.85);
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .tab-item:hover .inactive-icon {
+          opacity: 0.3 !important; /* Visible on hover */
+          transform: scale(1);
         }
         .tab-label {
           font-family: var(--font-mono);
           font-size: 8px;
           margin-top: 4px;
+          opacity: 0; /* Hidden by default */
           transition: all 0.3s ease;
+          pointer-events: none;
         }
-        .active-label {
+        .tab-active .tab-label {
+          opacity: 1;
           color: var(--accent);
           font-weight: 700;
-          opacity: 1;
         }
-        .inactive-label {
-          color: rgba(255,255,255,0.3);
-          opacity: 0.6;
+        .tab-item:hover .tab-label {
+          opacity: 0.7;
         }
         .more-overlay {
           position: fixed;
@@ -133,8 +164,8 @@ export default function BottomTabBar() {
           right: 12px;
           max-width: 400px;
           margin: 0 auto;
-          background: rgba(13, 16, 22, 0.85);
-          backdrop-filter: blur(60px) saturate(200%);
+          background: rgba(13, 16, 22, 0.95);
+          backdrop-filter: blur(60px);
           border-radius: 32px;
           border: 1px solid rgba(255, 255, 255, 0.1);
           padding: 24px;
@@ -144,32 +175,14 @@ export default function BottomTabBar() {
           gap: 16px;
           transform-origin: bottom center;
           transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 32px 64px rgba(0,0,0,0.6);
-        }
-        .more-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 10px;
-          padding: 16px 8px;
-          border-radius: 24px;
-          text-decoration: none;
-          color: white;
-          background: rgba(255,255,255,0.03);
-          transition: all 0.3s ease;
-        }
-        .more-item:hover {
-          background: rgba(201, 168, 76, 0.15);
-          transform: translateY(-4px);
         }
       `}</style>
 
-      {/* SVG Gooey Filter Definition */}
       <svg style={{ visibility: "hidden", position: "absolute", width: 0, height: 0 }}>
         <defs>
-          <filter id="gooey">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+          <filter id="gooey-dock">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 30 -15" result="goo" />
             <feComposite in="SourceGraphic" in2="goo" operator="atop" />
           </filter>
         </defs>
@@ -192,6 +205,7 @@ export default function BottomTabBar() {
               href={tab.href} 
               className="more-item"
               onClick={() => setShowMore(false)}
+              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: 16, borderRadius: 24, textDecoration: "none", color: "white", background: "rgba(255,255,255,0.03)" }}
             >
               <tab.Icon size={24} style={{ color: active ? "var(--accent)" : "rgba(255,255,255,0.6)" }} />
               <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", opacity: 0.8 }}>{t.nav[tab.key]}</span>
@@ -203,6 +217,8 @@ export default function BottomTabBar() {
       <nav
         ref={navRef}
         className="liquid-glass"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setHoverPos(null)}
         style={{
           position: "fixed",
           bottom: "calc(20px + env(safe-area-inset-bottom, 0px))",
@@ -214,9 +230,21 @@ export default function BottomTabBar() {
           borderRadius: 36,
           zIndex: 100,
           padding: "0 10px",
+          cursor: "pointer",
         }}
       >
         <div className="liquid-container">
+          {/* Mouse Follower */}
+          <div 
+            className="hover-follower" 
+            style={{ 
+              opacity: hoverPos ? 1 : 0,
+              width: hoverPos?.width,
+              transform: `translateX(${hoverPos?.x}px)`
+            }} 
+          />
+          
+          {/* Active Blob */}
           <div className="liquid-blob" style={blobStyle} />
 
           {MAIN_TABS.map((tab) => {
@@ -232,9 +260,7 @@ export default function BottomTabBar() {
                   size={24} 
                   className={active ? "active-icon" : "inactive-icon"} 
                 />
-                <span className={clsx("tab-label", active ? "active-label" : "inactive-label")}>
-                  {t.nav[tab.key]}
-                </span>
+                <span className="tab-label">{t.nav[tab.key]}</span>
               </Link>
             );
           })}
@@ -249,9 +275,7 @@ export default function BottomTabBar() {
             ) : (
               <MoreHorizontal size={24} className={(showMore || isUtilityActive) ? "active-icon" : "inactive-icon"} />
             )}
-            <span className={clsx("tab-label", (showMore || isUtilityActive) ? "active-label" : "inactive-label")}>
-              {showMore ? t.nav.close : t.nav.more}
-            </span>
+            <span className="tab-label">{showMore ? t.nav.close : t.nav.more}</span>
           </button>
         </div>
       </nav>
