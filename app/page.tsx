@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import { getRandomQuote } from "@/lib/quotes";
+import { useState, useEffect } from "react";
 
 const SPEC_STRIP = [
   "IEC 60364",
@@ -17,6 +19,11 @@ const SPEC_STRIP = [
 export default function HomePage() {
   const { t } = useLang();
   const th = t.home;
+  const [heroQuote, setHeroQuote] = useState("");
+
+  useEffect(() => {
+    setHeroQuote(getRandomQuote());
+  }, []);
 
   const CALCS = [
     {
@@ -98,12 +105,14 @@ export default function HomePage() {
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: "var(--fs-xs)",
-              color: "var(--muted)",
-              letterSpacing: "0.24em",
+              color: "var(--accent)",
+              letterSpacing: "0.08em",
               textTransform: "uppercase",
+              opacity: heroQuote ? 1 : 0,
+              transition: "opacity 0.5s ease",
             }}
           >
-            ◈ Managed by dummJo.
+            {heroQuote}
           </span>
         </div>
 
