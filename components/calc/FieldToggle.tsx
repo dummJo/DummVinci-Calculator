@@ -40,9 +40,9 @@ export default function FieldToggle({ label, checked, onChange, hint }: Props) {
           {label}
         </span>
         <span style={{
-          width: 36,
-          height: 20,
-          borderRadius: 10,
+          width: 44,
+          height: 24,
+          borderRadius: 12,
           background: checked ? "var(--accent)" : "var(--hairline)",
           position: "relative",
           flexShrink: 0,
@@ -50,13 +50,14 @@ export default function FieldToggle({ label, checked, onChange, hint }: Props) {
         }}>
           <span style={{
             position: "absolute",
-            top: 3,
-            left: checked ? 18 : 3,
-            width: 14,
-            height: 14,
+            top: 4,
+            left: checked ? 24 : 4,
+            width: 16,
+            height: 16,
             borderRadius: "50%",
-            background: checked ? "var(--bg)" : "var(--muted)",
-            transition: "left 0.2s ease, background 0.2s ease",
+            background: checked ? "#0d1016" : "var(--muted)",
+            transition: "left 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease",
+            boxShadow: checked ? "0 2px 4px rgba(0,0,0,0.2)" : "none",
           }} />
         </span>
       </button>
