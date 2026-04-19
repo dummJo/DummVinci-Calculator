@@ -32,6 +32,7 @@ export const T = {
       home: "Home", unified: "Fast", cable: "Cable", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Brake", panel: "Panel",
     },
+    common: {
       resultLabel: "◈ Result",
     },
     home: {
@@ -225,6 +226,7 @@ export const T = {
       home: "Beranda", unified: "Fast", cable: "Kabel", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Resistor", panel: "Panel",
     },
+    common: {
       resultLabel: "◈ Hasil Seleksi",
     },
     home: {
