@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import {
   LayoutGrid, Activity, Cpu, Disc3, MoreHorizontal, 
-  Cable, Zap, AlignJustify, Server, Disc, X
+  Cable, Zap, AlignJustify, Server, Disc, X, History, Sparkles, AlertCircle
 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { clsx } from "clsx";
@@ -13,6 +13,7 @@ export default function BottomTabBar() {
   const path = usePathname();
   const { t, lang } = useLang();
   const [showMore, setShowMore] = useState(false);
+  const [showChangelog, setShowChangelog] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
   const [hoverPos, setHoverPos] = useState<{ x: number, width: number } | null>(null);
 
@@ -38,7 +39,9 @@ export default function BottomTabBar() {
   const [blobStyle, setBlobStyle] = useState({});
 
   useEffect(() => {
-    const handleClose = () => setShowMore(false);
+    const handleClose = () => {
+      setShowMore(false);
+    };
     if (showMore) {
       window.addEventListener("click", handleClose);
     }
@@ -131,29 +134,27 @@ export default function BottomTabBar() {
           height: 100%;
           text-decoration: none;
           -webkit-tap-highlight-color: transparent;
-          transition: all 0.3s ease;
-        }
-        .active-icon {
-          color: #0d1016 !important;
-          transform: scale(1.15);
-          filter: drop-shadow(0 0 2px rgba(255,255,255,0.4));
-          opacity: 1 !important;
         }
         .inactive-icon {
           color: white;
-          opacity: 0 !important; /* Invisible before selected */
+          opacity: 0 !important;
           transform: scale(0.85);
           transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .tab-item:hover .inactive-icon {
-          opacity: 0.3 !important; /* Visible on hover */
+          opacity: 0.3 !important;
           transform: scale(1);
+        }
+        .tab-active .active-icon {
+          color: #0d1016 !important;
+          transform: scale(1.15);
+          opacity: 1 !important;
         }
         .tab-label {
           font-family: var(--font-mono);
           font-size: 8px;
           margin-top: 4px;
-          opacity: 0; /* Hidden by default */
+          opacity: 0;
           transition: all 0.3s ease;
           pointer-events: none;
         }
@@ -162,27 +163,39 @@ export default function BottomTabBar() {
           color: var(--accent);
           font-weight: 700;
         }
-        .tab-item:hover .tab-label {
-          opacity: 0.7;
-        }
-        .more-overlay {
+        .modal-overlay {
           position: fixed;
-          bottom: 96px;
-          left: 12px;
-          right: 12px;
-          max-width: 400px;
-          margin: 0 auto;
-          background: rgba(13, 16, 22, 0.95);
-          backdrop-filter: blur(60px);
-          border-radius: 32px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          padding: 24px;
-          z-index: 90;
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 16px;
-          transform-origin: bottom center;
-          transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          inset: 0;
+          z-index: 200;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+          background: rgba(0,0,0,0.6);
+          backdrop-filter: blur(8px);
+        }
+        .changelog-card {
+          width: 100%;
+          max-width: 500px;
+          max-height: 80vh;
+          overflow-y: auto;
+          background: #0d1017;
+          border: 1px solid var(--accent);
+          border-radius: 28px;
+          padding: 32px;
+          position: relative;
+          box-shadow: 0 32px 64px rgba(0,0,0,0.8);
+        }
+        .version-tag {
+          display: inline-block;
+          padding: 4px 12px;
+          background: rgba(201,168,76,0.15);
+          color: var(--accent);
+          border-radius: 12px;
+          font-family: var(--font-mono);
+          font-size: 10px;
+          font-weight: 700;
+          margin-bottom: 20px;
         }
       `}</style>
 
@@ -196,44 +209,101 @@ export default function BottomTabBar() {
         </defs>
       </svg>
 
+      {/* CHANGELOG MODAL */}
+      {showChangelog && (
+        <div className="modal-overlay" onClick={() => setShowChangelog(false)}>
+          <div className="changelog-card" onClick={e => e.stopPropagation()}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+              <div>
+                <span className="version-tag">STABLE v2.1.0</span>
+                <h2 style={{ fontSize: 24, fontFamily: "var(--font-display)", color: "white", margin: 0 }}>{t.nav.changelog}</h2>
+              </div>
+              <button onClick={() => setShowChangelog(false)} style={{ background: "none", border: "none", color: "var(--muted-soft)", cursor: "pointer" }}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div style={{ marginTop: 24, fontSize: 13, lineHeight: 1.6, color: "var(--fg-soft)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--accent)", marginBottom: 12 }}>
+                <Sparkles size={16} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)" }}>LATEST UPDATE</span>
+              </div>
+              <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+                <li><b>Liquid Meta-ball UI</b>: Organic "Gooey" docking physics with SVG filters.</li>
+                <li><b>Ghost Navigation</b>: Minimalist dock with invisible-until-active states.</li>
+                <li><b>Hover Follower</b>: Tactile mouse-tracking indicator for real-time feedback.</li>
+                <li><b>Golden Ratio Refactor</b>: All grids aligned to 1.618 harmonic proportions.</li>
+                <li><b>Click-Outside Logic</b>: Auto-close overlays for cleaner mobile experience.</li>
+              </ul>
+
+              <hr style={{ border: "none", borderTop: "1px solid rgba(255,255,255,0.05)", margin: "24px 0" }} />
+              
+              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--muted)", marginBottom: 12 }}>
+                <AlertCircle size={16} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)" }}>V2.0.0 CORE FEATURES</span>
+              </div>
+              <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 8, opacity: 0.7 }}>
+                <li>ABB Support Hub (Fault Lookup & Manuals).</li>
+                <li>Full ULH (-31) High Harmonic Drive sizing.</li>
+                <li>Ambient Temp (40°C+) Derating Logic.</li>
+              </ul>
+            </div>
+
+            <div style={{ marginTop: 40, textAlign: "center", opacity: 0.5, fontSize: 10, fontFamily: "var(--font-mono)" }}>
+              DummVinci Engineering • 2026 Production Build
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* BACKDROP FOR CLICK-OUTSIDE */}
       {showMore && (
         <div 
           onClick={() => setShowMore(false)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 80,
-            background: "transparent"
-          }} 
+          style={{ position: "fixed", inset: 0, zIndex: 80, background: "transparent" }} 
         />
       )}
 
       {/* MORE OVERLAY */}
       <div 
         className="more-overlay"
-        onClick={e => e.stopPropagation()} // Prevent closing when clicking inside
+        onClick={e => e.stopPropagation()}
         style={{ 
           opacity: showMore ? 1 : 0,
           transform: showMore ? "scale(1) translateY(0)" : "scale(0.8) translateY(40px)",
           pointerEvents: showMore ? "auto" : "none",
         }}
       >
-        {UTILITY_TABS.map(tab => {
-          const active = path.startsWith(tab.href);
-          return (
-            <Link 
-              key={tab.href} 
-              href={tab.href} 
-              className="more-item"
-              onClick={() => setShowMore(false)}
-              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: 16, borderRadius: 24, textDecoration: "none", color: "white", background: "rgba(255,255,255,0.03)" }}
-            >
-              <tab.Icon size={24} style={{ color: active ? "var(--accent)" : "rgba(255,255,255,0.6)" }} />
-              <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", opacity: 0.8 }}>{t.nav[tab.key]}</span>
-            </Link>
-          );
-        })}
+        <div style={{ gridColumn: "span 3", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 12 }}>
+          {UTILITY_TABS.map(tab => {
+            const active = path.startsWith(tab.href);
+            return (
+              <Link key={tab.href} href={tab.href} className="more-item" onClick={() => setShowMore(false)}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "16px 8px", borderRadius: 24, textDecoration: "none", color: "white", background: "rgba(255,255,255,0.03)" }}
+              >
+                <tab.Icon size={24} style={{ color: active ? "var(--accent)" : "rgba(255,255,255,0.6)" }} />
+                <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", opacity: 0.8, textAlign: "center" }}>{t.nav[tab.key]}</span>
+              </Link>
+            );
+          })}
+        </div>
+        
+        {/* CHANGELOG TRIGGER BANNER */}
+        <button 
+          onClick={() => { setShowChangelog(true); setShowMore(false); }}
+          style={{ 
+            gridColumn: "span 3",
+            display: "flex", alignItems: "center", gap: 12, padding: "14px 20px",
+            background: "linear-gradient(90deg, rgba(201,168,76,0.1) 0%, rgba(201,168,76,0.02) 100%)",
+            border: "1px solid rgba(201,168,76,0.2)",
+            borderRadius: 20, cursor: "pointer", color: "white", transition: "all 0.2s ease"
+          }}
+          className="hover-lift"
+        >
+          <History size={18} style={{ color: "var(--accent)" }} />
+          <div style={{ flex: 1, textAlign: "left" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--accent)" }}>{t.nav.changelog}</div>
+            <div style={{ fontSize: 9, opacity: 0.6 }}>Stable Production v2.1.0</div>
+          </div>
+        </button>
       </div>
 
       <nav
@@ -256,47 +326,19 @@ export default function BottomTabBar() {
         }}
       >
         <div className="liquid-container">
-          {/* Mouse Follower */}
-          <div 
-            className="hover-follower" 
-            style={{ 
-              opacity: hoverPos ? 1 : 0,
-              width: hoverPos?.width,
-              transform: `translateX(${hoverPos?.x}px)`
-            }} 
-          />
-          
-          {/* Active Blob */}
+          <div className="hover-follower" style={{ opacity: hoverPos ? 1 : 0, width: hoverPos?.width, transform: `translateX(${hoverPos?.x}px)` }} />
           <div className="liquid-blob" style={blobStyle} />
-
           {MAIN_TABS.map((tab) => {
             const active = tab.href === "/" ? path === "/" : path.startsWith(tab.href);
             return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={clsx("tab-item", active && "tab-active")}
-                onClick={() => setShowMore(false)}
-              >
-                <tab.Icon 
-                  size={24} 
-                  className={active ? "active-icon" : "inactive-icon"} 
-                />
+              <Link key={tab.href} href={tab.href} className={clsx("tab-item", active && "tab-active")} onClick={() => setShowMore(false)}>
+                <tab.Icon size={24} className={active ? "active-icon" : "inactive-icon"} style={{ color: active ? "#0d1016" : "white" }} />
                 <span className="tab-label">{t.nav[tab.key]}</span>
               </Link>
             );
           })}
-
-          <button
-            className={clsx("tab-item", (showMore || isUtilityActive) && "tab-active")}
-            style={{ background: "none", border: "none", cursor: "pointer" }}
-            onClick={() => setShowMore(!showMore)}
-          >
-            {showMore ? (
-              <X size={24} style={{ color: "var(--accent)" }} />
-            ) : (
-              <MoreHorizontal size={24} className={(showMore || isUtilityActive) ? "active-icon" : "inactive-icon"} />
-            )}
+          <button className={clsx("tab-item", (showMore || isUtilityActive) && "tab-active")} style={{ background: "none", border: "none", cursor: "pointer" }} onClick={(e) => { e.stopPropagation(); setShowMore(!showMore); }}>
+            {showMore ? <X size={24} style={{ color: "var(--accent)" }} /> : <MoreHorizontal size={24} className={(showMore || isUtilityActive) ? "active-icon" : "inactive-icon"} style={{ color: (showMore || isUtilityActive) ? "#0d1016" : "white" }} />}
             <span className="tab-label">{showMore ? t.nav.close : t.nav.more}</span>
           </button>
         </div>
