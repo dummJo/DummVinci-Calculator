@@ -27,6 +27,13 @@ export default function HomePage() {
 
   const CALCS = [
     {
+      href: "/unified",
+      icon: "⚡",
+      title: th.calcs.unified.title,
+      description: th.calcs.unified.desc,
+      tag: "SMART-SIZE",
+    },
+    {
       href: "/cable",
       icon: "⌁",
       title: th.calcs.cable.title,

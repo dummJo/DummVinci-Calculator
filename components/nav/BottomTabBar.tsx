@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutGrid, Cable, Cpu, Zap, AlignJustify, Disc3, Server,
+  LayoutGrid, Activity, Cable, Cpu, Zap, AlignJustify, Disc3, Server,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useLang } from "@/lib/i18n";
@@ -11,11 +11,11 @@ interface Tab { href: string; key: keyof ReturnType<typeof useLang>["t"]["nav"];
 
 const TABS: Tab[] = [
   { href: "/",                 key: "home",    Icon: LayoutGrid   },
+  { href: "/unified",          key: "unified", Icon: Activity     },
   { href: "/cable",            key: "cable",   Icon: Cable        },
   { href: "/vsd",              key: "drive",   Icon: Cpu          },
   { href: "/breaker",          key: "breaker", Icon: Zap          },
   { href: "/busbar",           key: "busbar",  Icon: AlignJustify },
-  { href: "/braking-resistor", key: "brake",   Icon: Disc3        },
   { href: "/panel",            key: "panel",   Icon: Server       },
 ];
 

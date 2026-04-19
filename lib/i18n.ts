@@ -29,7 +29,7 @@ export function useLang() {
 export const T = {
   en: {
     nav: {
-      home: "Home", cable: "Cable", drive: "Drive", breaker: "Breaker",
+      home: "Home", unified: "Fast", cable: "Cable", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Brake", panel: "Panel",
     },
       resultLabel: "◈ Result",
@@ -64,6 +64,10 @@ export const T = {
         panel: {
           title: "Panel Cooling",
           desc: "Enclosure sizing with natural, fan, or AC cooling. Rittal + XLTC part codes and filter specs.",
+        },
+        unified: {
+          title: "Fast Sizing",
+          desc: "VSD + Cable + Breaker in one flow. Get full motor starter specs in seconds.",
         },
       },
     },
@@ -218,7 +222,7 @@ export const T = {
 
   id: {
     nav: {
-      home: "Beranda", cable: "Kabel", drive: "Drive", breaker: "Breaker",
+      home: "Beranda", unified: "Fast", cable: "Kabel", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Resistor", panel: "Panel",
     },
       resultLabel: "◈ Hasil Seleksi",
@@ -253,6 +257,10 @@ export const T = {
         panel: {
           title: "Pendinginan Panel",
           desc: "Sizing enclosure dengan sistem alamiah, kipas, atau AC. Kode produk Rittal + XLTC serta spesifikasi filter udara.",
+        },
+        unified: {
+          title: "Fast Sizing",
+          desc: "VSD + Kabel + Breaker dalam satu alur. Dapatkan spesifikasi motor starter lengkap dalam hitungan detik.",
         },
       },
     },
@@ -393,7 +401,7 @@ export const T = {
       resPanelTitle: "Hasil Seleksi Enclosure",
       resPart: "Kode Produk", resDim: "Dimensi (Tinggi × Lebar × Dalam)",
       resSurface: "Luas Permukaan Efektif", resDiss: "Disipasi Panas Alamiah",
-      resCooling: "Mode Pendinginan Terpilih",
+      resCooling: "Mode Pendinginan",
       secFan: "Spesifikasi Kipas", secIntake: "Filter Udara Masuk (Intake)", secExhaust: "Filter Udara Keluar (Exhaust)",
       fanAirflow: "Aliran Udara Diperlukan", fanRittal: "Kode Kipas Rittal", fanXltc: "Kode Kipas XLTC",
       fanPosition: "Posisi Pemasangan Kipas",
@@ -403,6 +411,25 @@ export const T = {
       acHeatLoad: "Beban Panas Terhitung", acCapacity: "Kapasitas Pendinginan Dipilih",
       acBtu: "Kapasitas AC dalam BTU/h", acRittal: "Seri Rittal Blue e+", acXltc: "Kode AC XLTC",
       acMode: "Mode Operasi", acNote: "Catatan Instalasi Khusus",
+    },
+    unified: {
+      label: "Fast Sizing", title: "Kalkulator Terpadu Motor Starter",
+      subtitle: "VSD + Kabel + Breaker dalam satu alur — Standar ABB & Siemens",
+      secMotor: "Data Motor Utama",
+      motorKw: "Daya Motor (kW)",
+      motorAmps: "Arus FLA Manual (A) - opsional",
+      voltage: "Tegangan Jalur",
+      app: "Jenis Aplikasi",
+      heavy: "Tugas Berat / Crane",
+      cableLen: "Panjang Kabel (m)",
+      ambient: "Suhu Sekitar (°C)",
+      fault: "Level Hubung Singkat (kA)",
+      btnCalc: "Generate Strategi Feeder",
+      resTitle: "Strategi Terpadu Motor Starter",
+      resVsd: "Rekomendasi VSD (Drive)",
+      resCable: "Spesifikasi Kabel",
+      resBreaker: "Proteksi (MCCB/MCB)",
+      resAmps: "Arus FLA Terhitung",
     },
   },
 } as const;
