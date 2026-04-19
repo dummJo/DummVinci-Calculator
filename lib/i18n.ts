@@ -32,8 +32,40 @@ export const T = {
       home: "Home", cable: "Cable", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Brake", panel: "Panel",
     },
-    common: {
       resultLabel: "◈ Result",
+    },
+    home: {
+      heroTitle: "DummVinci",
+      heroSub: "Calculator",
+      heroSubtitle: "Precision Sizing. Engineered by dummJo.",
+      secCalculators: "Calculators",
+      ctaOpen: "Open Calculator",
+      calcs: {
+        cable: {
+          title: "Cable Sizing",
+          desc: "IEC 60364 conductor selection — phase, ground, vdrop, derating. Supreme / Jembo suggestion.",
+        },
+        vsd: {
+          title: "VSD + Airflow",
+          desc: "ABB drive selection: ACQ580 / ACS880. Frame, part code, heat loss, required panel airflow.",
+        },
+        breaker: {
+          title: "MCCB / MCB",
+          desc: "Siemens 5SL / 5SY / 3VA selection. Curve B/C/D, poles, Icu, coordination note.",
+        },
+        busbar: {
+          title: "Busbar Sizing",
+          desc: "Flat bar cross-section for Cu / Al. Ampacity, derating, enclosure factor, part description.",
+        },
+        brake: {
+          title: "Braking Resistor",
+          desc: "STAHL crane braking resistor — Rmin/Rmax/Rtarget, peak & continuous kW, part code.",
+        },
+        panel: {
+          title: "Panel Cooling",
+          desc: "Enclosure sizing with natural, fan, or AC cooling. Rittal + XLTC part codes and filter specs.",
+        },
+      },
     },
     kwamp: {
       estimatedA: (a: number, v: number, ph: string, pf: number) =>
@@ -189,8 +221,40 @@ export const T = {
       home: "Beranda", cable: "Kabel", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Resistor", panel: "Panel",
     },
-    common: {
       resultLabel: "◈ Hasil Seleksi",
+    },
+    home: {
+      heroTitle: "DummVinci",
+      heroSub: "Calculator",
+      heroSubtitle: "Sizing Presisi. Dirancang oleh dummJo.",
+      secCalculators: "Katalog Kalkulator",
+      ctaOpen: "Buka Kalkulator",
+      calcs: {
+        cable: {
+          title: "Ukuran Kabel",
+          desc: "Seleksi konduktor sesuai IEC 60364 — fasa, ground, jatuh tegangan, dan faktor derating. Rekomendasi kabel Supreme / Jembo.",
+        },
+        vsd: {
+          title: "VSD & Aliran Udara",
+          desc: "Seleksi drive ABB: ACQ580 / ACS880. Informasi frame, kode part, disipasi panas, dan kebutuhan airflow panel.",
+        },
+        breaker: {
+          title: "MCCB / MCB",
+          desc: "Seleksi Siemens seri 5SL / 5SY / 3VA. Karakteristik kurva B/C/D, jumlah kutub, Icu, dan catatan koordinasi.",
+        },
+        busbar: {
+          title: "Sizing Busbar",
+          desc: "Penentuan luas penampang busbar Cu / Al. Kapasitas arus, derating, faktor enclosure, dan spesifikasi material.",
+        },
+        brake: {
+          title: "Resistor Pengereman",
+          desc: "Sizing resistor pengereman crane STAHL — Rmin/Rmax/Rtarget, daya puncak & kontinu (kW), serta kode part.",
+        },
+        panel: {
+          title: "Pendinginan Panel",
+          desc: "Sizing enclosure dengan sistem alamiah, kipas, atau AC. Kode produk Rittal + XLTC serta spesifikasi filter udara.",
+        },
+      },
     },
     kwamp: {
       estimatedA: (a: number, v: number, ph: string, pf: number) =>

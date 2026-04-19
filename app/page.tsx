@@ -1,56 +1,8 @@
+"use client";
 // app/page.tsx — DummVinci Calculator Landing Page
 import Link from "next/link";
-
-const CALCS = [
-  {
-    href: "/cable",
-    icon: "⌁",
-    title: "Cable Sizing",
-    description:
-      "IEC 60364 conductor selection — phase, ground, vdrop, derating. Supreme / Jembo suggestion.",
-    tag: "IEC 60364-5-52",
-  },
-  {
-    href: "/vsd",
-    icon: "◎",
-    title: "VSD + Airflow",
-    description:
-      "ABB drive selection: ACQ580 / ACS880. Frame, part code, heat loss, required panel airflow.",
-    tag: "ABB CATALOG",
-  },
-  {
-    href: "/breaker",
-    icon: "⏻",
-    title: "MCCB / MCB",
-    description:
-      "Siemens 5SL / 5SY / 3VA selection. Curve B/C/D, poles, Icu, coordination note.",
-    tag: "IEC 60947-2",
-  },
-  {
-    href: "/busbar",
-    icon: "≡",
-    title: "Busbar Sizing",
-    description:
-      "Flat bar cross-section for Cu / Al. Ampacity, derating, enclosure factor, part description.",
-    tag: "DIN 43671",
-  },
-  {
-    href: "/braking-resistor",
-    icon: "Ω",
-    title: "Braking Resistor",
-    description:
-      "STAHL crane braking resistor — Rmin/Rmax/Rtarget, peak & continuous kW, part code.",
-    tag: "STAHL STANDARD",
-  },
-  {
-    href: "/panel",
-    icon: "▣",
-    title: "Panel Cooling",
-    description:
-      "Enclosure sizing with natural, fan, or AC cooling. Rittal + XLTC part codes and filter specs.",
-    tag: "IEC 60890",
-  },
-];
+import { useLang } from "@/lib/i18n";
+import Footer from "@/components/nav/Footer";
 
 const SPEC_STRIP = [
   "IEC 60364",
@@ -63,6 +15,54 @@ const SPEC_STRIP = [
 ];
 
 export default function HomePage() {
+  const { t } = useLang();
+  const th = t.home;
+
+  const CALCS = [
+    {
+      href: "/cable",
+      icon: "⌁",
+      title: th.calcs.cable.title,
+      description: th.calcs.cable.desc,
+      tag: "IEC 60364-5-52",
+    },
+    {
+      href: "/vsd",
+      icon: "◎",
+      title: th.calcs.vsd.title,
+      description: th.calcs.vsd.desc,
+      tag: "ABB CATALOG",
+    },
+    {
+      href: "/breaker",
+      icon: "⏻",
+      title: th.calcs.breaker.title,
+      description: th.calcs.breaker.desc,
+      tag: "IEC 60947-2",
+    },
+    {
+      href: "/busbar",
+      icon: "≡",
+      title: th.calcs.busbar.title,
+      description: th.calcs.busbar.desc,
+      tag: "DIN 43671",
+    },
+    {
+      href: "/braking-resistor",
+      icon: "Ω",
+      title: th.calcs.brake.title,
+      description: th.calcs.brake.desc,
+      tag: "STAHL STANDARD",
+    },
+    {
+      href: "/panel",
+      icon: "▣",
+      title: th.calcs.panel.title,
+      description: th.calcs.panel.desc,
+      tag: "IEC 60890",
+    },
+  ];
+
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       {/* ─── Hero ─────────────────────────────────────────────────────── */}
@@ -103,7 +103,7 @@ export default function HomePage() {
               textTransform: "uppercase",
             }}
           >
-            dummJo · ABB Value Partner
+            ◈ Managed by dummJo.
           </span>
         </div>
 
@@ -119,9 +119,9 @@ export default function HomePage() {
             margin: "0 0 20px",
           }}
         >
-          DummVinci
+          {th.heroTitle}
           <br />
-          <span style={{ color: "var(--accent)" }}>Calculator</span>
+          <span style={{ color: "var(--accent)" }}>{th.heroSub}</span>
         </h1>
 
         {/* Mono subtitle */}
@@ -135,7 +135,7 @@ export default function HomePage() {
             lineHeight: 1.6,
           }}
         >
-          Precision Sizing. Engineered by dummJo.
+          {th.heroSubtitle}
         </p>
 
         {/* Engineering spec strip */}
@@ -161,7 +161,7 @@ export default function HomePage() {
         style={{ maxWidth: 1080, margin: "0 auto", padding: "0 24px 20px", width: "100%" }}
       >
         <div className="sec-label">
-          <span>Calculators</span>
+          <span>{th.secCalculators}</span>
         </div>
       </div>
 
@@ -170,7 +170,7 @@ export default function HomePage() {
         style={{
           maxWidth: 1080,
           margin: "0 auto",
-          padding: "0 24px 80px",
+          padding: "0 24px 0px",
           width: "100%",
           flex: 1,
         }}
@@ -277,7 +277,7 @@ export default function HomePage() {
                     textTransform: "uppercase",
                   }}
                 >
-                  Open Calculator
+                  {th.ctaOpen}
                   <span style={{ fontSize: 14 }}>→</span>
                 </div>
               </div>
@@ -287,21 +287,7 @@ export default function HomePage() {
       </main>
 
       {/* ─── Footer ───────────────────────────────────────────────────── */}
-      <footer
-        style={{
-          textAlign: "center",
-          fontFamily: "var(--font-mono)",
-          fontSize: 9,
-          color: "var(--muted-soft)",
-          letterSpacing: "0.16em",
-          textTransform: "uppercase",
-          paddingBottom: 24,
-          paddingTop: 16,
-          borderTop: "1px solid var(--hairline-soft)",
-        }}
-      >
-        Engineered by dummJo · DummVinci Calculator · ABB Value Partner Standard
-      </footer>
+      <Footer />
     </div>
   );
 }
