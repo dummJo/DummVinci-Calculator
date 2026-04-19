@@ -128,6 +128,8 @@
   --cursor-glow:        rgba(201, 168, 76, 0.07);
   --cursor-card-glow:   rgba(201, 168, 76, 0.12);
   --cursor-card-border: rgba(201, 168, 76, 0.55);
+  --tabbar-bg:          rgba(10, 13, 18, 0.62);
+  --accent-pill-bg:     rgba(201, 168, 76, 0.16);
 }
 
 /* ─── Light theme — warm parchment + high contrast ink ─── */
@@ -160,6 +162,8 @@
   --cursor-glow:        rgba(110, 84, 32, 0.10);
   --cursor-card-glow:   rgba(110, 84, 32, 0.10);
   --cursor-card-border: rgba(110, 84, 32, 0.55);
+  --tabbar-bg:          rgba(220, 208, 180, 0.72);
+  --accent-pill-bg:     rgba(140, 101, 16, 0.12);
 }
 
 * { box-sizing: border-box; }
