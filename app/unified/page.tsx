@@ -48,7 +48,7 @@ export default function UnifiedPage() {
   const estA = estimateAmps(parseFloat(motorKw) || 0, voltage);
 
   return (
-    <CalcShell title={tu.title} subtitle={tu.subtitle}>
+    <CalcShell label={tu.label} title={tu.title} subtitle={tu.subtitle}>
       <div className="calc-grid">
         <div className="calc-col-input">
           <div className="sec-label"><span>{tu.secMotor}</span></div>
@@ -79,7 +79,7 @@ export default function UnifiedPage() {
             ]}
           />
           <FieldToggle
-            label={tu.heavy} active={heavy} onClick={() => setHeavy(!heavy)}
+            label={tu.heavy} checked={heavy} onChange={setHeavy}
             hint={t.vsd.heavyHint}
           />
 
