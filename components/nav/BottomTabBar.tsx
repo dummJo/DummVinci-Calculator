@@ -13,9 +13,8 @@ export default function BottomTabBar() {
   const path = usePathname();
   const { t, lang } = useLang();
   const [showMore, setShowMore] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
 
-  // Main high-frequency tabs
   const MAIN_TABS = [
     { href: "/",            key: "home",    Icon: LayoutGrid },
     { href: "/unified",     key: "unified", Icon: Activity   },
@@ -23,7 +22,6 @@ export default function BottomTabBar() {
     { href: "/abb-support", key: "support", Icon: Disc3      },
   ];
 
-  // Grouped calculators
   const UTILITY_TABS = [
     { href: "/cable",            key: "cable",   Icon: Cable        },
     { href: "/breaker",          key: "breaker", Icon: Zap          },
@@ -36,17 +34,15 @@ export default function BottomTabBar() {
   const activeIndex = allTabs.findIndex(tab => tab.href === "/" ? path === "/" : path.startsWith(tab.href));
   const isUtilityActive = activeIndex >= MAIN_TABS.length;
   
-  // Slide indicator logic
   const [blobStyle, setBlobStyle] = useState({});
-  const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (navRef.current) {
       const activeEl = navRef.current.querySelector(".tab-active") as HTMLElement;
       if (activeEl) {
         setBlobStyle({
-          width: activeEl.offsetWidth - 8,
-          transform: `translateX(${activeEl.offsetLeft + 4}px)`,
+          width: activeEl.offsetWidth - 12,
+          transform: `translateX(${activeEl.offsetLeft + 6}px)`,
           opacity: 1,
         });
       } else {
@@ -58,33 +54,44 @@ export default function BottomTabBar() {
   return (
     <>
       <style>{`
+        .liquid-container {
+          filter: url('#gooey');
+          position: relative;
+          display: flex;
+          align-items: center;
+          width: 100%;
+          height: 100%;
+        }
         .liquid-glass {
-          background: rgba(20, 24, 33, 0.4);
-          backdrop-filter: blur(40px) saturate(180%) contrast(100%);
-          -webkit-backdrop-filter: blur(40px) saturate(180%) contrast(100%);
-          border: 0.5px solid rgba(255, 255, 255, 0.12);
-          box-shadow: 
-            0 8px 32px -4px rgba(0, 0, 0, 0.5),
-            inset 0 1px 1px rgba(255, 255, 255, 0.05);
+          background: rgba(13, 16, 22, 0.7);
+          backdrop-filter: blur(40px) saturate(200%);
+          -webkit-backdrop-filter: blur(40px) saturate(200%);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
         .liquid-blob {
           position: absolute;
-          top: 8px;
-          bottom: 8px;
+          top: 6px;
+          bottom: 6px;
           left: 0;
-          background: linear-gradient(135deg, rgba(201, 168, 76, 0.25) 0%, rgba(201, 168, 76, 0.08) 100%);
-          border-radius: 20px;
-          z-index: 0;
-          /* Super elastic spring transition */
-          transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+          /* Iridescent Holographic Background */
+          background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 50%),
+                      linear-gradient(135deg, #c9a84c 0%, #ffdf9e 40%, #c9a84c 70%, #8c6510 100%);
+          background-size: 200% 200%;
+          border-radius: 24px;
+          z-index: 1;
+          transition: 
+            transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+            width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
           pointer-events: none;
           box-shadow: 
-            0 4px 12px rgba(201,168,76,0.15),
-            inset 0 1px 0 rgba(255,255,255,0.1);
+            0 0 20px rgba(201, 168, 76, 0.3),
+            inset 0 0 12px rgba(255, 255, 255, 0.2);
+          will-change: transform, width;
         }
         .tab-item {
           position: relative;
-          z-index: 1;
+          z-index: 2;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -92,67 +99,88 @@ export default function BottomTabBar() {
           flex: 1;
           height: 100%;
           text-decoration: none;
-          transition: transform 0.2s ease;
+          -webkit-tap-highlight-color: transparent;
         }
-        .tab-item:active {
-          transform: scale(0.92);
+        .active-icon {
+          color: #0d1016 !important; /* Cut-out effect */
+          transform: scale(1.15);
+          filter: drop-shadow(0 0 2px rgba(255,255,255,0.4));
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .icon-glow {
-          transition: filter 0.3s ease, color 0.3s ease;
+        .inactive-icon {
+          color: rgba(255,255,255,0.4);
+          transition: all 0.3s ease;
         }
-        .active-glow {
-          filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.6));
-          color: var(--accent) !important;
-          animation: spring-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .tab-label {
+          font-family: var(--font-mono);
+          font-size: 8px;
+          margin-top: 4px;
+          transition: all 0.3s ease;
         }
-        @keyframes spring-pop {
-          0% { transform: scale(1); }
-          40% { transform: scale(1.25); }
-          70% { transform: scale(0.9); }
-          100% { transform: scale(1); }
+        .active-label {
+          color: var(--accent);
+          font-weight: 700;
+          opacity: 1;
         }
-        .liquid-blob {
-          will-change: transform, width;
+        .inactive-label {
+          color: rgba(255,255,255,0.3);
+          opacity: 0.6;
         }
         .more-overlay {
           position: fixed;
-          bottom: 100px;
+          bottom: 96px;
           left: 12px;
           right: 12px;
           max-width: 400px;
           margin: 0 auto;
+          background: rgba(13, 16, 22, 0.85);
+          backdrop-filter: blur(60px) saturate(200%);
+          border-radius: 32px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
           padding: 24px;
-          border-radius: 28px;
           z-index: 90;
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 16px;
           transform-origin: bottom center;
-          transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1.15);
+          transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          box-shadow: 0 32px 64px rgba(0,0,0,0.6);
         }
         .more-item {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 8px;
-          padding: 12px;
-          border-radius: 20px;
+          gap: 10px;
+          padding: 16px 8px;
+          border-radius: 24px;
           text-decoration: none;
-          color: var(--muted);
-          transition: all 0.2s ease;
+          color: white;
+          background: rgba(255,255,255,0.03);
+          transition: all 0.3s ease;
         }
         .more-item:hover {
-          background: rgba(255,255,255,0.05);
-          color: var(--accent);
+          background: rgba(201, 168, 76, 0.15);
+          transform: translateY(-4px);
         }
       `}</style>
 
+      {/* SVG Gooey Filter Definition */}
+      <svg style={{ visibility: "hidden", position: "absolute", width: 0, height: 0 }}>
+        <defs>
+          <filter id="gooey">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+            <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+          </filter>
+        </defs>
+      </svg>
+
       {/* MORE OVERLAY */}
       <div 
-        className="liquid-glass more-overlay"
+        className="more-overlay"
         style={{ 
           opacity: showMore ? 1 : 0,
-          transform: showMore ? "scale(1) translateY(0)" : "scale(0.8) translateY(20px)",
+          transform: showMore ? "scale(1) translateY(0)" : "scale(0.8) translateY(40px)",
           pointerEvents: showMore ? "auto" : "none",
         }}
       >
@@ -162,17 +190,11 @@ export default function BottomTabBar() {
             <Link 
               key={tab.href} 
               href={tab.href} 
-              className="more-item hover-lift"
+              className="more-item"
               onClick={() => setShowMore(false)}
             >
-              <div style={{ 
-                width: 44, height: 44, borderRadius: 14, background: "rgba(201,168,76,0.1)",
-                display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "center",
-                color: active ? "var(--accent)" : "inherit"
-              }}>
-                <tab.Icon size={22} />
-              </div>
-              <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", textAlign: "center" }}>{t.nav[tab.key]}</span>
+              <tab.Icon size={24} style={{ color: active ? "var(--accent)" : "rgba(255,255,255,0.6)" }} />
+              <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", opacity: 0.8 }}>{t.nav[tab.key]}</span>
             </Link>
           );
         })}
@@ -188,64 +210,50 @@ export default function BottomTabBar() {
           right: 12,
           maxWidth: 450,
           margin: "0 auto",
-          height: 68,
-          borderRadius: 34,
-          display: "flex",
-          padding: "0 8px",
+          height: 72,
+          borderRadius: 36,
           zIndex: 100,
+          padding: "0 10px",
         }}
       >
-        <div className="liquid-blob" style={blobStyle} />
+        <div className="liquid-container">
+          <div className="liquid-blob" style={blobStyle} />
 
-        {MAIN_TABS.map((tab) => {
-          const active = tab.href === "/" ? path === "/" : path.startsWith(tab.href);
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={clsx("tab-item", active && "tab-active")}
-              onClick={() => setShowMore(false)}
-            >
-              <tab.Icon 
-                size={22} 
-                className={clsx("icon-glow", active ? "active-glow" : "color-muted")} 
-                style={{ color: active ? "var(--accent)" : "rgba(255,255,255,0.4)" }}
-              />
-              <span style={{ 
-                fontSize: 8, 
-                marginTop: 4, 
-                opacity: active ? 1 : 0.5, 
-                color: active ? "var(--accent)" : "white",
-                fontWeight: active ? 700 : 400,
-                fontFamily: "var(--font-mono)"
-              }}>
-                {t.nav[tab.key]}
-              </span>
-            </Link>
-          );
-        })}
+          {MAIN_TABS.map((tab) => {
+            const active = tab.href === "/" ? path === "/" : path.startsWith(tab.href);
+            return (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                className={clsx("tab-item", active && "tab-active")}
+                onClick={() => setShowMore(false)}
+              >
+                <tab.Icon 
+                  size={24} 
+                  className={active ? "active-icon" : "inactive-icon"} 
+                />
+                <span className={clsx("tab-label", active ? "active-label" : "inactive-label")}>
+                  {t.nav[tab.key]}
+                </span>
+              </Link>
+            );
+          })}
 
-        {/* MORE BUTTON */}
-        <button
-          className={clsx("tab-item", (showMore || isUtilityActive) && "tab-active")}
-          style={{ background: "none", border: "none", cursor: "pointer" }}
-          onClick={() => setShowMore(!showMore)}
-        >
-          {showMore ? (
-            <X size={22} className="color-accent" />
-          ) : (
-            <MoreHorizontal size={22} className={clsx("icon-glow", isUtilityActive ? "active-glow" : "color-muted")} style={{ color: isUtilityActive ? "var(--accent)" : "rgba(255,255,255,0.4)" }} />
-          )}
-          <span style={{ 
-            fontSize: 8, marginTop: 4, 
-            opacity: (showMore || isUtilityActive) ? 1 : 0.5, 
-            color: (showMore || isUtilityActive) ? "var(--accent)" : "white",
-            fontWeight: (showMore || isUtilityActive) ? 700 : 400,
-            fontFamily: "var(--font-mono)"
-          }}>
-            {showMore ? t.nav.close : t.nav.more}
-          </span>
-        </button>
+          <button
+            className={clsx("tab-item", (showMore || isUtilityActive) && "tab-active")}
+            style={{ background: "none", border: "none", cursor: "pointer" }}
+            onClick={() => setShowMore(!showMore)}
+          >
+            {showMore ? (
+              <X size={24} style={{ color: "var(--accent)" }} />
+            ) : (
+              <MoreHorizontal size={24} className={(showMore || isUtilityActive) ? "active-icon" : "inactive-icon"} />
+            )}
+            <span className={clsx("tab-label", (showMore || isUtilityActive) ? "active-label" : "inactive-label")}>
+              {showMore ? t.nav.close : t.nav.more}
+            </span>
+          </button>
+        </div>
       </nav>
     </>
   );
