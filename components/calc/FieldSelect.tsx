@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 
 interface Option { value: string; label: string }
 
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export default function FieldSelect({ label, value, onChange, options, hint }: Props) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
       <label style={{
@@ -25,9 +28,11 @@ export default function FieldSelect({ label, value, onChange, options, hint }: P
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         style={{
           background: "var(--bg-raised)",
-          border: "1px solid var(--glass-border)",
+          border: `1px solid ${focused ? "var(--accent)" : "var(--glass-border)"}`,
           borderRadius: "var(--r-md)",
           color: "var(--fg)",
           fontFamily: "var(--font-mono)",
@@ -36,10 +41,11 @@ export default function FieldSelect({ label, value, onChange, options, hint }: P
           width: "100%",
           outline: "none",
           cursor: "pointer",
-          transition: "border-color 0.18s ease",
-        }}
-        onFocus={e => (e.currentTarget.style.borderColor = "var(--accent)")}
-        onBlur={e => (e.currentTarget.style.borderColor = "var(--glass-border)")}
+          transition: "box-shadow 0.14s ease",
+          boxShadow: focused
+            ? "0 0 0 3px rgba(201,168,76,0.18)"
+            : "none",
+        } as React.CSSProperties}
       >
         {options.map(o => (
           <option key={o.value} value={o.value}>{o.label}</option>

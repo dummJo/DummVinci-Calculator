@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 
 interface Props {
   label: string;
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export default function FieldNumber({ label, unit, value, onChange, min, max, step, hint, required }: Props) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
       <label style={{
@@ -48,9 +51,11 @@ export default function FieldNumber({ label, unit, value, onChange, min, max, st
         min={min}
         max={max}
         step={step ?? "any"}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         style={{
           background: "var(--glass-bg)",
-          border: "1px solid var(--glass-border)",
+          border: `1px solid ${focused ? "var(--accent)" : "var(--glass-border)"}`,
           borderRadius: "var(--r-md)",
           color: "var(--fg)",
           fontFamily: "var(--font-mono)",
@@ -58,12 +63,13 @@ export default function FieldNumber({ label, unit, value, onChange, min, max, st
           padding: "10px 14px",
           width: "100%",
           outline: "none",
-          transition: "border-color 0.18s ease",
           WebkitAppearance: "none",
           MozAppearance: "textfield",
-        }}
-        onFocus={e => (e.currentTarget.style.borderColor = "var(--accent)")}
-        onBlur={e => (e.currentTarget.style.borderColor = "var(--glass-border)")}
+          transition: "box-shadow 0.14s ease",
+          boxShadow: focused
+            ? "0 0 0 3px rgba(201,168,76,0.18), inset 0 1px 0 rgba(255,255,255,0.04)"
+            : "none",
+        } as React.CSSProperties}
       />
       {hint && (
         <div style={{

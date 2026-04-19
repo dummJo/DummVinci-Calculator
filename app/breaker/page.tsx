@@ -6,88 +6,75 @@ import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import FieldToggle from "@/components/calc/FieldToggle";
+import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
 import { sizeBreaker, BreakerResult } from "@/lib/calc/breaker";
 import type { Curve } from "@/lib/calc/breaker";
+import { useLang } from "@/lib/i18n";
 
 export default function BreakerPage() {
-  const [loadCurrent, setLoadCurrent] = useState("63");
+  const { t } = useLang();
+  const tb = t.breaker;
+
+  const [loadCurrent,  setLoadCurrent]  = useState("63");
   const [faultCurrent, setFaultCurrent] = useState("10");
-  const [curve, setCurve] = useState<Curve>("C");
-  const [poles, setPoles] = useState<"1" | "2" | "3" | "4">("3");
-  const [driveLoad, setDriveLoad] = useState(false);
+  const [voltage,      setVoltage]      = useState("400");
+  const [curve,        setCurve]        = useState<Curve>("C");
+  const [poles,        setPoles]        = useState<"1"|"2"|"3"|"4">("3");
+  const [driveLoad,    setDriveLoad]    = useState(false);
 
   const [result, setResult] = useState<BreakerResult | null>(null);
 
   function handleCalc() {
     const r = sizeBreaker({
-      loadCurrent: parseFloat(loadCurrent) || 0,
+      loadCurrent:  parseFloat(loadCurrent)  || 0,
       faultCurrent: parseFloat(faultCurrent) || 0,
       curve: driveLoad ? "D" : curve,
-      poles: parseInt(poles) as 1 | 2 | 3 | 4,
+      poles: parseInt(poles) as 1|2|3|4,
       driveLoad,
     });
     setResult(r);
   }
 
   return (
-    <CalcShell
-      label="Breaker Selection"
-      title="MCCB / MCB Selector"
-      subtitle="Siemens 5SL · 5SY · 3VA — IEC 60947-2 · IEC 60898 · Curve B/C/D"
-    >
-      {/* ─── Inputs ──────────────────────────────────────────────────── */}
-      <div
-        className="vinci-card"
-        style={{ display: "flex", flexDirection: "column", gap: 20 }}
-      >
-        <div className="sec-label">
-          <span>Circuit Parameters</span>
-        </div>
+    <CalcShell label={tb.label} title={tb.title} subtitle={tb.subtitle}>
+      <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <div className="sec-label"><span>{tb.secCircuit}</span></div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 16,
-          }}
-        >
-          <FieldNumber
-            label="Load Current"
-            unit="A"
-            value={loadCurrent}
-            onChange={setLoadCurrent}
-            min={0.5}
-            step={0.5}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+          <FieldKwAmp
+            label={tb.loadCurrent}
+            voltage={parseFloat(voltage) || 400}
+            defaultMode="a"
+            defaultAmps={parseFloat(loadCurrent)}
+            onChange={(amps) => setLoadCurrent(amps.toFixed(2))}
             required
-            hint="Full-load operating current (FLA)"
+            hint={tb.loadCurrentHint}
           />
           <FieldNumber
-            label="Prospective Fault Current"
-            unit="kA"
-            value={faultCurrent}
-            onChange={setFaultCurrent}
-            min={0.5}
-            max={100}
-            step={0.5}
-            required
-            hint="Available short-circuit current at MDB"
+            label={tb.faultCurrent} unit="kA"
+            value={faultCurrent} onChange={setFaultCurrent}
+            min={0.5} max={100} step={0.5} required hint={tb.faultCurrentHint}
           />
           <FieldSelect
-            label="Trip Curve"
-            value={curve}
-            onChange={(v) => setCurve(v as Curve)}
+            label={tb.voltage} value={voltage} onChange={setVoltage}
             options={[
-              { value: "B", label: "Curve B — 3–5× In (resistive loads)" },
-              { value: "C", label: "Curve C — 5–10× In (general purpose)" },
-              { value: "D", label: "Curve D — 10–20× In (VSD / transformer)" },
+              { value: "230", label: "230 V" },
+              { value: "400", label: "400 V" },
+              { value: "415", label: "415 V" },
             ]}
-            hint={driveLoad ? "Overridden to D by VSD toggle" : "Select per IEC 60898-1"}
           />
           <FieldSelect
-            label="Poles"
-            value={poles}
-            onChange={(v) => setPoles(v as "1" | "2" | "3" | "4")}
+            label={tb.tripCurve} value={curve} onChange={v => setCurve(v as Curve)}
+            options={[
+              { value: "B", label: tb.curveB },
+              { value: "C", label: tb.curveC },
+              { value: "D", label: tb.curveD },
+            ]}
+            hint={driveLoad ? tb.curveHintOverride : tb.curveHint}
+          />
+          <FieldSelect
+            label={tb.poles} value={poles} onChange={v => setPoles(v as "1"|"2"|"3"|"4")}
             options={[
               { value: "1", label: "1-Pole" },
               { value: "2", label: "2-Pole" },
@@ -97,61 +84,41 @@ export default function BreakerPage() {
           />
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 16,
-          }}
-        >
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           <FieldToggle
-            label="VSD / Drive Load — Force Curve D"
-            checked={driveLoad}
-            onChange={setDriveLoad}
-            hint="Drives have high inrush — curve D prevents nuisance trips"
+            label={tb.vsdToggle} checked={driveLoad} onChange={setDriveLoad} hint={tb.vsdToggleHint}
           />
         </div>
 
-        <button
-          className="btn-primary"
-          onClick={handleCalc}
-          style={{ marginTop: 8, width: "100%", justifyContent: "center" }}
-        >
-          Select Breaker
+        <button className="btn-primary" onClick={handleCalc}
+          style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
+          {tb.btnCalc}
         </button>
       </div>
 
-      {/* ─── Result ──────────────────────────────────────────────────── */}
       {result && (
         <ResultCard
-          title="Breaker Selection"
+          title={tb.resTitle}
           rows={[
-            { label: "Type", value: result.type, accent: true },
-            { label: "Family", value: result.family, accent: true },
-            { label: "Part Code", value: result.partCode, accent: true },
-            { label: "Nominal Rating", value: result.nominalA > 0 ? `${result.nominalA} A` : "—" },
-            { label: "Breaking Capacity Icu", value: result.icuKa > 0 ? `${result.icuKa} kA` : "—" },
-            { label: "Trip Curve", value: result.curve },
-            { label: "Coordination Note", value: result.coordination },
+            { label: tb.resType,   value: result.type,   accent: true },
+            { label: tb.resFamily, value: result.family, accent: true },
+            { label: tb.resPart,   value: result.partCode, accent: true },
+            { label: tb.resNomA,   value: result.nominalA > 0 ? `${result.nominalA} A` : "—" },
+            { label: tb.resIcu,    value: result.icuKa > 0 ? `${result.icuKa} kA` : "—" },
+            { label: tb.resCurve,  value: result.curve },
+            { label: tb.resCoord,  value: result.coordination },
           ]}
           warnings={result.warnings}
         />
       )}
 
-      {/* ─── Footer ───────────────────────────────────────────────────── */}
-      <footer
-        style={{
-          marginTop: 48,
-          textAlign: "center",
-          fontFamily: "var(--font-mono)",
-          fontSize: 9,
-          color: "var(--muted-soft)",
-          letterSpacing: "0.16em",
-          textTransform: "uppercase",
-          paddingBottom: 16,
-        }}
-      >
-        Engineered by dummJo · DummVinci Calculator · ABB Value Partner Standard
+      <footer style={{
+        marginTop: 48, textAlign: "center",
+        fontFamily: "var(--font-mono)", fontSize: 9,
+        color: "var(--muted-soft)", letterSpacing: "0.16em",
+        textTransform: "uppercase", paddingBottom: 16,
+      }}>
+        {t.common.engineeredBy}
       </footer>
     </CalcShell>
   );

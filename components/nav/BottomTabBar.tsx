@@ -5,25 +5,23 @@ import {
   LayoutGrid, Cable, Cpu, Zap, AlignJustify, Disc3, Server,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useLang } from "@/lib/i18n";
 
-interface Tab {
-  href: string;
-  label: string;
-  Icon: LucideIcon;
-}
+interface Tab { href: string; key: keyof ReturnType<typeof useLang>["t"]["nav"]; Icon: LucideIcon }
 
 const TABS: Tab[] = [
-  { href: "/",                  label: "Home",    Icon: LayoutGrid  },
-  { href: "/cable",             label: "Cable",   Icon: Cable       },
-  { href: "/vsd",               label: "Drive",   Icon: Cpu         },
-  { href: "/breaker",           label: "Breaker", Icon: Zap         },
-  { href: "/busbar",            label: "Busbar",  Icon: AlignJustify},
-  { href: "/braking-resistor",  label: "Brake",   Icon: Disc3       },
-  { href: "/panel",             label: "Panel",   Icon: Server      },
+  { href: "/",                 key: "home",    Icon: LayoutGrid   },
+  { href: "/cable",            key: "cable",   Icon: Cable        },
+  { href: "/vsd",              key: "drive",   Icon: Cpu          },
+  { href: "/breaker",          key: "breaker", Icon: Zap          },
+  { href: "/busbar",           key: "busbar",  Icon: AlignJustify },
+  { href: "/braking-resistor", key: "brake",   Icon: Disc3        },
+  { href: "/panel",            key: "panel",   Icon: Server       },
 ];
 
 export default function BottomTabBar() {
   const path = usePathname();
+  const { t } = useLang();
 
   return (
     <>
@@ -111,13 +109,9 @@ export default function BottomTabBar() {
           display: "flex",
           alignItems: "stretch",
           height: "calc(64px + env(safe-area-inset-bottom, 0px))",
-
-          /* Telegram-grade liquid glass */
           background: "var(--tabbar-bg, rgba(10,13,18,0.62))",
           backdropFilter: "blur(48px) saturate(200%) brightness(1.06)",
           WebkitBackdropFilter: "blur(48px) saturate(200%) brightness(1.06)",
-
-          /* Hairline top + inner highlight = glass edge */
           borderTop: "1px solid rgba(255,255,255,0.07)",
           boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
         }}
@@ -132,17 +126,10 @@ export default function BottomTabBar() {
               className="tab-link"
               style={{ color: active ? "var(--accent)" : "var(--muted)" }}
             >
-              {/* Liquid glass pill — only rendered when active so animation fires on mount */}
               {active && <span className="tab-pill tab-pill--active" />}
-
               <span className={`tab-icon${active ? " tab-icon--active" : ""}`}>
-                <Icon
-                  size={22}
-                  strokeWidth={active ? 2.2 : 1.6}
-                  absoluteStrokeWidth
-                />
+                <Icon size={22} strokeWidth={active ? 2.2 : 1.6} absoluteStrokeWidth />
               </span>
-
               <span
                 className="tab-label"
                 style={{
@@ -151,7 +138,7 @@ export default function BottomTabBar() {
                   fontWeight: active ? 600 : 400,
                 }}
               >
-                {tab.label}
+                {t.nav[tab.key]}
               </span>
             </Link>
           );

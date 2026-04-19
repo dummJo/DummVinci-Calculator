@@ -1,4 +1,5 @@
 "use client";
+import { useLang } from "@/lib/i18n";
 
 interface Row { label: string; value: string | number; accent?: boolean }
 
@@ -10,8 +11,10 @@ interface Props {
 }
 
 export default function ResultCard({ title, rows, recommendation, warnings }: Props) {
+  const { t } = useLang();
+
   return (
-    <div className="vinci-card" style={{ marginTop: 24 }}>
+    <div className="vinci-card result-card-enter" style={{ marginTop: 24 }}>
       {/* header */}
       <div style={{
         display: "flex",
@@ -28,7 +31,7 @@ export default function ResultCard({ title, rows, recommendation, warnings }: Pr
           letterSpacing: "0.2em",
           textTransform: "uppercase",
         }}>
-          ◈ Result
+          {t.common.resultLabel}
         </span>
         <span style={{
           fontFamily: "var(--font-display)",

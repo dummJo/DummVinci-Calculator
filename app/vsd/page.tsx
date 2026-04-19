@@ -6,69 +6,54 @@ import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import FieldToggle from "@/components/calc/FieldToggle";
+import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
 import { sizeVsd, VsdResult } from "@/lib/calc/vsd";
 import type { DriveApp, Voltage } from "@/lib/calc/vsd";
+import { useLang } from "@/lib/i18n";
 
 export default function VsdPage() {
+  const { t } = useLang();
+  const tv = t.vsd;
+
   const [motorKw, setMotorKw] = useState("22");
   const [voltage, setVoltage] = useState<string>("400");
-  const [app, setApp] = useState<DriveApp>("pump");
-  const [heavy, setHeavy] = useState(false);
-  const [deltaT, setDeltaT] = useState("12");
+  const [app,     setApp]     = useState<DriveApp>("pump");
+  const [heavy,   setHeavy]   = useState(false);
+  const [deltaT,  setDeltaT]  = useState("12");
 
   const [result, setResult] = useState<VsdResult | null>(null);
 
   function handleCalc() {
     const r = sizeVsd({
-      motorKw: parseFloat(motorKw) || 0,
-      voltage: (parseInt(voltage) as Voltage) ?? 400,
+      motorKw:      parseFloat(motorKw) || 0,
+      voltage:      (parseInt(voltage) as Voltage) ?? 400,
       app,
-      dutyHeavy: heavy,
-      panelDeltaT: parseFloat(deltaT) || 12,
+      dutyHeavy:    heavy,
+      panelDeltaT:  parseFloat(deltaT)  || 12,
     });
     setResult(r);
   }
 
-  // Crane app auto-forces ACS880 — give user a visual hint
   const isCrane = app === "crane" || heavy;
 
   return (
-    <CalcShell
-      label="VSD Sizing"
-      title="VSD + Airflow Calculator"
-      subtitle="ABB ACQ580 (HVAC-R) · ACS880 (Industrial / Crane) · Panel thermal sizing"
-    >
-      {/* ─── Inputs ──────────────────────────────────────────────────── */}
-      <div
-        className="vinci-card"
-        style={{ display: "flex", flexDirection: "column", gap: 20 }}
-      >
-        <div className="sec-label">
-          <span>Motor & Application</span>
-        </div>
+    <CalcShell label={tv.label} title={tv.title} subtitle={tv.subtitle}>
+      <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <div className="sec-label"><span>{tv.secMotor}</span></div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 16,
-          }}
-        >
-          <FieldNumber
-            label="Motor Power"
-            unit="kW"
-            value={motorKw}
-            onChange={setMotorKw}
-            min={0.37}
-            step={0.1}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+          <FieldKwAmp
+            label={tv.motorPower}
+            voltage={parseFloat(voltage) || 400}
+            defaultMode="kw"
+            defaultKw={parseFloat(motorKw)}
+            onChange={(_, kw) => setMotorKw(kw.toFixed(2))}
             required
-            hint="Nameplate kW of driven motor"
+            hint={tv.motorPowerHint}
           />
           <FieldSelect
-            label="Line Voltage"
-            value={voltage}
-            onChange={setVoltage}
+            label={tv.lineVoltage} value={voltage} onChange={setVoltage}
             options={[
               { value: "400", label: "400 V (IEC standard)" },
               { value: "480", label: "480 V (NEMA)" },
@@ -76,116 +61,76 @@ export default function VsdPage() {
             ]}
           />
           <FieldSelect
-            label="Application"
-            value={app}
-            onChange={(v) => setApp(v as DriveApp)}
+            label={tv.app} value={app} onChange={v => setApp(v as DriveApp)}
             options={[
-              { value: "pump", label: "Pump" },
-              { value: "fan", label: "Fan / Blower" },
-              { value: "crane", label: "Crane / Hoist" },
-              { value: "conveyor", label: "Conveyor" },
-              { value: "compressor", label: "Compressor" },
+              { value: "pump",       label: tv.appPump },
+              { value: "fan",        label: tv.appFan },
+              { value: "crane",      label: tv.appCrane },
+              { value: "conveyor",   label: tv.appConveyor },
+              { value: "compressor", label: tv.appCompressor },
             ]}
-            hint={isCrane ? "ACS880 selected — crane/heavy duty" : "ACQ580 for HVAC-R apps"}
+            hint={isCrane ? tv.appHintCrane : tv.appHintAcq}
           />
           <FieldNumber
-            label="Panel ΔT"
-            unit="K"
-            value={deltaT}
-            onChange={setDeltaT}
-            min={5}
-            max={25}
-            step={1}
-            hint="Allowed temp rise inside panel (typically 10–15 K)"
+            label={tv.panelDt} unit="K"
+            value={deltaT} onChange={setDeltaT}
+            min={5} max={25} step={1} hint={tv.panelDtHint}
           />
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 16,
-          }}
-        >
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           <FieldToggle
-            label="Heavy Duty / High Inertia — Crane"
-            checked={heavy}
-            onChange={setHeavy}
-            hint="Forces ACS880, 20% oversizing margin, braking resistor note"
+            label={tv.heavy} checked={heavy} onChange={setHeavy} hint={tv.heavyHint}
           />
         </div>
 
         {isCrane && (
-          <div
-            style={{
-              padding: "10px 14px",
-              background: "rgba(201,168,76,0.07)",
-              border: "1px solid var(--gold-deep)",
-              borderRadius: "var(--r-md)",
-              fontFamily: "var(--font-mono)",
-              fontSize: "var(--fs-xs)",
-              color: "var(--parchment-dim)",
-              lineHeight: 1.65,
-              letterSpacing: "0.02em",
-            }}
-          >
-            ◈ Crane / heavy-duty mode: ACS880 mandatory. Size braking resistor via the
-            dedicated Braking Resistor calculator.
+          <div style={{
+            padding: "10px 14px",
+            background: "rgba(201,168,76,0.07)",
+            border: "1px solid var(--gold-deep)",
+            borderRadius: "var(--r-md)",
+            fontFamily: "var(--font-mono)",
+            fontSize: "var(--fs-xs)",
+            color: "var(--parchment-dim)",
+            lineHeight: 1.65,
+            letterSpacing: "0.02em",
+          }}>
+            {tv.craneNote}
           </div>
         )}
 
-        <button
-          className="btn-primary"
-          onClick={handleCalc}
-          style={{ marginTop: 8, width: "100%", justifyContent: "center" }}
-        >
-          Size Drive
+        <button className="btn-primary" onClick={handleCalc}
+          style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
+          {tv.btnCalc}
         </button>
       </div>
 
-      {/* ─── Result ──────────────────────────────────────────────────── */}
       {result && (
         <ResultCard
-          title="Drive Selection"
+          title={tv.resTitle}
           rows={[
-            { label: "Drive Family", value: result.family, accent: true },
-            { label: "Part Code", value: result.partCode, accent: true },
-            { label: "Frame", value: result.frame },
-            { label: "Nominal Current", value: result.nominalA > 0 ? `${result.nominalA} A` : "—" },
-            { label: "Rated Power", value: result.ratedKw > 0 ? `${result.ratedKw} kW` : "—" },
-            {
-              label: "Heat Dissipation",
-              value: result.plossW > 0 ? `${result.plossW} W` : "—",
-            },
-            {
-              label: "Heatsink Airflow (drive)",
-              value: result.heatsinkAirflow > 0 ? `${result.heatsinkAirflow} m³/h` : "—",
-            },
-            {
-              label: "Required Panel Airflow",
-              value: result.panelAirflowRequired > 0 ? `${result.panelAirflowRequired} m³/h` : "—",
-              accent: result.panelAirflowRequired > 0,
-            },
+            { label: tv.resFamily,       value: result.family, accent: true },
+            { label: tv.resPart,         value: result.partCode, accent: true },
+            { label: tv.resFrame,        value: result.frame },
+            { label: tv.resNomA,         value: result.nominalA > 0 ? `${result.nominalA} A` : "—" },
+            { label: tv.resRatedKw,      value: result.ratedKw > 0 ? `${result.ratedKw} kW` : "—" },
+            { label: tv.resPloss,        value: result.plossW > 0 ? `${result.plossW} W` : "—" },
+            { label: tv.resHsAirflow,    value: result.heatsinkAirflow > 0 ? `${result.heatsinkAirflow} m³/h` : "—" },
+            { label: tv.resPanelAirflow, value: result.panelAirflowRequired > 0 ? `${result.panelAirflowRequired} m³/h` : "—", accent: result.panelAirflowRequired > 0 },
           ]}
           recommendation={result.recommendation}
           warnings={result.warnings}
         />
       )}
 
-      {/* ─── Footer ───────────────────────────────────────────────────── */}
-      <footer
-        style={{
-          marginTop: 48,
-          textAlign: "center",
-          fontFamily: "var(--font-mono)",
-          fontSize: 9,
-          color: "var(--muted-soft)",
-          letterSpacing: "0.16em",
-          textTransform: "uppercase",
-          paddingBottom: 16,
-        }}
-      >
-        Engineered by dummJo · DummVinci Calculator · ABB Value Partner Standard
+      <footer style={{
+        marginTop: 48, textAlign: "center",
+        fontFamily: "var(--font-mono)", fontSize: 9,
+        color: "var(--muted-soft)", letterSpacing: "0.16em",
+        textTransform: "uppercase", paddingBottom: 16,
+      }}>
+        {t.common.engineeredBy}
       </footer>
     </CalcShell>
   );
