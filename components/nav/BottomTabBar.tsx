@@ -38,6 +38,14 @@ export default function BottomTabBar() {
   const [blobStyle, setBlobStyle] = useState({});
 
   useEffect(() => {
+    const handleClose = () => setShowMore(false);
+    if (showMore) {
+      window.addEventListener("click", handleClose);
+    }
+    return () => window.removeEventListener("click", handleClose);
+  }, [showMore]);
+
+  useEffect(() => {
     if (navRef.current) {
       const activeEl = navRef.current.querySelector(".tab-active") as HTMLElement;
       if (activeEl) {
@@ -188,9 +196,23 @@ export default function BottomTabBar() {
         </defs>
       </svg>
 
+      {/* BACKDROP FOR CLICK-OUTSIDE */}
+      {showMore && (
+        <div 
+          onClick={() => setShowMore(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 80,
+            background: "transparent"
+          }} 
+        />
+      )}
+
       {/* MORE OVERLAY */}
       <div 
         className="more-overlay"
+        onClick={e => e.stopPropagation()} // Prevent closing when clicking inside
         style={{ 
           opacity: showMore ? 1 : 0,
           transform: showMore ? "scale(1) translateY(0)" : "scale(0.8) translateY(40px)",
