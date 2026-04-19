@@ -53,16 +53,23 @@ function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: an
 
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(8, minmax(80px, 1fr))",
-        gap: 12,
-        minWidth: 700,
+        // Golden Ratio based columns: First column (Code) is ~1.618x base
+        gridTemplateColumns: "1.6fr 0.6fr 0.6fr 0.8fr 0.8fr 0.6fr 0.6fr 1fr",
+        gap: 24,
+        minWidth: 880,
       }}>
         {specs.map((s, i) => (
-          <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted-soft)", textTransform: "uppercase" }}>
+          <div key={i} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 8, color: "var(--muted-soft)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
               {s.label}
             </span>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700, color: "var(--accent)", whiteSpace: "nowrap" }}>
+            <span style={{ 
+              fontFamily: "var(--font-mono)", 
+              fontSize: 12.5, 
+              fontWeight: 700, 
+              color: "var(--accent)",
+              whiteSpace: "nowrap"
+            }}>
               {s.value}
             </span>
           </div>
@@ -178,7 +185,7 @@ export default function UnifiedPage() {
           <div className="sec-label" style={{ marginTop: 24 }}><span>{t.breaker.secCircuit}</span></div>
           <FieldNumber label={tu.fault} value={fault} onChange={setFault} />
 
-          <button className="btn-primary" style={{ marginTop: 32 }} onClick={calculate}>
+          <button className="btn-primary" style={{ marginTop: 48, width: "100%", height: 52 }} onClick={calculate}>
             {tu.btnCalc}
           </button>
         </div>
