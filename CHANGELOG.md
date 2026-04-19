@@ -5,9 +5,39 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] — 2026-04-19
 
-## [1.8.0] — 2026-04-15
+### Added
+- **ABB Support Hub**: A comprehensive technical support module featuring:
+  - **Dynamic Fault Code Lookup**: Pop-up solutions for common ABB drive error codes (Overcurrent, DC Overvoltage, etc.).
+  - **Verified Documentation Library**: Direct link shortcuts to 2026/Latest hardware and software manuals for ACS880, ACQ580, ACS580, ACH580, and ACS380.
+  - **Frame Dimensions Table**: Physical reference data (H×W×D) for frames R1 through R11.
+- **Expanded Drive Variant Support**: Calculation logic now supports specific construction types:
+  - **-01 Wall-mounted** (Default)
+  - **-04 Drive Modules** (Frame-mounted for high power R10/R11)
+  - **-07 Cabinet-built** (Ready-to-use enclosures)
+  - **-31 Ultra-Low Harmonic (ULH)**: Integrated sizing with LCL filter dimensions and THDi < 3% recommendations.
+- **Engineering Specification Summary Strip**: A professional-grade specification table in the "Fast Sizing" (Unified) calculator showing Code, kW, Fuse, Breaker, Cable, Airflow, Frame, and Dimensions.
+- **Tropical Climate Derating**: Logic implementation for 1%/°C ambient temperature derating above 40°C as per ABB Hardware Manuals.
+- **Branding**: Implemented "Engineered by dummJo" white-label trademark across all pages and results.
+
+### Changed
+- **Precision Data Overhaul**: Migrated from generic 3% loss estimations to frame-specific `ploss` [W] and `requiredAirflow` [m³/h] values from real ABB/Siemens catalogs.
+- **Localized UI (i18n)**: Full translation support for Indonesian (ID) and English (EN) across all navigation and calculation labels.
+- **Mobile UX**: Optimized `BottomTabBar` for 390px viewports with 8 functional tabs (Home, Unified, Cable, VSD, Breaker, Busbar, Panel, Support Hub).
+
+### Removed
+- Deprecated legacy "placeholder" part codes.
+- Removed hardcoded default cooling assumptions; replaced with standardized IEC 60890 and XLTC calculation logic.
+- Purged all "DummVinci" branding from logic logs to align with PTTS IoT Dashboard rebranding.
+
+## [1.9.0] — 2026-04-18
+
+### Added
+- Unified (Fast Sizing) calculator orchestrator.
+- Multi-component dependency logic (e.g., Cable sizing based on Breaker trip rating).
+- Integrated footer and navigation system for the calculator hub.
+
 
 ### Added
 - Backend integration readiness for NestJS with dedicated `portfolioApi` client
