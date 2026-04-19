@@ -1,0 +1,35 @@
+[
+  { "type": "MCB", "family": "5SL6", "code": "5SL6106-7CC", "nominalA": 6, "icuKa": 6, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+  { "type": "MCB", "family": "5SL6", "code": "5SL6110-7CC", "nominalA": 10, "icuKa": 6, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+  { "type": "MCB", "family": "5SL6", "code": "5SL6116-7CC", "nominalA": 16, "icuKa": 6, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+  { "type": "MCB", "family": "5SL6", "code": "5SL6120-7CC", "nominalA": 20, "icuKa": 6, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+  { "type": "MCB", "family": "5SL6", "code": "5SL6125-7CC", "nominalA": 25, "icuKa": 6, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+  { "type": "MCB", "family": "5SL6", "code": "5SL6132-7CC", "nominalA": 32, "icuKa": 6, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+  { "type": "MCB", "family": "5SL6", "code": "5SL6140-7CC", "nominalA": 40, "icuKa": 6, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+  { "type": "MCB", "family": "5SL6", "code": "5SL6150-7CC", "nominalA": 50, "icuKa": 6, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+  { "type": "MCB", "family": "5SL6", "code": "5SL6163-7CC", "nominalA": 63, "icuKa": 6, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+
+  { "type": "MCB", "family": "5SY6", "code": "5SY6132-7", "nominalA": 32, "icuKa": 10, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+  { "type": "MCB", "family": "5SY6", "code": "5SY6140-7", "nominalA": 40, "icuKa": 10, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+  { "type": "MCB", "family": "5SY6", "code": "5SY6150-7", "nominalA": 50, "icuKa": 10, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+  { "type": "MCB", "family": "5SY6", "code": "5SY6163-7", "nominalA": 63, "icuKa": 10, "curves": ["B","C","D"], "poles": [1,2,3,4] },
+
+  { "type": "MCCB", "family": "3VA1", "code": "3VA1010-3ED32-0AA0", "nominalA": 16, "icuKa": 25, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA1", "code": "3VA1025-3ED32-0AA0", "nominalA": 25, "icuKa": 25, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA1", "code": "3VA1040-3ED32-0AA0", "nominalA": 40, "icuKa": 25, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA1", "code": "3VA1063-3ED32-0AA0", "nominalA": 63, "icuKa": 25, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA1", "code": "3VA1080-3ED32-0AA0", "nominalA": 80, "icuKa": 25, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA1", "code": "3VA1112-3ED32-0AA0", "nominalA": 100, "icuKa": 25, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA1", "code": "3VA1125-3ED32-0AA0", "nominalA": 125, "icuKa": 25, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA1", "code": "3VA1160-3ED32-0AA0", "nominalA": 160, "icuKa": 25, "curves": ["C","D"], "poles": [3,4] },
+
+  { "type": "MCCB", "family": "3VA2", "code": "3VA2110-5HL32-0AA0", "nominalA": 100, "icuKa": 55, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA2", "code": "3VA2140-5HL32-0AA0", "nominalA": 140, "icuKa": 55, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA2", "code": "3VA2160-5HL32-0AA0", "nominalA": 160, "icuKa": 55, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA2", "code": "3VA2225-5HL32-0AA0", "nominalA": 225, "icuKa": 55, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA2", "code": "3VA2250-5HL32-0AA0", "nominalA": 250, "icuKa": 55, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA2", "code": "3VA2400-5HL32-0AA0", "nominalA": 400, "icuKa": 85, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA2", "code": "3VA2463-5HL32-0AA0", "nominalA": 630, "icuKa": 85, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA2", "code": "3VA2780-5HL32-0AA0", "nominalA": 800, "icuKa": 100, "curves": ["C","D"], "poles": [3,4] },
+  { "type": "MCCB", "family": "3VA2", "code": "3VA2910-5HL32-0AA0", "nominalA": 1000, "icuKa": 100, "curves": ["C","D"], "poles": [3,4] }
+]

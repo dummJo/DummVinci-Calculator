@@ -1,0 +1,20 @@
+[
+  { "code": "BR-015-K08",  "ohms": 120, "powerKw": 0.8,  "edPct": 15, "ip": "IP20" },
+  { "code": "BR-025-K15",  "ohms": 90,  "powerKw": 1.5,  "edPct": 25, "ip": "IP20" },
+  { "code": "BR-040-K25",  "ohms": 68,  "powerKw": 2.5,  "edPct": 40, "ip": "IP20" },
+  { "code": "BR-025-K40",  "ohms": 50,  "powerKw": 4.0,  "edPct": 25, "ip": "IP20" },
+  { "code": "BR-040-K40",  "ohms": 40,  "powerKw": 4.0,  "edPct": 40, "ip": "IP20" },
+  { "code": "BR-025-K60",  "ohms": 33,  "powerKw": 6.0,  "edPct": 25, "ip": "IP20" },
+  { "code": "BR-040-K60",  "ohms": 27,  "powerKw": 6.0,  "edPct": 40, "ip": "IP20" },
+  { "code": "BR-025-K100", "ohms": 22,  "powerKw": 10.0, "edPct": 25, "ip": "IP20" },
+  { "code": "BR-040-K100", "ohms": 18,  "powerKw": 10.0, "edPct": 40, "ip": "IP20" },
+  { "code": "BR-025-K160", "ohms": 15,  "powerKw": 16.0, "edPct": 25, "ip": "IP20" },
+  { "code": "BR-040-K160", "ohms": 12,  "powerKw": 16.0, "edPct": 40, "ip": "IP54" },
+  { "code": "BR-060-K160", "ohms": 10,  "powerKw": 16.0, "edPct": 60, "ip": "IP54" },
+  { "code": "BR-040-K250", "ohms": 8.2, "powerKw": 25.0, "edPct": 40, "ip": "IP54" },
+  { "code": "BR-060-K250", "ohms": 6.8, "powerKw": 25.0, "edPct": 60, "ip": "IP54" },
+  { "code": "BR-040-K400", "ohms": 5.1, "powerKw": 40.0, "edPct": 40, "ip": "IP54" },
+  { "code": "BR-060-K400", "ohms": 4.3, "powerKw": 40.0, "edPct": 60, "ip": "IP54" },
+  { "code": "BR-040-K630", "ohms": 3.3, "powerKw": 63.0, "edPct": 40, "ip": "IP54" },
+  { "code": "BR-060-K630", "ohms": 2.7, "powerKw": 63.0, "edPct": 60, "ip": "IP54" }
+]

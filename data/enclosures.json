@@ -1,0 +1,19 @@
+[
+  { "brand": "Rittal", "code": "AE 1050", "h": 500, "w": 500, "d": 210, "ip": "IP66", "suitableIndoor": true, "suitableOutdoor": true },
+  { "brand": "Rittal", "code": "AE 1076", "h": 760, "w": 600, "d": 250, "ip": "IP66", "suitableIndoor": true, "suitableOutdoor": true },
+  { "brand": "Rittal", "code": "AE 1090", "h": 900, "w": 600, "d": 300, "ip": "IP66", "suitableIndoor": true, "suitableOutdoor": true },
+  { "brand": "Rittal", "code": "TS 8 8606", "h": 1800, "w": 600, "d": 600, "ip": "IP55", "suitableIndoor": true, "suitableOutdoor": false },
+  { "brand": "Rittal", "code": "TS 8 8806", "h": 2000, "w": 800, "d": 600, "ip": "IP55", "suitableIndoor": true, "suitableOutdoor": false },
+  { "brand": "Rittal", "code": "TS 8 8886", "h": 2000, "w": 800, "d": 800, "ip": "IP55", "suitableIndoor": true, "suitableOutdoor": false },
+  { "brand": "Rittal", "code": "TS 8 8986", "h": 2000, "w": 1200, "d": 800, "ip": "IP55", "suitableIndoor": true, "suitableOutdoor": false },
+  { "brand": "Rittal", "code": "CS Toptec 9783", "h": 1000, "w": 800, "d": 400, "ip": "IP66", "suitableIndoor": true, "suitableOutdoor": true },
+  { "brand": "Rittal", "code": "CS Toptec 9787", "h": 1400, "w": 1000, "d": 500, "ip": "IP66", "suitableIndoor": true, "suitableOutdoor": true },
+
+  { "brand": "XLTC", "code": "X-FS6060", "h": 600, "w": 600, "d": 250, "ip": "IP54", "suitableIndoor": true, "suitableOutdoor": false },
+  { "brand": "XLTC", "code": "X-FS8060", "h": 800, "w": 600, "d": 300, "ip": "IP54", "suitableIndoor": true, "suitableOutdoor": false },
+  { "brand": "XLTC", "code": "X-FS1260", "h": 1200, "w": 600, "d": 400, "ip": "IP55", "suitableIndoor": true, "suitableOutdoor": false },
+  { "brand": "XLTC", "code": "X-FS1860", "h": 1800, "w": 600, "d": 600, "ip": "IP55", "suitableIndoor": true, "suitableOutdoor": false },
+  { "brand": "XLTC", "code": "X-FS2080", "h": 2000, "w": 800, "d": 600, "ip": "IP55", "suitableIndoor": true, "suitableOutdoor": false },
+  { "brand": "XLTC", "code": "X-FSO1060", "h": 1000, "w": 800, "d": 400, "ip": "IP66", "suitableIndoor": true, "suitableOutdoor": true },
+  { "brand": "XLTC", "code": "X-FSO1480", "h": 1400, "w": 1000, "d": 500, "ip": "IP66", "suitableIndoor": true, "suitableOutdoor": true }
+]

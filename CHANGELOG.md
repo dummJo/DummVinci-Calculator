@@ -1,0 +1,153 @@
+# Changelog
+
+All notable changes to this project are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [1.8.0] — 2026-04-15
+
+### Added
+- Backend integration readiness for NestJS with dedicated `portfolioApi` client
+- Hybrid data orchestration: automatic API fetching with local translation fallback
+- UI Skeletons for Projects and Skills sections for improved loading UX
+- Environment variable support for API endpoints (`.env.example`)
+- Multi-language SEO: Dynamic `html lang` attribute updates based on user locale
+
+### Changed
+- Hardened project architecture: Removed hardcoded metadata from components
+- Decoupled data from UI: Migrated project metadata (years, tags, links) to `translations.ts`
+- Standardized `Role` and `AboutData` interfaces for shared backend-frontend compatibility
+
+### Fixed
+- Resolved project-wide IDE errors by restoring missing `node_modules`
+- Fixed `About.tsx` type mismatch for role descriptions
+- Fixed missing Lucide icon imports in `CareerJourney.tsx`
+
+## [1.7.0] — 2026-04-03
+
+### Added
+- Internationalization support for 5 languages with language switching
+- WhatsApp call-to-action integration
+- Brand marquee carousel showcasing partner companies
+- Page transition animations for enhanced navigation flow
+- International SEO optimization with hreflang tags and language-specific metadata
+
+### Changed
+- Enhanced multi-language support across all content sections
+
+## [1.6.0] — 2026-04-03
+
+### Added
+- Light/dark mode toggle for user preference
+- Warm vincinian light theme implementation with golden accents
+
+### Changed
+- Canvas contrast increased in light mode with darker gold and higher opacity for better readability among older audiences
+
+## [1.5.0] — 2026-04-03
+
+### Added
+- Floating action buttons for enhanced user interaction
+- Back-to-top functionality
+- GitHub and LinkedIn icon cards in Contact section with card-hover styling
+- Consultation request call-to-action
+
+### Changed
+- Consultation button switched from mailto to Gmail compose URL for improved compatibility
+- Contact section redesigned with social media integration
+
+### Fixed
+- Removed AnimatePresence from FloatingActions to fix aria-hidden on #app-root
+- Fixed accessibility issues with aria-hidden isolation on canvas
+- Fixed mailto implementation using dynamic anchor click for browser compatibility
+
+## [1.4.0] — 2026-04-03
+
+### Added
+- Favicon: Vitruvian Man SVG illustration as renaissance design element
+- JSON-LD structured data for improved search engine understanding
+- Comprehensive SEO overhaul with title optimization and Jabodetabek keywords
+- Larger clickable profile photo with lightbox functionality
+- Da Vinci cursor-reactive background animation
+
+### Changed
+- Page title updated to "dummJo Engineering & Consulting"
+- Profile presentation enhanced with Da Vinci renaissance elements and golden spiral motifs
+- GitHub links updated to dummJo organization
+- Increased Da Vinci background cursor effect opacity to ~30%
+
+### Fixed
+- Fixed horizontal overflow with viewport-clamped canvas and hidden scrollbar
+- Resolved nav links on subpages and centralized contact information to Jakarta
+
+## [1.3.0] — 2026-04-03
+
+### Added
+- Hover lift effect applied to all card elements across the homepage
+- Aria-label improvements for project external links
+
+### Changed
+- Hero statistics updated with JKT & Bali-based information
+- Availability messaging clarified as worldwide hybrid
+- Multi-brand positioning for ABB, Siemens, and Allen Bradley partnerships
+- Generalized PQ & ICSS product offerings with N5050 Crane integration
+- Product positioning adjusted to focus on sizing and quotation services
+- AI project description generalized for broader applicability
+- Software skills section trimmed for conciseness
+
+## [1.2.0] — 2026-04-03
+
+### Added
+- Profile photo frame design element
+- Da Vinci renaissance aesthetic branding
+- Golden spiral visual motifs
+- Footer tagline with vincinian design philosophy
+
+### Changed
+- Complete readability overhaul implementing WCAG contrast standards
+- Four-tier color system established for visual hierarchy
+- Font hierarchy refined for improved typography
+- Vincinian tagline prominently featured
+- Profile photo updated with new imagery
+
+### Fixed
+- Adjusted color contrast for accessibility compliance
+
+## [1.1.0] — 2026-04-03
+
+### Added
+- Dedicated dummVinci project page and showcase
+- Digitalization icons for project representation
+- Homepage teaser for dummVinci initiative
+
+### Changed
+- Branding updated to dummjo.dev
+- Full name updated to Adam Muhammad
+- Archived previous adam-retto branding
+- Comprehensive SEO improvements
+
+### Fixed
+- Removed boilerplate components
+
+## [1.0.0] — 2026-04-03
+
+### Added
+- Initial portfolio implementation
+- Basic Next.js framework setup
+- Contact information and professional profile
+- Project showcase sections
+- Navigation structure
+
+[Unreleased]: https://github.com/dummJo/portfolio/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/dummJo/portfolio/compare/v1.7.0...v1.8.0
+[1.7.0]: https://github.com/dummJo/portfolio/compare/v1.6.0...v1.7.0
+[1.6.0]: https://github.com/dummJo/portfolio/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/dummJo/portfolio/compare/v1.4.0...v1.5.0
+[1.4.0]: https://github.com/dummJo/portfolio/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/dummJo/portfolio/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/dummJo/portfolio/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/dummJo/portfolio/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/dummJo/portfolio/releases/tag/v1.0.0
