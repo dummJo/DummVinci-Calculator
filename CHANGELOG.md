@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] — 2026-04-19
+
+### Added
+- **Liquid Meta-ball UI**: Advanced "Gooey" taskbar system implemented via SVG filters for organic, liquid transitions between navigation items.
+- **Ghost Navigation**: Implemented "Invisible-until-Active" logic for the taskbar to minimize distraction and maximize screen real estate.
+- **Interactive Hover Follower**: High-fidelity mouse-tracking indicator that follows the cursor on the dock, providing real-time tactile feedback.
+- **Golden Ratio UI Alignment**: Refactored `SummaryStrip` and internal input spacing using the 1.618 golden proportion for harmonic visual balance.
+- **Elastic Motion Engine**: Transitioned from linear easing to bouncy `cubic-bezier` spring physics for all taskbar and toggle interactions.
+
+### Fixed
+- **Summary Overlap**: Resolved text clipping in part codes by implementing a proportionally weighted grid system.
+- **Click-Outside Closure**: Integrated a global listener to automatically close navigation overlays when clicking outside the menu.
+
 ## [2.0.0] — 2026-04-19
 
 ### Added
