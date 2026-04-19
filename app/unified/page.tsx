@@ -11,6 +11,67 @@ import { sizeMotorStarter, UnifiedResult, estimateAmps } from "@/lib/calc/unifie
 import type { Voltage, DriveApp } from "@/lib/calc/vsd";
 import type { Insulation, Install } from "@/lib/calc/cable";
 
+import { Download } from "lucide-react";
+
+function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: any }) {
+  const specs = [
+    { label: tu.colCode, value: result.vsd.partCode },
+    { label: tu.colKw, value: result.vsd.ratedKw },
+    { label: tu.colFuse, value: (result.vsd as any).fuseA || "—" },
+    { label: tu.colBreaker, value: result.breaker.partCode.split(" ")[0] },
+    { label: tu.colCable, value: result.cable.suggestion.split(" ")[1] }, // simpler string
+    { label: tu.colAir, value: result.vsd.panelAirflowRequired },
+    { label: tu.colFrame, value: result.vsd.frame },
+    { label: tu.colDim, value: `${result.vsd.h}×${result.vsd.w}×${result.vsd.d}` },
+  ];
+
+  return (
+    <div className="vinci-card result-card-enter" style={{
+      padding: "16px 20px",
+      background: "var(--accent-pill-bg, rgba(201,168,76,0.05))",
+      border: "1px solid var(--accent)",
+      borderRadius: "var(--r-lg)",
+      marginBottom: 24,
+      overflowX: "auto",
+    }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 16,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--accent)" }} />
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--accent)", letterSpacing: "0.1em" }}>
+            ENGINEERING SPECIFICATION SUMMARY
+          </span>
+        </div>
+        <button className="btn-icon" style={{ padding: 4, height: "auto" }}>
+          <Download size={14} />
+        </button>
+      </div>
+
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(8, minmax(80px, 1fr))",
+        gap: 12,
+        minWidth: 700,
+      }}>
+        {specs.map((s, i) => (
+          <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted-soft)", textTransform: "uppercase" }}>
+              {s.label}
+            </span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 700, color: "var(--accent)", whiteSpace: "nowrap" }}>
+              {s.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function UnifiedPage() {
   const { t } = useLang();
   const tu = t.unified;
@@ -114,6 +175,8 @@ export default function UnifiedPage() {
         <div className="calc-col-result">
           {result ? (
             <>
+              <SummaryStrip result={result} t={t} tu={tu} />
+              
               <ResultCard
                 title={tu.resTitle}
                 rows={[

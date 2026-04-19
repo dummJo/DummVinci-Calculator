@@ -1,0 +1,105 @@
+{
+  "faults": [
+    {
+      "code": "2310",
+      "title": "Overcurrent",
+      "desc": "Check motor cables, mechanical load blockage, or short acceleration time."
+    },
+    {
+      "code": "3210",
+      "title": "Earth Fault",
+      "desc": "Check motor cable insulation and motor terminals against ground."
+    },
+    {
+      "code": "3220",
+      "title": "DC Overvoltage",
+      "desc": "Check input voltage, lengthen deceleration time, or use braking resistor."
+    },
+    {
+      "code": "3381",
+      "title": "Output Phase Loss",
+      "desc": "Check motor cable connections at drive terminals (U2, V2, W2) and motor."
+    },
+    {
+      "code": "4310",
+      "title": "Heatsink Overtemp",
+      "desc": "Check cooling fans, panel filter cleanliness, and Ambient temperature."
+    },
+    {
+      "code": "5091",
+      "title": "Safe Torque Off (STO)",
+      "desc": "Check STO safety circuit (XSTO) and ensure both channels are active."
+    },
+    {
+      "code": "7122",
+      "title": "Motor Stall",
+      "desc": "Check for locked rotor or if current limit parameters are too low."
+    },
+    {
+      "code": "7310",
+      "title": "Motor Overload",
+      "desc": "Check for motor overload or motor thermal parameter settings."
+    },
+    {
+      "code": "3130",
+      "title": "Input Phase Loss",
+      "desc": "Check input fuses and stability of main power supply (L1, L2, L3)."
+    },
+    {
+      "code": "5100",
+      "title": "Comm Loss",
+      "desc": "Check connection between Control Panel (CDPI) or PC Tool and drive."
+    },
+    {
+      "code": "2330",
+      "title": "Ground Fault",
+      "desc": "Check for current leakage in motor cables or internal motor parts."
+    },
+    {
+      "code": "2340",
+      "title": "Short Circuit",
+      "desc": "Check for short circuits in motor cables or inverter modules."
+    },
+    {
+      "code": "3211",
+      "title": "DC Charging Error",
+      "desc": "Check input voltage or damage to internal charging circuit."
+    },
+    {
+      "code": "7081",
+      "title": "Control Panel Loss",
+      "desc": "Check panel mounting or panel cable if mounted on the panel door."
+    },
+    {
+      "code": "FF0E",
+      "title": "External Fault",
+      "desc": "Check external signals connected to Digital Input (usually external trip relay)."
+    }
+  ],
+  "manuals": [
+    {
+      "family": "ACS880",
+      "link": "https://library.e.abb.com/public/a1aa2aae72bc46d794e4f126f71afecb/LinkList_ACS880-01.html"
+    },
+    {
+      "family": "ACQ580",
+      "link": "https://library.e.abb.com/public/e019ebffa91d4407afffdfa50b981222/LinkList_ACQ580-01.html"
+    },
+    {
+      "family": "ACS580",
+      "link": "https://library.e.abb.com/public/5f763a327fe94444a0e3dfbe81c826f1/LinkList_ACS580-01.html"
+    },
+    {
+      "family": "ACH580",
+      "link": "https://library.e.abb.com/public/339a04467d16453fa89d7ca9cd215802/LinkList_ACH580-01.html"
+    },
+    {
+      "family": "ACS380",
+      "link": "https://library.e.abb.com/public/84d741892c7a4533a2d57a4de82c1bd9/LinkList_ACS380-04.html"
+    },
+    {
+      "family": "ACS880 +N5050",
+      "link": "https://library.e.abb.com/public/b38995646f2c4b8b99c752697a66c891/3AXD50000035435_ACS880_crane_control_program_FW_E.pdf"
+    }
+  ]
+}

@@ -17,6 +17,7 @@ const TABS: Tab[] = [
   { href: "/breaker",          key: "breaker", Icon: Zap          },
   { href: "/busbar",           key: "busbar",  Icon: AlignJustify },
   { href: "/panel",            key: "panel",   Icon: Server       },
+  { href: "/abb-support",      key: "support", Icon: Disc3        },
 ];
 
 export default function BottomTabBar() {

@@ -30,7 +30,7 @@ export const T = {
   en: {
     nav: {
       home: "Home", unified: "Fast", cable: "Cable", drive: "Drive", breaker: "Breaker",
-      busbar: "Busbar", brake: "Brake", panel: "Panel",
+      busbar: "Busbar", brake: "Brake", panel: "Panel", support: "ABB Hub",
     },
     common: {
       resultLabel: "◈ Result",
@@ -239,12 +239,30 @@ export const T = {
       resBreaker: "Protection (MCCB/MCB)",
       resAmps: "Calculated FLA",
     },
+    support: {
+      title: "ABB Drive Support Hub",
+      subtitle: "Error code lookup · Product manuals · Physical dimensions",
+      inputFault: "Enter Error Code (e.g., 2310)",
+      btnSearch: "Search Solution",
+      modalSolution: "Solution Found",
+      driveSelection: "ABB Drive Family",
+      secManuals: "Product Documentation",
+      secSpecs: "Frame & Dimensions",
+      colCode: "Type Code",
+      colKw: "Power (kW)",
+      colFuse: "Fuse (A)",
+      colBreaker: "Breaker",
+      colCable: "Cable Size",
+      colAir: "Air (m³/h)",
+      colFrame: "Frame",
+      colDim: "Dim (H×W×D)",
+    },
   },
 
   id: {
     nav: {
       home: "Beranda", unified: "Fast", cable: "Kabel", drive: "Drive", breaker: "Breaker",
-      busbar: "Busbar", brake: "Resistor", panel: "Panel",
+      busbar: "Busbar", brake: "Resistor", panel: "Panel", support: "ABB Hub",
     },
     common: {
       resultLabel: "◈ Hasil Seleksi",
@@ -452,6 +470,24 @@ export const T = {
       resCable: "Spesifikasi Kabel",
       resBreaker: "Proteksi (MCCB/MCB)",
       resAmps: "Arus FLA Terhitung",
+    },
+    support: {
+      title: "ABB Drive Support Hub",
+      subtitle: "Pencarian kode error · Manual produk · Dimensi fisik",
+      inputFault: "Masukkan Kode Error (misal: 2310)",
+      btnSearch: "Cari Solusi",
+      modalSolution: "Solusi Ditemukan",
+      driveSelection: "Keluarga Drive ABB",
+      secManuals: "Dokumentasi Produk",
+      secSpecs: "Frame & Dimensi",
+      colCode: "Tipe Kode",
+      colKw: "Daya (kW)",
+      colFuse: "Sekring (A)",
+      colBreaker: "Breaker",
+      colCable: "Ukuran Kabel",
+      colAir: "Udara (m³/h)",
+      colFrame: "Frame",
+      colDim: "Dim (T×L×D)",
     },
   },
 } as const;

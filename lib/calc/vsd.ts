@@ -30,6 +30,8 @@ interface DriveFrame {
   ratedKw: number;
   ploss: number;             // W at nominal load
   requiredAirflow: number;   // m³/h through heatsink per ABB manual
+  h: number; w: number; d: number;
+  fuseA: number;
 }
 
 export interface VsdResult {
@@ -41,6 +43,8 @@ export interface VsdResult {
   plossW: number;
   heatsinkAirflow: number;        // drive's own heatsink demand (m³/h)
   panelAirflowRequired: number;   // panel-level Q for ΔT limit (m³/h)
+  h: number; w: number; d: number;
+  fuseA: number;
   recommendation: string;
   warnings: string[];
   keyFeatures: string[];
@@ -112,6 +116,8 @@ export function sizeVsd(input: VsdInput): VsdResult {
     plossW: pick.ploss,
     heatsinkAirflow: pick.requiredAirflow,
     panelAirflowRequired: Math.round(panelQ),
+    h: pick.h, w: pick.w, d: pick.d,
+    fuseA: pick.fuseA,
     recommendation: recommendation(pick, input.app),
     warnings,
     keyFeatures,
