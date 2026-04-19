@@ -10,6 +10,7 @@ import ResultCard from "@/components/calc/ResultCard";
 import { sizeCable, CableResult } from "@/lib/calc/cable";
 import type { Phase, Insulation, Install } from "@/lib/calc/cable";
 import { useLang } from "@/lib/i18n";
+import Footer from "@/components/nav/Footer";
 
 export default function CablePage() {
   const { t } = useLang();
@@ -138,14 +139,7 @@ export default function CablePage() {
         />
       )}
 
-      <footer style={{
-        marginTop: 48, textAlign: "center",
-        fontFamily: "var(--font-mono)", fontSize: 9,
-        color: "var(--muted-soft)", letterSpacing: "0.16em",
-        textTransform: "uppercase", paddingBottom: 16,
-      }}>
-        {t.common.engineeredBy}
-      </footer>
+      <Footer />
     </CalcShell>
   );
 }

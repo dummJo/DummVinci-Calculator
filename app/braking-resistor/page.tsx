@@ -9,6 +9,7 @@ import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
 import { sizeBrakingResistor, BrResult } from "@/lib/calc/braking-resistor";
 import { useLang } from "@/lib/i18n";
+import Footer from "@/components/nav/Footer";
 
 type LineVoltage = 400 | 480 | 690;
 type EdPct       = 15 | 25 | 40 | 60;
@@ -103,14 +104,7 @@ export default function BrakingResistorPage() {
         />
       )}
 
-      <footer style={{
-        marginTop: 48, textAlign: "center",
-        fontFamily: "var(--font-mono)", fontSize: 9,
-        color: "var(--muted-soft)", letterSpacing: "0.16em",
-        textTransform: "uppercase", paddingBottom: 16,
-      }}>
-        {t.common.engineeredBy}
-      </footer>
+      <Footer />
     </CalcShell>
   );
 }

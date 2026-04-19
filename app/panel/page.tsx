@@ -9,6 +9,7 @@ import ResultCard from "@/components/calc/ResultCard";
 import { sizePanel, PanelResult } from "@/lib/calc/panel";
 import type { Location, IpClass, CoolingMode } from "@/lib/calc/panel";
 import { useLang } from "@/lib/i18n";
+import Footer from "@/components/nav/Footer";
 
 function InfoRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
@@ -177,14 +178,7 @@ export default function PanelPage() {
         </>
       )}
 
-      <footer style={{
-        marginTop: 48, textAlign: "center",
-        fontFamily: "var(--font-mono)", fontSize: 9,
-        color: "var(--muted-soft)", letterSpacing: "0.16em",
-        textTransform: "uppercase", paddingBottom: 16,
-      }}>
-        {t.common.engineeredBy}
-      </footer>
+      <Footer />
     </CalcShell>
   );
 }

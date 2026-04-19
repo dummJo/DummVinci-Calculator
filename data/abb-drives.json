@@ -5,7 +5,7 @@
   { "family": "ACQ580", "code": "ACQ580-01-07A2-4", "frame": "R1", "voltage": 400, "nominalA": 7.2, "ratedKw": 3, "ploss": 125, "requiredAirflow": 52 },
   { "family": "ACQ580", "code": "ACQ580-01-09A4-4", "frame": "R1", "voltage": 400, "nominalA": 9.4, "ratedKw": 4, "ploss": 160, "requiredAirflow": 52 },
   { "family": "ACQ580", "code": "ACQ580-01-12A6-4", "frame": "R1", "voltage": 400, "nominalA": 12.6, "ratedKw": 5.5, "ploss": 200, "requiredAirflow": 52 },
-  { "family": "ACQ580", "code": "ACQ580-01-17A0-4", "frame": "R2", "voltage": 400, "nominalA": 17, "ratedKw": 7.5, "ploss": 270, "requiredAirflow": 71 },
+  { "family": "ACQ580", "code": "ACQ580-01-017A-4", "frame": "R2", "voltage": 400, "nominalA": 17, "ratedKw": 7.5, "ploss": 270, "requiredAirflow": 71 },
   { "family": "ACQ580", "code": "ACQ580-01-025A-4", "frame": "R2", "voltage": 400, "nominalA": 25, "ratedKw": 11, "ploss": 370, "requiredAirflow": 71 },
   { "family": "ACQ580", "code": "ACQ580-01-032A-4", "frame": "R3", "voltage": 400, "nominalA": 32, "ratedKw": 15, "ploss": 490, "requiredAirflow": 134 },
   { "family": "ACQ580", "code": "ACQ580-01-038A-4", "frame": "R3", "voltage": 400, "nominalA": 38, "ratedKw": 18.5, "ploss": 570, "requiredAirflow": 134 },
@@ -21,7 +21,7 @@
   { "family": "ACQ580", "code": "ACQ580-01-293A-4", "frame": "R8", "voltage": 400, "nominalA": 293, "ratedKw": 160, "ploss": 3700, "requiredAirflow": 680 },
   { "family": "ACQ580", "code": "ACQ580-01-363A-4", "frame": "R8", "voltage": 400, "nominalA": 363, "ratedKw": 200, "ploss": 4500, "requiredAirflow": 680 },
   { "family": "ACQ580", "code": "ACQ580-01-430A-4", "frame": "R9", "voltage": 400, "nominalA": 430, "ratedKw": 250, "ploss": 5400, "requiredAirflow": 920 },
-  { "family": "ACQ580", "code": "ACQ580-01-505A-4", "frame": "R9", "voltage": 400, "nominalA": 505, "ratedKw": 280, "ploss": 6100, "requiredAirflow": 920 },
+  { "family": "ACQ580", "code": "ACQ580-04-505A-4", "frame": "R10", "voltage": 400, "nominalA": 505, "ratedKw": 250, "ploss": 6100, "requiredAirflow": 1300 },
 
   { "family": "ACS880", "code": "ACS880-01-04A6-3", "frame": "R1", "voltage": 400, "nominalA": 4.6, "ratedKw": 1.5, "ploss": 90, "requiredAirflow": 52 },
   { "family": "ACS880", "code": "ACS880-01-07A2-3", "frame": "R1", "voltage": 400, "nominalA": 7.2, "ratedKw": 3, "ploss": 145, "requiredAirflow": 52 },
@@ -41,9 +41,9 @@
   { "family": "ACS880", "code": "ACS880-01-293A-3", "frame": "R8", "voltage": 400, "nominalA": 293, "ratedKw": 160, "ploss": 4300, "requiredAirflow": 680 },
   { "family": "ACS880", "code": "ACS880-01-363A-3", "frame": "R9", "voltage": 400, "nominalA": 363, "ratedKw": 200, "ploss": 5200, "requiredAirflow": 920 },
   { "family": "ACS880", "code": "ACS880-01-430A-3", "frame": "R9", "voltage": 400, "nominalA": 430, "ratedKw": 250, "ploss": 6200, "requiredAirflow": 920 },
-  { "family": "ACS880", "code": "ACS880-01-521A-3", "frame": "R10", "voltage": 400, "nominalA": 521, "ratedKw": 315, "ploss": 7400, "requiredAirflow": 1300 },
-  { "family": "ACS880", "code": "ACS880-01-585A-3", "frame": "R11", "voltage": 400, "nominalA": 585, "ratedKw": 355, "ploss": 8300, "requiredAirflow": 1500 },
-  { "family": "ACS880", "code": "ACS880-01-650A-3", "frame": "R11", "voltage": 400, "nominalA": 650, "ratedKw": 400, "ploss": 9200, "requiredAirflow": 1500 },
+  { "family": "ACS880", "code": "ACS880-04-505A-3", "frame": "R10", "voltage": 400, "nominalA": 505, "ratedKw": 280, "ploss": 7400, "requiredAirflow": 1300 },
+  { "family": "ACS880", "code": "ACS880-04-585A-3", "frame": "R11", "voltage": 400, "nominalA": 585, "ratedKw": 315, "ploss": 8300, "requiredAirflow": 1500 },
+  { "family": "ACS880", "code": "ACS880-04-650A-3", "frame": "R11", "voltage": 400, "nominalA": 650, "ratedKw": 355, "ploss": 9200, "requiredAirflow": 1500 },
 
   { "family": "ACS880", "code": "ACS880-01-045A-5", "frame": "R3", "voltage": 480, "nominalA": 45, "ratedKw": 30, "ploss": 780, "requiredAirflow": 134 },
   { "family": "ACS880", "code": "ACS880-01-087A-5", "frame": "R5", "voltage": 480, "nominalA": 87, "ratedKw": 55, "ploss": 1450, "requiredAirflow": 405 },
@@ -51,8 +51,8 @@
   { "family": "ACS880", "code": "ACS880-01-293A-5", "frame": "R8", "voltage": 480, "nominalA": 293, "ratedKw": 200, "ploss": 4500, "requiredAirflow": 680 },
 
   { "family": "ACS880", "code": "ACS880-01-033A-7", "frame": "R6", "voltage": 690, "nominalA": 33, "ratedKw": 30, "ploss": 850, "requiredAirflow": 405 },
-  { "family": "ACS880", "code": "ACS880-01-056A-7", "frame": "R6", "voltage": 690, "nominalA": 56, "ratedKw": 55, "ploss": 1500, "requiredAirflow": 405 },
-  { "family": "ACS880", "code": "ACS880-01-103A-7", "frame": "R8", "voltage": 690, "nominalA": 103, "ratedKw": 110, "ploss": 2900, "requiredAirflow": 680 },
-  { "family": "ACS880", "code": "ACS880-01-156A-7", "frame": "R9", "voltage": 690, "nominalA": 156, "ratedKw": 160, "ploss": 4400, "requiredAirflow": 920 },
-  { "family": "ACS880", "code": "ACS880-01-208A-7", "frame": "R10", "voltage": 690, "nominalA": 208, "ratedKw": 200, "ploss": 5700, "requiredAirflow": 1300 }
+  { "family": "ACS880", "code": "ACS880-01-056A-7", "frame": "R6", "voltage": 690, "nominalA": 56, "ratedKw": 50, "ploss": 1500, "requiredAirflow": 405 },
+  { "family": "ACS880", "code": "ACS880-01-103A-7", "frame": "R8", "voltage": 690, "nominalA": 103, "ratedKw": 90, "ploss": 2900, "requiredAirflow": 680 },
+  { "family": "ACS880", "code": "ACS880-01-156A-7", "frame": "R9", "voltage": 690, "nominalA": 156, "ratedKw": 132, "ploss": 4400, "requiredAirflow": 920 },
+  { "family": "ACS880", "code": "ACS880-01-210A-7", "frame": "R9", "voltage": 690, "nominalA": 210, "ratedKw": 200, "ploss": 5700, "requiredAirflow": 920 }
 ]

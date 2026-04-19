@@ -27,15 +27,13 @@ export default function BottomTabBar() {
     <>
       <style>{`
         @keyframes pillPop {
-          0%   { transform: scale(0.72); opacity: 0; }
-          60%  { transform: scale(1.08); opacity: 1; }
-          100% { transform: scale(1);   opacity: 1; }
+          0%   { transform: scale3d(0.85, 0.85, 1); opacity: 0; }
+          100% { transform: scale3d(1, 1, 1);       opacity: 1; }
         }
         @keyframes iconBounce {
-          0%   { transform: translateY(0) scale(1); }
-          35%  { transform: translateY(-3px) scale(1.18); }
-          65%  { transform: translateY(1px) scale(0.94); }
-          100% { transform: translateY(0) scale(1); }
+          0%   { transform: translate3d(0, 0, 0) scale3d(1, 1, 1); }
+          45%  { transform: translate3d(0, -2px, 0) scale3d(1.1, 1.1, 1); }
+          100% { transform: translate3d(0, 0, 0) scale3d(1, 1, 1); }
         }
         .tab-link {
           flex: 1;
@@ -46,59 +44,64 @@ export default function BottomTabBar() {
           gap: 4px;
           text-decoration: none;
           background-image: none !important;
-          padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0px));
+          padding: 6px 2px calc(8px + env(safe-area-inset-bottom, 0px));
           position: relative;
           -webkit-tap-highlight-color: transparent;
           user-select: none;
         }
+        .tab-icon-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 32px;
+          z-index: 1;
+        }
         .tab-pill {
           position: absolute;
-          top: 7px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 52px;
-          height: 34px;
-          border-radius: 12px;
+          inset: 0;
+          border-radius: 10px;
           pointer-events: none;
-          transition: opacity 0.22s ease;
+          transition: opacity 0.2s ease;
+          will-change: transform, opacity;
+          z-index: -1;
         }
         .tab-pill--active {
-          background: var(--accent-pill-bg, rgba(201,168,76,0.16));
+          background: var(--accent-pill-bg, rgba(201,168,76,0.12));
           box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.12),
-            inset 0 -1px 0 rgba(0,0,0,0.10),
-            0 0 0 1px rgba(201,168,76,0.22),
-            0 4px 16px rgba(201,168,76,0.12);
-          animation: pillPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            inset 0 1px 0 rgba(255,255,255,0.08),
+            0 0 0 1px rgba(201,168,76,0.2),
+            0 4px 12px rgba(201,168,76,0.08);
+          animation: pillPop 0.28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
         [data-theme="light"] .tab-pill--active {
-          background: rgba(140,101,16,0.12);
+          background: rgba(140,101,16,0.08);
           box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.5),
-            inset 0 -1px 0 rgba(0,0,0,0.06),
-            0 0 0 1px rgba(140,101,16,0.25),
-            0 4px 16px rgba(140,101,16,0.10);
+            inset 0 1px 0 rgba(255,255,255,0.4),
+            0 0 0 1px rgba(140,101,16,0.15),
+            0 4px 12px rgba(140,101,16,0.06);
         }
         .tab-icon {
-          position: relative;
-          z-index: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           transition: color 0.18s ease;
+          will-change: transform;
         }
         .tab-icon--active {
-          animation: iconBounce 0.36s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+          animation: iconBounce 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
         .tab-label {
-          position: relative;
-          z-index: 1;
           font-family: var(--font-mono);
-          font-size: 9px;
-          letter-spacing: 0.05em;
+          font-size: 8.5px;
+          letter-spacing: 0.02em;
           text-transform: uppercase;
           line-height: 1;
           transition: color 0.18s ease, opacity 0.18s ease;
+          text-align: center;
         }
       `}</style>
-
       <nav
         style={{
           position: "fixed",
@@ -109,11 +112,11 @@ export default function BottomTabBar() {
           display: "flex",
           alignItems: "stretch",
           height: "calc(64px + env(safe-area-inset-bottom, 0px))",
-          background: "var(--tabbar-bg, rgba(10,13,18,0.62))",
-          backdropFilter: "blur(48px) saturate(200%) brightness(1.06)",
-          WebkitBackdropFilter: "blur(48px) saturate(200%) brightness(1.06)",
-          borderTop: "1px solid rgba(255,255,255,0.07)",
-          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
+          background: "var(--tabbar-bg, rgba(10,13,18,0.7))",
+          backdropFilter: "blur(40px) saturate(180%)",
+          WebkitBackdropFilter: "blur(40px) saturate(180%)",
+          borderTop: "1px solid var(--glass-border)",
+          boxShadow: "0 -4px 24px rgba(0,0,0,0.2)",
         }}
       >
         {TABS.map(tab => {
@@ -126,10 +129,12 @@ export default function BottomTabBar() {
               className="tab-link"
               style={{ color: active ? "var(--accent)" : "var(--muted)" }}
             >
-              {active && <span className="tab-pill tab-pill--active" />}
-              <span className={`tab-icon${active ? " tab-icon--active" : ""}`}>
-                <Icon size={22} strokeWidth={active ? 2.2 : 1.6} absoluteStrokeWidth />
-              </span>
+              <div className="tab-icon-wrapper">
+                {active && <span className="tab-pill tab-pill--active" />}
+                <span className={`tab-icon${active ? " tab-icon--active" : ""}`}>
+                  <Icon size={21} strokeWidth={active ? 2.2 : 1.6} absoluteStrokeWidth />
+                </span>
+              </div>
               <span
                 className="tab-label"
                 style={{

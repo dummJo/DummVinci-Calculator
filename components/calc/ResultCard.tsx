@@ -8,9 +8,11 @@ interface Props {
   rows: Row[];
   recommendation?: string;
   warnings?: string[];
+  features?: string[];
+  featuresLabel?: string;
 }
 
-export default function ResultCard({ title, rows, recommendation, warnings }: Props) {
+export default function ResultCard({ title, rows, recommendation, warnings, features, featuresLabel }: Props) {
   const { t } = useLang();
 
   return (
@@ -77,7 +79,43 @@ export default function ResultCard({ title, rows, recommendation, warnings }: Pr
         ))}
       </div>
 
-      {/* recommendation */}
+      {/* features */}
+      {features && features.length > 0 && (
+        <div style={{
+          marginTop: 16,
+          paddingTop: 12,
+          borderTop: "1px solid var(--hairline-soft)",
+        }}>
+           <div style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 9,
+            color: "var(--muted)",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            marginBottom: 8,
+          }}>
+            {featuresLabel || "Key Features"}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {features.map((f, i) => (
+              <div key={i} style={{
+                display: "flex",
+                gap: 8,
+                alignItems: "flex-start",
+                fontFamily: "var(--font-mono)",
+                fontSize: "var(--fs-xs)",
+                color: "var(--accent)",
+                lineHeight: 1.4,
+              }}>
+                <span style={{ fontSize: 10, marginTop: 1 }}>◈</span>
+                <span>{f}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+       {/* recommendation */}
       {recommendation && (
         <div style={{
           marginTop: 16,

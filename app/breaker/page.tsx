@@ -11,26 +11,27 @@ import ResultCard from "@/components/calc/ResultCard";
 import { sizeBreaker, BreakerResult } from "@/lib/calc/breaker";
 import type { Curve } from "@/lib/calc/breaker";
 import { useLang } from "@/lib/i18n";
+import Footer from "@/components/nav/Footer";
 
 export default function BreakerPage() {
   const { t } = useLang();
   const tb = t.breaker;
 
-  const [loadCurrent,  setLoadCurrent]  = useState("63");
+  const [loadCurrent, setLoadCurrent] = useState("63");
   const [faultCurrent, setFaultCurrent] = useState("10");
-  const [voltage,      setVoltage]      = useState("400");
-  const [curve,        setCurve]        = useState<Curve>("C");
-  const [poles,        setPoles]        = useState<"1"|"2"|"3"|"4">("3");
-  const [driveLoad,    setDriveLoad]    = useState(false);
+  const [voltage, setVoltage] = useState("400");
+  const [curve, setCurve] = useState<Curve>("C");
+  const [poles, setPoles] = useState<"1" | "2" | "3" | "4">("3");
+  const [driveLoad, setDriveLoad] = useState(false);
 
   const [result, setResult] = useState<BreakerResult | null>(null);
 
   function handleCalc() {
     const r = sizeBreaker({
-      loadCurrent:  parseFloat(loadCurrent)  || 0,
+      loadCurrent: parseFloat(loadCurrent) || 0,
       faultCurrent: parseFloat(faultCurrent) || 0,
       curve: driveLoad ? "D" : curve,
-      poles: parseInt(poles) as 1|2|3|4,
+      poles: parseInt(poles) as 1 | 2 | 3 | 4,
       driveLoad,
     });
     setResult(r);
@@ -74,7 +75,7 @@ export default function BreakerPage() {
             hint={driveLoad ? tb.curveHintOverride : tb.curveHint}
           />
           <FieldSelect
-            label={tb.poles} value={poles} onChange={v => setPoles(v as "1"|"2"|"3"|"4")}
+            label={tb.poles} value={poles} onChange={v => setPoles(v as "1" | "2" | "3" | "4")}
             options={[
               { value: "1", label: "1-Pole" },
               { value: "2", label: "2-Pole" },
@@ -100,26 +101,19 @@ export default function BreakerPage() {
         <ResultCard
           title={tb.resTitle}
           rows={[
-            { label: tb.resType,   value: result.type,   accent: true },
+            { label: tb.resType, value: result.type, accent: true },
             { label: tb.resFamily, value: result.family, accent: true },
-            { label: tb.resPart,   value: result.partCode, accent: true },
-            { label: tb.resNomA,   value: result.nominalA > 0 ? `${result.nominalA} A` : "—" },
-            { label: tb.resIcu,    value: result.icuKa > 0 ? `${result.icuKa} kA` : "—" },
-            { label: tb.resCurve,  value: result.curve },
-            { label: tb.resCoord,  value: result.coordination },
+            { label: tb.resPart, value: result.partCode, accent: true },
+            { label: tb.resNomA, value: result.nominalA > 0 ? `${result.nominalA} A` : "—" },
+            { label: tb.resIcu, value: result.icuKa > 0 ? `${result.icuKa} kA` : "—" },
+            { label: tb.resCurve, value: result.curve },
+            { label: tb.resCoord, value: result.coordination },
           ]}
           warnings={result.warnings}
         />
       )}
 
-      <footer style={{
-        marginTop: 48, textAlign: "center",
-        fontFamily: "var(--font-mono)", fontSize: 9,
-        color: "var(--muted-soft)", letterSpacing: "0.16em",
-        textTransform: "uppercase", paddingBottom: 16,
-      }}>
-        {t.common.engineeredBy}
-      </footer>
+      <Footer />
     </CalcShell>
   );
 }

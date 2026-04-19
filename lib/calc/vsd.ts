@@ -42,6 +42,7 @@ export interface VsdResult {
   panelAirflowRequired: number;   // panel-level Q for ΔT limit (m³/h)
   recommendation: string;
   warnings: string[];
+  keyFeatures: string[];
 }
 
 const LIST = drives as DriveFrame[];
@@ -65,6 +66,7 @@ export function sizeVsd(input: VsdInput): VsdResult {
       heatsinkAirflow: 0, panelAirflowRequired: 0,
       recommendation: `No ${family} @ ${input.voltage}V matches ${targetKw.toFixed(1)} kW. Check catalog / use HV.`,
       warnings: ["Motor kW exceeds listed frames"],
+      keyFeatures: [],
     };
   }
 
@@ -74,6 +76,22 @@ export function sizeVsd(input: VsdInput): VsdResult {
     warnings.push("Crane duty — ACS880 mandatory for regen / BR support");
   if (input.voltage >= 480) warnings.push("≥480V — verify regional standards & insulation class");
   if (panelQ > 800) warnings.push("High airflow > 800 m³/h — consider forced ventilation + filter");
+
+  const keyFeatures = pick.family === "ACQ580"
+    ? [
+      "Built-in Intelligent Pump Control (IPC)",
+      "Sensorless Flow Calculation",
+      "Soft Pipe Fill & Dry Run Protection",
+      "Integrated EMC C2 Filter & DC Choke",
+      "Coated circuit boards as standard",
+    ]
+    : [
+      "Direct Torque Control (DTC) technology",
+      "Integrated Safe Torque Off (STO) SIL3",
+      "Built-in Brake Chopper (up to R4 frames)",
+      "Supports various fieldbus adapters",
+      "Optimized for heavy-duty applications",
+    ];
 
   return {
     family: pick.family,
@@ -86,6 +104,7 @@ export function sizeVsd(input: VsdInput): VsdResult {
     panelAirflowRequired: Math.round(panelQ),
     recommendation: recommendation(pick, input.app),
     warnings,
+    keyFeatures,
   };
 }
 

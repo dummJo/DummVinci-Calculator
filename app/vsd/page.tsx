@@ -11,6 +11,7 @@ import ResultCard from "@/components/calc/ResultCard";
 import { sizeVsd, VsdResult } from "@/lib/calc/vsd";
 import type { DriveApp, Voltage } from "@/lib/calc/vsd";
 import { useLang } from "@/lib/i18n";
+import Footer from "@/components/nav/Footer";
 
 export default function VsdPage() {
   const { t } = useLang();
@@ -121,17 +122,12 @@ export default function VsdPage() {
           ]}
           recommendation={result.recommendation}
           warnings={result.warnings}
+          features={result.keyFeatures}
+          featuresLabel={tv.resFeatures}
         />
       )}
 
-      <footer style={{
-        marginTop: 48, textAlign: "center",
-        fontFamily: "var(--font-mono)", fontSize: 9,
-        color: "var(--muted-soft)", letterSpacing: "0.16em",
-        textTransform: "uppercase", paddingBottom: 16,
-      }}>
-        {t.common.engineeredBy}
-      </footer>
+      <Footer />
     </CalcShell>
   );
 }
