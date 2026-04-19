@@ -111,6 +111,15 @@ export function sizeVsd(input: VsdInput): VsdResult {
       "Optimized for heavy-duty applications",
     ];
 
+  if (pick.variant === "31") {
+    keyFeatures.push(
+      "Ultra-low harmonic performance (THDi < 3%)",
+      "Integrated LCL filter — no extra filters needed",
+      "Unity power factor (cos φ = 1.0)",
+      "Active supply unit for voltage boost capability"
+    );
+  }
+
   return {
     family: pick.family,
     variant: pick.variant,
@@ -130,10 +139,17 @@ export function sizeVsd(input: VsdInput): VsdResult {
 }
 
 function recommendation(d: DriveFrame, app: DriveApp): string {
-  const note = app === "crane"
-    ? "Crane: enable brake chopper + connect STAHL BR to R+/R-. Safety STO via FSO-12."
-    : app === "pump" || app === "fan"
-      ? "HVAC-R: enable built-in pump/fan control macro; set Vdc curve for pipe resonance"
-      : "Industrial: verify motor data plate, run ID-run (first start)";
+  let note = "";
+  
+  if (d.variant === "31") {
+    note = "ULH: Perfect for clean power grids. THDi < 3%. Built-in active supply eliminates harmonics without external filters. Boost voltage if needed.";
+  } else if (app === "crane") {
+    note = "Crane: enable brake chopper + connect STAHL BR to R+/R-. Safety STO via FSO-12.";
+  } else if (app === "pump" || app === "fan") {
+    note = "HVAC-R: enable built-in pump/fan control macro; set Vdc curve for pipe resonance";
+  } else {
+    note = "Industrial: verify motor data plate, run ID-run (first start)";
+  }
+  
   return `${d.family} ${d.code} — ${d.frame} frame. ${note}`;
 }
