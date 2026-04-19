@@ -105,18 +105,23 @@ export default function BottomTabBar() {
       <nav
         style={{
           position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
+          bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+          left: 12,
+          right: 12,
+          maxWidth: 600,
+          margin: "0 auto",
           zIndex: 100,
           display: "flex",
           alignItems: "stretch",
-          height: "calc(64px + env(safe-area-inset-bottom, 0px))",
-          background: "var(--tabbar-bg, rgba(10,13,18,0.7))",
-          backdropFilter: "blur(40px) saturate(180%)",
-          WebkitBackdropFilter: "blur(40px) saturate(180%)",
-          borderTop: "1px solid var(--glass-border)",
-          boxShadow: "0 -4px 24px rgba(0,0,0,0.2)",
+          height: 64,
+          background: "var(--tabbar-floating-bg, rgba(13,16,22,0.85))",
+          backdropFilter: "blur(24px) saturate(160%)",
+          WebkitBackdropFilter: "blur(24px) saturate(160%)",
+          border: "1px solid var(--glass-border-bold, rgba(255,255,255,0.08))",
+          borderRadius: 32,
+          boxShadow: "0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03)",
+          overflow: "hidden",
+          padding: "0 4px",
         }}
       >
         {TABS.map(tab => {
@@ -127,20 +132,25 @@ export default function BottomTabBar() {
               key={tab.href}
               href={tab.href}
               className="tab-link"
-              style={{ color: active ? "var(--accent)" : "var(--muted)" }}
+              style={{
+                color: active ? "var(--accent)" : "var(--muted)",
+                paddingTop: 8,
+                paddingBottom: 8,
+              }}
             >
               <div className="tab-icon-wrapper">
                 {active && <span className="tab-pill tab-pill--active" />}
                 <span className={`tab-icon${active ? " tab-icon--active" : ""}`}>
-                  <Icon size={21} strokeWidth={active ? 2.2 : 1.6} absoluteStrokeWidth />
+                  <Icon size={20} strokeWidth={active ? 2.4 : 1.8} absoluteStrokeWidth />
                 </span>
               </div>
               <span
                 className="tab-label"
                 style={{
                   color: active ? "var(--accent)" : "var(--muted-soft)",
-                  opacity: active ? 1 : 0.7,
-                  fontWeight: active ? 600 : 400,
+                  opacity: active ? 1 : 0.6,
+                  fontWeight: active ? 700 : 400,
+                  fontSize: 8,
                 }}
               >
                 {t.nav[tab.key]}
