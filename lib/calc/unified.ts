@@ -41,6 +41,7 @@ export function sizeMotorStarter(input: UnifiedInput): UnifiedResult {
     app: input.app,
     dutyHeavy: input.dutyHeavy,
     panelDeltaT: input.panelDeltaT,
+    ambientC: input.ambientC,
   });
 
   // 2. Size Cable (using motor amps)

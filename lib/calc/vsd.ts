@@ -18,6 +18,7 @@ export interface VsdInput {
   app: DriveApp;
   dutyHeavy: boolean;        // crane / conveyor high-inertia → oversize
   panelDeltaT: number;       // allowed ΔT inside panel vs ambient (K), typical 10–15
+  ambientC?: number;         // Ambient temperature outside panel (°C), base 40°C
 }
 
 interface DriveFrame {
@@ -52,9 +53,18 @@ export function sizeVsd(input: VsdInput): VsdResult {
   const family: "ACQ580" | "ACS880" = heavy ? "ACS880" : "ACQ580";
   const oversize = heavy ? 1.2 : 1.05;
   const targetKw = input.motorKw * oversize;
+  const ambient = input.ambientC ?? 40;
+
+  // ABB Manual: 1% derating per 1°C above 40°C
+  const tempDerate = ambient > 40 ? 1 - (ambient - 40) * 0.01 : 1.0;
 
   const candidates = LIST
-    .filter(d => d.family === family && d.voltage === input.voltage && d.ratedKw >= targetKw)
+    .filter(d => {
+      const deratedA = d.nominalA * tempDerate;
+      // Rough kW check after derating (matching A/kW ratio)
+      const deratedKw = d.ratedKw * tempDerate;
+      return d.family === family && d.voltage === input.voltage && deratedKw >= targetKw;
+    })
     .sort((a, b) => a.ratedKw - b.ratedKw);
 
   const pick = candidates[0];

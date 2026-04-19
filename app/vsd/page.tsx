@@ -22,6 +22,7 @@ export default function VsdPage() {
   const [app,     setApp]     = useState<DriveApp>("pump");
   const [heavy,   setHeavy]   = useState(false);
   const [deltaT,  setDeltaT]  = useState("12");
+  const [ambient, setAmbient] = useState("35");
 
   const [result, setResult] = useState<VsdResult | null>(null);
 
@@ -32,6 +33,7 @@ export default function VsdPage() {
       app,
       dutyHeavy:    heavy,
       panelDeltaT:  parseFloat(deltaT)  || 12,
+      ambientC:     parseFloat(ambient) || 40,
     });
     setResult(r);
   }
@@ -82,6 +84,11 @@ export default function VsdPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           <FieldToggle
             label={tv.heavy} checked={heavy} onChange={setHeavy} hint={tv.heavyHint}
+          />
+          <FieldNumber
+            label={tv.ambient} unit="°C"
+            value={ambient} onChange={setAmbient}
+            min={10} max={55} step={1} hint={tv.ambientHint}
           />
         </div>
 

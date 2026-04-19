@@ -113,6 +113,7 @@ export const T = {
       appHintCrane: "ACS880 selected — crane/heavy duty",
       appHintAcq: "ACQ580 for HVAC-R apps",
       panelDt: "Panel ΔT", panelDtHint: "Allowed temp rise inside panel (typically 10–15 K)",
+      ambient: "Ambient Temp", ambientHint: "Operating temp outside panel (°C) — base 40°C",
       heavy: "Heavy Duty / High Inertia — Crane",
       heavyHint: "Forces ACS880, 20% oversizing margin, braking resistor note",
       craneNote: "◈ Crane / heavy-duty mode: ACS880 mandatory. Size braking resistor via the dedicated Braking Resistor calculator.",
