@@ -19,7 +19,7 @@ export interface VsdInput {
   dutyHeavy: boolean;        // crane / conveyor high-inertia → oversize
   panelDeltaT: number;       // allowed ΔT inside panel vs ambient (K), typical 10–15
   ambientC?: number;         // Ambient temperature outside panel (°C), base 40°C
-  variant: "01" | "04" | "07"; 
+  variant: "01" | "04" | "07" | "31"; 
 }
 
 interface DriveFrame {

@@ -100,6 +100,14 @@
     {
       "family": "ACS880 +N5050",
       "link": "https://library.e.abb.com/public/b38995646f2c4b8b99c752697a66c891/3AXD50000035435_ACS880_crane_control_program_FW_E.pdf"
+    },
+    {
+      "family": "ACS880-31 (ULH)",
+      "link": "https://library.e.abb.com/public/23974c600a9446d3be89ca3dcd6060c4/LinkList_ACS880-31.html"
+    },
+    {
+      "family": "ACQ580-31 (ULH)",
+      "link": "https://library.e.abb.com/public/2f664a44ed01488da1af6c543fdf569d/LinkList_ACQ580-31.html"
     }
   ]
 }

@@ -98,6 +98,7 @@ export default function VsdPage() {
               { value: "01", label: tv.constWall },
               { value: "04", label: tv.constModule },
               { value: "07", label: tv.constCabinet },
+              { value: "31", label: tv.constUlh },
             ]}
           />
         </div>

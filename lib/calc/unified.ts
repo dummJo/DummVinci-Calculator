@@ -14,7 +14,7 @@ export interface UnifiedInput {
   ambientC: number;
   faultCurrentKa: number;    // kA for breaker
   panelDeltaT: number;       // For VSD airflow
-  driveVariant: "01" | "04" | "07";
+  driveVariant: "01" | "04" | "07" | "31";
 }
 
 export interface UnifiedResult {

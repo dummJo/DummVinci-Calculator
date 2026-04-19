@@ -151,6 +151,7 @@ export default function UnifiedPage() {
               { value: "01", label: t.vsd.constWall },
               { value: "04", label: t.vsd.constModule },
               { value: "07", label: t.vsd.constCabinet },
+              { value: "31", label: t.vsd.constUlh },
             ]}
           />
 
