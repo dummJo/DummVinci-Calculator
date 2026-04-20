@@ -1,17 +1,14 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Inter, JetBrains_Mono, Outfit, Bricolage_Grotesque } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CursorGlow from "@/components/CursorGlow";
 import DaVinciAscii from "@/components/DaVinciAscii";
 import BottomTabBar from "@/components/nav/BottomTabBar";
 import TopBar from "@/components/nav/TopBar";
-import DynamicIconManager from "@/components/DynamicIconManager";
+
 import "./globals.css";
 
-const displayFont = Instrument_Serif({ variable: "--font-display", subsets: ["latin"], weight: "400" });
-const headingFont = Bricolage_Grotesque({ variable: "--font-heading", subsets: ["latin"] });
-const sansFont = Outfit({ variable: "--font-sans", subsets: ["latin"] });
-const bodyFont = Inter({ variable: "--font-body", subsets: ["latin"] });
+const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const monoFont = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -28,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id" className={`${displayFont.variable} ${headingFont.variable} ${sansFont.variable} ${bodyFont.variable} ${monoFont.variable}`}>
+    <html lang="id" className={`${inter.variable} ${monoFont.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -37,7 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
       </head>
       <body style={{ position: "relative" }}>
-        <DynamicIconManager />
+
         <CursorGlow />
         <DaVinciAscii />
         <TopBar />

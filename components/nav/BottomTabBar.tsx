@@ -136,6 +136,7 @@ export default function BottomTabBar() {
           height: 100%;
           text-decoration: none;
           -webkit-tap-highlight-color: transparent;
+          background-image: none !important;
         }
         .inactive-icon {
           color: var(--fg);

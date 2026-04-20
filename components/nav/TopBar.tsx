@@ -3,12 +3,7 @@ import { useState, useEffect } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useLang, type Lang } from "@/lib/i18n";
 
-import { ICONS_SVG_STRINGS } from "@/components/DynamicIconManager";
-
-// ─── 8 Vincinian icons from dummjo.dev (cycle every 3.2 s) ───────────────────
-const ICONS = ICONS_SVG_STRINGS.map((svg, i) => (
-  <div key={i} dangerouslySetInnerHTML={{ __html: svg }} />
-));
+import Logo from "@/components/Logo";
 
 // ─── Lang pill toggle ─────────────────────────────────────────────────────────
 function LangToggle() {
@@ -51,21 +46,7 @@ function LangToggle() {
   );
 }
 
-// ─── TopBar ───────────────────────────────────────────────────────────────────
 export default function TopBar() {
-  const [iconIdx, setIconIdx] = useState(0);
-  const [fading, setFading]   = useState(false);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setFading(true);
-      setTimeout(() => {
-        setIconIdx(i => (i + 1) % ICONS.length);
-        setFading(false);
-      }, 260);
-    }, 3200);
-    return () => clearInterval(id);
-  }, []);
 
   return (
     <header
@@ -89,13 +70,10 @@ export default function TopBar() {
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
         <div style={{
           width: 32, height: 32,
-          borderRadius: 6,
-          overflow: "hidden",
           flexShrink: 0,
-          opacity: fading ? 0 : 1,
-          transition: "opacity 0.24s ease",
+          color: "var(--accent)"
         }}>
-          {ICONS[iconIdx]}
+          <Logo size={32} />
         </div>
         <div style={{
           fontFamily: "var(--font-display)",
