@@ -8,8 +8,11 @@ import FieldSelect from "@/components/calc/FieldSelect";
 import ResultCard from "@/components/calc/ResultCard";
 import { sizePanel, PanelResult } from "@/lib/calc/panel";
 import type { Location, IpClass, CoolingMode } from "@/lib/calc/panel";
+import { estimatePanelLayout, LayoutResult } from "@/lib/calc/panel-layout";
+import type { VsdFrame, BusbarTier, LayoutInput } from "@/lib/calc/panel-layout";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import { Layers, Ruler } from "lucide-react";
 
 function InfoRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
@@ -45,6 +48,28 @@ export default function PanelPage() {
   const [space,       setSpace]       = useState<"compact"|"comfortable">("comfortable");
 
   const [result, setResult] = useState<PanelResult | null>(null);
+
+  // ── Panel Layout Estimator state ──────────────────────────────────────────
+  const [vsdFrame, setVsdFrame] = useState<VsdFrame>("R3");
+  const [vsdQty,   setVsdQty]   = useState("1");
+  const [mcb3p,    setMcb3p]    = useState("12");
+  const [mccbCnt,  setMccbCnt]  = useState("2");
+  const [mccbFrm,  setMccbFrm]  = useState<"S"|"M"|"L">("S");
+  const [bbTier,   setBbTier]   = useState<BusbarTier>("single");
+  const [layoutSpace, setLayoutSpace] = useState<"compact"|"comfortable">("comfortable");
+  const [layoutResult, setLayoutResult] = useState<LayoutResult | null>(null);
+
+  function handleLayout() {
+    const r = estimatePanelLayout({
+      vsdFrame, vsdQty: parseInt(vsdQty) || 0,
+      mcbCount3p: parseInt(mcb3p) || 0,
+      mccbCount: parseInt(mccbCnt) || 0,
+      mccbFrame: mccbFrm,
+      busbarTier: bbTier,
+      spacePreference: layoutSpace,
+    } as LayoutInput);
+    setLayoutResult(r);
+  }
 
   function handleCalc() {
     const r = sizePanel({
@@ -181,6 +206,120 @@ export default function PanelPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          PANEL LAYOUT ESTIMATOR — IEC 61439-1 Annex N
+      ══════════════════════════════════════════════════════════════════════ */}
+      <div className="vinci-card" style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Ruler size={18} style={{ color: "var(--accent)" }} />
+          <div>
+            <div className="sec-label" style={{ marginBottom: 0 }}><span>Panel Layout Estimator</span></div>
+            <p style={{ fontSize: 12, color: "var(--muted)", margin: "4px 0 0", fontFamily: "var(--font-body)" }}>
+              Input komponen yang akan dipasang → output dimensi minimum enclosure sesuai IEC 61439 untuk quotation.
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
+          <FieldSelect label="VSD Frame Size" value={vsdFrame} onChange={v => setVsdFrame(v as VsdFrame)}
+            options={[
+              { value: "none", label: "No VSD" },
+              { value: "R0", label: "R0 — ≤ 0.75 kW (68×245 mm)" },
+              { value: "R1", label: "R1 — 1.1–2.2 kW (100×260 mm)" },
+              { value: "R2", label: "R2 — 3–5.5 kW (125×340 mm)" },
+              { value: "R3", label: "R3 — 7.5–15 kW (175×409 mm)" },
+              { value: "R4", label: "R4 — 18.5–30 kW (210×502 mm)" },
+              { value: "R5", label: "R5 — 37–75 kW (260×660 mm)" },
+              { value: "R6", label: "R6 — 90–132 kW (384×702 mm)" },
+              { value: "R9", label: "R9 — 160–250 kW (cabinet-mount)" },
+            ]}
+            hint="ABB ACS880/ACQ580 frame sizes from hardware manual" />
+          <FieldNumber label="VSD Quantity" value={vsdQty} onChange={setVsdQty} min={0} max={20} />
+          <FieldNumber label="3-Pole MCB Count (DIN rail)" value={mcb3p} onChange={setMcb3p} min={0}
+            hint="Each 3P MCB = 54 mm wide on 35 mm DIN" />
+          <FieldNumber label="MCCB Count" value={mccbCnt} onChange={setMccbCnt} min={0} />
+          <FieldSelect label="MCCB Frame" value={mccbFrm} onChange={v => setMccbFrm(v as "S"|"M"|"L")}
+            options={[
+              { value: "S", label: "S — up to 250A (3VA1/5SL)" },
+              { value: "M", label: "M — up to 400A (3VA2)" },
+              { value: "L", label: "L — up to 630A (3VL)" },
+            ]} />
+          <FieldSelect label="Busbar Tray" value={bbTier} onChange={v => setBbTier(v as BusbarTier)}
+            options={[
+              { value: "none",   label: "No busbar (terminal block only)" },
+              { value: "single", label: "Single-tier (100 mm)" },
+              { value: "triple", label: "Triple-tier segregated (150 mm)" },
+            ]}
+            hint="Triple-tier: L1/L2/L3 separated per IEC 61439 Form 3b" />
+          <FieldSelect label="Space Preference" value={layoutSpace} onChange={v => setLayoutSpace(v as "compact"|"comfortable")}
+            options={[
+              { value: "comfortable", label: "Comfortable (×1.3 margin)" },
+              { value: "compact",     label: "Compact (×1.1 margin)" },
+            ]}
+            hint="Comfortable leaves 30% spare — recommended for tropical maintenance" />
+        </div>
+
+        <button className="btn-primary" onClick={handleLayout}
+          style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
+          Estimate Panel Dimensions (IEC 61439)
+        </button>
+      </div>
+
+      {layoutResult && (
+        <div className="vinci-card result-card-enter" style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Layers size={18} style={{ color: "var(--accent)" }} />
+            <span style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 700, color: "var(--fg)" }}>
+              Minimum Enclosure Dimensions
+            </span>
+          </div>
+
+          {/* DIMENSION HERO */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, textAlign: "center" }}>
+            {[
+              { label: "HEIGHT", value: `${layoutResult.enclosureHmm} mm`, sub: "H — IEC 61439" },
+              { label: "WIDTH",  value: `${layoutResult.enclosureWmm} mm`, sub: "W — std column" },
+              { label: "DEPTH",  value: `${layoutResult.enclosureDmm} mm`, sub: "D — door clearance" },
+            ].map(d => (
+              <div key={d.label} style={{ padding: "18px 12px", background: "rgba(201,168,76,0.08)", borderRadius: 16, border: "1px solid rgba(201,168,76,0.2)" }}>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>{d.label}</div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 22, fontWeight: 700, color: "var(--accent)" }}>{d.value}</div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted-soft)", marginTop: 4 }}>{d.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* COMPONENT STACK BREAKDOWN */}
+          <div className="sec-label"><span>Vertical layout breakdown</span></div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {layoutResult.breakdown.map((b, i) => {
+              const pct = Math.round((b.heightMm / layoutResult.enclosureHmm) * 100);
+              return (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--fg)", flex: 1 }}>{b.item}</div>
+                  <div style={{ width: 120, background: "rgba(255,255,255,0.05)", borderRadius: 6, height: 6, overflow: "hidden" }}>
+                    <div style={{ width: `${pct}%`, height: "100%", background: "var(--accent)", borderRadius: 6 }} />
+                  </div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: "var(--accent)", width: 60, textAlign: "right" }}>{b.heightMm} mm</div>
+                </div>
+              );
+            })}
+            <div style={{ display: "flex", alignItems: "center", gap: 12, paddingTop: 8, borderTop: "1px dashed rgba(255,255,255,0.08)" }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "#4ade80", flex: 1, fontWeight: 700 }}>Free space remaining</div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: "#4ade80", width: 60, textAlign: "right" }}>{layoutResult.freeHeightMm} mm</div>
+            </div>
+          </div>
+
+          {layoutResult.warnings.length > 0 && (
+            <div style={{ padding: 14, background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.3)", borderRadius: 14, display: "flex", flexDirection: "column", gap: 6 }}>
+              {layoutResult.warnings.map((w, i) => (
+                <div key={i} style={{ fontSize: 11, fontFamily: "var(--font-body)", color: "#fb923c", lineHeight: 1.5 }}>⚠ {w}</div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
 
       <Footer />
