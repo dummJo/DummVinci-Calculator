@@ -138,7 +138,12 @@ export default function UnifiedPage() {
   const estA = estimateAmps(parseFloat(motorKw) || 0, voltage);
 
   return (
-    <CalcShell label={tu.label} title={tu.title} subtitle={tu.subtitle}>
+    <CalcShell 
+      label={tu.label} 
+      title={tu.title} 
+      subtitle={tu.subtitle}
+      concept="Alur 'Fast Sizing' ibarat jalan pintas bagi sistem Motor Starter. Cukup masukkan kapasitas (kW) motor, alat ini merangkai 3 lapis perlindungan proporsional secara otonom: Tipe Drive VSD, Ketebalan Kabel Aman, dan Spesifikasi Komponen Breaker Siemens beserta ekuivalennya agar junior tidak salah mendesain arus."
+    >
       <style>{`
         .apple-glass-card {
           background: rgba(255, 255, 255, 0.03);

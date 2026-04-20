@@ -57,7 +57,12 @@ export default function PanelPage() {
   }
 
   return (
-    <CalcShell label={tp.label} title={tp.title} subtitle={tp.subtitle}>
+    <CalcShell 
+      label={tp.label} 
+      title={tp.title} 
+      subtitle={tp.subtitle}
+      concept="Casing Panel/Enclosure tidak cuma jadi kotak pembungkus. Seluruh peralatan elektronik di dalamnya akan mengeluarkan radiasi panas (Heat Loss). Kalkulator termal ini memandu insinyur apakah jeroan mesin bisa didinginkan secara angin alami saja, butuh kipas eksternal raksasa, atau bahkan wajib disuntik unit pendingin AC (AirCon) tertutup berstandar IP55+."
+    >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="sec-label"><span>{tp.secHeat}</span></div>
 

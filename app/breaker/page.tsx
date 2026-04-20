@@ -38,7 +38,12 @@ export default function BreakerPage() {
   }
 
   return (
-    <CalcShell label={tb.label} title={tb.title} subtitle={tb.subtitle}>
+    <CalcShell 
+      label={tb.label} 
+      title={tb.title} 
+      subtitle={tb.subtitle}
+      concept="Breaker (MCB/MCCB) bertugas memutus sirkuit jika arus melebihi toleransi atau terjadi korsleting. Kalkulator ini membantu junior memilih kurva trip yang paling aman. Beban VSD atau trafo memiliki lonjakan listrik inrush besar di awal, sehingga diwajibkan menjajaki Kurva D agar breaker tidak 'jepret' mendadak saat pertama dinyalakan."
+    >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="sec-label"><span>{tb.secCircuit}</span></div>
 

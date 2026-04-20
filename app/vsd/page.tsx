@@ -43,7 +43,12 @@ export default function VsdPage() {
   const isCrane = app === "crane" || heavy;
 
   return (
-    <CalcShell label={tv.label} title={tv.title} subtitle={tv.subtitle}>
+    <CalcShell 
+      label={tv.label} 
+      title={tv.title} 
+      subtitle={tv.subtitle}
+      concept="Variable Speed Drive (VSD/Inverter) digunakan untuk mengontrol putaran mesin pabrik agar efisien. Jika beban sangat ekstrem seperti Crane Angkut, insinyur tak boleh bertaruh nyawa; mereka diwajibkan memilih duty kelas berat (Heavy Duty) yang secara matematis akan melipatgandakan margin kapasitas mesin dari ancaman terbakar."
+    >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="sec-label"><span>{tv.secMotor}</span></div>
 

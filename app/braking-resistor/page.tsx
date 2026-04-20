@@ -36,7 +36,12 @@ export default function BrakingResistorPage() {
   }
 
   return (
-    <CalcShell label={tr.label} title={tr.title} subtitle={tr.subtitle}>
+    <CalcShell 
+      label={tr.label} 
+      title={tr.title} 
+      subtitle={tr.subtitle}
+      concept="Saat Crane menurunkan palet beban berton-ton, gravitasi memaksa motor bekerja berbalik arah menjadi mesin sekring pembangkit listrik ('generator'). Energi listrik berbahaya ini akan mengalir masuk dan meledakkan panel Drive jika tidak ditangani! Oleh karena itu energi tersebut dipaksa melewai jembatan Braking Resistor agar dihanguskan ke udara sebagai panas radiasi murni."
+    >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="sec-label"><span>{tr.secDrive}</span></div>
 
