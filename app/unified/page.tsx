@@ -293,128 +293,129 @@ export default function UnifiedPage() {
       </div>
 
       <div style={{ maxWidth: 800, margin: "0 auto" }}>
-        
-        {/* STEP 1: MOTOR SPEC */}
+
+        {/* STEP 1 — MOTOR SPEC */}
         {step === 1 && (
           <div className="calc-col-input wizard-pane" style={{ width: "100%" }}>
             <div className="sec-label"><span>{tu.secMotor}</span></div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
-            <FieldNumber
-              label={tu.motorKw} value={motorKw} onChange={setMotorKw}
-              hint={`Estimated FLA: ${estA.toFixed(1)} A`}
-            />
-            <FieldNumber
-              label={tu.motorAmps} value={motorAmps} onChange={setMotorAmps}
-              hint="Leave empty to use estimated FLA"
-            />
-            <FieldSelect
-              label={tu.voltage} value={voltage.toString()} onChange={v => setVoltage(parseInt(v) as Voltage)}
-              options={[
-                { value: "380", label: "380 V" },
-                { value: "400", label: "400 V" },
-                { value: "415", label: "415 V" },
-                { value: "480", label: "480 V" },
-              ]}
-            />
-            <FieldSelect
-              label={tu.app} value={app} onChange={v => setApp(v as DriveApp)}
-              options={[
-                { value: "pump", label: t.vsd.appPump },
-                { value: "fan", label: t.vsd.appFan },
-                { value: "crane", label: t.vsd.appCrane },
-                { value: "conveyor", label: t.vsd.appConveyor },
-              ]}
-            />
-            <FieldToggle
-              label={tu.heavy} checked={heavy} onChange={setHeavy}
-              hint={t.vsd.heavyHint}
-            />
-            <FieldSelect
-              label={tu.driveVariant} value={variant} onChange={v => setVariant(v as any)}
-              options={[
-                { value: "01", label: t.vsd.constWall },
-                { value: "02", label: t.vsd.constCompact },
-                { value: "04", label: t.vsd.constModule },
-                { value: "07", label: t.vsd.constCabinet },
-                { value: "31", label: t.vsd.constUlh },
-              ]}
-            />
-          </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+              <FieldNumber
+                label={tu.motorKw} value={motorKw} onChange={setMotorKw}
+                hint={`Estimated FLA: ${estA.toFixed(1)} A`}
+              />
+              <FieldNumber
+                label={tu.motorAmps} value={motorAmps} onChange={setMotorAmps}
+                hint="Leave empty to use estimated FLA"
+              />
+              <FieldSelect
+                label={tu.voltage} value={voltage.toString()} onChange={v => setVoltage(parseInt(v) as Voltage)}
+                options={[
+                  { value: "380", label: "380 V" },
+                  { value: "400", label: "400 V" },
+                  { value: "415", label: "415 V" },
+                  { value: "480", label: "480 V" },
+                ]}
+              />
+              <FieldSelect
+                label={tu.app} value={app} onChange={v => setApp(v as DriveApp)}
+                options={[
+                  { value: "pump",      label: t.vsd.appPump },
+                  { value: "fan",       label: t.vsd.appFan },
+                  { value: "crane",     label: t.vsd.appCrane },
+                  { value: "conveyor",  label: t.vsd.appConveyor },
+                ]}
+              />
+              <FieldToggle
+                label={tu.heavy} checked={heavy} onChange={setHeavy}
+                hint={t.vsd.heavyHint}
+              />
+              <FieldSelect
+                label={tu.driveVariant} value={variant} onChange={v => setVariant(v as any)}
+                options={[
+                  { value: "01", label: t.vsd.constWall },
+                  { value: "02", label: t.vsd.constCompact },
+                  { value: "04", label: t.vsd.constModule },
+                  { value: "07", label: t.vsd.constCabinet },
+                  { value: "31", label: t.vsd.constUlh },
+                ]}
+              />
+            </div>
 
-          <div style={{ marginTop: 16, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24, alignSelf: "start" }}>
-          <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>APPLICATION: {APP_LEGEND[app].title}</span>
-            <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
-              <RichText text={APP_LEGEND[app].desc} />
-            </span>
-          </div>
-        </div>
-          </div>
-          
-          <div className="wizard-nav-bar" style={{ justifyContent: "flex-end" }}>
-            <button className="btn-primary" style={{ padding: "14px 32px" }} onClick={() => setStep(2)}>
-              Next: Routing & Environment →
-            </button>
-          </div>
-        </div>
-        )}
+            <div style={{ marginTop: 16, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24 }}>
+              <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>APPLICATION: {APP_LEGEND[app].title}</span>
+                <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
+                  <RichText text={APP_LEGEND[app].desc} />
+                </span>
+              </div>
+            </div>
 
-        {step === 2 && (
-        <div className="calc-col-input wizard-pane" style={{ width: "100%" }}>
-          <div className="sec-label"><span>{t.cable.secInstall}</span></div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
-            <FieldNumber label={tu.cableLen} value={cableLen} onChange={setCableLen} />
-            <FieldSelect
-              label={t.cable.insulation} value={insulation} onChange={v => setInsulation(v as Insulation)}
-              options={[
-                { value: "PVC", label: t.cable.insulPvc },
-                { value: "XLPE", label: t.cable.insulXlpe },
-              ]}
-            />
-            <FieldSelect
-              label={t.cable.installMethod} value={install} onChange={v => setInstall(v as Install)}
-              options={[
-                { value: "air", label: t.cable.methodAir },
-                { value: "tray", label: t.cable.methodTray },
-                { value: "conduit", label: t.cable.methodConduit },
-                { value: "buried", label: t.cable.methodBuried },
-              ]}
-            />
-            <FieldNumber label={tu.ambient} value={ambient} onChange={setAmbient} />
-          </div>
-
-          <div style={{ marginTop: 16, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 0, alignSelf: "start" }}>
-            <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METODE: {INSTALL_LEGEND[install].title}</span>
-              <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
-                <RichText text={INSTALL_LEGEND[install].desc} />
-              </span>
+            <div className="wizard-nav-bar" style={{ justifyContent: "flex-end" }}>
+              <button className="btn-primary" style={{ padding: "14px 32px" }} onClick={() => setStep(2)}>
+                Next: Routing &amp; Environment →
+              </button>
             </div>
           </div>
-
-          <div className="sec-label" style={{ marginTop: 24 }}><span>{t.breaker.secCircuit}</span></div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
-            <FieldNumber label={tu.fault} value={fault} onChange={setFault} />
-          </div>
-
-          <div className="wizard-nav-bar">
-            <button className="btn-secondary" style={{ padding: "14px 32px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "var(--r-md)", color: "white" }} onClick={() => setStep(1)}>
-              ← Back
-            </button>
-            <button className="btn-primary" style={{ padding: "14px 48px" }} onClick={calculate}>
-              Generate System BOQ Draft
-            </button>
-          </div>
-        </div>
         )}
 
+        {/* STEP 2 — ENV & ROUTING */}
+        {step === 2 && (
+          <div className="calc-col-input wizard-pane" style={{ width: "100%" }}>
+            <div className="sec-label"><span>{t.cable.secInstall}</span></div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+              <FieldNumber label={tu.cableLen} value={cableLen} onChange={setCableLen} />
+              <FieldSelect
+                label={t.cable.insulation} value={insulation} onChange={v => setInsulation(v as Insulation)}
+                options={[
+                  { value: "PVC",  label: t.cable.insulPvc },
+                  { value: "XLPE", label: t.cable.insulXlpe },
+                ]}
+              />
+              <FieldSelect
+                label={t.cable.installMethod} value={install} onChange={v => setInstall(v as Install)}
+                options={[
+                  { value: "air",     label: t.cable.methodAir },
+                  { value: "tray",    label: t.cable.methodTray },
+                  { value: "conduit", label: t.cable.methodConduit },
+                  { value: "buried",  label: t.cable.methodBuried },
+                ]}
+              />
+              <FieldNumber label={tu.ambient} value={ambient} onChange={setAmbient} />
+            </div>
+
+            <div style={{ marginTop: 16, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 0 }}>
+              <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METODE: {INSTALL_LEGEND[install].title}</span>
+                <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
+                  <RichText text={INSTALL_LEGEND[install].desc} />
+                </span>
+              </div>
+            </div>
+
+            <div className="sec-label" style={{ marginTop: 24 }}><span>{t.breaker.secCircuit}</span></div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+              <FieldNumber label={tu.fault} value={fault} onChange={setFault} />
+            </div>
+
+            <div className="wizard-nav-bar">
+              <button className="btn-secondary" style={{ padding: "14px 32px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "var(--r-md)", color: "white" }} onClick={() => setStep(1)}>
+                ← Back
+              </button>
+              <button className="btn-primary" style={{ padding: "14px 48px" }} onClick={calculate}>
+                Generate System BOQ Draft
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3 — RESULTS */}
         {step === 3 && result && (
-        <div className="calc-col-result wizard-pane">
+          <div className="calc-col-result wizard-pane">
             <div className="apple-inner-wrapper">
               <SummaryStrip result={result} t={t} tu={tu} />
-              
+
               <div className="result-cards-grid">
                 <ResultCard
                   title={tu.resTitle}
@@ -422,34 +423,31 @@ export default function UnifiedPage() {
                     { label: tu.resAmps, value: `${result.estimatedMotorAmps} A`, accent: true },
                   ]}
                 />
-
                 <ResultCard
                   title={tu.resVsd}
                   rows={[
-                    { label: t.vsd.resPart, value: result.vsd.partCode, accent: true },
-                    { label: t.vsd.resFrame, value: result.vsd.frame },
+                    { label: t.vsd.resPart,    value: result.vsd.partCode, accent: true },
+                    { label: t.vsd.resFrame,   value: result.vsd.frame },
                     { label: t.vsd.resRatedKw, value: `${result.vsd.ratedKw} kW` },
                   ]}
                   warnings={result.vsd.warnings}
                 />
-
                 <ResultCard
                   title={tu.resCable}
                   rows={[
                     { label: t.cable.resSuggestion, value: result.cable.suggestion, accent: true },
-                    { label: t.cable.resPhase, value: `${result.cable.phaseSize} mm²` },
-                    { label: t.cable.resGround, value: `${result.cable.groundSize} mm²` },
-                    { label: t.cable.resVdrop, value: `${result.cable.vdropPct}%` },
+                    { label: t.cable.resPhase,      value: `${result.cable.phaseSize} mm²` },
+                    { label: t.cable.resGround,     value: `${result.cable.groundSize} mm²` },
+                    { label: t.cable.resVdrop,      value: `${result.cable.vdropPct}%` },
                   ]}
                   warnings={result.cable.warnings}
                 />
-
                 <ResultCard
                   title={tu.resBreaker}
                   rows={[
-                    { label: t.breaker.resPart, value: result.breaker.partCode, accent: true },
-                    { label: t.breaker.resNomA, value: `${result.breaker.nominalA} A` },
-                    { label: t.breaker.resIcu, value: `${result.breaker.icuKa} kA` },
+                    { label: t.breaker.resPart,  value: result.breaker.partCode, accent: true },
+                    { label: t.breaker.resNomA,  value: `${result.breaker.nominalA} A` },
+                    { label: t.breaker.resIcu,   value: `${result.breaker.icuKa} kA` },
                   ]}
                   warnings={result.breaker.warnings}
                 />

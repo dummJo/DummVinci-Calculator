@@ -154,7 +154,7 @@ export default function PlcPage() {
           <div className="vinci-card result-card-enter" style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 24 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div className="sec-label" style={{ marginBottom: 0 }}><span>Signal Module Bill of Quantity</span></div>
-              <div style={{ display: "flex", align: "center", gap: 6 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 {result.powerOk
                   ? <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#4ade80", fontFamily: "var(--font-mono)", fontWeight: 700 }}><CheckCircle size={13} /> POWER OK</span>
                   : <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#fb923c", fontFamily: "var(--font-mono)", fontWeight: 700 }}><AlertTriangle size={13} /> POWER EXCEEDED</span>
