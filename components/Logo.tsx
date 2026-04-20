@@ -14,16 +14,16 @@ export default function Logo({ className, size = 32 }: { className?: string; siz
         stroke="currentColor" 
         strokeWidth="6" 
         strokeLinejoin="miter" 
-        strokeMiterlimit="10" 
+        strokeMiterlimit="2.5" 
       />
       <path 
-        d="M 62 32 Q 54 30 54 20 L 54 5 L 95 50 L 54 95 L 54 50 L 76 28" 
+        d="M 64 28 Q 54 28 54 16 L 54 5 L 95 50 L 54 95 L 54 50 L 75 28" 
         fill="none" 
         stroke="currentColor" 
         strokeWidth="6" 
         strokeLinejoin="miter" 
         strokeLinecap="square" 
-        strokeMiterlimit="10" 
+        strokeMiterlimit="2.5" 
       />
     </svg>
   );
