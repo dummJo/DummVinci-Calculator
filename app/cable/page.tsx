@@ -11,6 +11,14 @@ import { sizeCable, CableResult } from "@/lib/calc/cable";
 import type { Phase, Insulation, Install } from "@/lib/calc/cable";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import { Info } from "lucide-react";
+
+const INSTALL_LEGEND: Record<string, { title: string, desc: string }> = {
+  air: { title: "Clipped in Air (Kabel Terbuka)", desc: "Kabel dipasang telanjang ke dinding/siku. Karena terekspos udara bebas, suhu kabel terjaga dan arus yg boleh dilewati paling besar." },
+  tray: { title: "Cable Tray (Rak Kabel Berlubang)", desc: "Dipasang teratur di atas rak. Standar terbaik dan terbanyak di industri pabrik & mall. Udara masih bisa sirkulasi." },
+  conduit: { title: "In Conduit (Dalam Pipa Tertutup)", desc: "Kabel dirapikan di dalam pipa PVC/Besi. Panas listrik akan terperangkap! Karena itu, kapasitas/kemampuan hantar arusnya dipaksa turun (Derated)." },
+  buried: { title: "Direct Buried (Kabel Tanam Tanah)", desc: "Ditanam murni di dalam tanah. Disipasi panas sulit sehingga kabel harus dilindungi pelindung baja (armor) khusus." },
+};
 
 export default function CablePage() {
   const { t } = useLang();
@@ -116,6 +124,14 @@ export default function CablePage() {
             value={pf} onChange={setPf}
             min={0.5} max={1.0} step={0.01} hint={tc.pfHint}
           />
+        </div>
+
+        <div style={{ marginTop: 4, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12 }}>
+          <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METODE: {INSTALL_LEGEND[install].title}</span>
+            <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>{INSTALL_LEGEND[install].desc}</span>
+          </div>
         </div>
 
         <button className="btn-primary" onClick={handleCalc}

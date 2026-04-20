@@ -10,7 +10,21 @@ import Footer from "@/components/nav/Footer";
 import { sizeMotorStarter, UnifiedResult, estimateAmps } from "@/lib/calc/unified";
 import type { Voltage, DriveApp } from "@/lib/calc/vsd";
 import type { Insulation, Install } from "@/lib/calc/cable";
-import { Download, CheckCircle, Zap } from "lucide-react";
+import { Download, CheckCircle, Info } from "lucide-react";
+
+const APP_LEGEND: Record<string, { title: string, desc: string }> = {
+  pump: { title: "Variable Torque (Pompa)", desc: "Beban ringan di awal, berat di putaran tinggi. Margin ukuran drive standar (Normal Duty)." },
+  fan: { title: "High Inertia (Kipas Blower)", desc: "Baling-baling memiliki inersia putar berat di awal. Waktu akselerasi perlahan agar terhindar dari overload." },
+  crane: { title: "Heavy Duty (Hoist/Crane)", desc: "Beban gaya kejut konstan (beban angkat/turun). Mewajibkan seri ACS880 dan margin keandalan 20% ekstra." },
+  conveyor: { title: "Constant Torque (Konveyor)", desc: "Butuh otot/torsi penuh bahkan waktu mulai di 0 RPM akibat gesekan statis rel berjalan." },
+};
+
+const INSTALL_LEGEND: Record<string, { title: string, desc: string }> = {
+  air: { title: "Clipped in Air (Kabel Terbuka)", desc: "Kabel dipasang telanjang ke dinding/siku. Karena terekspos udara bebas, suhu kabel terjaga dan arus yg boleh dilewati paling besar." },
+  tray: { title: "Cable Tray (Rak Kabel Berlubang)", desc: "Dipasang teratur di atas rak. Standar terbaik dan terbanyak di industri pabrik & mall. Udara masih bisa sirkulasi." },
+  conduit: { title: "In Conduit (Dalam Pipa Tertutup)", desc: "Kabel dirapikan di dalam pipa PVC/Besi. Panas listrik akan terperangkap! Karena itu, kapasitas/kemampuan hantar arusnya dipaksa turun (Derated)." },
+  buried: { title: "Direct Buried (Kabel Tanam Tanah)", desc: "Ditanam murni di dalam tanah. Disipasi panas sulit sehingga kabel harus dilindungi pelindung baja (armor) khusus baja." },
+};
 
 function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: any }) {
   const specs = [
@@ -220,8 +234,18 @@ export default function UnifiedPage() {
               { value: "31", label: t.vsd.constUlh },
             ]}
           />
+        </div>
 
-          <div className="sec-label" style={{ marginTop: 24 }}><span>{t.cable.secInstall}</span></div>
+        <div style={{ padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24, alignSelf: "start" }}>
+          <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>APPLICATION: {APP_LEGEND[app].title}</span>
+            <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>{APP_LEGEND[app].desc}</span>
+          </div>
+        </div>
+
+        <div className="calc-col-input">
+          <div className="sec-label"><span>{t.cable.secInstall}</span></div>
           <FieldNumber label={tu.cableLen} value={cableLen} onChange={setCableLen} />
           <FieldSelect
             label={t.cable.insulation} value={insulation} onChange={v => setInsulation(v as Insulation)}
@@ -243,8 +267,18 @@ export default function UnifiedPage() {
 
           <div className="sec-label" style={{ marginTop: 24 }}><span>{t.breaker.secCircuit}</span></div>
           <FieldNumber label={tu.fault} value={fault} onChange={setFault} />
+        </div>
 
-          <button className="btn-primary" style={{ marginTop: 48, width: "100%", height: 52 }} onClick={calculate}>
+        <div style={{ padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 0, alignSelf: "start" }}>
+          <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METODE: {INSTALL_LEGEND[install].title}</span>
+            <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>{INSTALL_LEGEND[install].desc}</span>
+          </div>
+        </div>
+
+        <div className="calc-col-input">
+          <button className="btn-primary" style={{ marginTop: 12, width: "100%", height: 52 }} onClick={calculate}>
             {tu.btnCalc}
           </button>
         </div>
