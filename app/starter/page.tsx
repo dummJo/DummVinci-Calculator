@@ -5,6 +5,7 @@ import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import Footer from "@/components/nav/Footer";
+import { useLang } from "@/lib/i18n";
 import { sizeStarter } from "@/lib/calc/starter";
 import type { StarterInput, StarterResult, StarterType, Voltage } from "@/lib/calc/starter";
 import { Zap, ShieldCheck, Timer, CircuitBoard, AlertTriangle, CheckCircle, Copy } from "lucide-react";
@@ -30,6 +31,8 @@ function CopyButton({ text }: { text: string }) {
 }
 
 export default function StarterPage() {
+  const { t } = useLang();
+  const ts = t.starter;
   const [motorKw, setMotorKw]       = useState("15");
   const [voltage, setVoltage]       = useState<Voltage>(400);
   const [flaOverride, setFlaOverride] = useState("");
@@ -50,9 +53,9 @@ export default function StarterPage() {
 
   return (
     <CalcShell
-      label="STARTER"
-      title="Motor Starter Sizing"
-      subtitle="DOL & Star-Delta — Siemens SIRIUS 3RV2 MPCB · 3RT2 Contactor · 3RA2 Compact Kit"
+      label={ts.label}
+      title={ts.title}
+      subtitle={ts.subtitle}
       concept="Direct starter (**DOL / Star-Delta**) masih mendominasi proyek pompa, *fire pump*, dan conveyor di Indonesia. Kesalahan paling umum: teknisi memakai contactor berdasarkan rating *AC1* (resistive) — bukan **AC3** (motor duty), sehingga contactor 40A hanya mampu menanggung motor ~18.5 kW nyatanya. Kalkulator ini memastikan `MPCB trip setting`, `contactor AC3 rating`, dan `auxiliary wiring` sudah sesuai **IEC 60947-4-1** sebelum quotation keluar."
     >
       <style>{`
@@ -107,23 +110,23 @@ export default function StarterPage() {
 
       {/* INPUT CARD */}
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        <div className="sec-label"><span>Motor Specification</span></div>
+        <div className="sec-label"><span>{ts.secMotor}</span></div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
-          <FieldNumber label="Motor Power (kW)" value={motorKw} onChange={setMotorKw} min={0.37} step={0.37}
-            hint="From nameplate — 4-pole squirrel cage standard" />
-          <FieldSelect label="Supply Voltage" value={String(voltage)} onChange={v => setVoltage(parseInt(v) as Voltage)}
+          <FieldNumber label={ts.motorKw} value={motorKw} onChange={setMotorKw} min={0.37} step={0.37}
+            hint={ts.motorKwHint} />
+          <FieldSelect label={ts.voltage} value={String(voltage)} onChange={v => setVoltage(parseInt(v) as Voltage)}
             options={[
               { value: "400", label: "400 V (TN-S/TNS Indonesia)" },
               { value: "415", label: "415 V (legacy 50Hz grid)" },
               { value: "690", label: "690 V (MV switchgear)" },
               { value: "230", label: "230 V (single-phase equiv.)" },
             ]} />
-          <FieldNumber label="FLA Override (A)" value={flaOverride} onChange={setFlaOverride} min={0}
-            hint="Leave blank to auto-estimate from kW/voltage (IEC 60034)" />
+          <FieldNumber label={ts.flaOverride} value={flaOverride} onChange={setFlaOverride} min={0}
+            hint={ts.flaHint} />
         </div>
 
-        <div className="sec-label"><span>Starter Type</span></div>
+        <div className="sec-label"><span>{ts.secType}</span></div>
 
         {/* STARTER TYPE VISUAL PICKER */}
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -139,25 +142,23 @@ export default function StarterPage() {
               }}
             >
               {type === "DOL" ? <Zap size={14} /> : <CircuitBoard size={14} />}
-              {type === "DOL" ? "Direct On Line (DOL)" : "Star-Delta (Y-Δ)"}
+              {type === "DOL" ? ts.dolLabel : ts.sdLabel}
             </button>
           ))}
         </div>
 
         {/* CONTEXT CARD */}
         <div style={{ padding: "12px 16px", background: "rgba(255,255,255,0.03)", borderRadius: 14, border: "1px solid rgba(255,255,255,0.07)", fontSize: 12, color: "var(--fg-soft)", lineHeight: 1.6, fontFamily: "var(--font-body)" }}>
-          {starterType === "DOL"
-            ? "⚡ DOL — Motor langsung mendapat tegangan penuh saat START. Inrush ≈ 6–8× FLA. Cocok untuk motor ≤ 11 kW atau motor yang sering start/stop cepat (conveyor pendek, pompa dosing)."
-            : "🔄 Star-Delta — Motor mulai dalam sambungan Y (star), arus turun ~1/3. Setelah timer, beralih ke Δ (delta). Standar untuk pompa sentrifugal & blower >  7.5 kW. Siemens 3RA2 compact kit menyatukan 3 kontaktor + timer dalam satu paket."}
+          {starterType === "DOL" ? ts.dolDesc : ts.sdDesc}
         </div>
 
         {starterType === "STAR_DELTA" && (
-          <FieldNumber label="Transition Timer (s)" value={timerSec} onChange={setTimerSec} min={3} max={30}
-            hint="Typical 8–15 s. Set longer for high-inertia loads (fan, flywheel). Short = inrush spike at delta switch." />
+          <FieldNumber label={ts.timerSec} value={timerSec} onChange={setTimerSec} min={3} max={30}
+            hint={ts.timerHint} />
         )}
 
         <button className="btn-primary" onClick={handleCalc} style={{ marginTop: 4, width: "100%", justifyContent: "center" }}>
-          Generate Starter BOQ (Siemens SIRIUS)
+          {ts.btnCalc}
         </button>
       </div>
 
@@ -168,7 +169,7 @@ export default function StarterPage() {
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
               <ShieldCheck size={18} style={{ color: "var(--accent)" }} />
               <span style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 700 }}>
-                MPCB Protection Layer
+                {ts.resMpcb}
               </span>
               <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", marginLeft: "auto" }}>
                 IEC 60947-2 / Motor Protection Class 10A
@@ -176,12 +177,12 @@ export default function StarterPage() {
             </div>
             <div className="mpcb-hero">
               {[
-                { label: "MPCB Frame",     value: result.mpcbFrame },
-                { label: "Part Number",    value: result.mpcbPartNo },
-                { label: "Trip Class",     value: "Class 10A (motor standard)" },
-                { label: "Icu Rating",     value: `${result.icuKa} kA` },
-                { label: "FLA Motor",      value: `${result.fla} A` },
-                { label: "Set Range",      value: result.mpcbSetA },
+                { label: ts.mpcbFrame,   value: result.mpcbFrame },
+                { label: ts.mpcbPart,    value: result.mpcbPartNo },
+                { label: ts.mpcbClass,   value: "Class 10A (motor standard)" },
+                { label: ts.mpcbIcu,     value: `${result.icuKa} kA` },
+                { label: ts.mpcbFla,     value: `${result.fla} A` },
+                { label: ts.mpcbSet,     value: result.mpcbSetA },
               ].map(cell => (
                 <div key={cell.label} className="mpcb-cell">
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{cell.label}</div>
@@ -194,14 +195,14 @@ export default function StarterPage() {
             {result.starterType === "STAR_DELTA" && (
               <div style={{ padding: "14px 16px", background: "rgba(168,85,247,0.06)", borderRadius: 14, border: "1px solid rgba(168,85,247,0.2)" }}>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "#c084fc", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
-                  Star-Delta Current Distribution (IEC 60947-4-1)
+                  {ts.resSdTitle}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10 }}>
                   {[
-                    { label: "FLA (full load)", value: `${result.fla} A`, note: "Main + Delta contactor rating" },
-                    { label: "Star current",    value: `${(result.fla / Math.sqrt(3)).toFixed(1)} A`, note: "= FLA ÷ √3 during starting" },
-                    { label: "Inrush (star)",   value: `≈ ${(result.fla * 2).toFixed(0)} A`, note: "~2× FLA vs 6–8× DOL" },
-                    { label: "Timer",           value: `${result.timerSec} s`, note: "Y→Δ transition" },
+                    { label: ts.flaFull,     value: `${result.fla} A`,                             note: ts.flaNote },
+                    { label: ts.starCurrent, value: `${(result.fla / Math.sqrt(3)).toFixed(1)} A`, note: ts.starNote },
+                    { label: ts.inrushStar,  value: `≈ ${(result.fla * 2).toFixed(0)} A`,          note: ts.inrushNote },
+                    { label: "Timer",        value: `${result.timerSec} s`,                        note: "Y→Δ transition" },
                   ].map(row => (
                     <div key={row.label} style={{ padding: "10px 12px", background: "rgba(255,255,255,0.04)", borderRadius: 10 }}>
                       <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted)", marginBottom: 3 }}>{row.label}</div>
@@ -217,7 +218,7 @@ export default function StarterPage() {
           {/* BOM LIST */}
           <div className="vinci-card result-card-enter" style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
             <div style={{ display: "flex", justify: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-              <div className="sec-label" style={{ marginBottom: 0 }}><span>Siemens SIRIUS Bill of Quantity</span></div>
+              <div className="sec-label" style={{ marginBottom: 0 }}><span>{ts.resBom}</span></div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", opacity: 0.7 }}>
                 {result.starterType === "STAR_DELTA" ? "3RA2 Compact Kit + Auxiliaries" : "3RT2 DOL + Auxiliaries"}
               </div>
@@ -253,7 +254,7 @@ export default function StarterPage() {
 
           {/* WIRING KEY */}
           <div className="vinci-card result-card-enter" style={{ marginTop: 16 }}>
-            <div className="sec-label"><span>Wiring Logic Guide (PLC I/O Allocation)</span></div>
+            <div className="sec-label"><span>{ts.resWiring}</span></div>
             <div className="wiring-tip">
               {result.starterType === "DOL" ? (
                 <>

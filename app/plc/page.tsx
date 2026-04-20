@@ -9,6 +9,7 @@ import Footer from "@/components/nav/Footer";
 import { sizePlcModules, CPU_CATALOG } from "@/lib/calc/plc";
 import type { PlcInput, PlcResult, CpuModel } from "@/lib/calc/plc";
 import { CheckCircle, AlertTriangle, Cpu, Wifi } from "lucide-react";
+import { useLang } from "@/lib/i18n";
 
 const CPU_OPTIONS = Object.entries(CPU_CATALOG).map(([k, v]) => ({
   value: k,
@@ -16,6 +17,8 @@ const CPU_OPTIONS = Object.entries(CPU_CATALOG).map(([k, v]) => ({
 }));
 
 export default function PlcPage() {
+  const { t } = useLang();
+  const tp = t.plc;
   const [cpuModel, setCpuModel] = useState<CpuModel>("CPU 1214C");
   const [di, setDi] = useState("32");
   const [doVal, setDoVal] = useState("24");
@@ -91,14 +94,14 @@ export default function PlcPage() {
 
       {/* CPU SELECTOR */}
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        <div className="sec-label"><span>PLC CPU Selection</span></div>
+        <div className="sec-label"><span>{tp.secCpu}</span></div>
 
         <FieldSelect
           label="CPU Model"
           value={cpuModel}
           onChange={v => setCpuModel(v as CpuModel)}
           options={CPU_OPTIONS}
-          hint="Select CPU based on project scale. S7-1200 for < 200 I/O, S7-1500 for complex projects."
+          hint={tp.cpuHint}
         />
 
         {/* CPU Info Strip */}
@@ -118,7 +121,7 @@ export default function PlcPage() {
           ))}
         </div>
 
-        <div className="sec-label" style={{ marginTop: 4 }}><span>Required I/O Points</span></div>
+        <div className="sec-label" style={{ marginTop: 4 }}><span>{tp.secIo}</span></div>
 
         {/* IO TYPE COLOR GUIDE */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
@@ -129,22 +132,22 @@ export default function PlcPage() {
         </div>
 
         <div className="plc-io-grid">
-          <FieldNumber label="Digital Inputs (DI)" value={di} onChange={setDi} min={0}
-            hint="Push buttons, limit switches, level switches, motor feedback" />
-          <FieldNumber label="Digital Outputs (DO)" value={doVal} onChange={setDoVal} min={0}
-            hint="Contactors, solenoids, pilot lamps, relays" />
-          <FieldNumber label="Analog Inputs (AI)" value={ai} onChange={setAi} min={0}
-            hint="4-20 mA sensors: pressure, flow, temperature, level" />
-          <FieldNumber label="Analog Outputs (AO)" value={ao} onChange={setAo} min={0}
-            hint="4-20 mA control: VSD speed ref, control valve position" />
+          <FieldNumber label={tp.di} value={di} onChange={setDi} min={0}
+            hint={tp.diHint} />
+          <FieldNumber label={tp.doLabel} value={doVal} onChange={setDoVal} min={0}
+            hint={tp.doHint} />
+          <FieldNumber label={tp.ai} value={ai} onChange={setAi} min={0}
+            hint={tp.aiHint} />
+          <FieldNumber label={tp.ao} value={ao} onChange={setAo} min={0}
+            hint={tp.aoHint} />
         </div>
 
-        <div className="sec-label"><span>Sizing Parameters</span></div>
-        <FieldNumber label="Spare Channel Margin (%)" value={spare} onChange={setSpare} min={10} max={50}
-          hint="IEC 60848 recommends 20% spare — prevents costly re-order at handover" />
+        <div className="sec-label"><span>{tp.secParams}</span></div>
+        <FieldNumber label={tp.spare} value={spare} onChange={setSpare} min={10} max={50}
+          hint={tp.spareHint} />
 
         <button className="btn-primary" onClick={handleCalc} style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
-          Calculate Modules & Power Budget
+          {tp.btnCalc}
         </button>
       </div>
 
@@ -153,11 +156,11 @@ export default function PlcPage() {
           {/* MODULE LIST */}
           <div className="vinci-card result-card-enter" style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 24 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div className="sec-label" style={{ marginBottom: 0 }}><span>Signal Module Bill of Quantity</span></div>
+              <div className="sec-label" style={{ marginBottom: 0 }}><span>{tp.resBom}</span></div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 {result.powerOk
-                  ? <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#4ade80", fontFamily: "var(--font-mono)", fontWeight: 700 }}><CheckCircle size={13} /> POWER OK</span>
-                  : <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#fb923c", fontFamily: "var(--font-mono)", fontWeight: 700 }}><AlertTriangle size={13} /> POWER EXCEEDED</span>
+                  ? <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#4ade80", fontFamily: "var(--font-mono)", fontWeight: 700 }}><CheckCircle size={13} /> {tp.resPowerOk}</span>
+                  : <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "#fb923c", fontFamily: "var(--font-mono)", fontWeight: 700 }}><AlertTriangle size={13} /> {tp.resPowerExceeded}</span>
                 }
               </div>
             </div>
@@ -202,9 +205,9 @@ export default function PlcPage() {
             {/* Slot summary */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginTop: 8 }}>
               {[
-                { label: "Slots Used", value: `${result.usedSmSlots} / ${result.totalSmSlots}`, ok: result.usedSmSlots <= result.totalSmSlots },
-                { label: "Slots Free", value: String(result.freeSmSlots), ok: true },
-                { label: "Bus Draw", value: `${result.totalPowerMa} mA`, ok: result.powerOk },
+                { label: tp.resSlotsUsed, value: `${result.usedSmSlots} / ${result.totalSmSlots}`, ok: result.usedSmSlots <= result.totalSmSlots },
+                { label: tp.resFreeSlots, value: String(result.freeSmSlots), ok: true },
+                { label: tp.resBusDraw,   value: `${result.totalPowerMa} mA`, ok: result.powerOk },
               ].map(s => (
                 <div key={s.label} style={{ padding: "12px 14px", background: "rgba(255,255,255,0.04)", borderRadius: 14, border: `1px solid ${s.ok ? "rgba(255,255,255,0.07)" : "rgba(251,146,60,0.4)"}` }}>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted)", textTransform: "uppercase", marginBottom: 4 }}>{s.label}</div>
@@ -237,7 +240,7 @@ export default function PlcPage() {
                 <Wifi size={22} style={{ color: "#60a5fa", flexShrink: 0, marginTop: 2 }} />
                 <div>
                   <div style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: 13, color: "#60a5fa", marginBottom: 6 }}>
-                    ET 200SP PROFINET EXPANSION REQUIRED
+                    {tp.resEt200Title}
                   </div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--fg-soft)", lineHeight: 1.6 }}>
                     Add <strong style={{ color: "#60a5fa" }}>{result.et200Heads} × ET 200SP station</strong> on PROFINET to the rack.
@@ -254,12 +257,12 @@ export default function PlcPage() {
 
           {/* CHANNEL SUMMARY */}
           <ResultCard
-            title="Available Channel Summary (incl. onboard)"
+            title={tp.resChannels}
             rows={[
-              { label: "Total DI Available", value: `${result.channelSummary.di} channels`, accent: true },
-              { label: "Total DO Available", value: `${result.channelSummary.do} channels`, accent: true },
-              { label: "Total AI Available", value: `${result.channelSummary.ai} channels`, accent: true },
-              { label: "Total AO Available", value: `${result.channelSummary.ao} channels`, accent: true },
+              { label: tp.resDi, value: `${result.channelSummary.di} channels`, accent: true },
+              { label: tp.resDo, value: `${result.channelSummary.do} channels`, accent: true },
+              { label: tp.resAi, value: `${result.channelSummary.ai} channels`, accent: true },
+              { label: tp.resAo, value: `${result.channelSummary.ao} channels`, accent: true },
             ]}
             warnings={result.warnings}
           />
