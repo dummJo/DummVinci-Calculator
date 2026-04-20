@@ -89,16 +89,37 @@ export default function BusbarPage() {
       </div>
 
       {result && (
-        <ResultCard
-          title={tbu.resTitle}
-          rows={[
-            { label: tbu.resSection,  value: `${result.sectionMm2} mm²`, accent: true },
-            { label: tbu.resDim,      value: result.dimensionMm, accent: true },
-            { label: tbu.resDerating, value: `k = ${result.derating}` },
-            { label: tbu.resPart,     value: result.part },
-            { label: tbu.resNote,     value: result.note },
-          ]}
-        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <ResultCard
+            title={tbu.resTitle}
+            rows={[
+              { label: tbu.resSection,  value: `${result.sectionMm2} mm²`, accent: true },
+              { label: tbu.resDim,      value: result.dimensionMm, accent: true },
+              { label: tbu.resDerating, value: `k = ${result.derating}` },
+              { label: tbu.resPart,     value: result.part },
+              { label: tbu.resNote,     value: result.note },
+            ]}
+          />
+
+          {result.options && result.options.length > 1 && (
+            <div className="vinci-card" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--accent)", padding: "4px 8px", border: "1px solid var(--accent)", borderRadius: 12 }}>DIN 43671 / IEC 61439-1</span>
+                <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-heading)", color: "var(--fg)" }}>Alternative Dimensional Options</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {result.options.map((opt, i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: i < result.options.length - 1 ? "1px solid var(--glass-border)" : "none", paddingBottom: i < result.options.length - 1 ? 8 : 0 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: i === 0 ? "var(--accent)" : "var(--fg)" }}>{opt.h} × {opt.t} mm <span style={{ opacity: 0.5, fontWeight: 400 }}>({opt.mm2} mm²)</span></span>
+                      <span style={{ fontSize: 11, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>Max Capacity: {opt.capacityA} A continuous</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       <Footer />

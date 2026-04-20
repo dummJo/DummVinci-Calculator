@@ -17,12 +17,20 @@ export interface BusbarInput {
   forcedCooling: boolean;
 }
 
+export interface BusbarOption {
+  h: number;
+  t: number;
+  mm2: number;
+  capacityA: number;
+}
+
 export interface BusbarResult {
   sectionMm2: number;
   dimensionMm: string;      // e.g. "40 × 10 mm"
   derating: number;
   part: string;
   note: string;
+  options: BusbarOption[];
 }
 
 // Standard flat bar sizes (height × thickness) — common catalog mm²
@@ -43,8 +51,16 @@ export function sizeBusbar(input: BusbarInput): BusbarResult {
   const capacity = base * k;                 // A/mm²
   const required = input.current / capacity; // mm²
 
-  const pick = BARS.find(([, , mm2]) => mm2 >= required) ?? BARS[BARS.length - 1];
+  const startIndex = BARS.findIndex(([, , mm2]) => mm2 >= required);
+  const safeIndex = startIndex === -1 ? BARS.length - 1 : startIndex;
+  const pick = BARS[safeIndex];
   const [h, t, mm2] = pick;
+
+  const options: BusbarOption[] = [];
+  for (let i = safeIndex; i < Math.min(safeIndex + 3, BARS.length); i++) {
+    const [bh, bt, bmm2] = BARS[i];
+    options.push({ h: bh, t: bt, mm2: bmm2, capacityA: Math.round(capacity * bmm2) });
+  }
 
   return {
     sectionMm2: mm2,
@@ -52,5 +68,6 @@ export function sizeBusbar(input: BusbarInput): BusbarResult {
     derating: Math.round(k * 100) / 100,
     part: `${input.material} flat bar ${h}×${t}, section ${mm2} mm²`,
     note: `Rated @ ${Math.round(capacity * mm2)} A continuous. Use M8 bolts, torque 22 Nm. Insulate with SMC busbar support (Rittal SV 9340 or equivalent).`,
+    options,
   };
 }
