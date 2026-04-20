@@ -11,14 +11,9 @@ import { sizeMotorStarter, UnifiedResult, estimateAmps } from "@/lib/calc/unifie
 import type { Voltage, DriveApp } from "@/lib/calc/vsd";
 import type { Insulation, Install } from "@/lib/calc/cable";
 import { Download, CheckCircle, Info } from "lucide-react";
-
-const APP_LEGEND: Record<string, { title: string, desc: string }> = {
-  pump: { title: "Variable Torque (Pompa)", desc: "Beban ringan di awal, berat di putaran tinggi. Margin ukuran drive standar (Normal Duty)." },
-  fan: { title: "High Inertia (Kipas Blower)", desc: "Baling-baling memiliki inersia putar berat di awal. Waktu akselerasi perlahan agar terhindar dari overload." },
-import { Download, CheckCircle, Info, AlertCircle, Maximize2, Zap } from "lucide-react";
 import RichText from "@/components/calc/RichText";
 
-const APP_LEGEND = {
+const APP_LEGEND: Record<string, { title: string, desc: string }> = {
   pump: { title: "Normal Duty", desc: "Torsi awal **rendah**. Arus saat mulai berjalan *(Inrush)* biasanya linier dan ringan. Sangat aman dipasangkan ke Drive spek standar." },
   fan: { title: "Normal Duty", desc: "Torsi putar **berat di Inersia**. Membutuhkan waktu memutar bilah kipas yang berbobot secara perlahan (Ramp time)." },
   crane: { title: "Heavy Duty", desc: "Beban gravitasi **langsung jatuh** ke poros motor sejak `RPM 0`. Wajib menggunakan kelas *Heavy Duty* untuk sirkuit proteksi VSD agar tahan banting." },
@@ -271,6 +266,7 @@ export default function UnifiedPage() {
               <RichText text={APP_LEGEND[app].desc} />
             </span>
           </div>
+        </div>
         </div>
 
         <div className="calc-col-input" style={{ width: "100%" }}>
