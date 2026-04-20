@@ -209,49 +209,50 @@ export default function UnifiedPage() {
       <div className="calc-grid">
         <div className="calc-col-input">
           <div className="sec-label"><span>{tu.secMotor}</span></div>
-          <FieldNumber
-            label={tu.motorKw} value={motorKw} onChange={setMotorKw}
-            hint={`Estimated FLA: ${estA.toFixed(1)} A`}
-          />
-          <FieldNumber
-            label={tu.motorAmps} value={motorAmps} onChange={setMotorAmps}
-            hint="Leave empty to use estimated FLA"
-          />
-          <FieldSelect
-            label={tu.voltage} value={voltage.toString()} onChange={v => setVoltage(parseInt(v) as Voltage)}
-            options={[
-              { value: "380", label: "380 V" },
-              { value: "400", label: "400 V" },
-              { value: "415", label: "415 V" },
-              { value: "480", label: "480 V" },
-            ]}
-          />
-          <FieldSelect
-            label={tu.app} value={app} onChange={v => setApp(v as DriveApp)}
-            options={[
-              { value: "pump", label: t.vsd.appPump },
-              { value: "fan", label: t.vsd.appFan },
-              { value: "crane", label: t.vsd.appCrane },
-              { value: "conveyor", label: t.vsd.appConveyor },
-            ]}
-          />
-          <FieldToggle
-            label={tu.heavy} checked={heavy} onChange={setHeavy}
-            hint={t.vsd.heavyHint}
-          />
-          <FieldSelect
-            label={tu.driveVariant} value={variant} onChange={v => setVariant(v as any)}
-            options={[
-              { value: "01", label: t.vsd.constWall },
-              { value: "02", label: t.vsd.constCompact },
-              { value: "04", label: t.vsd.constModule },
-              { value: "07", label: t.vsd.constCabinet },
-              { value: "31", label: t.vsd.constUlh },
-            ]}
-          />
-        </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+            <FieldNumber
+              label={tu.motorKw} value={motorKw} onChange={setMotorKw}
+              hint={`Estimated FLA: ${estA.toFixed(1)} A`}
+            />
+            <FieldNumber
+              label={tu.motorAmps} value={motorAmps} onChange={setMotorAmps}
+              hint="Leave empty to use estimated FLA"
+            />
+            <FieldSelect
+              label={tu.voltage} value={voltage.toString()} onChange={v => setVoltage(parseInt(v) as Voltage)}
+              options={[
+                { value: "380", label: "380 V" },
+                { value: "400", label: "400 V" },
+                { value: "415", label: "415 V" },
+                { value: "480", label: "480 V" },
+              ]}
+            />
+            <FieldSelect
+              label={tu.app} value={app} onChange={v => setApp(v as DriveApp)}
+              options={[
+                { value: "pump", label: t.vsd.appPump },
+                { value: "fan", label: t.vsd.appFan },
+                { value: "crane", label: t.vsd.appCrane },
+                { value: "conveyor", label: t.vsd.appConveyor },
+              ]}
+            />
+            <FieldToggle
+              label={tu.heavy} checked={heavy} onChange={setHeavy}
+              hint={t.vsd.heavyHint}
+            />
+            <FieldSelect
+              label={tu.driveVariant} value={variant} onChange={v => setVariant(v as any)}
+              options={[
+                { value: "01", label: t.vsd.constWall },
+                { value: "02", label: t.vsd.constCompact },
+                { value: "04", label: t.vsd.constModule },
+                { value: "07", label: t.vsd.constCabinet },
+                { value: "31", label: t.vsd.constUlh },
+              ]}
+            />
+          </div>
 
-        <div style={{ padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24, alignSelf: "start" }}>
+          <div style={{ marginTop: 16, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24, alignSelf: "start" }}>
           <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>APPLICATION: {APP_LEGEND[app].title}</span>
@@ -259,41 +260,43 @@ export default function UnifiedPage() {
           </div>
         </div>
 
-        <div className="calc-col-input">
+        <div className="calc-col-input" style={{ width: "100%" }}>
           <div className="sec-label"><span>{t.cable.secInstall}</span></div>
-          <FieldNumber label={tu.cableLen} value={cableLen} onChange={setCableLen} />
-          <FieldSelect
-            label={t.cable.insulation} value={insulation} onChange={v => setInsulation(v as Insulation)}
-            options={[
-              { value: "PVC", label: t.cable.insulPvc },
-              { value: "XLPE", label: t.cable.insulXlpe },
-            ]}
-          />
-          <FieldSelect
-            label={t.cable.installMethod} value={install} onChange={v => setInstall(v as Install)}
-            options={[
-              { value: "air", label: t.cable.methodAir },
-              { value: "tray", label: t.cable.methodTray },
-              { value: "conduit", label: t.cable.methodConduit },
-              { value: "buried", label: t.cable.methodBuried },
-            ]}
-          />
-          <FieldNumber label={tu.ambient} value={ambient} onChange={setAmbient} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+            <FieldNumber label={tu.cableLen} value={cableLen} onChange={setCableLen} />
+            <FieldSelect
+              label={t.cable.insulation} value={insulation} onChange={v => setInsulation(v as Insulation)}
+              options={[
+                { value: "PVC", label: t.cable.insulPvc },
+                { value: "XLPE", label: t.cable.insulXlpe },
+              ]}
+            />
+            <FieldSelect
+              label={t.cable.installMethod} value={install} onChange={v => setInstall(v as Install)}
+              options={[
+                { value: "air", label: t.cable.methodAir },
+                { value: "tray", label: t.cable.methodTray },
+                { value: "conduit", label: t.cable.methodConduit },
+                { value: "buried", label: t.cable.methodBuried },
+              ]}
+            />
+            <FieldNumber label={tu.ambient} value={ambient} onChange={setAmbient} />
+          </div>
+
+          <div style={{ marginTop: 16, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 0, alignSelf: "start" }}>
+            <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METODE: {INSTALL_LEGEND[install].title}</span>
+              <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>{INSTALL_LEGEND[install].desc}</span>
+            </div>
+          </div>
 
           <div className="sec-label" style={{ marginTop: 24 }}><span>{t.breaker.secCircuit}</span></div>
-          <FieldNumber label={tu.fault} value={fault} onChange={setFault} />
-        </div>
-
-        <div style={{ padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 0, alignSelf: "start" }}>
-          <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METODE: {INSTALL_LEGEND[install].title}</span>
-            <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>{INSTALL_LEGEND[install].desc}</span>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+            <FieldNumber label={tu.fault} value={fault} onChange={setFault} />
           </div>
-        </div>
 
-        <div className="calc-col-input">
-          <button className="btn-primary" style={{ marginTop: 12, width: "100%", height: 52 }} onClick={calculate}>
+          <button className="btn-primary" style={{ marginTop: 32, width: "100%", height: 52 }} onClick={calculate}>
             {tu.btnCalc}
           </button>
         </div>
