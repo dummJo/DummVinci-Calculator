@@ -14,14 +14,14 @@ import { Download, CheckCircle, Zap } from "lucide-react";
 
 function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: any }) {
   const specs = [
-    { label: tu.colCode, value: result.vsd.partCode },
-    { label: tu.colKw, value: result.vsd.ratedKw },
-    { label: tu.colFuse, value: result.vsd.fuseA || "—" },
-    { label: tu.colBreaker, value: result.breaker.partCode.split(" ")[0] },
-    { label: tu.colCable, value: result.cable.suggestion.split(" ")[1] }, // simpler string
-    { label: tu.colAir, value: result.vsd.panelAirflowRequired },
-    { label: tu.colFrame, value: result.vsd.frame },
-    { label: tu.colDim, value: `${result.vsd.h}×${result.vsd.w}×${result.vsd.d}` },
+    { label: t.support.colCode + "*", value: result.vsd.partCode },
+    { label: t.support.colKw, value: result.vsd.ratedKw },
+    { label: t.support.colFuse, value: result.vsd.fuseA || "—" },
+    { label: t.support.colBreaker + "*", value: result.breaker.partCode.split(" ")[0] },
+    { label: t.support.colCable + "*", value: `${result.cable.phaseSize} mm²` },
+    { label: t.support.colAir, value: result.vsd.panelAirflowRequired },
+    { label: t.support.colFrame, value: result.vsd.frame },
+    { label: t.support.colDim, value: `${result.vsd.h}×${result.vsd.w}×${result.vsd.d}` },
   ];
 
   return (
@@ -56,12 +56,12 @@ function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: an
       }}>
         {specs.map((s, i) => (
           <div key={i} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: 8, color: "var(--muted-soft)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted-soft)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
               {s.label}
             </span>
             <span style={{ 
               fontFamily: "var(--font-mono)", 
-              fontSize: 12.5, 
+              fontSize: 13, 
               fontWeight: 700, 
               color: "var(--accent)",
               whiteSpace: "nowrap"
@@ -70,6 +70,22 @@ function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: an
             </span>
           </div>
         ))}
+      </div>
+
+      {/* PUNCH NOTE LEGEND (Data Origins) */}
+      <div style={{ 
+        marginTop: 32, paddingTop: 16, borderTop: "1px dashed rgba(255,255,255,0.08)", 
+        display: "flex", flexWrap: "wrap", gap: "10px 24px", opacity: 0.7 
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--fg)" }}>
+          <span style={{ color: "var(--accent)" }}>[*] Drive & Airflow (m³/h):</span> ABB Hardware Catalog (ACQ580/ACS880)
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--fg)" }}>
+          <span style={{ color: "var(--accent)" }}>[*] Cable & V-Drop:</span> IEC 60364-5-52 (Conductor Derating)
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--fg)" }}>
+          <span style={{ color: "var(--accent)" }}>[*] Breaker Sizing:</span> IEC 60947-2 (≥ 1.25× In + Motor Inrush Profile)
+        </div>
       </div>
     </div>
   );
