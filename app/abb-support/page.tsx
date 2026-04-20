@@ -12,13 +12,11 @@ export default function AbbSupportHub() {
   const ts = t.support;
 
   const [searchCode, setSearchCode] = useState("");
-  const [activeFault, setActiveFault] = useState<any>(null);
   const [selectedFamily, setSelectedFamily] = useState("ACS880");
 
-  const handleSearch = () => {
-    const found = supportData.faults.find(f => f.code === searchCode || f.title.toLowerCase().includes(searchCode.toLowerCase()));
-    if (found) setActiveFault(found);
-  };
+  const matchedFaults = searchCode.trim().length >= 2 
+    ? supportData.faults.filter(f => f.code.includes(searchCode.toUpperCase()) || f.title.toLowerCase().includes(searchCode.toLowerCase()))
+    : [];
 
   const filteredDrives = drivesData.filter(d => d.family.startsWith(selectedFamily.split(" ")[0]));
 
@@ -32,30 +30,52 @@ export default function AbbSupportHub() {
           border: "1px solid var(--accent)" 
         }}>
           <div className="sec-label"><span>ERROR CODE LOOKUP</span></div>
-          <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-            <div style={{ position: "relative", flex: 1 }}>
-              <input 
-                type="text" 
-                placeholder={ts.inputFault}
-                value={searchCode}
-                onChange={e => setSearchCode(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && handleSearch()}
-                style={{
-                  width: "100%",
-                  background: "var(--glass-bg)",
-                  border: "1px solid var(--glass-border)",
-                  borderRadius: "var(--r-md)",
-                  padding: "12px 14px 12px 40px",
-                  color: "var(--fg)",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 14,
-                  outline: "none"
-                }}
-              />
-              <Search size={18} style={{ position: "absolute", left: 14, top: 13, color: "var(--muted)" }} />
-            </div>
-            <button className="btn-primary" onClick={handleSearch}>{ts.btnSearch}</button>
+          <div style={{ position: "relative", marginTop: 16 }}>
+            <input 
+              type="text" 
+              placeholder={ts.inputFault}
+              value={searchCode}
+              onChange={e => setSearchCode(e.target.value)}
+              style={{
+                width: "100%",
+                background: "var(--glass-bg)",
+                border: "1px solid var(--glass-border)",
+                borderRadius: "var(--r-md)",
+                padding: "16px 16px 16px 44px",
+                color: "var(--fg)",
+                fontFamily: "var(--font-mono)",
+                fontSize: 16,
+                outline: "none",
+                transition: "border-color 0.2s"
+              }}
+            />
+            <Search size={20} style={{ position: "absolute", left: 16, top: 16, color: "var(--accent)" }} />
           </div>
+
+          {searchCode.trim().length >= 2 && (
+            <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+              {matchedFaults.length > 0 ? matchedFaults.map(f => (
+                <div key={f.code} style={{
+                  padding: 16,
+                  background: "rgba(0,0,0,0.3)",
+                  borderLeft: "3px solid var(--accent)",
+                  borderRadius: 8
+                }}>
+                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                     <span style={{ fontSize: 16, fontWeight: 700, color: "white", fontFamily: "var(--font-mono)" }}>{f.code}</span>
+                     <span style={{ fontSize: 13, color: "var(--accent)", fontWeight: 600 }}>{f.title}</span>
+                   </div>
+                   <div style={{ fontSize: 13, color: "var(--fg)", opacity: 0.8, lineHeight: 1.5 }}>
+                     {f.desc}
+                   </div>
+                </div>
+              )) : (
+                <div style={{ padding: 16, textAlign: "center", color: "var(--muted)", fontSize: 13 }}>
+                  No fault codes matched "{searchCode}".
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* MANUAL SHORTCUTS */}
@@ -137,73 +157,6 @@ export default function AbbSupportHub() {
           </table>
         </div>
       </div>
-
-      {/* MODAL FAULT SOLUTION */}
-      {activeFault && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.8)",
-          backdropFilter: "blur(8px)",
-          zIndex: 1000,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 20
-        }}>
-          <div 
-            className="vinci-card"
-            style={{ 
-              maxWidth: 400, 
-              width: "100%", 
-              boxShadow: "0 24px 64px rgba(0,0,0,0.6)",
-              border: "1px solid var(--accent)",
-              position: "relative"
-            }}
-          >
-            <button 
-              onClick={() => setActiveFault(null)}
-              style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", color: "var(--muted)", cursor: "pointer" }}
-            >
-              <X size={20} />
-            </button>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-              <HelpCircle size={32} style={{ color: "var(--accent)" }} />
-              <div>
-                <div style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--accent)", letterSpacing: "0.1em" }}>{ts.modalSolution}</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: "var(--fg)" }}>FAULT {activeFault.code}</div>
-              </div>
-            </div>
-            <div style={{ 
-              fontSize: 16, 
-              fontWeight: 600, 
-              color: "var(--fg)", 
-              marginBottom: 12, 
-              fontFamily: "var(--font-display)" 
-            }}>
-              {activeFault.title}
-            </div>
-            <div style={{ 
-              fontSize: 14, 
-              color: "var(--muted)", 
-              lineHeight: 1.6, 
-              fontFamily: "var(--font-mono)",
-              background: "rgba(255,255,255,0.03)",
-              padding: 16,
-              borderRadius: 8
-            }}>
-              {activeFault.desc}
-            </div>
-            <button 
-              className="btn-primary" 
-              onClick={() => setActiveFault(null)}
-              style={{ width: "100%", marginTop: 24 }}
-            >
-              CLOSE
-            </button>
-          </div>
-        </div>
-      )}
 
       <Footer />
     </CalcShell>
