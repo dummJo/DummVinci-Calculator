@@ -44,6 +44,7 @@ export interface BreakerResult {
   curve: Curve;
   coordination: string;
   options: BreakerOption[];
+  equivalents: string[];
   warnings: string[];
 }
 
@@ -65,6 +66,7 @@ export function sizeBreaker(input: BreakerInput): BreakerResult {
       type: "MCCB", family: "—", partCode: "—", nominalA: 0, icuKa: 0, curve: curveForce,
       coordination: "No Siemens breaker matches. Consider 3VA2 higher frame or upstream selectivity.",
       options: [],
+      equivalents: [],
       warnings: [...warnings, "No breaker found. Check Icu/In combination."],
     };
   }
@@ -89,8 +91,21 @@ export function sizeBreaker(input: BreakerInput): BreakerResult {
     curve: curveForce,
     coordination: coordinationNote(pick, input),
     options,
+    equivalents: getEquivalents(pick.type, pick.icuKa),
     warnings,
   };
+}
+
+function getEquivalents(type: "MCB" | "MCCB", icuKa: number): string[] {
+  if (type === "MCB") {
+    if (icuKa <= 6) return ["ABB S200C / SH200L", "Schneider Acti9 K60N"];
+    return ["ABB S200M (10kA)", "Schneider Acti9 iC60N"];
+  } else {
+    // MCCB frame equivalents
+    if (icuKa <= 36) return ["ABB Tmax XT1 / XT2", "Schneider ComPacT NSXm"];
+    if (icuKa <= 55) return ["ABB Tmax XT3", "Schneider ComPacT NSX"];
+    return ["ABB Tmax XT4 / XT5", "Schneider ComPacT NSX High"];
+  }
 }
 
 function coordinationNote(b: BreakerSpec, input: BreakerInput): string {

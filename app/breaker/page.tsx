@@ -125,10 +125,22 @@ export default function BreakerPage() {
                       <span style={{ fontSize: 13, fontWeight: 600, color: "var(--accent)" }}>{opt.family} {opt.partCode}</span>
                       <span style={{ fontSize: 11, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{opt.type} / {opt.nominalA}A / Icu: {opt.icuKa}kA</span>
                     </div>
-                    <button style={{ background: "var(--accent)", color: "#000", border: "none", borderRadius: 12, padding: "6px 14px", fontSize: 11, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(201,168,76,0.3)" }}>Quote</button>
                   </div>
                 ))}
               </div>
+
+              {result.equivalents && result.equivalents.length > 0 && (
+                <div style={{ marginTop: 8, paddingTop: 16, borderTop: "1px dashed var(--glass-border)", display: "flex", flexDirection: "column", gap: 10 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "var(--muted-soft)" }}>Cross-Brand Equivalents (Indent Protection):</span>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {result.equivalents.map((eq, i) => (
+                      <span key={i} style={{ fontSize: 10, fontFamily: "var(--font-mono)", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px", borderRadius: 8, color: "var(--fg)" }}>
+                        {eq}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
