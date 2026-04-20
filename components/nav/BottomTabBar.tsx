@@ -15,7 +15,6 @@ export default function BottomTabBar() {
   const [showMore, setShowMore] = useState(false);
   const [showChangelog, setShowChangelog] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
-  const [hoverPos, setHoverPos] = useState<{ x: number, width: number } | null>(null);
 
   const MAIN_TABS = [
     { href: "/",            key: "home",    Icon: LayoutGrid },
@@ -36,8 +35,6 @@ export default function BottomTabBar() {
   const activeIndex = allTabs.findIndex(tab => tab.href === "/" ? path === "/" : path.startsWith(tab.href));
   const isUtilityActive = activeIndex >= MAIN_TABS.length;
   
-  const [blobStyle, setBlobStyle] = useState({});
-
   useEffect(() => {
     const handleClose = () => {
       setShowMore(false);
@@ -47,38 +44,6 @@ export default function BottomTabBar() {
     }
     return () => window.removeEventListener("click", handleClose);
   }, [showMore]);
-
-  useEffect(() => {
-    const updateBlob = () => {
-      if (navRef.current) {
-        const activeEl = navRef.current.querySelector(".tab-active") as HTMLElement;
-        if (activeEl) {
-          setBlobStyle({
-            width: activeEl.offsetWidth - 12,
-            transform: `translateX(${activeEl.offsetLeft + 6}px)`,
-            opacity: 1,
-          });
-        } else {
-          setBlobStyle({ opacity: 0 });
-        }
-      }
-    };
-    updateBlob();
-    window.addEventListener("resize", updateBlob);
-    return () => window.removeEventListener("resize", updateBlob);
-  }, [path, showMore]);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const target = (e.target as HTMLElement).closest(".tab-item") as HTMLElement;
-    if (target) {
-      setHoverPos({
-        x: target.offsetLeft + 6,
-        width: target.offsetWidth - 12
-      });
-    } else {
-      setHoverPos(null);
-    }
-  };
 
   return (
     <>
@@ -97,36 +62,6 @@ export default function BottomTabBar() {
           border: 1px solid var(--glass-border);
           box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
           transform: translateZ(0); /* Force hardware layer */
-        }
-        .telegram-pill {
-          position: absolute;
-          top: 8px;
-          bottom: 8px;
-          left: 0;
-          background: var(--accent-pill-bg, rgba(201, 168, 76, 0.15));
-          border-radius: 20px;
-          z-index: 1;
-          transition: 
-            transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1),
-            width 0.4s cubic-bezier(0.1, 0.7, 0.1, 1),
-            opacity 0.3s ease;
-          pointer-events: none;
-          will-change: transform, width, opacity;
-        }
-        .hover-follower {
-          position: absolute;
-          top: 8px;
-          bottom: 8px;
-          left: 0;
-          background: rgba(255, 255, 255, 0.06);
-          border-radius: 20px;
-          z-index: 0;
-          transition: 
-            transform 0.2s ease-out,
-            width 0.2s ease-out,
-            opacity 0.2s ease;
-          pointer-events: none;
-          will-change: transform, width, opacity;
         }
         .tab-item {
           position: relative;
@@ -155,19 +90,33 @@ export default function BottomTabBar() {
           opacity: 1 !important;
           transform: scale(1.02) translateY(1px);
         }
+        
+        @keyframes liquidPop {
+          0% { 
+            transform: scale(0.95) translateY(2px); 
+            filter: drop-shadow(0 0 0 transparent);
+          }
+          50% { 
+            transform: scale(1.3) translateY(-8px); 
+            filter: drop-shadow(0 16px 24px rgba(201,168,76,0.9));
+          }
+          100% { 
+            transform: scale(1.15) translateY(-4px); 
+            filter: drop-shadow(0 8px 12px rgba(201,168,76,0.6));
+          }
+        }
+        
         .tab-active .active-icon {
           color: var(--accent) !important;
-          transform: scale(1.15) translateY(-2px);
-          opacity: 1 !important;
-          transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1), opacity 0.4s ease, color 0.4s ease;
-          will-change: transform, color, opacity;
+          animation: liquidPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+          will-change: transform, filter, opacity;
         }
         .tab-label {
           font-family: var(--font-body), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           font-size: 10px;
           margin-top: 4px;
           opacity: 0.7;
-          transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1), opacity 0.4s ease, color 0.4s ease;
+          transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1), opacity 0.4s ease, color 0.4s ease, filter 0.4s ease;
           pointer-events: none;
           color: var(--fg);
           font-weight: 500;
@@ -176,7 +125,9 @@ export default function BottomTabBar() {
         .tab-active .tab-label {
           opacity: 1;
           color: var(--accent);
-          font-weight: 600;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          filter: drop-shadow(0 2px 4px rgba(201,168,76,0.3));
           transform: translateY(-2px);
         }
         .more-overlay {
@@ -352,8 +303,6 @@ export default function BottomTabBar() {
       <nav
         ref={navRef}
         className="telegram-glass"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setHoverPos(null)}
         style={{
           position: "fixed",
           bottom: "calc(20px + env(safe-area-inset-bottom, 0px))",
@@ -369,8 +318,6 @@ export default function BottomTabBar() {
         }}
       >
         <div className="telegram-container">
-          <div className="hover-follower" style={{ opacity: hoverPos ? 1 : 0, width: hoverPos?.width || 0, transform: `translateX(${hoverPos?.x || 0}px)` }} />
-          <div className="telegram-pill" style={blobStyle} />
           {MAIN_TABS.map((tab) => {
             const active = tab.href === "/" ? path === "/" : path.startsWith(tab.href);
             return (
