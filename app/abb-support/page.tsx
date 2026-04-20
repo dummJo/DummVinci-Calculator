@@ -6,6 +6,7 @@ import { useLang } from "@/lib/i18n";
 import supportData from "@/data/abb-support.json";
 import drivesData from "@/data/abb-drives.json";
 import { Search, ExternalLink, HelpCircle, X, Maximize2 } from "lucide-react";
+import RichText from "@/components/calc/RichText";
 
 export default function AbbSupportHub() {
   const { t } = useLang();
@@ -66,7 +67,7 @@ export default function AbbSupportHub() {
                      <span style={{ fontSize: 13, color: "var(--accent)", fontWeight: 600 }}>{f.title}</span>
                    </div>
                    <div style={{ fontSize: 13, color: "var(--fg)", opacity: 0.8, lineHeight: 1.5 }}>
-                     {f.desc}
+                     <RichText text={f.desc} />
                    </div>
                 </div>
               )) : (

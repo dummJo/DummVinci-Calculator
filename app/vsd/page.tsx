@@ -47,7 +47,7 @@ export default function VsdPage() {
       label={tv.label} 
       title={tv.title} 
       subtitle={tv.subtitle}
-      concept="Variable Speed Drive (VSD/Inverter) digunakan untuk mengontrol putaran mesin pabrik agar efisien. Jika beban sangat ekstrem seperti Crane Angkut, insinyur tak boleh bertaruh nyawa; mereka diwajibkan memilih duty kelas berat (Heavy Duty) yang secara matematis akan melipatgandakan margin kapasitas mesin dari ancaman terbakar."
+      concept="Variable Speed Drive (`VSD`) digunakan untuk mengontrol putaran mesin pabrik agar efisien. Jika beban sangat ekstrem seperti **Crane Angkut**, insinyur tak boleh bertaruh nyawa; mutlak mewajibkan proteksi kelas bongsor (*Heavy Duty*) yang dinilai secara logis melipatgandakan margin kapasitas keselamatan alat."
     >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="sec-label"><span>{tv.secMotor}</span></div>

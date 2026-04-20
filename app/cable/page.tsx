@@ -54,7 +54,7 @@ export default function CablePage() {
       label={tc.label} 
       title={tc.title} 
       subtitle={tc.subtitle}
-      concept="Ukuran kabel listrik ibarat saluran air; ia harus disesuaikan dengan besar beban arusnya. Kabel yang ditutup rapat (Conduit/Pipa) lebih mudah panas ketimbang di udara terbuka, sehingga kemampuannya dipaksa turun (Derated). Kalkulator ini mengamankan kabel dari resiko terbakar (Sizing) dan meredam Drop Voltage."
+      concept="Ukuran kabel listrik ibarat saluran air; ia harus disesuaikan dengan besar **beban arusnya**. Kabel yang ditutup rapat (*Conduit/Pipa*) lebih mudah panas ketimbang di udara terbuka, sehingga kemampuannya dipaksa turun (`Derated`). Kalkulator ini mengamankan kabel dari **resiko terbakar** (Sizing) dan meredam **Drop Voltage**."
     >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="sec-label"><span>{tc.secLoad}</span></div>

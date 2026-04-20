@@ -15,15 +15,21 @@ import { Download, CheckCircle, Info } from "lucide-react";
 const APP_LEGEND: Record<string, { title: string, desc: string }> = {
   pump: { title: "Variable Torque (Pompa)", desc: "Beban ringan di awal, berat di putaran tinggi. Margin ukuran drive standar (Normal Duty)." },
   fan: { title: "High Inertia (Kipas Blower)", desc: "Baling-baling memiliki inersia putar berat di awal. Waktu akselerasi perlahan agar terhindar dari overload." },
-  crane: { title: "Heavy Duty (Hoist/Crane)", desc: "Beban gaya kejut konstan (beban angkat/turun). Mewajibkan seri ACS880 dan margin keandalan 20% ekstra." },
-  conveyor: { title: "Constant Torque (Konveyor)", desc: "Butuh otot/torsi penuh bahkan waktu mulai di 0 RPM akibat gesekan statis rel berjalan." },
+import { Download, CheckCircle, Info, AlertCircle, Maximize2, Zap } from "lucide-react";
+import RichText from "@/components/calc/RichText";
+
+const APP_LEGEND = {
+  pump: { title: "Normal Duty", desc: "Torsi awal **rendah**. Arus saat mulai berjalan *(Inrush)* biasanya linier dan ringan. Sangat aman dipasangkan ke Drive spek standar." },
+  fan: { title: "Normal Duty", desc: "Torsi putar **berat di Inersia**. Membutuhkan waktu memutar bilah kipas yang berbobot secara perlahan (Ramp time)." },
+  crane: { title: "Heavy Duty", desc: "Beban gravitasi **langsung jatuh** ke poros motor sejak `RPM 0`. Wajib menggunakan kelas *Heavy Duty* untuk sirkuit proteksi VSD agar tahan banting." },
+  conveyor: { title: "Heavy Duty", desc: "Sering dipenuhi batu/pasir padat (*Locked load*). Motor butuh dorongan **Setrum Torsi Kejut** yang sangat galak di detik pertama operasi." }
 };
 
-const INSTALL_LEGEND: Record<string, { title: string, desc: string }> = {
-  air: { title: "Clipped in Air (Kabel Terbuka)", desc: "Kabel dipasang telanjang ke dinding/siku. Karena terekspos udara bebas, suhu kabel terjaga dan arus yg boleh dilewati paling besar." },
-  tray: { title: "Cable Tray (Rak Kabel Berlubang)", desc: "Dipasang teratur di atas rak. Standar terbaik dan terbanyak di industri pabrik & mall. Udara masih bisa sirkulasi." },
-  conduit: { title: "In Conduit (Dalam Pipa Tertutup)", desc: "Kabel dirapikan di dalam pipa PVC/Besi. Panas listrik akan terperangkap! Karena itu, kapasitas/kemampuan hantar arusnya dipaksa turun (Derated)." },
-  buried: { title: "Direct Buried (Kabel Tanam Tanah)", desc: "Ditanam murni di dalam tanah. Disipasi panas sulit sehingga kabel harus dilindungi pelindung baja (armor) khusus baja." },
+const INSTALL_LEGEND = {
+  air: { title: "Clipped di Udara Terbuka", desc: "Pendinginan **optimal**. Kulit kabel tersapu angin *ambient*, kapasitas arus (Ampere) bisa didorong ke tingkat maksimum (Kering)." },
+  tray: { title: "Cable Tray Berlubang", desc: "Standard industri umum. Udara masih bisa menembus sela-sela rak *(Perforated tray)*, derating margin stabil." },
+  conduit: { title: "Di Dalam Pipa Tertutup", desc: "**AWAS PANAS!** Hawa panas terjebak dalam lorong tertutup. Kapasitas kabel (*Ampacity*) harus **didiskon mahal** (Disunat ~30%)." },
+  buried: { title: "Ditanam di Dalam Tanah", desc: "Sangat lembab dan sulit membuang radiasi terma. Wajib kabel *Armor/Baja* berlapis ganda dan derating kalkulasi tanah spesifik." }
 };
 
 function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: any }) {
@@ -142,7 +148,7 @@ export default function UnifiedPage() {
       label={tu.label} 
       title={tu.title} 
       subtitle={tu.subtitle}
-      concept="Alur 'Fast Sizing' ibarat jalan pintas bagi sistem Motor Starter. Cukup masukkan kapasitas (kW) motor, alat ini merangkai 3 lapis perlindungan proporsional secara otonom: Tipe Drive VSD, Ketebalan Kabel Aman, dan Spesifikasi Komponen Breaker Siemens beserta ekuivalennya agar junior tidak salah mendesain arus."
+      concept="Alur `Fast Sizing` ibarat jalan pintas pintar bagi sistem perakitan. Cukup masukkan kapasitas **(kW) motor**, alat ini merangkai **3 lapis perisai otomatis** secara otonom: *Tipe Drive VSD*, *Ketebalan Kabel*, dan *Komponen Breaker Equivalents* agar arsitektur panel aman tanpa hitungan ganda."
     >
       <style>{`
         .apple-glass-card {
@@ -261,7 +267,9 @@ export default function UnifiedPage() {
           <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>APPLICATION: {APP_LEGEND[app].title}</span>
-            <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>{APP_LEGEND[app].desc}</span>
+            <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
+              <RichText text={APP_LEGEND[app].desc} />
+            </span>
           </div>
         </div>
 
@@ -292,7 +300,9 @@ export default function UnifiedPage() {
             <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
               <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METODE: {INSTALL_LEGEND[install].title}</span>
-              <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>{INSTALL_LEGEND[install].desc}</span>
+              <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
+                <RichText text={INSTALL_LEGEND[install].desc} />
+              </span>
             </div>
           </div>
 

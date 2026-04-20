@@ -1,3 +1,5 @@
+import RichText from "./RichText";
+
 interface Props {
   label: string;
   title: string;
@@ -47,7 +49,9 @@ export default function CalcShell({ label, title, subtitle, concept, children }:
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.1em", fontFamily: "var(--font-mono)" }}>Engineering 101 (Newbie Guide)</span>
-            <span style={{ fontSize: 13, color: "var(--fg)", lineHeight: 1.65, opacity: 0.9 }}>{concept}</span>
+            <span style={{ fontSize: 13, color: "var(--fg)", lineHeight: 1.65, opacity: 0.9 }}>
+              <RichText text={concept} />
+            </span>
           </div>
         </div>
       )}

@@ -42,7 +42,7 @@ export default function BusbarPage() {
       label={tbu.label} 
       title={tbu.title} 
       subtitle={tbu.subtitle}
-      concept="Busbar adalah pelat tembaga (Cu) tebal telanjang pengganti kabel berlapis, yang mana menjadi urat nadi/tulang punggung distribusi panel utama. Kalkulator menuntun engineer untuk meracik lebar dan ketebalan pelat agar gesekan elektron kuat (Ampacity tinggi) tanpa tembaga meleleh di dalam sirkulasi panel tertutup."
+      concept="Busbar adalah **pelat tembaga (Cu)** tebal telanjang pengganti kabel berlapis, yang mana menjadi urat nadi distribusi panel utama. Kalkulator menuntun engineer untuk meracik lebar dan ketebalan pelat agar gesekan elektron kuat (`Ampacity` tinggi) tanpa tembaga meleleh di dalam sirkulasi panel tertutup."
     >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="sec-label"><span>{tbu.secParams}</span></div>

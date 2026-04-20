@@ -128,27 +128,27 @@
     {
       "code": "D100",
       "title": "Brake Control Fault (Crane)",
-      "desc": "[ACS880 +N5050] Mechanical brake logic failure. Check brake feedback acknowledge signal, contactors, and brake resistor."
+      "desc": "[`ACS880 +N5050`] **Mechanical brake logic failure**. Check brake feedback acknowledge signal, contactors, and brake resistor."
     },
     {
       "code": "D101",
       "title": "Brake Slip (Crane)",
-      "desc": "[ACS880 +N5050] Motor shaft movement detected while the mechanical brake is commanded closed. Check brake pad wear/tightness."
+      "desc": "[`ACS880 +N5050`] **Motor shaft movement detected** while the mechanical brake is commanded closed. Check brake pad wear/tightness."
     },
     {
       "code": "D102",
       "title": "Torque Proving (Crane)",
-      "desc": "[ACS880 +N5050] Motor failed to build sufficient electrical holding torque against the closed brake before opening. Check motor data."
+      "desc": "[`ACS880 +N5050`] Motor **failed to build sufficient electrical holding torque** against the closed brake before opening. Check motor data."
     },
     {
       "code": "D105",
       "title": "Speed Match (Crane)",
-      "desc": "[ACS880 +N5050] The motor actual speed deviates too much from the speed reference. Usually caused by overloaded hoist or encoder loss."
+      "desc": "[`ACS880 +N5050`] The motor actual speed deviates too much from the speed reference. Usually caused by **overloaded hoist** or **encoder loss**."
     },
     {
       "code": "D108",
       "title": "Snag Load (Crane)",
-      "desc": "[ACS880 +N5050] Hook or load caught on a mechanical obstruction during hoisting up, instantly jerking the torque. Inspect the load path."
+      "desc": "[`ACS880 +N5050`] Hook or load **caught on a mechanical obstruction** during hoisting up, instantly jerking the torque. Inspect the load path."
     }
   ],
   "manuals": [
