@@ -117,6 +117,7 @@ export default function UnifiedPage() {
   const [fault, setFault] = useState("10");
   const [variant, setVariant] = useState<"01" | "02" | "04" | "07" | "31">("01");
   const [result, setResult] = useState<UnifiedResult | null>(null);
+  const [step, setStep] = useState(1);
 
   const calculate = () => {
     const res = sizeMotorStarter({
@@ -134,6 +135,7 @@ export default function UnifiedPage() {
       driveVariant: variant,
     });
     setResult(res);
+    setStep(3);
   };
 
   const estA = estimateAmps(parseFloat(motorKw) || 0, voltage);
@@ -211,10 +213,91 @@ export default function UnifiedPage() {
         @media (max-width: 600px) {
           .summary-specs-grid { grid-template-columns: repeat(2, 1fr); }
         }
+        
+        /* Wizard Animations */
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        .wizard-pane {
+          animation: slideInRight 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
+        }
+        .wizard-stepper {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 32px;
+          padding: 0 16px;
+        }
+        .wizard-step {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          position: relative;
+          z-index: 2;
+          flex: 1;
+        }
+        .step-circle {
+          width: 32px; height: 32px;
+          border-radius: 16px;
+          display: flex; align-items: center; justify-content: center;
+          font-family: var(--font-mono); font-weight: 700; font-size: 14px;
+          transition: all 0.3s ease;
+        }
+        .step-active {
+          background: var(--accent); color: #000;
+          box-shadow: 0 0 16px rgba(201,168,76,0.4);
+        }
+        .step-done {
+          background: rgba(201,168,76,0.2); color: var(--accent);
+          border: 1px solid var(--accent);
+        }
+        .step-pending {
+          background: rgba(255,255,255,0.05); color: var(--muted);
+          border: 1px solid rgba(255,255,255,0.1);
+        }
+        .wizard-connector {
+          position: absolute; top: 16px; left: 50%; width: 100%;
+          height: 2px; background: rgba(255,255,255,0.05); z-index: 1;
+        }
+        .wizard-connector-filled {
+          height: 100%; background: var(--accent);
+          transition: width 0.4s ease;
+        }
+        .wizard-nav-bar {
+          display: flex; justify-content: space-between; gap: 16px; margin-top: 32px;
+        }
       `}</style>
-      <div className="calc-grid">
-        <div className="calc-col-input">
-          <div className="sec-label"><span>{tu.secMotor}</span></div>
+
+      {/* WIZARD STEPPER */}
+      <div className="wizard-stepper">
+        <div className="wizard-step">
+          <div className={`step-circle ${step === 1 ? 'step-active' : 'step-done'}`}>1</div>
+          <span style={{ fontSize: 10, color: step >= 1 ? 'var(--fg)' : 'var(--muted)', fontFamily: 'var(--font-mono)' }}>MOTOR SPEC</span>
+          <div className="wizard-connector">
+            <div className="wizard-connector-filled" style={{ width: step > 1 ? '100%' : '0%' }} />
+          </div>
+        </div>
+        <div className="wizard-step">
+          <div className={`step-circle ${step === 2 ? 'step-active' : (step > 2 ? 'step-done' : 'step-pending')}`}>2</div>
+          <span style={{ fontSize: 10, color: step >= 2 ? 'var(--fg)' : 'var(--muted)', fontFamily: 'var(--font-mono)' }}>ENV & ROUTING</span>
+          <div className="wizard-connector">
+            <div className="wizard-connector-filled" style={{ width: step > 2 ? '100%' : '0%' }} />
+          </div>
+        </div>
+        <div className="wizard-step">
+          <div className={`step-circle ${step === 3 ? 'step-active' : 'step-pending'}`}>3</div>
+          <span style={{ fontSize: 10, color: step >= 3 ? 'var(--fg)' : 'var(--muted)', fontFamily: 'var(--font-mono)' }}>FINAL BOQ</span>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 800, margin: "0 auto" }}>
+        
+        {/* STEP 1: MOTOR SPEC */}
+        {step === 1 && (
+          <div className="calc-col-input wizard-pane" style={{ width: "100%" }}>
+            <div className="sec-label"><span>{tu.secMotor}</span></div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
             <FieldNumber
               label={tu.motorKw} value={motorKw} onChange={setMotorKw}
@@ -267,9 +350,18 @@ export default function UnifiedPage() {
             </span>
           </div>
         </div>
+          </div>
+          
+          <div className="wizard-nav-bar" style={{ justifyContent: "flex-end" }}>
+            <button className="btn-primary" style={{ padding: "14px 32px" }} onClick={() => setStep(2)}>
+              Next: Routing & Environment →
+            </button>
+          </div>
         </div>
+        )}
 
-        <div className="calc-col-input" style={{ width: "100%" }}>
+        {step === 2 && (
+        <div className="calc-col-input wizard-pane" style={{ width: "100%" }}>
           <div className="sec-label"><span>{t.cable.secInstall}</span></div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
             <FieldNumber label={tu.cableLen} value={cableLen} onChange={setCableLen} />
@@ -307,13 +399,19 @@ export default function UnifiedPage() {
             <FieldNumber label={tu.fault} value={fault} onChange={setFault} />
           </div>
 
-          <button className="btn-primary" style={{ marginTop: 32, width: "100%", height: 52 }} onClick={calculate}>
-            {tu.btnCalc}
-          </button>
+          <div className="wizard-nav-bar">
+            <button className="btn-secondary" style={{ padding: "14px 32px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "var(--r-md)", color: "white" }} onClick={() => setStep(1)}>
+              ← Back
+            </button>
+            <button className="btn-primary" style={{ padding: "14px 48px" }} onClick={calculate}>
+              Generate System BOQ Draft
+            </button>
+          </div>
         </div>
+        )}
 
-        <div className="calc-col-result">
-          {result ? (
+        {step === 3 && result && (
+        <div className="calc-col-result wizard-pane">
             <div className="apple-inner-wrapper">
               <SummaryStrip result={result} t={t} tu={tu} />
               
@@ -356,13 +454,18 @@ export default function UnifiedPage() {
                   warnings={result.breaker.warnings}
                 />
               </div>
+
+              <div className="wizard-nav-bar" style={{ justifyContent: "center", marginTop: 40 }}>
+                <button className="btn-secondary" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "var(--r-md)", padding: "12px 32px", color: "var(--fg)" }} onClick={() => { setStep(2); setResult(null); }}>
+                  ← Modify Parameters
+                </button>
+                <button className="btn-primary" style={{ padding: "12px 32px" }} onClick={() => window.print()}>
+                  Export BOQ to PDF
+                </button>
+              </div>
             </div>
-          ) : (
-            <div className="result-placeholder">
-              {t.common.resultLabel}
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
       <Footer />
     </CalcShell>
