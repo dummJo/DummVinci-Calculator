@@ -74,6 +74,56 @@
       "code": "FF0E",
       "title": "External Fault",
       "desc": "Check external signals connected to Digital Input (usually external trip relay)."
+    },
+    {
+      "code": "3181",
+      "title": "Wiring or Earth Fault",
+      "desc": "Check for incorrect input and motor cable connections (i.e. input power cable connected to drive motor connection)."
+    },
+    {
+      "code": "4290",
+      "title": "Cooling Fan Fault",
+      "desc": "Main or auxiliary cooling fan speed drops below the limit. Check fan wiring and for debris blocking the fan."
+    },
+    {
+      "code": "4981",
+      "title": "External Temperature 1",
+      "desc": "External temperature sensor (PTC/Pt100) connected to drive detects overtemperature in motor/machinery."
+    },
+    {
+      "code": "6681",
+      "title": "EFB Comm Loss",
+      "desc": "Embedded fieldbus (Modbus RTU) communication lost. Check PLC cable, termination resistors, and baud rate."
+    },
+    {
+      "code": "7510",
+      "title": "FBA A Comm Loss",
+      "desc": "Communication lost between drive and Fieldbus Adapter A (e.g., FENA-11 Profinet). Check ethernet cable or PLC heartbeat."
+    },
+    {
+      "code": "9081",
+      "title": "External Fault 1",
+      "desc": "Fault triggered by a programmable external signal via Digital Input. Check the physical switch or interlock state."
+    },
+    {
+      "code": "A7AB",
+      "title": "Extension I/O Configuration Failure",
+      "desc": "The installed I/O extension module (e.g. FIO-01) does not match the drive parameter configuration."
+    },
+    {
+      "code": "FF61",
+      "title": "ID Run Fault",
+      "desc": "Motor identification run failed. Ensure motor nameplate data (99.xx parameters) is strictly correct before ID Run."
+    },
+    {
+      "code": "4110",
+      "title": "Control Board Temperature",
+      "desc": "The control unit (ZCU/BCU) is critically hot. Check if the control board fan is running or if ambient is exceeding 55°C."
+    },
+    {
+      "code": "3220",
+      "title": "DC Link Undervoltage",
+      "desc": "Intermediate circuit DC voltage is too low. Check input phase supply drop or main contactor tripping unexpectedly."
     }
   ],
   "manuals": [
