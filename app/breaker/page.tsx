@@ -9,7 +9,7 @@ import FieldToggle from "@/components/calc/FieldToggle";
 import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
 import { sizeBreaker, BreakerResult } from "@/lib/calc/breaker";
-import type { Curve } from "@/lib/calc/breaker";
+import type { Curve, Region } from "@/lib/calc/breaker";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 
@@ -20,19 +20,21 @@ export default function BreakerPage() {
   const [loadCurrent, setLoadCurrent] = useState("63");
   const [faultCurrent, setFaultCurrent] = useState("10");
   const [voltage, setVoltage] = useState("400");
-  const [curve, setCurve] = useState<Curve>("C");
-  const [poles, setPoles] = useState<"1" | "2" | "3" | "4">("3");
+  const [curve, setCurve]         = useState<Curve>("C");
+  const [poles, setPoles]         = useState<"1" | "2" | "3" | "4">("3");
   const [driveLoad, setDriveLoad] = useState(false);
+  const [preferRegion, setPreferRegion] = useState<Region>("EU");
 
   const [result, setResult] = useState<BreakerResult | null>(null);
 
   function handleCalc() {
     const r = sizeBreaker({
-      loadCurrent: parseFloat(loadCurrent) || 0,
-      faultCurrent: parseFloat(faultCurrent) || 0,
-      curve: driveLoad ? "D" : curve,
-      poles: parseInt(poles) as 1 | 2 | 3 | 4,
+      loadCurrent:   parseFloat(loadCurrent) || 0,
+      faultCurrent:  parseFloat(faultCurrent) || 0,
+      curve:         driveLoad ? "D" : curve,
+      poles:         parseInt(poles) as 1 | 2 | 3 | 4,
       driveLoad,
+      preferRegion,
     });
     setResult(r);
   }
@@ -94,6 +96,17 @@ export default function BreakerPage() {
           <FieldToggle
             label={tb.vsdToggle} checked={driveLoad} onChange={setDriveLoad} hint={tb.vsdToggleHint}
           />
+          <FieldSelect
+            label="Catalog Preference"
+            value={preferRegion}
+            onChange={v => setPreferRegion(v as Region)}
+            options={[
+              { value: "EU", label: "EU — 3VA1/3VA2 European series (priority)" },
+              { value: "IN", label: "IN — 3VJ India/SEA economy series (budget)" },
+              { value: "any", label: "Any — best Icu match regardless of origin" },
+            ]}
+            hint="EU series has wider accessory ecosystem (ETU, Profibus adapter). 3VJ is IEC-compliant & price-competitive for SEA market."
+          />
         </div>
 
         <button className="btn-primary" onClick={handleCalc}
@@ -107,13 +120,13 @@ export default function BreakerPage() {
           <ResultCard
             title={tb.resTitle}
             rows={[
-              { label: tb.resType, value: result.type, accent: true },
-              { label: tb.resFamily, value: result.family, accent: true },
-              { label: tb.resPart, value: result.partCode, accent: true },
-              { label: tb.resNomA, value: result.nominalA > 0 ? `${result.nominalA} A` : "—" },
-              { label: tb.resIcu, value: result.icuKa > 0 ? `${result.icuKa} kA` : "—" },
-              { label: tb.resCurve, value: result.curve },
-              { label: tb.resCoord, value: result.coordination },
+              { label: tb.resType,   value: result.type,     accent: true },
+              { label: tb.resFamily, value: `${result.family} [${result.region} · ${result.frame}]`, accent: true },
+              { label: tb.resPart,   value: result.partCode, accent: true },
+              { label: tb.resNomA,   value: result.nominalA > 0 ? `${result.nominalA} A` : "—" },
+              { label: tb.resIcu,    value: result.icuKa > 0    ? `${result.icuKa} kA`  : "—" },
+              { label: tb.resCurve,  value: result.curve },
+              { label: tb.resCoord,  value: result.coordination },
             ]}
             warnings={result.warnings}
           />
@@ -128,7 +141,14 @@ export default function BreakerPage() {
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: i < result.options.length - 1 ? "1px solid var(--glass-border)" : "none", paddingBottom: i < result.options.length - 1 ? 8 : 0 }}>
                     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                       <span style={{ fontSize: 13, fontWeight: 600, color: "var(--accent)" }}>{opt.family} {opt.partCode}</span>
-                      <span style={{ fontSize: 11, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{opt.type} / {opt.nominalA}A / Icu: {opt.icuKa}kA</span>
+                      <span style={{ fontSize: 11, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+                        {opt.type} · {opt.nominalA}A · Icu {opt.icuKa} kA
+                        <span style={{ marginLeft: 8, padding: "1px 6px", borderRadius: 6, fontSize: 9, fontWeight: 700,
+                          background: opt.region === "EU" ? "rgba(59,130,246,0.15)" : "rgba(34,197,94,0.15)",
+                          color: opt.region === "EU" ? "#60a5fa" : "#4ade80",
+                          border: `1px solid ${opt.region === "EU" ? "rgba(59,130,246,0.3)" : "rgba(34,197,94,0.3)"}`
+                        }}>{opt.region} · {opt.frame}</span>
+                      </span>
                     </div>
                   </div>
                 ))}
