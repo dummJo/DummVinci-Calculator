@@ -61,13 +61,7 @@ function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: an
         </button>
       </div>
 
-      <div style={{
-        display: "grid",
-        // Golden Ratio based columns: First column (Code) is ~1.618x base
-        gridTemplateColumns: "1.6fr 0.6fr 0.6fr 0.8fr 0.8fr 0.6fr 0.6fr 1fr",
-        gap: 24,
-        minWidth: 880,
-      }}>
+      <div className="summary-specs-grid">
         {specs.map((s, i) => (
           <div key={i} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted-soft)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
@@ -182,13 +176,34 @@ export default function UnifiedPage() {
           font-weight: 700;
           border: 1px solid rgba(201,168,76,0.3);
         }
-        .apple-inner-wrapper > div {
-          margin-bottom: 20px;
+        .apple-inner-wrapper > div.apple-glass-card {
+          margin-bottom: 24px;
           backdrop-filter: none !important;
           background: rgba(0, 0, 0, 0.2) !important;
           border-radius: 20px !important;
           border: 1px solid rgba(255,255,255,0.05) !important;
           box-shadow: none !important;
+        }
+        .summary-specs-grid {
+          display: grid;
+          grid-template-columns: 1.6fr 0.6fr 0.6fr 0.8fr 0.8fr 0.6fr 0.6fr 1fr;
+          gap: 24px;
+          align-items: end;
+        }
+        .result-cards-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 20px;
+        }
+        .result-cards-grid > div {
+          margin-top: 0 !important;
+          height: 100%;
+        }
+        @media (max-width: 1024px) {
+          .summary-specs-grid { grid-template-columns: repeat(4, 1fr); row-gap: 20px; }
+        }
+        @media (max-width: 600px) {
+          .summary-specs-grid { grid-template-columns: repeat(2, 1fr); }
         }
       `}</style>
       <div className="calc-grid">
@@ -288,43 +303,45 @@ export default function UnifiedPage() {
             <div className="apple-inner-wrapper">
               <SummaryStrip result={result} t={t} tu={tu} />
               
-              <ResultCard
-                title={tu.resTitle}
-                rows={[
-                  { label: tu.resAmps, value: `${result.estimatedMotorAmps} A`, accent: true },
-                ]}
-              />
+              <div className="result-cards-grid">
+                <ResultCard
+                  title={tu.resTitle}
+                  rows={[
+                    { label: tu.resAmps, value: `${result.estimatedMotorAmps} A`, accent: true },
+                  ]}
+                />
 
-              <ResultCard
-                title={tu.resVsd}
-                rows={[
-                  { label: t.vsd.resPart, value: result.vsd.partCode, accent: true },
-                  { label: t.vsd.resFrame, value: result.vsd.frame },
-                  { label: t.vsd.resRatedKw, value: `${result.vsd.ratedKw} kW` },
-                ]}
-                warnings={result.vsd.warnings}
-              />
+                <ResultCard
+                  title={tu.resVsd}
+                  rows={[
+                    { label: t.vsd.resPart, value: result.vsd.partCode, accent: true },
+                    { label: t.vsd.resFrame, value: result.vsd.frame },
+                    { label: t.vsd.resRatedKw, value: `${result.vsd.ratedKw} kW` },
+                  ]}
+                  warnings={result.vsd.warnings}
+                />
 
-              <ResultCard
-                title={tu.resCable}
-                rows={[
-                  { label: t.cable.resSuggestion, value: result.cable.suggestion, accent: true },
-                  { label: t.cable.resPhase, value: `${result.cable.phaseSize} mm²` },
-                  { label: t.cable.resGround, value: `${result.cable.groundSize} mm²` },
-                  { label: t.cable.resVdrop, value: `${result.cable.vdropPct}%` },
-                ]}
-                warnings={result.cable.warnings}
-              />
+                <ResultCard
+                  title={tu.resCable}
+                  rows={[
+                    { label: t.cable.resSuggestion, value: result.cable.suggestion, accent: true },
+                    { label: t.cable.resPhase, value: `${result.cable.phaseSize} mm²` },
+                    { label: t.cable.resGround, value: `${result.cable.groundSize} mm²` },
+                    { label: t.cable.resVdrop, value: `${result.cable.vdropPct}%` },
+                  ]}
+                  warnings={result.cable.warnings}
+                />
 
-              <ResultCard
-                title={tu.resBreaker}
-                rows={[
-                  { label: t.breaker.resPart, value: result.breaker.partCode, accent: true },
-                  { label: t.breaker.resNomA, value: `${result.breaker.nominalA} A` },
-                  { label: t.breaker.resIcu, value: `${result.breaker.icuKa} kA` },
-                ]}
-                warnings={result.breaker.warnings}
-              />
+                <ResultCard
+                  title={tu.resBreaker}
+                  rows={[
+                    { label: t.breaker.resPart, value: result.breaker.partCode, accent: true },
+                    { label: t.breaker.resNomA, value: `${result.breaker.nominalA} A` },
+                    { label: t.breaker.resIcu, value: `${result.breaker.icuKa} kA` },
+                  ]}
+                  warnings={result.breaker.warnings}
+                />
+              </div>
             </div>
           ) : (
             <div className="result-placeholder">
