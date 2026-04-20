@@ -92,10 +92,11 @@ export default function BottomTabBar() {
         }
         .telegram-glass {
           background: var(--tabbar-bg);
-          backdrop-filter: blur(40px) saturate(200%);
-          -webkit-backdrop-filter: blur(40px) saturate(200%);
+          backdrop-filter: blur(24px) saturate(180%);
+          -webkit-backdrop-filter: blur(24px) saturate(180%);
           border: 1px solid var(--glass-border);
-          box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+          transform: translateZ(0); /* Force hardware layer */
         }
         .telegram-pill {
           position: absolute;
@@ -106,10 +107,11 @@ export default function BottomTabBar() {
           border-radius: 20px;
           z-index: 1;
           transition: 
-            transform 0.65s cubic-bezier(0.25, 1.15, 0.5, 1),
-            width 0.5s cubic-bezier(0.25, 1.15, 0.5, 1),
-            opacity 0.4s ease;
+            transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1),
+            width 0.4s cubic-bezier(0.1, 0.7, 0.1, 1),
+            opacity 0.3s ease;
           pointer-events: none;
+          will-change: transform, width, opacity;
         }
         .hover-follower {
           position: absolute;
@@ -120,10 +122,11 @@ export default function BottomTabBar() {
           border-radius: 20px;
           z-index: 0;
           transition: 
-            transform 0.3s cubic-bezier(0.2, 0, 0, 1),
-            width 0.3s cubic-bezier(0.2, 0, 0, 1),
+            transform 0.2s ease-out,
+            width 0.2s ease-out,
             opacity 0.2s ease;
           pointer-events: none;
+          will-change: transform, width, opacity;
         }
         .tab-item {
           position: relative;
@@ -136,13 +139,13 @@ export default function BottomTabBar() {
           height: 100%;
           text-decoration: none;
           -webkit-tap-highlight-color: transparent;
-          background-image: none !important;
         }
         .inactive-icon {
           color: var(--fg);
-          opacity: 0.6 !important;
+          opacity: 0.6;
           transform: scale(0.95) translateY(2px);
-          transition: all 0.65s cubic-bezier(0.25, 1.15, 0.5, 1);
+          transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1), opacity 0.4s ease, color 0.4s ease;
+          will-change: transform, opacity;
         }
         .tab-item:active .inactive-icon, .tab-item:active .active-icon {
           transform: scale(0.85);
@@ -156,17 +159,19 @@ export default function BottomTabBar() {
           color: var(--accent) !important;
           transform: scale(1.15) translateY(-2px);
           opacity: 1 !important;
-          transition: all 0.65s cubic-bezier(0.25, 1.15, 0.5, 1);
+          transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1), opacity 0.4s ease, color 0.4s ease;
+          will-change: transform, color, opacity;
         }
         .tab-label {
           font-family: var(--font-body), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           font-size: 10px;
           margin-top: 4px;
           opacity: 0.7;
-          transition: all 0.65s cubic-bezier(0.25, 1.15, 0.5, 1);
+          transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1), opacity 0.4s ease, color 0.4s ease;
           pointer-events: none;
           color: var(--fg);
           font-weight: 500;
+          will-change: transform, opacity, color;
         }
         .tab-active .tab-label {
           opacity: 1;
