@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import {
   LayoutGrid, Activity, Cpu, Disc3, MoreHorizontal, 
-  Cable, Zap, AlignJustify, Server, Disc, X, History, Sparkles, AlertCircle, Microchip
+  Cable, Zap, AlignJustify, Server, Disc, X, History, Sparkles, AlertCircle, Microchip, Play
 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { clsx } from "clsx";
@@ -30,6 +30,7 @@ export default function BottomTabBar() {
     { href: "/panel",            key: "panel",   Icon: Server       },
     { href: "/braking-resistor", key: "brake",   Icon: Disc         },
     { href: "/plc",              key: "plc",     Icon: Microchip    },
+    { href: "/starter",          key: "starter", Icon: Play         },
   ];
 
   const allTabs = [...MAIN_TABS, ...UTILITY_TABS];
