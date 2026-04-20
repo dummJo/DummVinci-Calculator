@@ -10,8 +10,7 @@ import Footer from "@/components/nav/Footer";
 import { sizeMotorStarter, UnifiedResult, estimateAmps } from "@/lib/calc/unified";
 import type { Voltage, DriveApp } from "@/lib/calc/vsd";
 import type { Insulation, Install } from "@/lib/calc/cable";
-
-import { Download } from "lucide-react";
+import { Download, CheckCircle, Zap } from "lucide-react";
 
 function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: any }) {
   const specs = [
@@ -26,28 +25,25 @@ function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: an
   ];
 
   return (
-    <div className="vinci-card result-card-enter" style={{
-      padding: "16px 20px",
-      background: "var(--accent-pill-bg, rgba(201,168,76,0.05))",
-      border: "1px solid var(--accent)",
-      borderRadius: "var(--r-lg)",
-      marginBottom: 24,
-      overflowX: "auto",
-    }}>
+    <div className="apple-glass-card result-card-enter">
       <div style={{
         display: "flex",
         justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 16,
+        alignItems: "flex-start",
+        marginBottom: 24,
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--accent)" }} />
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--accent)", letterSpacing: "0.1em" }}>
-            ENGINEERING SPECIFICATION SUMMARY
-          </span>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div className="iec-badge">
+            <CheckCircle size={12} /> IEC 61439 & ABB COMPLIANT
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontFamily: "var(--font-heading)", fontSize: 18, color: "var(--fg)", fontWeight: 700, letterSpacing: "-0.02em" }}>
+              Unified Engineering Summary
+            </span>
+          </div>
         </div>
-        <button className="btn-icon" style={{ padding: 4, height: "auto" }}>
-          <Download size={14} />
+        <button className="btn-icon" style={{ padding: "8px 12px", height: "auto", background: "rgba(255,255,255,0.08)", borderRadius: 16 }}>
+          <Download size={16} style={{ color: "var(--fg)" }} />
         </button>
       </div>
 
@@ -119,6 +115,52 @@ export default function UnifiedPage() {
 
   return (
     <CalcShell label={tu.label} title={tu.title} subtitle={tu.subtitle}>
+      <style>{`
+        .apple-glass-card {
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(48px) saturate(200%);
+          -webkit-backdrop-filter: blur(48px) saturate(200%);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 32px;
+          padding: 28px;
+          margin-bottom: 24px;
+          box-shadow: 
+            inset 0 1px 1px rgba(255, 255, 255, 0.15),
+            0 12px 48px rgba(0, 0, 0, 0.3);
+          position: relative;
+          overflow: hidden;
+        }
+        .apple-glass-card::before {
+          content: "";
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 100%;
+          background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 100%);
+          pointer-events: none;
+        }
+        .iec-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 14px;
+          background: rgba(201,168,76,0.15);
+          color: var(--accent);
+          border-radius: 20px;
+          font-family: var(--font-mono);
+          font-size: 9px;
+          letter-spacing: 0.1em;
+          font-weight: 700;
+          border: 1px solid rgba(201,168,76,0.3);
+        }
+        .apple-inner-wrapper > div {
+          margin-bottom: 20px;
+          backdrop-filter: none !important;
+          background: rgba(0, 0, 0, 0.2) !important;
+          border-radius: 20px !important;
+          border: 1px solid rgba(255,255,255,0.05) !important;
+          box-shadow: none !important;
+        }
+      `}</style>
       <div className="calc-grid">
         <div className="calc-col-input">
           <div className="sec-label"><span>{tu.secMotor}</span></div>
@@ -193,7 +235,7 @@ export default function UnifiedPage() {
 
         <div className="calc-col-result">
           {result ? (
-            <>
+            <div className="apple-inner-wrapper">
               <SummaryStrip result={result} t={t} tu={tu} />
               
               <ResultCard
@@ -203,43 +245,37 @@ export default function UnifiedPage() {
                 ]}
               />
 
-              <div style={{ marginTop: 24 }}>
-                <ResultCard
-                  title={tu.resVsd}
-                  rows={[
-                    { label: t.vsd.resPart, value: result.vsd.partCode, accent: true },
-                    { label: t.vsd.resFrame, value: result.vsd.frame },
-                    { label: t.vsd.resRatedKw, value: `${result.vsd.ratedKw} kW` },
-                  ]}
-                  warnings={result.vsd.warnings}
-                />
-              </div>
+              <ResultCard
+                title={tu.resVsd}
+                rows={[
+                  { label: t.vsd.resPart, value: result.vsd.partCode, accent: true },
+                  { label: t.vsd.resFrame, value: result.vsd.frame },
+                  { label: t.vsd.resRatedKw, value: `${result.vsd.ratedKw} kW` },
+                ]}
+                warnings={result.vsd.warnings}
+              />
 
-              <div style={{ marginTop: 24 }}>
-                <ResultCard
-                  title={tu.resCable}
-                  rows={[
-                    { label: t.cable.resSuggestion, value: result.cable.suggestion, accent: true },
-                    { label: t.cable.resPhase, value: `${result.cable.phaseSize} mm²` },
-                    { label: t.cable.resGround, value: `${result.cable.groundSize} mm²` },
-                    { label: t.cable.resVdrop, value: `${result.cable.vdropPct}%` },
-                  ]}
-                  warnings={result.cable.warnings}
-                />
-              </div>
+              <ResultCard
+                title={tu.resCable}
+                rows={[
+                  { label: t.cable.resSuggestion, value: result.cable.suggestion, accent: true },
+                  { label: t.cable.resPhase, value: `${result.cable.phaseSize} mm²` },
+                  { label: t.cable.resGround, value: `${result.cable.groundSize} mm²` },
+                  { label: t.cable.resVdrop, value: `${result.cable.vdropPct}%` },
+                ]}
+                warnings={result.cable.warnings}
+              />
 
-              <div style={{ marginTop: 24 }}>
-                <ResultCard
-                  title={tu.resBreaker}
-                  rows={[
-                    { label: t.breaker.resPart, value: result.breaker.partCode, accent: true },
-                    { label: t.breaker.resNomA, value: `${result.breaker.nominalA} A` },
-                    { label: t.breaker.resIcu, value: `${result.breaker.icuKa} kA` },
-                  ]}
-                  warnings={result.breaker.warnings}
-                />
-              </div>
-            </>
+              <ResultCard
+                title={tu.resBreaker}
+                rows={[
+                  { label: t.breaker.resPart, value: result.breaker.partCode, accent: true },
+                  { label: t.breaker.resNomA, value: `${result.breaker.nominalA} A` },
+                  { label: t.breaker.resIcu, value: `${result.breaker.icuKa} kA` },
+                ]}
+                warnings={result.breaker.warnings}
+              />
+            </div>
           ) : (
             <div className="result-placeholder">
               {t.common.resultLabel}

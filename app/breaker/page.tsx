@@ -98,19 +98,40 @@ export default function BreakerPage() {
       </div>
 
       {result && (
-        <ResultCard
-          title={tb.resTitle}
-          rows={[
-            { label: tb.resType, value: result.type, accent: true },
-            { label: tb.resFamily, value: result.family, accent: true },
-            { label: tb.resPart, value: result.partCode, accent: true },
-            { label: tb.resNomA, value: result.nominalA > 0 ? `${result.nominalA} A` : "—" },
-            { label: tb.resIcu, value: result.icuKa > 0 ? `${result.icuKa} kA` : "—" },
-            { label: tb.resCurve, value: result.curve },
-            { label: tb.resCoord, value: result.coordination },
-          ]}
-          warnings={result.warnings}
-        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <ResultCard
+            title={tb.resTitle}
+            rows={[
+              { label: tb.resType, value: result.type, accent: true },
+              { label: tb.resFamily, value: result.family, accent: true },
+              { label: tb.resPart, value: result.partCode, accent: true },
+              { label: tb.resNomA, value: result.nominalA > 0 ? `${result.nominalA} A` : "—" },
+              { label: tb.resIcu, value: result.icuKa > 0 ? `${result.icuKa} kA` : "—" },
+              { label: tb.resCurve, value: result.curve },
+              { label: tb.resCoord, value: result.coordination },
+            ]}
+            warnings={result.warnings}
+          />
+          {result.options.length > 0 && (
+            <div className="vinci-card" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--accent)", padding: "4px 8px", border: "1px solid var(--accent)", borderRadius: 12 }}>IEC 60947-2 / 60898</span>
+                <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-heading)", color: "var(--fg)" }}>Supplier Quote Options</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {result.options.map((opt, i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: i < result.options.length - 1 ? "1px solid var(--glass-border)" : "none", paddingBottom: i < result.options.length - 1 ? 8 : 0 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "var(--accent)" }}>{opt.family} {opt.partCode}</span>
+                      <span style={{ fontSize: 11, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{opt.type} / {opt.nominalA}A / Icu: {opt.icuKa}kA</span>
+                    </div>
+                    <button style={{ background: "var(--accent)", color: "#000", border: "none", borderRadius: 12, padding: "6px 14px", fontSize: 11, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(201,168,76,0.3)" }}>Quote</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       <Footer />

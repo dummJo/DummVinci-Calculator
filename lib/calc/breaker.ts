@@ -27,6 +27,14 @@ interface BreakerSpec {
   poles: number[];
 }
 
+export interface BreakerOption {
+  type: "MCB" | "MCCB";
+  family: string;
+  partCode: string;
+  nominalA: number;
+  icuKa: number;
+}
+
 export interface BreakerResult {
   type: "MCB" | "MCCB";
   family: string;
@@ -35,6 +43,7 @@ export interface BreakerResult {
   icuKa: number;
   curve: Curve;
   coordination: string;
+  options: BreakerOption[];
   warnings: string[];
 }
 
@@ -55,12 +64,21 @@ export function sizeBreaker(input: BreakerInput): BreakerResult {
     return {
       type: "MCCB", family: "—", partCode: "—", nominalA: 0, icuKa: 0, curve: curveForce,
       coordination: "No Siemens breaker matches. Consider 3VA2 higher frame or upstream selectivity.",
+      options: [],
       warnings: [...warnings, "No breaker found. Check Icu/In combination."],
     };
   }
 
   if (pick.type === "MCB" && input.faultCurrent > 6)
     warnings.push("MCB near Icu limit — consider 5SY (10 kA) or MCCB cascaded");
+
+  const options = list.slice(0, 3).map(b => ({
+    type: b.type,
+    family: b.family,
+    partCode: b.code,
+    nominalA: b.nominalA,
+    icuKa: b.icuKa,
+  }));
 
   return {
     type: pick.type,
@@ -70,6 +88,7 @@ export function sizeBreaker(input: BreakerInput): BreakerResult {
     icuKa: pick.icuKa,
     curve: curveForce,
     coordination: coordinationNote(pick, input),
+    options,
     warnings,
   };
 }
