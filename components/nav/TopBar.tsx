@@ -79,12 +79,28 @@ export default function TopBar() {
         <div style={{
           fontFamily: "var(--font-display)",
           fontSize: "var(--fs-md)",
-          color: "var(--accent)",
-          letterSpacing: "-0.01em",
+          color: "var(--fg)",
+          letterSpacing: "-0.02em",
           lineHeight: 1.1,
           whiteSpace: "nowrap",
+          display: "flex",
+          alignItems: "baseline",
+          gap: "0.15em"
         }}>
-          DummVinci Calculator
+          <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.7 }}>Dumm</span>
+          <span style={{ fontWeight: 700, color: "var(--accent)" }}>Vinci</span>
+          <span style={{ 
+            fontFamily: "var(--font-mono)", 
+            fontSize: 8, 
+            fontWeight: 500, 
+            letterSpacing: "0.15em", 
+            textTransform: "uppercase",
+            marginLeft: 4,
+            opacity: 0.5,
+            color: "var(--accent)"
+          }}>
+            Calculator
+          </span>
         </div>
       </div>
 
