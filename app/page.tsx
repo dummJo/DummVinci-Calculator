@@ -7,14 +7,89 @@ import { getRandomQuote } from "@/lib/quotes";
 import { useState, useEffect } from "react";
 
 const SPEC_STRIP = [
-  "IEC 60364",
-  "IEC 60947",
-  "IEC 61439",
-  "DIN 43671",
-  "PUIL 2011",
-  "ABB Hardware Manual",
-  "STAHL CraneSystems",
+  "IEC 60364", "IEC 60947", "IEC 61439",
+  "DIN 43671", "PUIL 2011", "ABB Manual",
+  "STAHL CraneSystems", "Siemens SIRIUS",
 ];
+
+// ── Inline SVG icons — no external dependency ────────────────────────────────
+function IconCable() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 12h16" /><path d="M4 8h4v8H4z" /><path d="M16 8h4v8h-4z" />
+      <path d="M8 12h8" />
+    </svg>
+  );
+}
+function IconVSD() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" /><circle cx="12" cy="12" r="8" />
+      <path d="M12 4v2M12 18v2M4 12H2M22 12h-2" />
+    </svg>
+  );
+}
+function IconBreaker() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="5" y="2" width="14" height="20" rx="2" />
+      <path d="M12 7v5l3 3" /><circle cx="12" cy="17" r="1" />
+    </svg>
+  );
+}
+function IconBusbar() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="10" width="20" height="4" rx="1" />
+      <path d="M6 6v4M10 6v4M14 6v4M18 6v4M6 14v4M10 14v4M14 14v4M18 14v4" />
+    </svg>
+  );
+}
+function IconBrake() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 18L18 6" /><path d="M6 6h12v12" />
+      <circle cx="12" cy="12" r="2" />
+    </svg>
+  );
+}
+function IconPanel() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="3" width="20" height="18" rx="2" />
+      <path d="M8 3v18M2 9h6M2 15h6" />
+      <circle cx="15" cy="11" r="3" />
+      <path d="M15 8v1M15 14v1M12 11h1M18 11h1" />
+    </svg>
+  );
+}
+function IconUnified() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  );
+}
+function IconPLC() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <path d="M6 8v8M10 8v8" />
+      <rect x="13" y="8" width="6" height="8" rx="1" />
+      <circle cx="6" cy="8" r="1" fill="currentColor" stroke="none" />
+      <circle cx="10" cy="8" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+function IconStarter() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9 9h2l1 3 2-6 1 3h2" />
+      <path d="M12 17v1" strokeWidth="2.5" />
+    </svg>
+  );
+}
 
 export default function HomePage() {
   const { t } = useLang();
@@ -28,79 +103,94 @@ export default function HomePage() {
   const CALCS = [
     {
       href: "/unified",
-      icon: "⚡",
+      Icon: IconUnified,
       title: th.calcs.unified.title,
       description: th.calcs.unified.desc,
       tag: "SMART-SIZE",
+      accent: true,
     },
     {
       href: "/cable",
-      icon: "⌁",
+      Icon: IconCable,
       title: th.calcs.cable.title,
       description: th.calcs.cable.desc,
-      tag: "IEC 60364-5-52",
+      tag: "IEC 60364",
     },
     {
       href: "/vsd",
-      icon: "◎",
+      Icon: IconVSD,
       title: th.calcs.vsd.title,
       description: th.calcs.vsd.desc,
       tag: "ABB CATALOG",
     },
     {
       href: "/breaker",
-      icon: "⏻",
+      Icon: IconBreaker,
       title: th.calcs.breaker.title,
       description: th.calcs.breaker.desc,
-      tag: "IEC 60947-2",
+      tag: "IEC 60947",
     },
     {
       href: "/busbar",
-      icon: "≡",
+      Icon: IconBusbar,
       title: th.calcs.busbar.title,
       description: th.calcs.busbar.desc,
       tag: "DIN 43671",
     },
     {
       href: "/braking-resistor",
-      icon: "Ω",
+      Icon: IconBrake,
       title: th.calcs.brake.title,
       description: th.calcs.brake.desc,
-      tag: "STAHL STANDARD",
+      tag: "STAHL STD",
     },
     {
       href: "/panel",
-      icon: "▣",
+      Icon: IconPanel,
       title: th.calcs.panel.title,
       description: th.calcs.panel.desc,
       tag: "IEC 60890",
+    },
+    {
+      href: "/plc",
+      Icon: IconPLC,
+      title: th.calcs.plc.title,
+      description: th.calcs.plc.desc,
+      tag: "S7-1200/1500",
+    },
+    {
+      href: "/starter",
+      Icon: IconStarter,
+      title: th.calcs.starter.title,
+      description: th.calcs.starter.desc,
+      tag: "SIRIUS 3RV/3RT",
     },
   ];
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* ─── Hero ─────────────────────────────────────────────────────── */}
+      {/* ─── Compact Hero ─────────────────────────────────────────────── */}
       <header
         style={{
-          maxWidth: 1080,
+          maxWidth: 1100,
           margin: "0 auto",
-          padding: "64px 24px 48px",
+          padding: "40px 24px 28px",
           width: "100%",
         }}
       >
-        {/* Codex mark + brand line */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 40 }}>
+        {/* Brand row */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
           <div
             style={{
-              width: 40,
-              height: 40,
+              width: 32,
+              height: 32,
               border: "1px solid var(--accent)",
               borderRadius: 4,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontFamily: "var(--font-mono)",
-              fontSize: 18,
+              fontSize: 15,
               color: "var(--accent)",
               flexShrink: 0,
               background: "rgba(201,168,76,0.06)",
@@ -116,75 +206,76 @@ export default function HomePage() {
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               opacity: heroQuote ? 1 : 0,
-              transition: "opacity 0.5s ease",
+              transition: "opacity 0.6s ease",
             }}
           >
             {heroQuote}
           </span>
         </div>
 
-        {/* Display title */}
-        <h1
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(40px, 7vw, 80px)",
-            fontWeight: 400,
-            color: "var(--fg)",
-            letterSpacing: "-0.025em",
-            lineHeight: 1.0,
-            margin: "0 0 20px",
-          }}
-        >
-          {th.heroTitle}
-          <br />
-          <span style={{ color: "var(--accent)" }}>{th.heroSub}</span>
-        </h1>
+        {/* Title + subtitle inline */}
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 24, flexWrap: "wrap", marginBottom: 16 }}>
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "clamp(32px, 5vw, 56px)",
+              fontWeight: 400,
+              color: "var(--fg)",
+              letterSpacing: "-0.025em",
+              lineHeight: 1.0,
+              margin: 0,
+            }}
+          >
+            {th.heroTitle}
+            {" "}
+            <span style={{ color: "var(--accent)" }}>{th.heroSub}</span>
+          </h1>
+          <p
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "clamp(11px, 1.4vw, 13px)",
+              color: "var(--muted)",
+              letterSpacing: "0.06em",
+              margin: "0 0 4px",
+              lineHeight: 1.4,
+            }}
+          >
+            {th.heroSubtitle}
+          </p>
+        </div>
 
-        {/* Mono subtitle */}
-        <p
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "clamp(12px, 1.8vw, 15px)",
-            color: "var(--muted)",
-            letterSpacing: "0.08em",
-            margin: "0 0 36px",
-            lineHeight: 1.6,
-          }}
-        >
-          {th.heroSubtitle}
-        </p>
-
-        {/* Engineering spec strip */}
+        {/* Spec strip */}
         <div
           style={{
             display: "flex",
             flexWrap: "wrap",
-            gap: 8,
-            paddingTop: 24,
+            gap: 6,
+            paddingTop: 16,
             borderTop: "1px solid var(--hairline-soft)",
           }}
         >
           {SPEC_STRIP.map((s) => (
-            <span key={s} className="tag" style={{ letterSpacing: "0.10em" }}>
+            <span key={s} className="tag" style={{ letterSpacing: "0.08em", fontSize: 10, padding: "2px 7px" }}>
               {s}
             </span>
           ))}
         </div>
       </header>
 
-      {/* ─── Section label ────────────────────────────────────────────── */}
-      <div
-        style={{ maxWidth: 1080, margin: "0 auto", padding: "0 24px 20px", width: "100%" }}
-      >
+      {/* ─── Section label ─────────────────────────────────────────────── */}
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 14px", width: "100%" }}>
         <div className="sec-label">
           <span>{th.secCalculators}</span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", marginLeft: 8 }}>
+            {CALCS.length} tools
+          </span>
         </div>
       </div>
 
-      {/* ─── Card grid ────────────────────────────────────────────────── */}
+      {/* ─── Compact Card Grid ─────────────────────────────────────────── */}
       <main
         style={{
-          maxWidth: 1080,
+          maxWidth: 1100,
           margin: "0 auto",
           padding: "0 24px 0px",
           width: "100%",
@@ -194,20 +285,15 @@ export default function HomePage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: 16,
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gap: 12,
           }}
         >
           {CALCS.map((calc) => (
             <Link
               key={calc.href}
               href={calc.href}
-              style={{
-                textDecoration: "none",
-                display: "block",
-                borderRadius: "var(--r-2xl)",
-                backgroundImage: "none",
-              }}
+              style={{ textDecoration: "none", display: "block", borderRadius: "var(--r-xl)" }}
             >
               <div
                 className="vinci-card card-hover cursor-card"
@@ -216,37 +302,52 @@ export default function HomePage() {
                   display: "flex",
                   flexDirection: "column",
                   cursor: "pointer",
-                  borderRadius: "var(--r-2xl)",
+                  borderRadius: "var(--r-xl)",
+                  padding: "18px 20px",
+                  ...(calc.accent
+                    ? {
+                        borderColor: "rgba(201,168,76,0.35)",
+                        background: "rgba(201,168,76,0.04)",
+                      }
+                    : {}),
                 }}
               >
                 {/* Icon + tag row */}
                 <div
                   style={{
                     display: "flex",
-                    alignItems: "flex-start",
+                    alignItems: "center",
                     justifyContent: "space-between",
-                    marginBottom: 20,
+                    marginBottom: 12,
                   }}
                 >
                   <div
                     style={{
-                      width: 48,
-                      height: 48,
+                      width: 36,
+                      height: 36,
                       border: "1px solid var(--glass-border)",
                       borderRadius: "var(--r-lg)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontFamily: "var(--font-mono)",
-                      fontSize: 22,
-                      color: "var(--accent)",
-                      background: "rgba(201,168,76,0.06)",
+                      color: calc.accent ? "var(--accent)" : "var(--muted)",
+                      background: calc.accent ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
                       flexShrink: 0,
+                      transition: "color 0.2s, background 0.2s",
+                    }}
+                    className="card-icon"
+                  >
+                    <calc.Icon />
+                  </div>
+                  <span
+                    className="tag"
+                    style={{
+                      letterSpacing: "0.08em",
+                      fontSize: 9,
+                      padding: "2px 6px",
+                      ...(calc.accent ? { color: "var(--accent)", borderColor: "rgba(201,168,76,0.4)", background: "rgba(201,168,76,0.08)" } : {}),
                     }}
                   >
-                    {calc.icon}
-                  </div>
-                  <span className="tag" style={{ letterSpacing: "0.10em", marginTop: 4 }}>
                     {calc.tag}
                   </span>
                 </div>
@@ -255,11 +356,11 @@ export default function HomePage() {
                 <h2
                   style={{
                     fontFamily: "var(--font-display)",
-                    fontSize: "var(--fs-xl)",
+                    fontSize: "var(--fs-lg)",
                     fontWeight: 400,
                     color: "var(--fg)",
                     letterSpacing: "-0.01em",
-                    margin: "0 0 10px",
+                    margin: "0 0 6px",
                     lineHeight: 1.2,
                   }}
                 >
@@ -270,32 +371,33 @@ export default function HomePage() {
                 <p
                   style={{
                     fontFamily: "var(--font-mono)",
-                    fontSize: "var(--fs-xs)",
+                    fontSize: 11,
                     color: "var(--muted)",
-                    lineHeight: 1.7,
-                    letterSpacing: "0.02em",
-                    margin: "0 0 24px",
+                    lineHeight: 1.6,
+                    letterSpacing: "0.01em",
+                    margin: "0 0 14px",
                     flex: 1,
                   }}
                 >
                   {calc.description}
                 </p>
 
-                {/* CTA row */}
+                {/* CTA */}
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: 6,
+                    gap: 5,
                     fontFamily: "var(--font-mono)",
-                    fontSize: "var(--fs-xs)",
+                    fontSize: 10,
                     color: "var(--accent)",
                     letterSpacing: "0.06em",
                     textTransform: "uppercase",
+                    opacity: 0.8,
                   }}
                 >
                   {th.ctaOpen}
-                  <span style={{ fontSize: 14 }}>→</span>
+                  <span style={{ fontSize: 12 }}>→</span>
                 </div>
               </div>
             </Link>
@@ -303,7 +405,7 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* ─── Footer ───────────────────────────────────────────────────── */}
+      {/* ─── Footer ────────────────────────────────────────────────────── */}
       <Footer />
     </div>
   );
