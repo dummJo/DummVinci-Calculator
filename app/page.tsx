@@ -359,18 +359,12 @@ export default function HomePage() {
         style={{
           maxWidth: 1100,
           margin: "0 auto",
-          padding: "0 24px 0px",
+          padding: "0 16px 0px", // Reduced horizontal padding for mobile compactness
           width: "100%",
           flex: 1,
         }}
       >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: 12,
-          }}
-        >
+        <div className="hero-grid">
           {CALCS.map((calc) => (
             <Link
               key={calc.href}
@@ -384,8 +378,7 @@ export default function HomePage() {
                   display: "flex",
                   flexDirection: "column",
                   cursor: "pointer",
-                  borderRadius: "var(--r-xl)",
-                  padding: "18px 20px",
+                  // padding removed as it's now in .vinci-card class
                   ...(calc.accent
                     ? {
                         borderColor: "rgba(201,168,76,0.35)",
