@@ -114,15 +114,15 @@
   --accent-hi: var(--gold-hi);
   --accent-2:  var(--gold-dim);
   --border:    var(--hairline);
-  --card:      rgba(255, 255, 255, 0.035);
-  --nav-bg:    rgba(13, 17, 23, 0.48);
+  --card:      rgba(255, 255, 255, 0.05);
+  --nav-bg:    rgba(13, 17, 23, 0.88);
   --canvas-accent: var(--gold);
   --selection-bg:  var(--gold);
   --selection-fg:  var(--ink-900);
   /* Glass surfaces */
-  --glass-bg:       rgba(255, 255, 255, 0.062);
-  --glass-border:   rgba(255, 255, 255, 0.11);
-  --glass-hi:       rgba(255, 255, 255, 0.16);
+  --glass-bg:       rgba(255, 255, 255, 0.095);
+  --glass-border:   rgba(255, 255, 255, 0.14);
+  --glass-hi:       rgba(255, 255, 255, 0.18);
   --glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.2);
   --glass-blur:     blur(22px) saturate(180%);
   --nav-blur:       blur(32px) saturate(160%);
@@ -149,15 +149,15 @@
   --accent-2:  #7a6848;
   --canvas-accent: #5a3e08;
   --border:    rgba(110, 84, 32, 0.38);
-  --card:      rgba(255, 248, 220, 0.45);
-  --nav-bg:    rgba(226, 212, 176, 0.68);
+  --card:      rgba(255, 248, 220, 0.65);
+  --nav-bg:    rgba(226, 212, 176, 0.92);
   --shadow-hover:       rgba(110, 84, 32, 0.14);
   --selection-bg:       #8c6510;
   --selection-fg:       #f5ead0;
   /* Glass surfaces — warm cream tint (not cold white) */
-  --glass-bg:       rgba(255, 248, 218, 0.62);
-  --glass-border:   rgba(160, 120, 50, 0.30);
-  --glass-hi:       rgba(255, 252, 235, 0.88);
+  --glass-bg:       rgba(255, 250, 235, 0.82);
+  --glass-border:   rgba(160, 120, 50, 0.35);
+  --glass-hi:       rgba(255, 252, 235, 0.94);
   --glass-shadow:   0 8px 32px rgba(80, 55, 10, 0.14), 0 1px 2px rgba(80, 55, 10, 0.08);
   --glass-blur:     blur(22px) saturate(180%);
   --nav-blur:       blur(32px) saturate(160%);
