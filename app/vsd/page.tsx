@@ -49,12 +49,11 @@ export default function VsdPage() {
       label={tv.label} 
       title={tv.title} 
       subtitle={tv.subtitle}
-      concept="Variable Speed Drive (`VSD`) digunakan untuk mengontrol putaran mesin pabrik agar efisien. Jika beban sangat ekstrem seperti **Crane Angkut**, insinyur tak boleh bertaruh nyawa; mutlak mewajibkan proteksi kelas bongsor (*Heavy Duty*) yang dinilai secara logis melipatgandakan margin kapasitas keselamatan alat."
+      concept={tv.concept}
     >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        <div className="sec-label"><span>{tv.secMotor}</span></div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+        <div className="sec-label"><span>MOTOR & POWER</span></div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 20 }}>
           <FieldKwAmp
             label={tv.motorPower}
             voltage={parseFloat(voltage) || 400}
@@ -74,6 +73,12 @@ export default function VsdPage() {
               { value: "690", label: "690 V (HV mining)" },
             ]}
           />
+        </div>
+
+        <div style={{ height: 1, background: "var(--glass-border)", marginBottom: 20 }} />
+
+        <div className="sec-label"><span>APPLICATION DYNAMICS</span></div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 20 }}>
           <FieldSelect
             label={tv.app} value={app} onChange={v => setApp(v as DriveApp)}
             options={[
@@ -85,17 +90,6 @@ export default function VsdPage() {
             ]}
             hint={isCrane ? tv.appHintCrane : tv.appHintAcq}
           />
-          <FieldSelect
-            label="IP Rating" value={ipPref} onChange={v => setIpPref(v as IpRating)}
-            options={[
-              { value: "IP21", label: "IP21 (Wall / Inside Panel)" },
-              { value: "IP55", label: "IP55 (Dust/Water Protected)" },
-              { value: "IP66", label: "IP66 (Wash-down / Extreme)" },
-            ]}
-          />
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           <FieldToggle
             label={tv.heavy} checked={heavy} onChange={setHeavy} hint={tv.heavyHint}
           />
@@ -103,6 +97,20 @@ export default function VsdPage() {
             label={tv.ambient} unit="°C"
             value={ambient} onChange={setAmbient}
             min={10} max={55} step={1} hint={tv.ambientHint}
+          />
+        </div>
+
+        <div style={{ height: 1, background: "var(--glass-border)", marginBottom: 20 }} />
+
+        <div className="sec-label"><span>HARDWARE CONFIGURATION</span></div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 20 }}>
+          <FieldSelect
+            label="Environmental (IP)" value={ipPref} onChange={v => setIpPref(v as IpRating)}
+            options={[
+              { value: "IP21", label: "IP21 (Wall / Inside Panel)" },
+              { value: "IP55", label: "IP55 (Dust/Water Protected)" },
+              { value: "IP66", label: "IP66 (Wash-down / Extreme)" },
+            ]}
           />
           <FieldSelect
             label={tv.construction} value={variant} onChange={v => setVariant(v as any)}

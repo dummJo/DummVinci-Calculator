@@ -9,7 +9,7 @@ export default function PanelLayoutPage() {
   const tl = (t as any).panelLayout || { title: "Panel Layout", subtitle: "Coming Soon" };
 
   return (
-    <CalcShell label="IEC 61439" title={tl.title} subtitle={tl.subtitle}>
+    <CalcShell label="IEC 61439" title={tl.title} subtitle={tl.subtitle} concept={tl.concept}>
       <div className="vinci-card" style={{ 
         display: "flex", 
         flexDirection: "column", 
@@ -33,10 +33,10 @@ export default function PanelLayoutPage() {
           <Hammer size={32} />
         </div>
         <h2 style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, margin: 0 }}>
-          Under Construction
+          {tl.underConstTitle}
         </h2>
         <p style={{ color: "var(--muted)", maxWidth: 400, fontSize: 14 }}>
-          We are currently integrating the IEC 61439 component positioning engine and dimension auto-selector.
+          {tl.underConstDesc}
         </p>
       </div>
       <Footer />

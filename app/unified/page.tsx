@@ -13,20 +13,6 @@ import type { Insulation, Install } from "@/lib/calc/cable";
 import { Download, CheckCircle, Info } from "lucide-react";
 import RichText from "@/components/calc/RichText";
 
-const APP_LEGEND: Record<string, { title: string, desc: string }> = {
-  pump: { title: "Normal Duty", desc: "Torsi awal **rendah**. Arus saat mulai berjalan *(Inrush)* biasanya linier dan ringan. Sangat aman dipasangkan ke Drive spek standar." },
-  fan: { title: "Normal Duty", desc: "Torsi putar **berat di Inersia**. Membutuhkan waktu memutar bilah kipas yang berbobot secara perlahan (Ramp time)." },
-  crane: { title: "Heavy Duty", desc: "Beban gravitasi **langsung jatuh** ke poros motor sejak `RPM 0`. Wajib menggunakan kelas *Heavy Duty* untuk sirkuit proteksi VSD agar tahan banting." },
-  conveyor: { title: "Heavy Duty", desc: "Sering dipenuhi batu/pasir padat (*Locked load*). Motor butuh dorongan **Setrum Torsi Kejut** yang sangat galak di detik pertama operasi." }
-};
-
-const INSTALL_LEGEND = {
-  air: { title: "Clipped di Udara Terbuka", desc: "Pendinginan **optimal**. Kulit kabel tersapu angin *ambient*, kapasitas arus (Ampere) bisa didorong ke tingkat maksimum (Kering)." },
-  tray: { title: "Cable Tray Berlubang", desc: "Standard industri umum. Udara masih bisa menembus sela-sela rak *(Perforated tray)*, derating margin stabil." },
-  conduit: { title: "Di Dalam Pipa Tertutup", desc: "**AWAS PANAS!** Hawa panas terjebak dalam lorong tertutup. Kapasitas kabel (*Ampacity*) harus **didiskon mahal** (Disunat ~30%)." },
-  buried: { title: "Ditanam di Dalam Tanah", desc: "Sangat lembab dan sulit membuang radiasi terma. Wajib kabel *Armor/Baja* berlapis ganda dan derating kalkulasi tanah spesifik." }
-};
-
 function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: any }) {
   const specs = [
     { label: t.support.colCode + "*", value: result.vsd.partCode },
@@ -148,7 +134,7 @@ export default function UnifiedPage() {
       label={tu.label} 
       title={tu.title} 
       subtitle={tu.subtitle}
-      concept="Alur `Fast Sizing` ibarat jalan pintas pintar bagi sistem perakitan. Cukup masukkan kapasitas **(kW) motor**, alat ini merangkai **3 lapis perisai otomatis** secara otonom: *Tipe Drive VSD*, *Ketebalan Kabel*, dan *Komponen Breaker Equivalents* agar arsitektur panel aman tanpa hitungan ganda."
+      concept={tu.concept}
     >
       <style>{`
         .apple-glass-card {
@@ -301,24 +287,31 @@ export default function UnifiedPage() {
         {step === 1 && (
           <div className="calc-col-input wizard-pane" style={{ width: "100%" }}>
             <div className="sec-label"><span>{tu.secMotor}</span></div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 24 }}>
               <FieldNumber
                 label={tu.motorKw} value={motorKw} onChange={setMotorKw}
-                hint={`Estimated FLA: ${estA.toFixed(1)} A`}
-              />
-              <FieldNumber
-                label={tu.motorAmps} value={motorAmps} onChange={setMotorAmps}
-                hint="Leave empty to use estimated FLA"
+                hint={`${t.vsd.motorPowerHint} (FLA: ${estA.toFixed(1)} A)`}
+                required
               />
               <FieldSelect
                 label={tu.voltage} value={voltage.toString()} onChange={v => setVoltage(parseInt(v) as Voltage)}
                 options={[
-                  { value: "380", label: "380 V" },
-                  { value: "400", label: "400 V" },
-                  { value: "415", label: "415 V" },
-                  { value: "480", label: "480 V" },
+                  { value: "380", label: "380 V (Standard)" },
+                  { value: "400", label: "400 V (IEC standard)" },
+                  { value: "415", label: "415 V (AU/NZ)" },
+                  { value: "480", label: "480 V (NEMA)" },
                 ]}
               />
+              <FieldNumber
+                label={tu.motorAmps} value={motorAmps} onChange={setMotorAmps}
+                hint={tu.motorAmpsHint || "Optional if nameplate available"}
+              />
+            </div>
+
+            <div style={{ height: 1, background: "var(--glass-border)", marginBottom: 24 }} />
+
+            <div className="sec-label"><span>APPLICATION & DUTY</span></div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 24 }}>
               <FieldSelect
                 label={tu.app} value={app} onChange={v => setApp(v as DriveApp)}
                 options={[
@@ -332,6 +325,12 @@ export default function UnifiedPage() {
                 label={tu.heavy} checked={heavy} onChange={setHeavy}
                 hint={t.vsd.heavyHint}
               />
+            </div>
+
+            <div style={{ height: 1, background: "var(--glass-border)", marginBottom: 24 }} />
+
+            <div className="sec-label"><span>DRIVE SPECIFICATION</span></div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 24 }}>
               <FieldSelect
                 label={tu.driveVariant} value={variant} onChange={v => setVariant(v as any)}
                 options={[
@@ -343,11 +342,11 @@ export default function UnifiedPage() {
                 ]}
               />
               <FieldSelect
-                label="IP Rating" value={ipPref} onChange={v => setIpPref(v as any)}
+                label="Environmental Rating" value={ipPref} onChange={v => setIpPref(v as any)}
                 options={[
-                  { value: "IP21", label: "IP21 (Standard)" },
-                  { value: "IP55", label: "IP55 (Robust)" },
-                  { value: "IP66", label: "IP66 (Extreme)" },
+                  { value: "IP21", label: "IP21 — Standard Wall/Indoor" },
+                  { value: "IP55", label: "IP55 — Dust/Wet Protected" },
+                  { value: "IP66", label: "IP66 — High Pressure Washdown" },
                 ]}
               />
             </div>
@@ -355,9 +354,9 @@ export default function UnifiedPage() {
             <div style={{ marginTop: 16, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24 }}>
               <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>APPLICATION: {APP_LEGEND[app].title}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>APPLICATION: {(tu as any).appLegend[app].title}</span>
                 <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
-                  <RichText text={APP_LEGEND[app].desc} />
+                  <RichText text={(tu as any).appLegend[app].desc} />
                 </span>
               </div>
             </div>
@@ -374,8 +373,8 @@ export default function UnifiedPage() {
         {step === 2 && (
           <div className="calc-col-input wizard-pane" style={{ width: "100%" }}>
             <div className="sec-label"><span>{t.cable.secInstall}</span></div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
-              <FieldNumber label={tu.cableLen} value={cableLen} onChange={setCableLen} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 24 }}>
+              <FieldNumber label={tu.cableLen} value={cableLen} onChange={setCableLen} unit="m" />
               <FieldSelect
                 label={t.cable.insulation} value={insulation} onChange={v => setInsulation(v as Insulation)}
                 options={[
@@ -392,22 +391,24 @@ export default function UnifiedPage() {
                   { value: "buried",  label: t.cable.methodBuried },
                 ]}
               />
-              <FieldNumber label={tu.ambient} value={ambient} onChange={setAmbient} />
+              <FieldNumber label={tu.ambient} value={ambient} onChange={setAmbient} unit="°C" />
             </div>
 
-            <div style={{ marginTop: 16, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 0 }}>
+            <div style={{ marginTop: 0, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24 }}>
               <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METODE: {INSTALL_LEGEND[install].title}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METHOD: {(t.cable as any).methodLegend[install].title}</span>
                 <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
-                  <RichText text={INSTALL_LEGEND[install].desc} />
+                  <RichText text={(t.cable as any).methodLegend[install].desc} />
                 </span>
               </div>
             </div>
 
-            <div className="sec-label" style={{ marginTop: 24 }}><span>{t.breaker.secCircuit}</span></div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
-              <FieldNumber label={tu.fault} value={fault} onChange={setFault} />
+            <div style={{ height: 1, background: "var(--glass-border)", marginBottom: 24 }} />
+
+            <div className="sec-label"><span>{t.breaker.secCircuit}</span></div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 24 }}>
+              <FieldNumber label={tu.fault} value={fault} onChange={setFault} unit="kA" />
             </div>
 
             <div className="wizard-nav-bar">

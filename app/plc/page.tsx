@@ -44,9 +44,9 @@ export default function PlcPage() {
   return (
     <CalcShell
       label="PLC"
-      title="PLC I/O Module Sizing"
-      subtitle="Siemens S7-1200 & S7-1500 Gen 2 — module count, expansion, power budget"
-      concept="PLC adalah otak sistem kontrol. Setiap sensor (*DI/AI*) dan aktuator (*DO/AO*) butuh **satu kanal fisik** di modul I/O. Kurang spek modul = sistem mati saat commissioning. Kalkulator ini memastikan jumlah modul, ekspansi **ET 200SP**, dan **power budget** bus 24 VDC tidak under-spec sejak quotation."
+      title={tp.title}
+      subtitle={tp.subtitle}
+      concept={tp.concept}
     >
       <style>{`
         .plc-io-grid {

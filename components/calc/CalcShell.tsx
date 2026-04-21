@@ -1,5 +1,7 @@
 import RichText from "./RichText";
 
+import { useLang } from "@/lib/i18n";
+
 interface Props {
   label: string;
   title: string;
@@ -9,6 +11,7 @@ interface Props {
 }
 
 export default function CalcShell({ label, title, subtitle, concept, children }: Props) {
+  const { t } = useLang();
   return (
     <main style={{ maxWidth: 840, margin: "0 auto", padding: "64px 24px 120px" }}>
       {/* Brand & Section Label */}
@@ -70,7 +73,7 @@ export default function CalcShell({ label, title, subtitle, concept, children }:
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.15em", fontFamily: "var(--font-mono)" }}>Guidance & Theory</span>
+            <span style={{ fontSize: 11, fontWeight: 800, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.15em", fontFamily: "var(--font-mono)" }}>{t.common.guidanceTheory}</span>
             <div style={{ fontSize: "14px", color: "var(--fg)", lineHeight: 1.6, opacity: 0.95 }}>
               <RichText text={concept} />
             </div>

@@ -86,7 +86,7 @@ export default function PanelPage() {
       label={tp.label} 
       title={tp.title} 
       subtitle={tp.subtitle}
-      concept="Casing Panel/Enclosure tidak cuma jadi kotak pembungkus. Seluruh peralatan elektronik di dalamnya akan mengeluarkan radiasi panas (*Heat Loss*). Kalkulator termal ini memandu insinyur apakah jeroan mesin bisa didinginkan secara angin **alami** saja, butuh **kipas eksternal raksasa**, atau bahkan wajib disuntik unit pendingin chiller **AC (AirCon)** tertutup berstandar `IP55+`."
+      concept={tp.concept}
     >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="sec-label"><span>{tp.secHeat}</span></div>
@@ -215,15 +215,15 @@ export default function PanelPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Ruler size={18} style={{ color: "var(--accent)" }} />
           <div>
-            <div className="sec-label" style={{ marginBottom: 0 }}><span>Panel Layout Estimator</span></div>
+            <div className="sec-label" style={{ marginBottom: 0 }}><span>{t.panelLayout.title}</span></div>
             <p style={{ fontSize: 12, color: "var(--muted)", margin: "4px 0 0", fontFamily: "var(--font-body)" }}>
-              Input komponen yang akan dipasang → output dimensi minimum enclosure sesuai IEC 61439 untuk quotation.
+              {t.panelLayout.subtitle}
             </p>
           </div>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
-          <FieldSelect label="VSD Frame Size" value={vsdFrame} onChange={v => setVsdFrame(v as VsdFrame)}
+          <FieldSelect label={t.panelLayout.vsdFrame} value={vsdFrame} onChange={v => setVsdFrame(v as VsdFrame)}
             options={[
               { value: "none", label: "No VSD" },
               { value: "R0", label: "R0 — ≤ 0.75 kW (68×245 mm)" },
@@ -236,24 +236,24 @@ export default function PanelPage() {
               { value: "R9", label: "R9 — 160–250 kW (cabinet-mount)" },
             ]}
             hint="ABB ACS880/ACQ580 frame sizes from hardware manual" />
-          <FieldNumber label="VSD Quantity" value={vsdQty} onChange={setVsdQty} min={0} max={20} />
-          <FieldNumber label="3-Pole MCB Count (DIN rail)" value={mcb3p} onChange={setMcb3p} min={0}
-            hint="Each 3P MCB = 54 mm wide on 35 mm DIN" />
-          <FieldNumber label="MCCB Count" value={mccbCnt} onChange={setMccbCnt} min={0} />
-          <FieldSelect label="MCCB Frame" value={mccbFrm} onChange={v => setMccbFrm(v as "S"|"M"|"L")}
+          <FieldNumber label={t.panelLayout.vsdQty} value={vsdQty} onChange={setVsdQty} min={0} max={20} />
+          <FieldNumber label={t.panelLayout.mcb3p} value={mcb3p} onChange={setMcb3p} min={0}
+            hint={t.panelLayout.mcb3pHint} />
+          <FieldNumber label={t.panelLayout.mccbCount} value={mccbCnt} onChange={setMccbCnt} min={0} />
+          <FieldSelect label={t.panelLayout.mccbFrame} value={mccbFrm} onChange={v => setMccbFrm(v as "S"|"M"|"L")}
             options={[
               { value: "S", label: "S — up to 250A (3VA1/5SL)" },
               { value: "M", label: "M — up to 400A (3VA2)" },
               { value: "L", label: "L — up to 630A (3VL)" },
             ]} />
-          <FieldSelect label="Busbar Tray" value={bbTier} onChange={v => setBbTier(v as BusbarTier)}
+          <FieldSelect label={t.panelLayout.busbarTier} value={bbTier} onChange={v => setBbTier(v as BusbarTier)}
             options={[
               { value: "none",   label: "No busbar (terminal block only)" },
               { value: "single", label: "Single-tier (100 mm)" },
               { value: "triple", label: "Triple-tier segregated (150 mm)" },
             ]}
             hint="Triple-tier: L1/L2/L3 separated per IEC 61439 Form 3b" />
-          <FieldSelect label="Space Preference" value={layoutSpace} onChange={v => setLayoutSpace(v as "compact"|"comfortable")}
+          <FieldSelect label={t.panelLayout.spacePreference} value={layoutSpace} onChange={v => setLayoutSpace(v as "compact"|"comfortable")}
             options={[
               { value: "comfortable", label: "Comfortable (×1.3 margin)" },
               { value: "compact",     label: "Compact (×1.1 margin)" },
@@ -263,7 +263,7 @@ export default function PanelPage() {
 
         <button className="btn-primary" onClick={handleLayout}
           style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
-          Estimate Panel Dimensions (IEC 61439)
+          {t.panelLayout.btnCalc}
         </button>
       </div>
 
@@ -272,16 +272,16 @@ export default function PanelPage() {
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <Layers size={18} style={{ color: "var(--accent)" }} />
             <span style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 700, color: "var(--fg)" }}>
-              Minimum Enclosure Dimensions
+              {t.panelLayout.resTitle}
             </span>
           </div>
 
           {/* DIMENSION HERO */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, textAlign: "center" }}>
             {[
-              { label: "HEIGHT", value: `${layoutResult.enclosureHmm} mm`, sub: "H — IEC 61439" },
-              { label: "WIDTH",  value: `${layoutResult.enclosureWmm} mm`, sub: "W — std column" },
-              { label: "DEPTH",  value: `${layoutResult.enclosureDmm} mm`, sub: "D — door clearance" },
+              { label: t.panelLayout.resH, value: `${layoutResult.enclosureHmm} mm`, sub: "H — IEC 61439" },
+              { label: t.panelLayout.resW, value: `${layoutResult.enclosureWmm} mm`, sub: "W — std column" },
+              { label: t.panelLayout.resD, value: `${layoutResult.enclosureDmm} mm`, sub: "D — door clearance" },
             ].map(d => (
               <div key={d.label} style={{ padding: "18px 12px", background: "rgba(201,168,76,0.08)", borderRadius: 16, border: "1px solid rgba(201,168,76,0.2)" }}>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>{d.label}</div>
@@ -292,7 +292,7 @@ export default function PanelPage() {
           </div>
 
           {/* COMPONENT STACK BREAKDOWN */}
-          <div className="sec-label"><span>Vertical layout breakdown</span></div>
+          <div className="sec-label"><span>{t.panelLayout.breakdown}</span></div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {layoutResult.breakdown.map((b, i) => {
               const pct = Math.round((b.heightMm / layoutResult.enclosureHmm) * 100);
@@ -307,7 +307,7 @@ export default function PanelPage() {
               );
             })}
             <div style={{ display: "flex", alignItems: "center", gap: 12, paddingTop: 8, borderTop: "1px dashed rgba(255,255,255,0.08)" }}>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "#4ade80", flex: 1, fontWeight: 700 }}>Free space remaining</div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "#4ade80", flex: 1, fontWeight: 700 }}>{t.panelLayout.freeSpace}</div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: "#4ade80", width: 60, textAlign: "right" }}>{layoutResult.freeHeightMm} mm</div>
             </div>
           </div>

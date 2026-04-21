@@ -22,7 +22,7 @@ export default function AbbSupportHub() {
   const filteredDrives = drivesData.filter(d => d.family.startsWith(selectedFamily.split(" ")[0]));
 
   return (
-    <CalcShell label="ABB HUB" title={ts.title} subtitle={ts.subtitle}>
+    <CalcShell label="ABB HUB" title={ts.title} subtitle={ts.subtitle} concept={ts.concept}>
       <div className="vinci-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 32 }}>
         
         {/* FAULT SEARCH */}
@@ -30,7 +30,7 @@ export default function AbbSupportHub() {
           background: "linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(13,16,22,0) 100%)",
           border: "1px solid var(--accent)" 
         }}>
-          <div className="sec-label"><span>ERROR CODE LOOKUP</span></div>
+          <div className="sec-label"><span>{ts.title.toUpperCase()}</span></div>
           <div style={{ position: "relative", marginTop: 16 }}>
             <input 
               type="text" 
@@ -72,7 +72,7 @@ export default function AbbSupportHub() {
                 </div>
               )) : (
                 <div style={{ padding: 16, textAlign: "center", color: "var(--muted)", fontSize: 13 }}>
-                  No fault codes matched "{searchCode}".
+                  No results for "{searchCode}".
                 </div>
               )}
             </div>

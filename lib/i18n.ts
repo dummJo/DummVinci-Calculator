@@ -35,6 +35,8 @@ export const T = {
     },
     common: {
       resultLabel: "◈ Result",
+      managedBy: "◈ Managed by dummJo.",
+      guidanceTheory: "Guidance & Theory",
     },
     home: {
       heroTitle: "DummVinci",
@@ -98,6 +100,7 @@ export const T = {
     cable: {
       label: "Cable Sizing", title: "Cable Sizing Calculator",
       subtitle: "IEC 60364-5-52 · PUIL 2011 · Cu conductor, PVC / XLPE, method C",
+      concept: "Conductor selection balances **Thermal Capacity** against **Voltage Drop**. We use Method C (Clipped to wall) as a safe industrial baseline, incorporating IEC 60364-5-52 derating factors for multi-core cables. Ground sizing follows the direct phase-matching rule for s < 16mm².",
       secLoad: "Load Parameters", secInstall: "Installation & Environment",
       btnCalc: "Calculate Cable Size",
       current: "Design Current", currentHint: "Full-load amps at motor terminal",
@@ -118,10 +121,17 @@ export const T = {
       resPhase: "Phase Conductor", resGround: "Ground (PE) Conductor",
       resAmpacity: "Derated Ampacity", resVdrop: "Voltage Drop",
       resDerating: "Combined Derating Factor", resSuggestion: "Suggested Cable",
+      methodLegend: {
+        air: { title: "Clipped in Air", desc: "Cable is exposed to ambient air. Optimal cooling, providing the highest ampacity for a given cross-section." },
+        tray: { title: "Cable Tray", desc: "Installed on perforated trays. Standard industrial routing; maintains stable derating due to airflow holes." },
+        conduit: { title: "In Conduit", desc: "Cable is enclosed in pipe. **Heat is trapped!** Ampacity must be significantly discounted (~30% derating)." },
+        buried: { title: "Direct Buried", desc: "Embedded in soil. Requires armored cable (NYFGbY) and specific soil thermal resistance calculations." },
+      }
     },
     vsd: {
       label: "VSD Sizing", title: "VSD + Airflow Calculator",
       subtitle: "ABB ACQ580 (HVAC-R) · ACS880 (Industrial / Crane) · Panel thermal sizing",
+      concept: "Variable Speed Drives (VSD) generate significant harmonic heat. We calculate the **Heatsink Airflow** based on the unit's power loss (Ploss) and the required **Panel Airflow** to keep ΔT within 10-15K. ACS880 is mandatory for hoisting apps due to firmware torque control.",
       secMotor: "Motor & Application", btnCalc: "Size Drive",
       motorPower: "Motor Power", motorPowerHint: "Nameplate kW of driven motor",
       lineVoltage: "Line Voltage", app: "Application",
@@ -148,6 +158,7 @@ export const T = {
     breaker: {
       label: "Breaker Selection", title: "MCCB / MCB Selector",
       subtitle: "Siemens 5SL · 5SY · 3VA — IEC 60947-2 · IEC 60898 · Curve B/C/D",
+      concept: "Circuit protection must clear faults before the I²t thermal threshold of the cable is exceeded. For VSD and inductive loads, **Curve D** is prioritized to prevent nuisance trips during high-frequency switching and initial transformer magnetizing inrush.",
       secCircuit: "Circuit Parameters", btnCalc: "Select Breaker",
       loadCurrent: "Load Current", loadCurrentHint: "Full-load operating current (FLA)",
       faultCurrent: "Prospective Fault Current", faultCurrentHint: "Available short-circuit current at MDB",
@@ -169,6 +180,7 @@ export const T = {
     busbar: {
       label: "Busbar Sizing", title: "Busbar Sizing Calculator",
       subtitle: "DIN 43671 · IEC 61439-1 Annex N · Rectangular flat bar, Cu / Al",
+      concept: "Busbar capacity is determined by **Heat Dissipation**. Enclosed panels reduce ampacity due to trapped air. Forced cooling (fans) or using multiple bars per phase can increase the current carrying capacity significantly.",
       secParams: "Busbar Parameters", secInstall: "Installation Conditions",
       btnCalc: "Size Busbar",
       current: "Continuous Current", currentHint: "Rated continuous current at busbar (not short-circuit)",
@@ -189,6 +201,7 @@ export const T = {
     br: {
       label: "Braking Resistor", title: "Braking Resistor Sizing",
       subtitle: "STAHL CraneSystems Standard · ABB ACS880 R+/R- · Crane hoist & traverse",
+      concept: "Braking resistors dissipate **Regenerative Energy** into heat when a motor decelerates a heavy load. For cranes, R-target must be precisely calculated to ensure the DC-bus does not trip on overvoltage during gravity descent.",
       secDrive: "Drive & Motor Parameters", secDuty: "Duty & Peak Parameters",
       btnCalc: "Size Braking Resistor",
       motorPower: "Motor Power", motorPowerHint: "Nameplate kW of crane motor",
@@ -207,6 +220,7 @@ export const T = {
     panel: {
       label: "Panel Cooling", title: "Panel / Enclosure Sizing",
       subtitle: "IEC 60890 · XLTC & Rittal TS 8 — Natural / Fan / Air Conditioning",
+      concept: "Panel thermal management prevents component failure. We calculate **Total Heat Load** and determine if natural convection, forced fans, or active Air Conditioning is required based on the external ambient temperature and IP rating.",
       secHeat: "Heat Load & Environment", secCooling: "Cooling Strategy",
       btnCalc: "Size Panel",
       heat: "Total Heat Load", heatHint: "Sum of all component losses inside panel (drives + transformers + etc.)",
@@ -244,9 +258,11 @@ export const T = {
     unified: {
       label: "Fast Sizing", title: "Unified Motor Starter Sizing",
       subtitle: "VSD + Cable + Breaker in one flow — ABB & Siemens Standards",
+      concept: "The `Fast Sizing` workflow acts as an autonomous shortcut for assembly design. By inputting **Motor capacity (kW)**, the tool generates a 3-layer protective architecture: *VSD Type*, *Cable Rating*, and *Breaker Equivalent*, ensuring system stability and compliance with IEC standards.",
       secMotor: "Main Motor Data",
       motorKw: "Motor Power (kW)",
       motorAmps: "Manual FLA (A) - optional",
+      motorAmpsHint: "Optional if nameplate available - overrides auto-estimate",
       voltage: "Line Voltage",
       app: "Application Type",
       heavy: "Heavy Duty / Crane",
@@ -260,10 +276,17 @@ export const T = {
       resCable: "Cable Specification",
       resBreaker: "Protection (MCCB/MCB)",
       resAmps: "Calculated FLA",
+      appLegend: {
+        pump: { title: "Normal Duty", desc: "Starting torque is **low**. Inrush currents are linear. Safe with standard industrial drive specs." },
+        fan: { title: "Normal Duty", desc: "High **Inertia** load. Requires gradual ramp up time to move large fan blades safely." },
+        crane: { title: "Heavy Duty", desc: "Gravitational load applied at `0 RPM`. **Heavy Duty** class mandatory for drive protection circuit." },
+        conveyor: { title: "Heavy Duty", desc: "Often loaded with stones/sand (*locked load*). Motor needs massive **Starting Torque** punch." }
+      }
     },
     support: {
       title: "ABB Drive Support Hub",
       subtitle: "Error code lookup · Product manuals · Physical dimensions",
+      concept: "The Support Hub provides immediate field diagnostics. Enter an **ABB Fault Code** to see the root cause and standard IEC remediation steps. Frame dimensions are provided for panel layout planning.",
       inputFault: "Enter Error Code (e.g., 2310)",
       btnSearch: "Search Solution",
       modalSolution: "Solution Found",
@@ -282,6 +305,7 @@ export const T = {
     plc: {
       label: "PLC I/O", title: "PLC I/O Module Sizing",
       subtitle: "Siemens S7-1200 & S7-1500 Gen 2 — module count, expansion, power budget",
+      concept: "PLC sizing requires a balance of current **I/O density** and future **Expansion Margin**. 20% spare capacity is the IEC standard. High DI/DO counts might necessitate a separate ET 200SP interface module.",
       secCpu: "PLC CPU Selection",
       cpuHint: "S7-1200 for < 200 I/O; S7-1500 for complex multi-axis or safety projects.",
       secIo: "Required I/O Points",
@@ -303,6 +327,7 @@ export const T = {
     starter: {
       label: "Starter", title: "Motor Starter Sizing",
       subtitle: "DOL & Star-Delta — Siemens SIRIUS 3RV2 MPCB · 3RT2 Contactor · 3RA2 Compact Kit",
+      concept: "Motor starters protect against **Overload** and **Short-Circuit**. DOL is for light loads; Star-Delta reduces inrush current for larger centrifugal pumps. Our sizing follows the Siemens SIRIUS type-2 coordination chart.",
       secMotor: "Motor Specification",
       motorKw: "Motor Power (kW)", motorKwHint: "From nameplate — 4-pole squirrel cage standard",
       voltage: "Supply Voltage",
@@ -326,6 +351,9 @@ export const T = {
     panelLayout: {
       title: "Panel Layout Estimator",
       subtitle: "Input installed components → minimum enclosure dimensions per IEC 61439",
+      concept: "Component layout must account for **Heat Rise** and **Cabling Access**. Minimum height is estimated based on DIN-rail tiers and VSD clearance requirements for optimal airflow as per IEC 61439 regulations.",
+      underConstTitle: "Under Construction",
+      underConstDesc: "We are currently integrating the IEC 61439 component positioning engine and dimension auto-selector.",
       vsdFrame: "VSD Frame Size", vsdQty: "VSD Quantity",
       mcb3p: "3-Pole MCB Count (DIN rail)", mcb3pHint: "Each 3P MCB = 54 mm wide on 35 mm DIN",
       mccbCount: "MCCB Count", mccbFrame: "MCCB Frame",
@@ -346,6 +374,8 @@ export const T = {
     },
     common: {
       resultLabel: "◈ Hasil Seleksi",
+      managedBy: "◈ Dikelola oleh dummJo.",
+      guidanceTheory: "Panduan & Teori",
     },
     home: {
       heroTitle: "DummVinci",
@@ -409,6 +439,7 @@ export const T = {
     cable: {
       label: "Ukuran Kabel", title: "Kalkulator Ukuran Kabel",
       subtitle: "Standar IEC 60364-5-52 · PUIL 2011 · Konduktor Tembaga (Cu), PVC / XLPE",
+      concept: "Seleksi penghantar menyeimbangkan antara **Kapasitas Terma** (panas) dan **Jatuh Tegangan**. Menggunakan Metode C (Tempel dinding) sebagai dasar industri yang aman, menyertakan faktor derating IEC 60364-5-52. Ukuran ground mengikuti aturan penyelarasan fasa untuk s < 16mm².",
       secLoad: "Parameter Beban", secInstall: "Kondisi Instalasi & Lingkungan",
       btnCalc: "Hitung Ukuran Kabel",
       current: "Arus Desain (Ib)", currentHint: "Arus beban penuh pada terminal motor",
@@ -429,10 +460,17 @@ export const T = {
       resPhase: "Konduktor Fasa", resGround: "Konduktor Pembumian (PE)",
       resAmpacity: "KHA Terkoreksi (Iz)", resVdrop: "Jatuh Tegangan Terhitung",
       resDerating: "Faktor Derating Gabungan", resSuggestion: "Rekomendasi Kabel",
+      methodLegend: {
+        air: { title: "Di Udara Terbuka", desc: "Kabel telanjang ke dinding/siku. Pendinginan optimal, kapasitas arus boleh dilewati paling besar." },
+        tray: { title: "Rak Kabel (Tray)", desc: "Standar industri. Udara masih bisa sirkulasi melalui celah rak, faktor derating stabil." },
+        conduit: { title: "Dalam Konduit", desc: "**Awas Panas!** Hawa panas terjebak dalam pipa tertutup. Kapasitas arus harus didiskon mahal (~30%)." },
+        buried: { title: "Tanam Langsung", desc: "Ditanam di dalam tanah. Wajib kabel pelindung baja (Armor) dan perhitungan suhu tanah spesifik." },
+      }
     },
     vsd: {
       label: "Sizing VSD", title: "Kalkulator VSD & Aliran Udara",
       subtitle: "ABB ACQ580 (Air & Limbah) · ACS880 (Industri / Crane) · Estimasi Termal Panel",
+      concept: "Variable Speed Drive (VSD) menghasilkan panas harmonik yang signifikan. Kami menghitung **Aliran Udara Heatsink** berdasarkan rugi daya (Ploss) dan **Aliran Udara Panel** yang diperlukan agar ΔT tetap di 10-15K. ACS880 wajib untuk aplikasi angkat (hoist) karena kontrol torsinya.",
       secMotor: "Parameter Motor & Aplikasi", btnCalc: "Tentukan Drive",
       motorPower: "Daya Motor", motorPowerHint: "Kapasitas kW sesuai plat nama motor",
       lineVoltage: "Tegangan Jalur", app: "Aplikasi Produk",
@@ -459,6 +497,7 @@ export const T = {
     breaker: {
       label: "Seleksi Breaker", title: "Selektor MCCB / MCB",
       subtitle: "Siemens 5SL · 5SY · 3VA — Standar IEC 60947-2 · IEC 60898 · Kurva B/C/D",
+      concept: "Proteksi sirkuit harus memutus gangguan sebelum ambang batas terma I²t pada kabel terlampaui. Untuk beban induktif dan VSD, **Kurva D** diprioritaskan guna mencegah trip prematur saat terjadi lonjakan inrush awal dan frekuensi switching tinggi.",
       secCircuit: "Parameter Sirkuit", btnCalc: "Pilih Pemutus Arus",
       loadCurrent: "Arus Beban Terhitung", loadCurrentHint: "Arus operasi beban penuh (FLA)",
       faultCurrent: "Arus Hubung Singkat (Isc)", faultCurrentHint: "Kapasitas arus hubung singkat yang tersedia di panel",
@@ -480,6 +519,7 @@ export const T = {
     busbar: {
       label: "Sizing Busbar", title: "Kalkulator Kapasitas Busbar",
       subtitle: "Standar DIN 43671 · IEC 61439-1 Annex N · Busbar Datar, Cu / Al",
+      concept: "Kapasitas busbar ditentukan oleh **Pelepasan Panas**. Panel tertutup mengurangi kapasitas arus karena udara terperangkap. Pendinginan paksa atau bar ganda dapat meningkatkan kemampuan hantar arus secara signifikan.",
       secParams: "Parameter Material Busbar", secInstall: "Kondisi Lokasi Pemasangan",
       btnCalc: "Tentukan Ukuran Busbar",
       current: "Arus Kontinu Nominal", currentHint: "Arus kontinu yang direncanakan pada busbar",
@@ -500,6 +540,7 @@ export const T = {
     br: {
       label: "Braking Resistor", title: "Sizing Resistor Pengereman",
       subtitle: "Standar STAHL CraneSystems · Koneksi ABB ACS880 R+/R- · Hoist & Traverse",
+      concept: "Braking resistor membuang **Energi Regeneratif** menjadi panas saat motor mengerem beban berat. Untuk crane, nilai R-target harus presisi agar sirkuit DC-bus tidak trip karena tegangan berlebih saat beban turun.",
       secDrive: "Parameter Drive & Motor", secDuty: "Parameter Duty Cycle & Peak",
       btnCalc: "Hitung Braking Resistor",
       motorPower: "Daya Motor", motorPowerHint: "Kapasitas kW sesuai plat nama motor crane",
@@ -519,6 +560,7 @@ export const T = {
     panel: {
       label: "Pendingin Panel", title: "Sizing Panel & Pendingin",
       subtitle: "Standar IEC 60890 · XLTC & Rittal TS 8 — Alamiah / Kipas / AC",
+      concept: "Manajemen termal panel mencegah kegagalan komponen prematur. Kami menghitung **Total Beban Panas** dan menentukan apakah diperlukan ventilasi alami, kipas paksa, atau AC aktif berdasarkan suhu lingkungan luar.",
       secHeat: "Beban Panas & Lingkungan Sekitar", secCooling: "Strategi Manajemen Panas",
       btnCalc: "Tentukan Spesifikasi Panel",
       heat: "Total Beban Panas Internal", heatHint: "Jumlah kerugian daya semua komponen (VSD + Trafo + dll.)",
@@ -556,9 +598,11 @@ export const T = {
     unified: {
       label: "Fast Sizing", title: "Kalkulator Terpadu Motor Starter",
       subtitle: "VSD + Kabel + Breaker dalam satu alur — Standar ABB & Siemens",
+      concept: "Alur `Fast Sizing` ibarat jalan pintas pintar bagi sistem perakitan. Cukup masukkan kapasitas **(kW) motor**, alat ini merangkai **3 lapis perisai otomatis** secara otonom: *Tipe Drive VSD*, *Ketebalan Kabel*, dan *Komponen Breaker* agar arsitektur panel aman tanpa hitungan ganda.",
       secMotor: "Data Motor Utama",
       motorKw: "Daya Motor (kW)",
       motorAmps: "Arus FLA Manual (A) - opsional",
+      motorAmpsHint: "Opsional jika tersedia nameplate - menimpa estimasi otomatis",
       voltage: "Tegangan Jalur",
       app: "Jenis Aplikasi",
       heavy: "Tugas Berat / Crane",
@@ -572,10 +616,17 @@ export const T = {
       resCable: "Spesifikasi Kabel",
       resBreaker: "Proteksi (MCCB/MCB)",
       resAmps: "Arus FLA Terhitung",
+      appLegend: {
+        pump: { title: "Normal Duty", desc: "Torsi awal **rendah**. Arus start biasanya linier. Sangat aman dipasangkan ke Drive spek standar." },
+        fan: { title: "Normal Duty", desc: "Beban **Inersia** tinggi. Membutuhkan waktu ancang-ancang (Ramp time) untuk memutar kipas yang berat." },
+        crane: { title: "Heavy Duty", desc: "Beban gravitasi sudah ada sejak `0 RPM`. Wajib menggunakan kelas **Heavy Duty** agar VSD tahan banting." },
+        conveyor: { title: "Heavy Duty", desc: "Sering dipenuhi batu/pasir padat (*locked load*). Motor butuh **Torsi Kejut** yang sangat galak." }
+      }
     },
     support: {
       title: "ABB Drive Support Hub",
       subtitle: "Pencarian kode error · Manual produk · Dimensi fisik",
+      concept: "Support Hub memberikan diagnosa lapangan secara instan. Masukkan **Kode Error ABB** untuk melihat penyebab dan langkah perbaikan standar. Dimensi frame juga tersedia untuk mempermudah perencanaan tata letak panel.",
       inputFault: "Masukkan Kode Error (misal: 2310)",
       btnSearch: "Cari Solusi",
       modalSolution: "Solusi Ditemukan",
@@ -594,6 +645,7 @@ export const T = {
     plc: {
       label: "Modul PLC", title: "Sizing Modul I/O PLC",
       subtitle: "Siemens S7-1200 & S7-1500 Gen 2 — jumlah modul, ekspansi, anggaran daya",
+      concept: "Sizing PLC membutuhkan keseimbangan antara **Densitas I/O** saat ini dan **Margin Ekspansi**. Cadangan 20% adalah standar IEC. Jumlah DI/DO yang tinggi mungkin memerlukan modul antarmuka ET 200SP terpisah.",
       secCpu: "Pemilihan CPU PLC",
       cpuHint: "S7-1200 untuk < 200 titik I/O; S7-1500 untuk proyek kompleks atau berkeselamatan.",
       secIo: "Titik I/O yang Dibutuhkan",
@@ -615,6 +667,7 @@ export const T = {
     starter: {
       label: "Starter", title: "Sizing Motor Starter",
       subtitle: "DOL & Star-Delta — MPCB Siemens SIRIUS 3RV2 · Kontaktor 3RT2 · Kit Kompak 3RA2",
+      concept: "Starter motor melindungi dari **Beban Lebih** dan **Hubung Singkat**. DOL untuk beban ringan; Star-Delta mengurangi arus inrush untuk pompa besar. Sizing kami mengikuti grafik koordinasi type-2 Siemens SIRIUS.",
       secMotor: "Spesifikasi Motor",
       motorKw: "Daya Motor (kW)", motorKwHint: "Dari pelat nama — motor sangkar tupai 4-kutub standar",
       voltage: "Tegangan Sumber",
@@ -638,6 +691,9 @@ export const T = {
     panelLayout: {
       title: "Estimator Tata Letak Panel",
       subtitle: "Masukkan komponen yang dipasang → dimensi minimum enclosure sesuai IEC 61439",
+      concept: "Tata letak komponen harus mempertimbangkan **Kenaikan Panas** dan **Akses Pengabelan**. Tinggi minimum diestimasi berdasarkan baris rel DIN dan jarak bebas VSD untuk aliran udara yang optimal sesuai IEC 61439.",
+      underConstTitle: "Sedang Dikembangkan",
+      underConstDesc: "Kami sedang mengintegrasikan mesin pemposisian komponen IEC 61439 dan selektor dimensi otomatis.",
       vsdFrame: "Ukuran Frame VSD", vsdQty: "Jumlah VSD",
       mcb3p: "Jumlah MCB 3-Kutub (DIN rail)", mcb3pHint: "Setiap MCB 3P = lebar 54 mm pada DIN 35 mm",
       mccbCount: "Jumlah MCCB", mccbFrame: "Frame MCCB",

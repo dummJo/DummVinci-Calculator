@@ -2,8 +2,10 @@
 import { useEffect, useState } from "react";
 
 import { getRandomQuote, type Quote } from "@/lib/quotes";
+import { useLang } from "@/lib/i18n";
 
 export default function Footer() {
+  const { t } = useLang();
   const [quote, setQuote] = useState<Quote | null>(null);
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function Footer() {
         textTransform: "uppercase",
         marginBottom: 12
       }}>
-        ◈ Managed by dummJo.
+        {t.common.managedBy}
       </div>
       
       <div style={{

@@ -13,13 +13,6 @@ import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import { Info } from "lucide-react";
 
-const INSTALL_LEGEND: Record<string, { title: string, desc: string }> = {
-  air: { title: "Clipped in Air (Kabel Terbuka)", desc: "Kabel dipasang telanjang ke dinding/siku. Karena terekspos udara bebas, suhu kabel terjaga dan arus yg boleh dilewati paling besar." },
-  tray: { title: "Cable Tray (Rak Kabel Berlubang)", desc: "Dipasang teratur di atas rak. Standar terbaik dan terbanyak di industri pabrik & mall. Udara masih bisa sirkulasi." },
-  conduit: { title: "In Conduit (Dalam Pipa Tertutup)", desc: "Kabel dirapikan di dalam pipa PVC/Besi. Panas listrik akan terperangkap! Karena itu, kapasitas/kemampuan hantar arusnya dipaksa turun (Derated)." },
-  buried: { title: "Direct Buried (Kabel Tanam Tanah)", desc: "Ditanam murni di dalam tanah. Disipasi panas sulit sehingga kabel harus dilindungi pelindung baja (armor) khusus." },
-};
-
 export default function CablePage() {
   const { t } = useLang();
   const tc = t.cable;
@@ -54,10 +47,10 @@ export default function CablePage() {
       label={tc.label} 
       title={tc.title} 
       subtitle={tc.subtitle}
-      concept="Ukuran kabel listrik ibarat saluran air; ia harus disesuaikan dengan besar **beban arusnya**. Kabel yang ditutup rapat (*Conduit/Pipa*) lebih mudah panas ketimbang di udara terbuka, sehingga kemampuannya dipaksa turun (`Derated`). Kalkulator ini mengamankan kabel dari **resiko terbakar** (Sizing) dan meredam **Drop Voltage**."
+      concept={tc.concept}
     >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        <div className="sec-label"><span>{tc.secLoad}</span></div>
+        <div className="sec-label"><span>LOAD & TOPOLOGY</span></div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           <FieldKwAmp
@@ -93,7 +86,8 @@ export default function CablePage() {
           />
         </div>
 
-        <div className="sec-label" style={{ marginTop: 4 }}><span>{tc.secInstall}</span></div>
+        <div style={{ height: 1, background: "var(--glass-border)", marginBottom: 20 }} />
+        <div className="sec-label"><span>ENVIRONMENT & INSTALLATION</span></div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           <FieldSelect
@@ -134,8 +128,8 @@ export default function CablePage() {
         <div style={{ marginTop: 4, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12 }}>
           <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METODE: {INSTALL_LEGEND[install].title}</span>
-            <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>{INSTALL_LEGEND[install].desc}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>CODE: {(tc as any).methodLegend[install].title}</span>
+            <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>{(tc as any).methodLegend[install].desc}</span>
           </div>
         </div>
 

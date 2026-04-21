@@ -40,7 +40,7 @@ export default function BrakingResistorPage() {
       label={tr.label} 
       title={tr.title} 
       subtitle={tr.subtitle}
-      concept="Saat Crane menurunkan palet beban berton-ton, gravitasi memaksa motor bekerja berbalik arah menjadi mesin pembangkit listrik (*'generator'*). Energi listrik berbahaya ini akan mengalir lurus masuk dan **meledakkan panel Drive** jika tidak ditangani! Oleh karena itu energi tersebut dipaksa melewai jembatan Braking Resistor agar dihanguskan ke udara sebagai panas murni."
+      concept={tr.concept}
     >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="sec-label"><span>{tr.secDrive}</span></div>

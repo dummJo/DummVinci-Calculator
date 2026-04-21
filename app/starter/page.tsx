@@ -56,7 +56,7 @@ export default function StarterPage() {
       label={ts.label}
       title={ts.title}
       subtitle={ts.subtitle}
-      concept="Direct starter (**DOL / Star-Delta**) masih mendominasi proyek pompa, *fire pump*, dan conveyor di Indonesia. Kesalahan paling umum: teknisi memakai contactor berdasarkan rating *AC1* (resistive) — bukan **AC3** (motor duty), sehingga contactor 40A hanya mampu menanggung motor ~18.5 kW nyatanya. Kalkulator ini memastikan `MPCB trip setting`, `contactor AC3 rating`, dan `auxiliary wiring` sudah sesuai **IEC 60947-4-1** sebelum quotation keluar."
+      concept={ts.concept}
     >
       <style>{`
         .bom-row {
