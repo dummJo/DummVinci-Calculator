@@ -266,15 +266,32 @@ export default function BottomTabBar() {
           pointerEvents: showMore ? "auto" : "none",
         }}
       >
-        <div style={{ gridColumn: "span 3", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 12 }}>
+        <div style={{ 
+          gridColumn: "span 3", 
+          display: "flex", 
+          flexWrap: "wrap", 
+          justifyContent: "center", 
+          gap: 12, 
+          marginBottom: 12 
+        }}>
           {UTILITY_TABS.map(tab => {
             const active = path.startsWith(tab.href);
             return (
               <Link key={tab.href} href={tab.href} className={clsx("more-item", active && "tab-active")} onClick={() => setShowMore(false)}
-                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "16px 8px", borderRadius: 24, textDecoration: "none" }}
+                style={{ 
+                  display: "flex", 
+                  flexDirection: "column", 
+                  alignItems: "center", 
+                  gap: 8, 
+                  padding: "16px 4px", 
+                  borderRadius: 24, 
+                  textDecoration: "none",
+                  width: "calc(33.33% - 12px)",
+                  minWidth: "90px"
+                }}
               >
-                <tab.Icon size={24} strokeWidth={1.5} className={active ? "active-icon" : "inactive-icon"} />
-                <span style={{ fontSize: 9, fontFamily: "var(--font-body), system-ui, sans-serif", opacity: active ? 1 : 0.8, textAlign: "center", color: active ? "var(--accent)" : "var(--fg)", fontWeight: active ? 600 : 500 }}>
+                <tab.Icon size={22} strokeWidth={1.5} className={active ? "active-icon" : "inactive-icon"} />
+                <span style={{ fontSize: 9, fontFamily: "var(--font-body), sans-serif", opacity: active ? 1 : 0.8, textAlign: "center", color: active ? "var(--accent)" : "var(--fg)", fontWeight: active ? 600 : 500 }}>
                   {t.nav[tab.key as keyof typeof t.nav]}
                 </span>
               </Link>

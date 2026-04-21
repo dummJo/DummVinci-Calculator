@@ -16,51 +16,61 @@ export default function ResultCard({ title, rows, recommendation, warnings, feat
   const { t } = useLang();
 
   return (
-    <div className="vinci-card result-card-enter" style={{ marginTop: 24 }}>
+    <div className="vinci-card result-card-enter" style={{ marginTop: 32, padding: "24px 28px" }}>
       {/* header */}
       <div style={{
         display: "flex",
         alignItems: "center",
-        gap: 10,
-        marginBottom: 16,
-        paddingBottom: 12,
+        gap: 12,
+        marginBottom: 24,
+        paddingBottom: 16,
         borderBottom: "1px solid var(--hairline-soft)",
       }}>
-        <span style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: 9,
-          color: "var(--accent)",
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
+        <div style={{
+          padding: "2px 8px",
+          background: "var(--accent-pill-bg)",
+          borderRadius: 4,
+          display: "flex",
+          alignItems: "center",
         }}>
-          {t.common.resultLabel}
-        </span>
+          <span style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 9,
+            color: "var(--accent)",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+          }}>
+            {t.common.resultLabel}
+          </span>
+        </div>
         <span style={{
           fontFamily: "var(--font-display)",
-          fontSize: "var(--fs-md)",
+          fontSize: "17px",
           color: "var(--fg)",
-          letterSpacing: "-0.01em",
+          letterSpacing: "-0.015em",
+          fontWeight: 600,
         }}>
           {title}
         </span>
       </div>
 
       {/* rows */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         {rows.map((r, i) => (
           <div key={i} style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "baseline",
-            gap: 8,
-            paddingBottom: 10,
+            gap: 12,
+            paddingBottom: 14,
             borderBottom: i < rows.length - 1 ? "1px solid var(--hairline-soft)" : "none",
           }}>
             <span style={{
               fontFamily: "var(--font-mono)",
-              fontSize: "var(--fs-xs)",
+              fontSize: "11px",
               color: "var(--muted)",
-              letterSpacing: "0.04em",
+              letterSpacing: "0.06em",
               textTransform: "uppercase",
               flexShrink: 0,
             }}>
@@ -68,9 +78,9 @@ export default function ResultCard({ title, rows, recommendation, warnings, feat
             </span>
             <span style={{
               fontFamily: "var(--font-mono)",
-              fontSize: r.accent ? "var(--fs-md)" : "var(--fs-sm)",
+              fontSize: r.accent ? "16px" : "14px",
               color: r.accent ? "var(--accent)" : "var(--fg)",
-              fontWeight: r.accent ? 600 : 400,
+              fontWeight: r.accent ? 700 : 400,
               textAlign: "right",
             }}>
               {r.value}
