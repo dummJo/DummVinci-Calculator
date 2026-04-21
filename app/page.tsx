@@ -5,6 +5,11 @@ import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import { getRandomQuote, type Quote } from "@/lib/quotes";
 import { useState, useEffect } from "react";
+import {
+  LayoutGrid, Activity, Cpu, Disc3, 
+  Cable, Zap, AlignJustify, Server, Disc, Microchip, Play,
+  ChevronRight
+} from "lucide-react";
 
 const SPEC_STRIP = [
   "IEC 60364", "IEC 60947", "IEC 61439",
@@ -101,80 +106,24 @@ export default function HomePage() {
   }, []);
 
   const CALCS = [
-    {
-      href: "/unified",
-      Icon: IconUnified,
-      title: th.calcs.unified.title,
-      description: th.calcs.unified.desc,
-      tag: "SMART-SIZE",
-      accent: true,
-    },
-    {
-      href: "/cable",
-      Icon: IconCable,
-      title: th.calcs.cable.title,
-      description: th.calcs.cable.desc,
-      tag: "IEC 60364",
-    },
-    {
-      href: "/vsd",
-      Icon: IconVSD,
-      title: th.calcs.vsd.title,
-      description: th.calcs.vsd.desc,
-      tag: "ABB CATALOG",
-    },
-    {
-      href: "/breaker",
-      Icon: IconBreaker,
-      title: th.calcs.breaker.title,
-      description: th.calcs.breaker.desc,
-      tag: "IEC 60947",
-    },
-    {
-      href: "/busbar",
-      Icon: IconBusbar,
-      title: th.calcs.busbar.title,
-      description: th.calcs.busbar.desc,
-      tag: "DIN 43671",
-    },
-    {
-      href: "/braking-resistor",
-      Icon: IconBrake,
-      title: th.calcs.brake.title,
-      description: th.calcs.brake.desc,
-      tag: "STAHL STD",
-    },
-    {
-      href: "/panel",
-      Icon: IconPanel,
-      title: th.calcs.panel.title,
-      description: th.calcs.panel.desc,
-      tag: "IEC 60890",
-    },
-    {
-      href: "/plc",
-      Icon: IconPLC,
-      title: th.calcs.plc.title,
-      description: th.calcs.plc.desc,
-      tag: "S7-1200/1500",
-    },
-    {
-      href: "/starter",
-      Icon: IconStarter,
-      title: th.calcs.starter.title,
-      description: th.calcs.starter.desc,
-      tag: "SIRIUS 3RV/3RT",
-    },
+    { href: "/unified",     key: "unified", tag: "Fastsizing", Icon: IconUnified, accent: true },
+    { href: "/vsd",         key: "drive",   tag: "VSD & BTU",   Icon: IconVSD },
+    { href: "/cable",       key: "cable",   tag: "Current",     Icon: IconCable },
+    { href: "/breaker",     key: "breaker", tag: "Protection",  Icon: IconBreaker },
+    { href: "/busbar",      key: "busbar",  tag: "Capacity",    Icon: IconBusbar },
+    { href: "/starter",     key: "starter", tag: "Motor Sizing",Icon: IconStarter },
+    { href: "/plc",         key: "plc",     tag: "I/O Config",  Icon: IconPLC },
+    { href: "/braking-resistor", key: "brake",   tag: "Regeneration",Icon: IconBrake },
+    { href: "/panel",       key: "panel",   tag: "Enclosure",   Icon: IconPanel },
   ];
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* ─── Compact Hero ─────────────────────────────────────────────── */}
       <header
         style={{
           maxWidth: 1100,
           margin: "0 auto",
-          padding: "40px 24px 28px",
+          padding: "64px 24px 32px",
           width: "100%",
         }}
       >
@@ -299,19 +248,19 @@ export default function HomePage() {
             <span
               style={{
                 fontFamily: "var(--font-mono)",
-                fontSize: "clamp(10px, 1.2vw, 12px)",
-                fontWeight: 500,
-                color: "var(--muted)",
-                letterSpacing: "0.22em",
+                fontSize: 11,
+                fontWeight: 600,
+                color: "var(--accent)",
+                letterSpacing: "0.2em",
                 textTransform: "uppercase",
               }}
             >
-              {th.heroSub}
+              CALCULATOR
             </span>
           </div>
         </div>
 
-        {/* Subtitle */}
+
         <p
           style={{
             fontFamily: "var(--font-mono)",
@@ -354,12 +303,12 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ─── Compact Card Grid ─────────────────────────────────────────── */}
+      {/* ─── Aesthetic List View ─────────────────────────────────────────── */}
       <main
         style={{
           maxWidth: 1100,
           margin: "0 auto",
-          padding: "0 16px 0px", // Reduced horizontal padding for mobile compactness
+          padding: "0 16px 0px", 
           width: "100%",
           flex: 1,
         }}
@@ -369,118 +318,68 @@ export default function HomePage() {
             <Link
               key={calc.href}
               href={calc.href}
-              style={{ textDecoration: "none", display: "block", borderRadius: "var(--r-xl)" }}
+              className="vinci-card card-hover cursor-card"
+              style={{ textDecoration: "none" }}
             >
+              {/* Left: Icon block */}
               <div
-                className="vinci-card card-hover cursor-card"
+                className="card-icon"
                 style={{
-                  height: "100%",
+                  width: 42,
+                  height: 42,
+                  border: "1px solid var(--glass-border)",
+                  borderRadius: "var(--r-md)",
                   display: "flex",
-                  flexDirection: "column",
-                  cursor: "pointer",
-                  // padding removed as it's now in .vinci-card class
-                  ...(calc.accent
-                    ? {
-                        borderColor: "rgba(201,168,76,0.35)",
-                        background: "rgba(201,168,76,0.04)",
-                      }
-                    : {}),
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: calc.accent ? "var(--accent)" : "var(--muted)",
+                  background: calc.accent ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
+                  flexShrink: 0,
                 }}
               >
-                {/* Icon + tag row */}
-                <div
+                <calc.Icon />
+              </div>
+
+              {/* Center: Title & Descriptor */}
+              <div style={{ flex: 1, paddingLeft: 4 }}>
+                <h2
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: 12,
+                    fontFamily: "var(--font-display)",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    color: "var(--fg)",
+                    letterSpacing: "-0.01em",
+                    margin: "0 0 2px",
+                    lineHeight: 1.2,
                   }}
                 >
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      border: "1px solid var(--glass-border)",
-                      borderRadius: "var(--r-lg)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: calc.accent ? "var(--accent)" : "var(--muted)",
-                      background: calc.accent ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
-                      flexShrink: 0,
-                      transition: "color 0.2s, background 0.2s",
-                    }}
-                    className="card-icon"
-                  >
-                    <calc.Icon />
-                  </div>
+                  {calc.title}
+                </h2>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <span
                     className="tag"
                     style={{
-                      letterSpacing: "0.08em",
-                      fontSize: 9,
-                      padding: "2px 6px",
-                      ...(calc.accent ? { color: "var(--accent)", borderColor: "rgba(201,168,76,0.4)", background: "rgba(201,168,76,0.08)" } : {}),
+                      letterSpacing: "0.04em",
+                      fontSize: 8,
+                      padding: "1px 6px",
+                      opacity: 0.6,
+                      ...(calc.accent ? { color: "var(--accent)", borderColor: "rgba(201,168,76,0.3)" } : {}),
                     }}
                   >
                     {calc.tag}
                   </span>
                 </div>
+              </div>
 
-                {/* Title */}
-                <h2
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "16px", // Reduced from var(--fs-lg) for compact grid
-                    fontWeight: 500,
-                    color: "var(--fg)",
-                    letterSpacing: "-0.01em",
-                    margin: "0 0 6px",
-                    lineHeight: 1.25,
-                  }}
-                >
-                  {calc.title}
-                </h2>
-
-                {/* Description */}
-                <p
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 11,
-                    color: "var(--muted)",
-                    lineHeight: 1.6,
-                    letterSpacing: "0.01em",
-                    margin: "0 0 14px",
-                    flex: 1,
-                  }}
-                >
-                  {calc.description}
-                </p>
-
-                {/* CTA */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 5,
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 10,
-                    color: "var(--accent)",
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    opacity: 0.8,
-                  }}
-                >
-                  {th.ctaOpen}
-                  <span style={{ fontSize: 12 }}>→</span>
-                </div>
+              {/* Right: Modern Arrow indicator */}
+              <div style={{ opacity: 0.3, color: "var(--fg-soft)", paddingRight: 4 }}>
+                <ChevronRight size={18} strokeWidth={1.5} />
               </div>
             </Link>
           ))}
         </div>
       </main>
 
-      {/* ─── Footer ────────────────────────────────────────────────────── */}
       <Footer />
     </div>
   );
