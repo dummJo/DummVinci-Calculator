@@ -213,36 +213,90 @@ export default function HomePage() {
           </span>
         </div>
 
-        {/* Title + subtitle inline */}
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 24, flexWrap: "wrap", marginBottom: 16 }}>
+
+        {/* Title — editorial typographic contrast */}
+        <div style={{ marginBottom: 16 }}>
           <h1
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(32px, 5vw, 56px)",
+              fontSize: "clamp(36px, 6vw, 64px)",
               fontWeight: 400,
               color: "var(--fg)",
-              letterSpacing: "-0.025em",
-              lineHeight: 1.0,
-              margin: 0,
+              letterSpacing: "-0.03em",
+              lineHeight: 0.95,
+              margin: "0 0 10px",
             }}
           >
-            {th.heroTitle}
-            {" "}
-            <span style={{ color: "var(--accent)" }}>{th.heroSub}</span>
+            {/* "Dumm" — thin italic, slightly muted */}
+            <span
+              style={{
+                fontWeight: 300,
+                fontStyle: "italic",
+                opacity: 0.65,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Dumm
+            </span>
+            {/* "Vinci" — extrabold, upright, accent */}
+            <span
+              style={{
+                fontWeight: 800,
+                fontStyle: "normal",
+                color: "var(--accent)",
+                letterSpacing: "-0.04em",
+              }}
+            >
+              Vinci
+            </span>
           </h1>
-          <p
+
+          {/* "Calculator" as a compact mono eyebrow label */}
+          <div
             style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "clamp(11px, 1.4vw, 13px)",
-              color: "var(--muted)",
-              letterSpacing: "0.06em",
-              margin: "0 0 4px",
-              lineHeight: 1.4,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
             }}
           >
-            {th.heroSubtitle}
-          </p>
+            <div
+              style={{
+                width: 24,
+                height: 1,
+                background: "var(--accent)",
+                opacity: 0.5,
+                flexShrink: 0,
+              }}
+            />
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "clamp(10px, 1.2vw, 12px)",
+                fontWeight: 500,
+                color: "var(--muted)",
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+              }}
+            >
+              {th.heroSub}
+            </span>
+          </div>
         </div>
+
+        {/* Subtitle */}
+        <p
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "clamp(11px, 1.4vw, 13px)",
+            color: "var(--muted)",
+            letterSpacing: "0.06em",
+            margin: "0 0 4px",
+            lineHeight: 1.4,
+          }}
+        >
+          {th.heroSubtitle}
+        </p>
+
 
         {/* Spec strip */}
         <div
