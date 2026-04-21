@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
-import { getRandomQuote } from "@/lib/quotes";
+import { getRandomQuote, type Quote } from "@/lib/quotes";
 import { useState, useEffect } from "react";
 
 const SPEC_STRIP = [
@@ -94,7 +94,7 @@ function IconStarter() {
 export default function HomePage() {
   const { t } = useLang();
   const th = t.home;
-  const [heroQuote, setHeroQuote] = useState("");
+  const [heroQuote, setHeroQuote] = useState<Quote | null>(null);
 
   useEffect(() => {
     setHeroQuote(getRandomQuote());
@@ -178,8 +178,9 @@ export default function HomePage() {
           width: "100%",
         }}
       >
-        {/* Brand row */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+        {/* Brand row + quote strip */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 20 }}>
+          {/* ◈ mark */}
           <div
             style={{
               width: 32,
@@ -194,23 +195,50 @@ export default function HomePage() {
               color: "var(--accent)",
               flexShrink: 0,
               background: "rgba(201,168,76,0.06)",
+              marginTop: 2,
             }}
           >
             ◈
           </div>
-          <span
+
+          {/* Quote block */}
+          <div
             style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "var(--fs-xs)",
-              color: "var(--accent)",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
               opacity: heroQuote ? 1 : 0,
-              transition: "opacity 0.6s ease",
+              transition: "opacity 0.8s ease",
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
             }}
           >
-            {heroQuote}
-          </span>
+            {/* Quote text */}
+            <span
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(11px, 1.3vw, 13px)",
+                fontStyle: "italic",
+                fontWeight: 300,
+                color: "var(--fg-soft)",
+                lineHeight: 1.45,
+                letterSpacing: "0.005em",
+              }}
+            >
+              &ldquo;{heroQuote?.text}&rdquo;
+            </span>
+            {/* Author */}
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                color: "var(--accent)",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                opacity: 0.75,
+              }}
+            >
+              — {heroQuote?.author}
+            </span>
+          </div>
         </div>
 
 
