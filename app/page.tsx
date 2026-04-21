@@ -431,12 +431,12 @@ export default function HomePage() {
                 <h2
                   style={{
                     fontFamily: "var(--font-display)",
-                    fontSize: "var(--fs-lg)",
-                    fontWeight: 400,
+                    fontSize: "16px", // Reduced from var(--fs-lg) for compact grid
+                    fontWeight: 500,
                     color: "var(--fg)",
                     letterSpacing: "-0.01em",
                     margin: "0 0 6px",
-                    lineHeight: 1.2,
+                    lineHeight: 1.25,
                   }}
                 >
                   {calc.title}
