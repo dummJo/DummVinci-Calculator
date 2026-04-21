@@ -267,16 +267,10 @@ input, select, textarea {
 a {
   color: var(--accent);
   text-decoration: none;
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 0% 1px;
-  background-repeat: no-repeat;
-  background-position: left bottom;
-  transition: color var(--dur-fast) var(--ease),
-              background-size var(--dur-med) var(--ease);
+  transition: color var(--dur-fast) var(--ease);
 }
 a:hover {
   color: var(--accent-hi);
-  background-size: 100% 1px;
 }
 
 /* ─── Spinning + cursor border glow ─── */
