@@ -39,8 +39,17 @@ function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: an
             <CheckCircle size={12} /> IEC 61439 & ABB COMPLIANT
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontFamily: "var(--font-heading)", fontSize: 18, color: "var(--fg)", fontWeight: 700, letterSpacing: "-0.02em" }}>
-              Unified Engineering Summary
+            <span style={{ 
+              fontFamily: "var(--font-display)", 
+              fontSize: 20, 
+              color: "var(--fg)", 
+              fontWeight: 400, 
+              letterSpacing: "-0.04em",
+              lineHeight: 1
+            }}>
+              <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.6 }}>Unified</span>
+              {" "}
+              <span style={{ fontWeight: 800 }}>Engineering Summary</span>
             </span>
           </div>
         </div>

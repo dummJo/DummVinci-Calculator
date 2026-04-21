@@ -46,12 +46,20 @@ export default function ResultCard({ title, rows, recommendation, warnings, feat
         </div>
         <span style={{
           fontFamily: "var(--font-display)",
-          fontSize: "17px",
+          fontSize: "18px",
           color: "var(--fg)",
-          letterSpacing: "-0.015em",
-          fontWeight: 600,
+          letterSpacing: "-0.02em",
+          lineHeight: 1,
         }}>
-          {title}
+          {title.includes(" ") ? (
+            <>
+              <span style={{ fontWeight: 800 }}>{title.split(" ")[0]}</span>
+              {" "}
+              <span style={{ fontWeight: 400, opacity: 0.8 }}>{title.split(" ").slice(1).join(" ")}</span>
+            </>
+          ) : (
+            <span style={{ fontWeight: 800 }}>{title}</span>
+          )}
         </span>
       </div>
 

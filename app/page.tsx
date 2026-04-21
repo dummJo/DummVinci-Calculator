@@ -215,12 +215,12 @@ export default function HomePage() {
           <h1
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(36px, 6vw, 64px)",
+              fontSize: "clamp(44px, 8vw, 76px)",
               fontWeight: 400,
               color: "var(--fg)",
-              letterSpacing: "-0.03em",
-              lineHeight: 0.95,
-              margin: "0 0 10px",
+              letterSpacing: "-0.05em",
+              lineHeight: 0.85,
+              margin: "0 0 16px",
             }}
           >
             {/* "Dumm" — thin italic, slightly muted */}
@@ -229,7 +229,6 @@ export default function HomePage() {
                 fontWeight: 300,
                 fontStyle: "italic",
                 opacity: 0.65,
-                letterSpacing: "-0.02em",
               }}
             >
               Dumm
@@ -240,7 +239,6 @@ export default function HomePage() {
                 fontWeight: 800,
                 fontStyle: "normal",
                 color: "var(--accent)",
-                letterSpacing: "-0.04em",
               }}
             >
               Vinci

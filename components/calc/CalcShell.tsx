@@ -39,14 +39,26 @@ export default function CalcShell({ label, title, subtitle, concept, children }:
 
       <h1 style={{
         fontFamily: "var(--font-display)",
-        fontSize: "clamp(32px, 6.5vw, 56px)",
+        fontSize: "clamp(34px, 7vw, 60px)",
         fontWeight: 400,
         color: "var(--fg)",
-        letterSpacing: "-0.035em",
-        lineHeight: 0.95,
-        margin: "0 0 16px",
+        letterSpacing: "-0.04em",
+        lineHeight: 0.9,
+        margin: "0 0 20px",
       }}>
-        {title}
+        {title.includes(" ") ? (
+          <>
+            <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.6 }}>
+              {title.split(" ")[0]}
+            </span>
+            {" "}
+            <span style={{ fontWeight: 800 }}>
+              {title.split(" ").slice(1).join(" ")}
+            </span>
+          </>
+        ) : (
+          <span style={{ fontWeight: 800 }}>{title}</span>
+        )}
       </h1>
       
       <p style={{
