@@ -57,13 +57,12 @@ export function sizeMotorStarter(input: UnifiedInput): UnifiedResult {
     ambientC: input.ambientC,
   });
 
-  // 3. Size Breaker (using vsd result or motor amps?)
-  // Usually sizing for the drive's nominal current or motor's FLA + margin. 
-  // We use the drive load flag for D curve.
+  // 3. Size Breaker (using the drive's specific fuse rating as a design baseline)
+  // This ensures the breaker matches the engineering list's requirement (e.g. 11kW -> 32A).
   const breaker = sizeBreaker({
-    loadCurrent: motorAmps,
+    loadCurrent: vsd.fuseA || motorAmps,
     faultCurrent: input.faultCurrentKa,
-    curve: "C", // will be forced to D by driveLoad: true
+    curve: "C", // sizing for drive load will typically favor D or high-inrush C
     poles: 3,
     driveLoad: true,
   });
