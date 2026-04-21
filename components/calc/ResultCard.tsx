@@ -20,7 +20,7 @@ export default function ResultCard({ title, rows, recommendation, warnings, feat
       {/* header */}
       <div style={{
         display: "flex",
-        alignItems: "center",
+        alignItems: "flex-start",
         gap: 12,
         marginBottom: 24,
         paddingBottom: 16,

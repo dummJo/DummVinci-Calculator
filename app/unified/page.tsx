@@ -194,9 +194,9 @@ export default function UnifiedPage() {
         }
         .summary-specs-grid {
           display: grid;
-          grid-template-columns: 1.6fr 0.6fr 0.6fr 0.8fr 0.8fr 0.6fr 0.6fr 1fr;
-          gap: 24px;
-          align-items: end;
+          grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+          gap: 20px 32px;
+          align-items: start;
         }
         .result-cards-grid {
           display: grid;

@@ -399,8 +399,8 @@ export default function HomePage() {
               <Link
                 key={calc.key}
                 href={calc.href}
-                className="vinci-card card-hover cursor-card"
-                style={{ textDecoration: "none", alignItems: "flex-start", padding: "18px 20px" }}
+                className="vinci-card vinci-card-row card-hover cursor-card"
+                style={{ textDecoration: "none", padding: "18px 20px" }}
               >
                 {/* Left: Icon block */}
                 <div
