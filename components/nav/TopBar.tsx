@@ -58,7 +58,8 @@ export default function TopBar() {
         background: "var(--nav-bg)",
         backdropFilter: "var(--nav-blur)",
         WebkitBackdropFilter: "var(--nav-blur)",
-        borderBottom: "1px solid var(--glass-border)",
+        borderBottom: "none",
+
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
