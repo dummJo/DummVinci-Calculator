@@ -35,6 +35,7 @@ function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: an
     { label: t.support.colBreaker + "*", value: result.breaker.partCode.split(" ")[0] },
     { label: t.support.colCable + "*", value: `${result.cable.phaseSize} mm²` },
     { label: t.support.colAir, value: result.vsd.panelAirflowRequired },
+    { label: t.vsd.resIp, value: result.vsd.ip },
     { label: t.support.colFrame, value: result.vsd.frame },
     { label: t.support.colDim, value: `${result.vsd.h}×${result.vsd.w}×${result.vsd.d}` },
   ];
@@ -116,6 +117,7 @@ export default function UnifiedPage() {
   const [ambient, setAmbient] = useState("35");
   const [fault, setFault] = useState("10");
   const [variant, setVariant] = useState<"01" | "02" | "04" | "07" | "31">("01");
+  const [ipPref, setIpPref] = useState<any>("IP21");
   const [result, setResult] = useState<UnifiedResult | null>(null);
   const [step, setStep] = useState(1);
 
@@ -133,6 +135,7 @@ export default function UnifiedPage() {
       faultCurrentKa: parseFloat(fault) || 0,
       panelDeltaT: 10,
       driveVariant: variant,
+      ipPreference: ipPref,
     });
     setResult(res);
     setStep(3);
@@ -337,6 +340,14 @@ export default function UnifiedPage() {
                   { value: "04", label: t.vsd.constModule },
                   { value: "07", label: t.vsd.constCabinet },
                   { value: "31", label: t.vsd.constUlh },
+                ]}
+              />
+              <FieldSelect
+                label="IP Rating" value={ipPref} onChange={v => setIpPref(v as any)}
+                options={[
+                  { value: "IP21", label: "IP21 (Standard)" },
+                  { value: "IP55", label: "IP55 (Robust)" },
+                  { value: "IP66", label: "IP66 (Extreme)" },
                 ]}
               />
             </div>

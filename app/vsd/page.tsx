@@ -8,7 +8,7 @@ import FieldSelect from "@/components/calc/FieldSelect";
 import FieldToggle from "@/components/calc/FieldToggle";
 import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
-import { sizeVsd, VsdResult } from "@/lib/calc/vsd";
+import { sizeVsd, VsdResult, IpRating } from "@/lib/calc/vsd";
 import type { DriveApp, Voltage } from "@/lib/calc/vsd";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
@@ -22,8 +22,9 @@ export default function VsdPage() {
   const [app,     setApp]     = useState<DriveApp>("pump");
   const [heavy,   setHeavy]   = useState(false);
   const [deltaT,  setDeltaT]  = useState("12");
-  const [ambient, setAmbient] = useState("35");
+  const [ambient, setAmbient] = useState("40");
   const [variant, setVariant] = useState<"01" | "02" | "04" | "07" | "31">("01");
+  const [ipPref,  setIpPref]  = useState<IpRating>("IP21");
 
   const [result, setResult] = useState<VsdResult | null>(null);
 
@@ -36,6 +37,7 @@ export default function VsdPage() {
       panelDeltaT:  parseFloat(deltaT)  || 12,
       ambientC:     parseFloat(ambient) || 40,
       variant:      variant,
+      ipPreference: ipPref,
     });
     setResult(r);
   }
@@ -65,9 +67,11 @@ export default function VsdPage() {
           <FieldSelect
             label={tv.lineVoltage} value={voltage} onChange={setVoltage}
             options={[
+              { value: "380", label: "380 V (Standard)" },
               { value: "400", label: "400 V (IEC standard)" },
+              { value: "415", label: "415 V (AU/NZ)" },
               { value: "480", label: "480 V (NEMA)" },
-              { value: "690", label: "690 V (HV panel)" },
+              { value: "690", label: "690 V (HV mining)" },
             ]}
           />
           <FieldSelect
@@ -81,10 +85,13 @@ export default function VsdPage() {
             ]}
             hint={isCrane ? tv.appHintCrane : tv.appHintAcq}
           />
-          <FieldNumber
-            label={tv.panelDt} unit="K"
-            value={deltaT} onChange={setDeltaT}
-            min={5} max={25} step={1} hint={tv.panelDtHint}
+          <FieldSelect
+            label="IP Rating" value={ipPref} onChange={v => setIpPref(v as IpRating)}
+            options={[
+              { value: "IP21", label: "IP21 (Wall / Inside Panel)" },
+              { value: "IP55", label: "IP55 (Dust/Water Protected)" },
+              { value: "IP66", label: "IP66 (Wash-down / Extreme)" },
+            ]}
           />
         </div>
 
@@ -106,6 +113,11 @@ export default function VsdPage() {
               { value: "07", label: tv.constCabinet },
               { value: "31", label: tv.constUlh },
             ]}
+          />
+          <FieldNumber
+            label={tv.panelDt} unit="K"
+            value={deltaT} onChange={setDeltaT}
+            min={5} max={25} step={1} hint={tv.panelDtHint}
           />
         </div>
 
@@ -137,6 +149,7 @@ export default function VsdPage() {
           rows={[
             { label: tv.resFamily,       value: result.family, accent: true },
             { label: tv.resPart,         value: result.partCode, accent: true },
+            { label: tv.resIp,           value: result.ip },
             { label: tv.resFrame,        value: result.frame },
             { label: tv.resNomA,         value: result.nominalA > 0 ? `${result.nominalA} A` : "—" },
             { label: tv.resRatedKw,      value: result.ratedKw > 0 ? `${result.ratedKw} kW` : "—" },

@@ -15,6 +15,7 @@ export interface UnifiedInput {
   faultCurrentKa: number;    // kA for breaker
   panelDeltaT: number;       // For VSD airflow
   driveVariant: "01" | "02" | "04" | "07" | "31";
+  ipPreference?: any;
 }
 
 export interface UnifiedResult {
@@ -44,6 +45,7 @@ export function sizeMotorStarter(input: UnifiedInput): UnifiedResult {
     panelDeltaT: input.panelDeltaT,
     ambientC: input.ambientC,
     variant: input.driveVariant,
+    ipPreference: input.ipPreference,
   });
 
   // 2. Size Cable (using motor amps)

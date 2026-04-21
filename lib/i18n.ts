@@ -142,6 +142,7 @@ export const T = {
       resNomA: "Nominal Current", resRatedKw: "Rated Power",
       resPloss: "Heat Dissipation", resHsAirflow: "Heatsink Airflow (drive)",
       resPanelAirflow: "Required Panel Airflow",
+      resIp: "IP Rating",
       resFeatures: "Key Features",
     },
     breaker: {
@@ -452,6 +453,7 @@ export const T = {
       resNomA: "Arus Nominal Kontinu", resRatedKw: "Kapasitas Daya Rated",
       resPloss: "Disipasi Panas (Losses)", resHsAirflow: "Aliran Udara Heatsink (Internal)",
       resPanelAirflow: "Aliran Udara Panel Diperlukan",
+      resIp: "Kelas Proteksi (IP)",
       resFeatures: "Fitur Unggulan Produk",
     },
     breaker: {

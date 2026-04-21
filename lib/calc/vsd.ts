@@ -1,51 +1,52 @@
 /**
  * ABB VSD sizing + required panel airflow.
  * Catalog: ACQ580 (HVAC-R / pump & fan) and ACS880 (industrial / crane / heavy duty).
- * Frame data approximated from ABB hardware manuals (3AUA0000099584 ACQ580, 3AUA0000078093 ACS880).
- * Heat dissipation ≈ 3% of drive rated kW (typical for IGBT).
- * Required panel airflow Q [m³/h] = Ploss_W * 3.6 / (ρ·cp·ΔT) ≈ Ploss_W * 3.1 / ΔT,
- * using air ρ·cp ≈ 1.16 kJ/m³·K and ΔT in K.
+ * Frame data approximated from ABB hardware manuals.
  */
 
 import drives from "@/data/abb-drives.json";
 
 export type DriveApp = "pump" | "fan" | "crane" | "conveyor" | "compressor";
 export type Voltage = 380 | 400 | 415 | 480 | 690;
+export type IpRating = "IP20" | "IP21" | "IP55" | "IP66";
 
 export interface VsdInput {
   motorKw: number;
   voltage: Voltage;
   app: DriveApp;
-  dutyHeavy: boolean;        // crane / conveyor high-inertia → oversize
-  panelDeltaT: number;       // allowed ΔT inside panel vs ambient (K), typical 10–15
-  ambientC?: number;         // Ambient temperature outside panel (°C), base 40°C
-  variant: "01" | "02" | "04" | "07" | "31"; 
+  dutyHeavy: boolean;
+  panelDeltaT: number;
+  ambientC?: number;
+  variant: "01" | "02" | "04" | "07" | "31";
+  ipPreference?: IpRating;
 }
 
 interface DriveFrame {
-  family: "ACQ580" | "ACS880" | "ACS380";
+  family: "ACQ580" | "ACS880" | "ACS380" | "ACH580";
   variant: string;
+  ip: string;
   code: string;
   frame: string;
   voltage: number;
   nominalA: number;
   ratedKw: number;
-  ploss: number;             // W at nominal load
-  requiredAirflow: number;   // m³/h through heatsink per ABB manual
+  ploss: number;
+  requiredAirflow: number;
   h: number; w: number; d: number;
   fuseA: number;
 }
 
 export interface VsdResult {
-  family: "ACQ580" | "ACS880" | "ACS380";
+  family: string;
   variant: string;
+  ip: string;
   partCode: string;
   frame: string;
   nominalA: number;
   ratedKw: number;
   plossW: number;
-  heatsinkAirflow: number;        // drive's own heatsink demand (m³/h)
-  panelAirflowRequired: number;   // panel-level Q for ΔT limit (m³/h)
+  heatsinkAirflow: number;
+  panelAirflowRequired: number;
   h: number; w: number; d: number;
   fuseA: number;
   recommendation: string;
@@ -58,33 +59,45 @@ const LIST = drives as DriveFrame[];
 export function sizeVsd(input: VsdInput): VsdResult {
   const heavy = input.dutyHeavy || input.app === "crane" || input.app === "conveyor";
   const isMachinery = input.app === "conveyor" && input.motorKw <= 11;
-  const family: "ACQ580" | "ACS880" | "ACS380" = heavy ? "ACS880" : (isMachinery ? "ACS380" : "ACQ580");
+  
+  let family: "ACQ580" | "ACS880" | "ACS380" | "ACH580" = "ACQ580";
+  if (heavy) family = "ACS880";
+  else if (isMachinery) family = "ACS380";
+  else if (input.app === "fan") family = "ACH580"; // ACH is usually HVAC/Fan preferred
+  
   const oversize = heavy ? 1.2 : 1.05;
   const targetKw = input.motorKw * oversize;
   const ambient = input.ambientC ?? 40;
 
-  // ABB Manual: 1% derating per 1°C above 40°C
   const tempDerate = ambient > 40 ? 1 - (ambient - 40) * 0.01 : 1.0;
 
   const candidates = LIST
     .filter(d => {
-      const deratedA = d.nominalA * tempDerate;
-      // Rough kW check after derating (matching A/kW ratio)
       const deratedKw = d.ratedKw * tempDerate;
-      return d.family === family && d.variant === input.variant && d.voltage === input.voltage && deratedKw >= targetKw;
+      const matchFamily = d.family === family;
+      const matchVariant = d.variant === input.variant;
+      const matchVoltage = d.voltage === input.voltage;
+      const matchIp = input.ipPreference ? d.ip === input.ipPreference : true;
+      
+      return matchFamily && matchVariant && matchVoltage && matchIp && deratedKw >= targetKw;
     })
-    .sort((a, b) => a.ratedKw - b.ratedKw);
+    .sort((a, b) => {
+      // First sort by Kw, then by IP (preferring IP21 if no preference is set)
+      if (a.ratedKw !== b.ratedKw) return a.ratedKw - b.ratedKw;
+      return a.ip.localeCompare(b.ip);
+    });
 
   const pick = candidates[0];
   const warnings: string[] = [];
 
   if (!pick) {
     return {
-      family, variant: input.variant, partCode: "—", frame: "—", nominalA: 0, ratedKw: 0, plossW: 0,
+      family, variant: input.variant, ip: input.ipPreference || "IP21",
+      partCode: "—", frame: "—", nominalA: 0, ratedKw: 0, plossW: 0,
       heatsinkAirflow: 0, panelAirflowRequired: 0,
       h: 0, w: 0, d: 0, fuseA: 0,
-      recommendation: `No ${family}-${input.variant} @ ${input.voltage}V matches ${targetKw.toFixed(1)} kW.`,
-      warnings: ["Motor kW exceeds listed frames for this variant"],
+      recommendation: `No ${family}-${input.variant} (${input.ipPreference || "any IP"}) matching ${targetKw.toFixed(1)} kW.`,
+      warnings: ["Motor kW exceeds listed catalog frames"],
       keyFeatures: [],
     };
   }
@@ -92,54 +105,15 @@ export function sizeVsd(input: VsdInput): VsdResult {
   const panelQ = (pick.ploss * 3.1) / Math.max(input.panelDeltaT, 1);
 
   if (input.app === "crane" && family !== "ACS880")
-    warnings.push("Crane duty — ACS880 mandatory for regen / BR support");
-  if (input.voltage >= 480) warnings.push("≥480V — verify regional standards & insulation class");
-  if (panelQ > 800) warnings.push("High airflow > 800 m³/h — consider forced ventilation + filter");
+    warnings.push("Crane duty — ACS880 mandatory for regenerative support");
+  if (pick.ip === "IP66") warnings.push("IP66 Rating — verify cable gland plate seals for wash-down");
 
-  const keyFeatures = pick.family === "ACQ580"
-    ? [
-      "Built-in Intelligent Pump Control (IPC)",
-      "Sensorless Flow Calculation",
-      "Soft Pipe Fill & Dry Run Protection",
-      "Integrated EMC C2 Filter & DC Choke",
-      "Coated circuit boards as standard",
-    ]
-    : pick.family === "ACS380"
-      ? [
-        "Pre-configured for machinery applications",
-        "Cost-effective with built-in STO SIL3",
-        "Adaptive programming for custom logic",
-        "Optimized for high-volume cabinet building",
-        "Coated boards & unified control panel"
-      ]
-      : [
-        "Direct Torque Control (DTC) technology",
-        "Integrated Safe Torque Off (STO) SIL3",
-        "Built-in Brake Chopper (up to R4 frames)",
-        "Supports various fieldbus adapters",
-        "Optimized for heavy-duty applications",
-      ];
-
-  if (pick.variant === "02") {
-    keyFeatures.push(
-      "Compact open-module design for cabinet builders",
-      "Flexible mounting options in shallow panels",
-      "Easily integrated I/O and motor cable exits"
-    );
-  }
-
-  if (pick.variant === "31") {
-    keyFeatures.push(
-      "Ultra-low harmonic performance (THDi < 3%)",
-      "Integrated LCL filter — no extra filters needed",
-      "Unity power factor (cos φ = 1.0)",
-      "Active supply unit for voltage boost capability"
-    );
-  }
+  const keyFeatures = getFeatures(pick);
 
   return {
     family: pick.family,
     variant: pick.variant,
+    ip: pick.ip,
     partCode: pick.code,
     frame: pick.frame,
     nominalA: pick.nominalA,
@@ -155,22 +129,26 @@ export function sizeVsd(input: VsdInput): VsdResult {
   };
 }
 
+function getFeatures(d: DriveFrame): string[] {
+  const base = [
+    "Integrated EMC C2 Filter & DC Choke",
+    "Coated circuit boards as standard",
+  ];
+  
+  if (d.family === "ACQ580") return [...base, "Built-in Intelligent Pump Control (IPC)", "Sensorless Flow Calculation", "Soft Pipe Fill Protection"];
+  if (d.family === "ACH580") return [...base, "HVAC Specific: Fire Mode included", "Native BACnet/IP support", "Override mode for air handling"];
+  if (d.family === "ACS380") return ["Pre-configured for machinery", "Built-in STO SIL3", "Adaptive programming"];
+  if (d.family === "ACS880") return [...base, "Direct Torque Control (DTC)", "Safe Torque Off (STO) SIL3", "Brake Chopper support"];
+  
+  return base;
+}
+
 function recommendation(d: DriveFrame, app: DriveApp): string {
   let note = "";
+  if (d.variant === "31") note = "ULH: THDi < 3%. No external filters needed.";
+  else if (d.ip === "IP66") note = "Extreme: Suitable for food & beverage wash-down areas.";
+  else if (d.ip === "IP55") note = "Robust: Protected against dust and water jets.";
+  else note = "Standard wall-mount industrial drive.";
   
-  if (d.variant === "31") {
-    note = "ULH: Perfect for clean power grids. THDi < 3%. Built-in active supply eliminates harmonics without external filters. Boost voltage if needed.";
-  } else if (d.variant === "02") {
-    note = "Compact Module: Ideal for panel builders. Provides flexible mounting for shallow enclosures.";
-  } else if (d.family === "ACS380") {
-    note = "Machinery: Cost-optimized drive for conveyors/packaging. Ensure STO wiring is integrated.";
-  } else if (app === "crane") {
-    note = "Crane: enable brake chopper + connect STAHL BR to R+/R-. Safety STO via FSO-12.";
-  } else if (app === "pump" || app === "fan") {
-    note = "HVAC-R: enable built-in pump/fan control macro; set Vdc curve for pipe resonance";
-  } else {
-    note = "Industrial: verify motor data plate, run ID-run (first start)";
-  }
-  
-  return `${d.family} ${d.code} — ${d.frame} frame. ${note}`;
+  return `${d.family} ${d.code} (${d.ip}) — ${d.frame} frame. ${note}`;
 }
