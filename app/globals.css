@@ -271,15 +271,7 @@ a:hover {
 
 /* ─── Spinning + cursor border glow ─── */
 
-@property --spin-angle {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: 0deg;
-}
 
-@keyframes borderSpin {
-  to { --spin-angle: 360deg; }
-}
 
 .cursor-card {
   position: relative;
@@ -304,41 +296,7 @@ a:hover {
   opacity: 1;
 }
 
-.cursor-card::after {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background:
-    conic-gradient(
-      from var(--spin-angle),
-      transparent 0deg,
-      var(--cursor-card-border) 40deg,
-      transparent 100deg
-    ),
-    radial-gradient(
-      220px circle at var(--cx, 50%) var(--cy, 50%),
-      var(--cursor-card-border) 0%,
-      transparent 70%
-    );
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-.cursor-card:hover::after {
-  opacity: 1;
-  animation: borderSpin 3s linear infinite;
-}
+
 
 .cursor-card > * {
   position: relative;
