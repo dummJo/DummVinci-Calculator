@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import {
   LayoutGrid, Activity, Cpu, Disc3, 
   Cable, Zap, AlignJustify, Server, Disc, Microchip, Play,
-  ChevronRight
+  ChevronRight, SortAsc, SortDesc
 } from "lucide-react";
 
 const SPEC_STRIP = [
@@ -105,19 +105,36 @@ export default function HomePage() {
     setHeroQuote(getRandomQuote());
   }, []);
 
+  const [sortBy, setSortBy] = useState<"name" | "cat" | "default">("default");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
   const CALCS = [
-    { href: "/unified",     key: "unified", tag: "Fastsizing", Icon: IconUnified, accent: true },
-    { href: "/vsd",         key: "drive",   tag: "VSD & BTU",   Icon: IconVSD },
-    { href: "/cable",       key: "cable",   tag: "Current",     Icon: IconCable },
-    { href: "/breaker",     key: "breaker", tag: "Protection",  Icon: IconBreaker },
-    { href: "/busbar",      key: "busbar",  tag: "Capacity",    Icon: IconBusbar },
-    { href: "/starter",     key: "starter", tag: "Motor Sizing",Icon: IconStarter },
-    { href: "/plc",         key: "plc",     tag: "I/O Config",  Icon: IconPLC },
-    { href: "/abb-support", key: "support", tag: "Reference",   Icon: Activity },
-    { href: "/panel-layout",key: "layout",  tag: "Layout",      Icon: LayoutGrid },
-    { href: "/braking-resistor", key: "brake",   tag: "Regeneration",Icon: IconBrake },
-    { href: "/panel",       key: "panel",   tag: "Enclosure",   Icon: IconPanel },
+    { href: "/unified",     key: "unified", tag: "Fastsizing", cat: "Main",     Icon: IconUnified, accent: true },
+    { href: "/vsd",         key: "vsd",     tag: "VSD & BTU",   cat: "Starter",  Icon: IconVSD },
+    { href: "/cable",       key: "cable",   tag: "Current",     cat: "Power",    Icon: IconCable },
+    { href: "/breaker",     key: "breaker", tag: "Protection",  cat: "Power",    Icon: IconBreaker },
+    { href: "/busbar",      key: "busbar",  tag: "Capacity",    cat: "Power",    Icon: IconBusbar },
+    { href: "/starter",     key: "starter", tag: "Motor Sizing",cat: "Starter",  Icon: IconStarter },
+    { href: "/plc",         key: "plc",     tag: "I/O Config",  cat: "Control",  Icon: IconPLC },
+    { href: "/abb-support", key: "support", tag: "Reference",   cat: "Info",     Icon: Activity },
+    { href: "/panel-layout",key: "layout",  tag: "Layout",      cat: "Panel",    Icon: LayoutGrid },
+    { href: "/braking-resistor", key: "brake",   tag: "Regeneration",cat: "Starter",  Icon: IconBrake },
+    { href: "/panel",       key: "panel",   tag: "Enclosure",   cat: "Panel",    Icon: IconPanel },
   ];
+
+  const sortedCalcs = [...CALCS].sort((a, b) => {
+    if (sortBy === "default") return 0;
+    
+    const metaA = (th.calcs as any)[a.key];
+    const metaB = (th.calcs as any)[b.key];
+    
+    let valA = sortBy === "name" ? (metaA?.title || "") : a.cat;
+    let valB = sortBy === "name" ? (metaB?.title || "") : b.cat;
+    
+    if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+    if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -297,11 +314,71 @@ export default function HomePage() {
 
       {/* ─── Section label ─────────────────────────────────────────────── */}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 14px", width: "100%" }}>
-        <div className="sec-label">
-          <span>{th.secCalculators}</span>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", marginLeft: 8 }}>
-            {CALCS.length} tools
-          </span>
+        <div className="sec-label" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span>{th.secCalculators}</span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", marginLeft: 2 }}>
+              {CALCS.length} tools
+            </span>
+          </div>
+
+          {/* Sorting Controls */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div 
+              style={{ 
+                display: "flex", 
+                background: "rgba(255,255,255,0.03)", 
+                border: "1px solid var(--hairline-soft)",
+                borderRadius: 20,
+                padding: 2,
+                gap: 2
+              }}
+            >
+              {[
+                { id: "default", label: "Default" },
+                { id: "name",    label: "Name" },
+                { id: "cat",     label: "Category" }
+              ].map(opt => (
+                <button
+                  key={opt.id}
+                  onClick={() => setSortBy(opt.id as any)}
+                  style={{
+                    padding: "3px 10px",
+                    borderRadius: 18,
+                    fontSize: 9,
+                    fontFamily: "var(--font-mono)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    border: "none",
+                    cursor: "pointer",
+                    background: sortBy === opt.id ? "var(--accent)" : "transparent",
+                    color: sortBy === opt.id ? "var(--bg)" : "var(--muted)",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+              className="tag"
+              style={{ 
+                height: 24, 
+                padding: "0 8px", 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 4, 
+                cursor: "pointer",
+                borderColor: sortOrder === "desc" ? "var(--accent)" : "var(--glass-border)",
+                color: sortOrder === "desc" ? "var(--accent)" : "var(--muted)"
+              }}
+            >
+              {sortOrder === "asc" ? <SortAsc size={12} /> : <SortDesc size={12} />}
+              <span style={{ fontSize: 9 }}>{sortOrder.toUpperCase()}</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -316,11 +393,11 @@ export default function HomePage() {
         }}
       >
         <div className="hero-grid">
-          {CALCS.map((calc) => {
+          {sortedCalcs.map((calc) => {
             const meta = (th.calcs as any)[calc.key];
             return (
               <Link
-                key={calc.href}
+                key={calc.key}
                 href={calc.href}
                 className="vinci-card card-hover cursor-card"
                 style={{ textDecoration: "none", alignItems: "flex-start", padding: "18px 20px" }}
