@@ -79,6 +79,14 @@ export const T = {
           title: "Motor Starter",
           desc: "DOL & Star-Delta sizing — Siemens SIRIUS 3RV2 MPCB, 3RT2 contactors, 3RA2 compact kits + PLC wiring guide.",
         },
+        support: {
+          title: "Support Hub",
+          desc: "ABB Drive fault code lookup, manuals, and physical frame dimensions for planning.",
+        },
+        layout: {
+          title: "Panel Layout",
+          desc: "Estimate minimum enclosure dimensions based on component count per IEC 61439.",
+        },
       },
     },
     kwamp: {
@@ -380,6 +388,14 @@ export const T = {
         starter: {
           title: "Starter Motor",
           desc: "Sizing DOL & Star-Delta — MPCB 3RV2 Siemens SIRIUS, kontaktor 3RT2, kit kompak 3RA2 + panduan pengabelan PLC.",
+        },
+        support: {
+          title: "Pusat Bantuan",
+          desc: "Pencarian kode error drive ABB, manual produk, dan dimensi fisik frame untuk perencanaan.",
+        },
+        layout: {
+          title: "Tata Letak Panel",
+          desc: "Estimasi dimensi minimum enclosure berdasarkan jumlah komponen sesuai standar IEC 61439.",
         },
       },
     },

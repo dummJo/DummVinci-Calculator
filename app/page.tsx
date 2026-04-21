@@ -113,6 +113,8 @@ export default function HomePage() {
     { href: "/busbar",      key: "busbar",  tag: "Capacity",    Icon: IconBusbar },
     { href: "/starter",     key: "starter", tag: "Motor Sizing",Icon: IconStarter },
     { href: "/plc",         key: "plc",     tag: "I/O Config",  Icon: IconPLC },
+    { href: "/abb-support", key: "support", tag: "Reference",   Icon: Activity },
+    { href: "/panel-layout",key: "layout",  tag: "Layout",      Icon: LayoutGrid },
     { href: "/braking-resistor", key: "brake",   tag: "Regeneration",Icon: IconBrake },
     { href: "/panel",       key: "panel",   tag: "Enclosure",   Icon: IconPanel },
   ];
@@ -314,69 +316,89 @@ export default function HomePage() {
         }}
       >
         <div className="hero-grid">
-          {CALCS.map((calc) => (
-            <Link
-              key={calc.href}
-              href={calc.href}
-              className="vinci-card card-hover cursor-card"
-              style={{ textDecoration: "none" }}
-            >
-              {/* Left: Icon block */}
-              <div
-                className="card-icon"
-                style={{
-                  width: 42,
-                  height: 42,
-                  border: "1px solid var(--glass-border)",
-                  borderRadius: "var(--r-md)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: calc.accent ? "var(--accent)" : "var(--muted)",
-                  background: calc.accent ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
-                  flexShrink: 0,
-                }}
+          {CALCS.map((calc) => {
+            const meta = (th.calcs as any)[calc.key];
+            return (
+              <Link
+                key={calc.href}
+                href={calc.href}
+                className="vinci-card card-hover cursor-card"
+                style={{ textDecoration: "none", alignItems: "flex-start", padding: "18px 20px" }}
               >
-                <calc.Icon />
-              </div>
-
-              {/* Center: Title & Descriptor */}
-              <div style={{ flex: 1, paddingLeft: 4 }}>
-                <h2
+                {/* Left: Icon block */}
+                <div
+                  className="card-icon"
                   style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    color: "var(--fg)",
-                    letterSpacing: "-0.01em",
-                    margin: "0 0 2px",
-                    lineHeight: 1.2,
+                    width: 44,
+                    height: 44,
+                    border: "1px solid var(--glass-border)",
+                    borderRadius: "var(--r-md)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: calc.accent ? "var(--accent)" : "var(--muted)",
+                    background: calc.accent ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
+                    flexShrink: 0,
+                    marginTop: 2,
                   }}
                 >
-                  {calc.title}
-                </h2>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span
-                    className="tag"
+                  <calc.Icon />
+                </div>
+
+                {/* Center: Title & Descriptor */}
+                <div style={{ flex: 1, paddingLeft: 4, display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                    <h2
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "16px",
+                        fontWeight: 600,
+                        color: "var(--fg)",
+                        letterSpacing: "-0.015em",
+                        margin: 0,
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {meta?.title || "Untitled"}
+                    </h2>
+                    <span
+                      className="tag"
+                      style={{
+                        letterSpacing: "0.06em",
+                        fontSize: 8,
+                        padding: "1px 6px",
+                        textTransform: "uppercase",
+                        opacity: 0.8,
+                        ...(calc.accent ? { color: "var(--accent)", borderColor: "rgba(201,168,76,0.5)", background: "rgba(201,168,76,0.1)" } : {}),
+                      }}
+                    >
+                      {calc.tag}
+                    </span>
+                  </div>
+                  
+                  <p
                     style={{
-                      letterSpacing: "0.04em",
-                      fontSize: 8,
-                      padding: "1px 6px",
-                      opacity: 0.6,
-                      ...(calc.accent ? { color: "var(--accent)", borderColor: "rgba(201,168,76,0.3)" } : {}),
+                      fontFamily: "var(--font-body)",
+                      fontSize: "12.5px",
+                      color: "var(--fg-soft)",
+                      lineHeight: 1.45,
+                      margin: "2px 0 0",
+                      opacity: 0.7,
+                      fontWeight: 400,
+                      maxWidth: "92%",
                     }}
                   >
-                    {calc.tag}
-                  </span>
+                    {meta?.desc}
+                  </p>
                 </div>
-              </div>
 
-              {/* Right: Modern Arrow indicator */}
-              <div style={{ opacity: 0.3, color: "var(--fg-soft)", paddingRight: 4 }}>
-                <ChevronRight size={18} strokeWidth={1.5} />
-              </div>
-            </Link>
-          ))}
+                {/* Right: Modern Arrow indicator */}
+                <div style={{ opacity: 0.3, color: "var(--fg-soft)", paddingRight: 4, alignSelf: "center" }}>
+                  <ChevronRight size={18} strokeWidth={1.5} />
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </main>
 
