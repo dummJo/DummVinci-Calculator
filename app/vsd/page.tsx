@@ -23,7 +23,7 @@ export default function VsdPage() {
   const [heavy,   setHeavy]   = useState(false);
   const [deltaT,  setDeltaT]  = useState("12");
   const [ambient, setAmbient] = useState("40");
-  const [variant, setVariant] = useState<"01" | "02" | "04" | "07" | "31">("01");
+  const [variant, setVariant] = useState<"01" | "02" | "04" | "07" | "31" | "34" | "37" | "040C" | "040S">("01");
   const [ipPref,  setIpPref]  = useState<IpRating>("IP21");
 
   const [result, setResult] = useState<VsdResult | null>(null);
@@ -120,6 +120,10 @@ export default function VsdPage() {
               { value: "04", label: tv.constModule },
               { value: "07", label: tv.constCabinet },
               { value: "31", label: tv.constUlh },
+              { value: "34", label: tv.constUlhModule },
+              { value: "37", label: tv.constUlhCabinet },
+              { value: "040C", label: tv.constAcs380C },
+              { value: "040S", label: tv.constAcs380S },
             ]}
           />
           <FieldNumber

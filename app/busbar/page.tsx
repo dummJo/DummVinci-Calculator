@@ -23,6 +23,8 @@ export default function BusbarPage() {
   const [ambient,      setAmbient]      = useState("35");
   const [enclosed,     setEnclosed]     = useState(true);
   const [forcedCooling,setForcedCooling]= useState(false);
+  const [isDC,          setIsDC]          = useState(false);
+  const [segmented,     setSegmented]     = useState(false);
 
   const [result, setResult] = useState<BusbarResult | null>(null);
 
@@ -33,6 +35,8 @@ export default function BusbarPage() {
       ambientC:     parseFloat(ambient)  || 35,
       enclosed,
       forcedCooling,
+      isDC,
+      segmented:    isDC ? segmented : false,
     });
     setResult(r);
   }
@@ -78,6 +82,18 @@ export default function BusbarPage() {
             value={ambient} onChange={setAmbient}
             min={20} max={55} step={1} hint={tbu.ambientHint}
           />
+          <FieldSelect
+            label={tbu.voltageType} value={isDC ? "dc" : "ac"} 
+            onChange={v => {
+              const dc = v === "dc";
+              setIsDC(dc);
+              if (!dc) setSegmented(false);
+            }}
+            options={[
+              { value: "ac", label: tbu.ac },
+              { value: "dc", label: tbu.dc },
+            ]}
+          />
         </div>
 
         <div className="sec-label" style={{ marginTop: 4 }}><span>{tbu.secInstall}</span></div>
@@ -85,6 +101,9 @@ export default function BusbarPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           <FieldToggle label={tbu.enclosed}     checked={enclosed}      onChange={setEnclosed}      hint={tbu.enclosedHint} />
           <FieldToggle label={tbu.forced}       checked={forcedCooling} onChange={setForcedCooling} hint={tbu.forcedHint} />
+          {isDC && (
+            <FieldToggle label={tbu.segmented}  checked={segmented}     onChange={setSegmented}     hint={tbu.segmentedHint} />
+          )}
         </div>
 
         <button className="btn-primary" onClick={handleCalc}
@@ -116,7 +135,7 @@ export default function BusbarPage() {
                 {result.options.map((opt, i) => (
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: i < result.options.length - 1 ? "1px solid var(--glass-border)" : "none", paddingBottom: i < result.options.length - 1 ? 8 : 0 }}>
                     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: i === 0 ? "var(--accent)" : "var(--fg)" }}>{opt.h} × {opt.t} mm <span style={{ opacity: 0.5, fontWeight: 400 }}>({opt.mm2} mm²)</span></span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: i === 0 ? "var(--accent)" : "var(--fg)" }}>{opt.config || ""}{opt.h} × {opt.t} mm <span style={{ opacity: 0.5, fontWeight: 400 }}>({opt.mm2} mm²)</span></span>
                       <span style={{ fontSize: 11, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>Max Capacity: {opt.capacityA} A continuous</span>
                     </div>
                   </div>

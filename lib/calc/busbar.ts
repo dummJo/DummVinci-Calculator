@@ -15,6 +15,8 @@ export interface BusbarInput {
   ambientC: number;
   enclosed: boolean;        // true = inside panel (default)
   forcedCooling: boolean;
+  isDC: boolean;            // true = DC, false = AC
+  segmented?: boolean;      // true = multiple bars (only for DC)
 }
 
 export interface BusbarOption {
@@ -22,6 +24,7 @@ export interface BusbarOption {
   t: number;
   mm2: number;
   capacityA: number;
+  config?: string;          // e.g. "2 ×"
 }
 
 export interface BusbarResult {
@@ -48,8 +51,11 @@ export function sizeBusbar(input: BusbarInput): BusbarResult {
   if (input.ambientC > 35) k *= 1 - (input.ambientC - 35) * 0.01;
   if (input.ambientC < 25) k *= 1.05;
 
-  const capacity = base * k;                 // A/mm²
-  const required = input.current / capacity; // mm²
+  // DC Segmented logic: Factor for 2 bars is ~1.6x due to mutual heating
+  const kParallel = (input.isDC && input.segmented) ? 1.6 : 1.0;
+  
+  const capacity = base * k * kParallel;      // A/mm² total assembly
+  const required = input.current / capacity; // mm² per bar (if parallel, we search for bar size * 1.6)
 
   const startIndex = BARS.findIndex(([, , mm2]) => mm2 >= required);
   const safeIndex = startIndex === -1 ? BARS.length - 1 : startIndex;
@@ -59,15 +65,22 @@ export function sizeBusbar(input: BusbarInput): BusbarResult {
   const options: BusbarOption[] = [];
   for (let i = safeIndex; i < Math.min(safeIndex + 3, BARS.length); i++) {
     const [bh, bt, bmm2] = BARS[i];
-    options.push({ h: bh, t: bt, mm2: bmm2, capacityA: Math.round(capacity * bmm2) });
+    options.push({ 
+      h: bh, t: bt, mm2: bmm2, 
+      capacityA: Math.round(base * k * kParallel * bmm2),
+      config: input.segmented ? "2 × " : undefined
+    });
   }
 
+  const dimPrefix = input.segmented ? "2 × " : "";
+  const totalMm2 = input.segmented ? mm2 * 2 : mm2;
+
   return {
-    sectionMm2: mm2,
-    dimensionMm: `${h} × ${t} mm`,
-    derating: Math.round(k * 100) / 100,
-    part: `${input.material} flat bar ${h}×${t}, section ${mm2} mm²`,
-    note: `Rated @ ${Math.round(capacity * mm2)} A continuous. Use M8 bolts, torque 22 Nm. Insulate with SMC busbar support (Rittal SV 9340 or equivalent).`,
+    sectionMm2: totalMm2,
+    dimensionMm: `${dimPrefix}${h} × ${t} mm`,
+    derating: Math.round(k * (input.segmented ? 1.6 : 1.0) * 100) / 100,
+    part: `${input.material} ${input.isDC ? "DC " : ""}flat bar ${dimPrefix}${h}×${t}, section ${totalMm2} mm²`,
+    note: `Rated @ ${Math.round(base * k * kParallel * mm2)} A continuous. ${input.isDC ? "DC Common Bus configuration." : ""} Use M8 bolts, torque 22 Nm. ${input.segmented ? "Maintain 10mm gap between segments." : ""}`,
     options,
   };
 }

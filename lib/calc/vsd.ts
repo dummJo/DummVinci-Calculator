@@ -17,7 +17,7 @@ export interface VsdInput {
   dutyHeavy: boolean;
   panelDeltaT: number;
   ambientC?: number;
-  variant: "01" | "02" | "04" | "07" | "31";
+  variant: "01" | "02" | "04" | "07" | "31" | "34" | "37" | "040C" | "040S";
   ipPreference?: IpRating;
 }
 
@@ -145,10 +145,13 @@ function getFeatures(d: DriveFrame): string[] {
 
 function recommendation(d: DriveFrame, app: DriveApp): string {
   let note = "";
-  if (d.variant === "31") note = "ULH: THDi < 3%. No external filters needed.";
+  if (d.variant === "31" || d.variant === "34" || d.variant === "37") 
+    note = "ULH: Ultra-Low Harmonic (THDi < 3%). No external filters needed.";
+  else if (d.variant === "040C") note = "ACS380-C: Compact machinery drive with pre-configured I/O.";
+  else if (d.variant === "040S") note = "ACS380-S: Standard machinery drive with modular options.";
   else if (d.ip === "IP66") note = "Extreme: Suitable for food & beverage wash-down areas.";
   else if (d.ip === "IP55") note = "Robust: Protected against dust and water jets.";
-  else note = "Standard wall-mount industrial drive.";
+  else note = "Standard industrial drive configuration.";
   
   return `${d.family} ${d.code} (${d.ip}) — ${d.frame} frame. ${note}`;
 }
