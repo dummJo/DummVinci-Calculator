@@ -111,7 +111,7 @@ export default function UnifiedPage() {
   const [install, setInstall] = useState<Install>("tray");
   const [ambient, setAmbient] = useState("35");
   const [fault, setFault] = useState("10");
-  const [variant, setVariant] = useState<"01" | "02" | "04" | "07" | "31">("01");
+  const [variant, setVariant] = useState<"01" | "02" | "04" | "07" | "31" | "34" | "37" | "040C" | "040S">("01");
   const [ipPref, setIpPref] = useState<any>("IP21");
   const [result, setResult] = useState<UnifiedResult | null>(null);
   const [step, setStep] = useState(1);
@@ -348,6 +348,10 @@ export default function UnifiedPage() {
                   { value: "04", label: t.vsd.constModule },
                   { value: "07", label: t.vsd.constCabinet },
                   { value: "31", label: t.vsd.constUlh },
+                  { value: "34", label: t.vsd.constUlhModule },
+                  { value: "37", label: t.vsd.constUlhCabinet },
+                  { value: "040C", label: t.vsd.constAcs380C },
+                  { value: "040S", label: t.vsd.constAcs380S },
                 ]}
               />
               <FieldSelect
