@@ -3,28 +3,6 @@ import { useState, useEffect } from "react";
 
 export type Lang = "en" | "id";
 
-// ─── Hook ────────────────────────────────────────────────────────────────────
-export function useLang() {
-  const [lang, setLangState] = useState<Lang>("id");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("lang") as Lang | null;
-    if (saved === "en" || saved === "id") setLangState(saved);
-
-    const handler = (e: Event) => setLangState((e as CustomEvent<Lang>).detail);
-    window.addEventListener("lang-change", handler);
-    return () => window.removeEventListener("lang-change", handler);
-  }, []);
-
-  function setLang(l: Lang) {
-    localStorage.setItem("lang", l);
-    setLangState(l);
-    window.dispatchEvent(new CustomEvent<Lang>("lang-change", { detail: l }));
-  }
-
-  return { lang, setLang, t: T[lang] };
-}
-
 // ─── Translations ─────────────────────────────────────────────────────────────
 export const T = {
   en: {
@@ -732,3 +710,25 @@ export const T = {
 } as const;
 
 export type Translations = typeof T.en;
+
+// ─── Hook ────────────────────────────────────────────────────────────────────
+export function useLang() {
+  const [lang, setLangState] = useState<Lang>("id");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("lang") as Lang | null;
+    if (saved === "en" || saved === "id") setLangState(saved);
+
+    const handler = (e: Event) => setLangState((e as CustomEvent<Lang>).detail);
+    window.addEventListener("lang-change", handler);
+    return () => window.removeEventListener("lang-change", handler);
+  }, []);
+
+  function setLang(l: Lang) {
+    localStorage.setItem("lang", l);
+    setLangState(l);
+    window.dispatchEvent(new CustomEvent<Lang>("lang-change", { detail: l }));
+  }
+
+  return { lang, setLang, t: T[lang] };
+}
