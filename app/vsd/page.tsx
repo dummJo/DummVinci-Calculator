@@ -88,7 +88,12 @@ export default function VsdPage() {
               { value: "conveyor",   label: tv.appConveyor },
               { value: "compressor", label: tv.appCompressor },
             ]}
-            hint={isCrane ? tv.appHintCrane : tv.appHintAcq}
+            hint={
+              app === "crane" || heavy ? tv.appHintCrane : 
+              app === "fan" ? tv.appHintAch : 
+              app === "compressor" ? tv.appHintCompressor : 
+              tv.appHintAcq
+            }
           />
           <FieldToggle
             label={tv.heavy} checked={heavy} onChange={setHeavy} hint={tv.heavyHint}

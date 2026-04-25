@@ -19,10 +19,11 @@ export interface VsdInput {
   ambientC?: number;
   variant: "01" | "02" | "04" | "07" | "31" | "34" | "37" | "040C" | "040S";
   ipPreference?: IpRating;
+  familyPreference?: "ACQ580" | "ACS880" | "ACS580" | "ACH580" | "ACS380";
 }
 
 interface DriveFrame {
-  family: "ACQ580" | "ACS880" | "ACS380" | "ACH580";
+  family: "ACQ580" | "ACS880" | "ACS380" | "ACH580" | "ACS580";
   variant: string;
   ip: string;
   code: string;
@@ -60,10 +61,15 @@ export function sizeVsd(input: VsdInput): VsdResult {
   const heavy = input.dutyHeavy || input.app === "crane" || input.app === "conveyor";
   const isMachinery = input.app === "conveyor" && input.motorKw <= 11;
   
-  let family: "ACQ580" | "ACS880" | "ACS380" | "ACH580" = "ACQ580";
-  if (heavy) family = "ACS880";
-  else if (isMachinery) family = "ACS380";
-  else if (input.app === "fan") family = "ACH580"; // ACH is usually HVAC/Fan preferred
+  let family: "ACQ580" | "ACS880" | "ACS380" | "ACH580" | "ACS580" = input.familyPreference || "ACQ580";
+  
+  if (!input.familyPreference) {
+    if (heavy) family = "ACS880";
+    else if (isMachinery) family = "ACS380";
+    else if (input.app === "fan") family = "ACH580";
+    else if (input.app === "compressor") family = "ACS580";
+    else family = "ACQ580";
+  }
   
   const oversize = heavy ? 1.2 : 1.05;
   const targetKw = input.motorKw * oversize;
@@ -137,6 +143,7 @@ function getFeatures(d: DriveFrame): string[] {
   
   if (d.family === "ACQ580") return [...base, "Built-in Intelligent Pump Control (IPC)", "Sensorless Flow Calculation", "Soft Pipe Fill Protection"];
   if (d.family === "ACH580") return [...base, "HVAC Specific: Fire Mode included", "Native BACnet/IP support", "Override mode for air handling"];
+  if (d.family === "ACS580") return [...base, "General Purpose: Easy set-up with primary settings", "Embedded Modbus RTU", "Reduced energy consumption calculator"];
   if (d.family === "ACS380") return ["Pre-configured for machinery", "Built-in STO SIL3", "Adaptive programming"];
   if (d.family === "ACS880") return [...base, "Direct Torque Control (DTC)", "Safe Torque Off (STO) SIL3", "Brake Chopper support"];
   
