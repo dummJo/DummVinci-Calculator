@@ -713,11 +713,15 @@ export type Translations = typeof T.en;
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
 export function useLang() {
-  const [lang, setLangState] = useState<Lang>("id");
+  const [lang, setLangState] = useState<Lang>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("lang") as Lang | null;
+      if (saved === "en" || saved === "id") return saved;
+    }
+    return "id";
+  });
 
   useEffect(() => {
-    const saved = localStorage.getItem("lang") as Lang | null;
-    if (saved === "en" || saved === "id") setLangState(saved);
 
     const handler = (e: Event) => setLangState((e as CustomEvent<Lang>).detail);
     window.addEventListener("lang-change", handler);
