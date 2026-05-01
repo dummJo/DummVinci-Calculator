@@ -5,229 +5,320 @@ import CalcShell from "@/components/calc/CalcShell";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 
-// Data Structure
+// ─── Types ────────────────────────────────────────────────────────────────────
 type TutCategory = "voltage" | "megger" | "resistance" | "ground";
 
 const tutData: Record<TutCategory, {
-  id: string;
-  title: string;
+  titleEn: string;
   steps: string[];
+  stepsId: string[];
   nominal: string;
+  nominalId: string;
   standard: string;
 }> = {
   voltage: {
-    id: "voltage",
-    title: "Low Voltage AC/DC",
+    titleEn: "Low Voltage AC/DC",
     steps: [
       "Select AC (~) or DC (-) mode on the multimeter.",
-      "Ensure probes are in the VΩ and COM jacks.",
-      "For 3-Phase, measure L-L (e.g., L1-L2) and L-N (e.g., L1-Neutral).",
-      "Keep hands behind probe guards."
+      "Ensure red probe is in VΩ jack, black probe in COM jack.",
+      "For 3-Phase: measure L-L (L1↔L2) and L-N (L1↔Neutral).",
+      "Touch probes to the two measurement points and read display.",
+      "Keep hands behind probe finger guards at all times."
     ],
-    nominal: "380V-400V (L-L), 220V-230V (L-N)",
-    standard: "IEC 60038: Standard Voltages (+/- 10% tolerance)"
+    stepsId: [
+      "Pilih mode AC (~) atau DC (-) pada multitester.",
+      "Pastikan probe merah di jack VΩ, probe hitam di jack COM.",
+      "Untuk 3 Fasa: ukur L-L (L1↔L2) dan L-N (L1↔Netral).",
+      "Tempelkan probe ke dua titik pengukuran dan baca layar.",
+      "Selalu jaga tangan di belakang pelindung probe."
+    ],
+    nominal: "380–400 V (L-L) · 220–230 V (L-N)",
+    nominalId: "380–400 V (L-L) · 220–230 V (L-N)",
+    standard: "IEC 60038: Standard Voltages (±10% tolerance)"
   },
   megger: {
-    id: "megger",
-    title: "Insulation Resistance (Megger)",
+    titleEn: "Insulation Resistance (Megger)",
     steps: [
-      "POWER OFF and LOCK OUT the equipment.",
-      "Disconnect cables from VSDs/electronics to avoid damage.",
-      "Connect one probe to Ground, the other to the Phase conductor.",
-      "Apply test voltage (e.g., 500V or 1000V) for 1 minute.",
-      "Discharge the cable safely after testing."
+      "POWER OFF and LOCK OUT / TAG OUT the equipment.",
+      "Disconnect all cables from VSDs / PLCs to avoid damage.",
+      "Connect the EARTH terminal to the cable screen or ground.",
+      "Connect the LINE terminal to the phase conductor.",
+      "Apply test voltage (500 V for <1 kV cables, 1000 V for MV).",
+      "Hold for 60 seconds and read the MΩ value.",
+      "DISCHARGE the cable to ground for ≥ 4× test time after testing."
     ],
-    nominal: "> 1.0 MΩ for Low Voltage. Ideally > 100 MΩ for new cables.",
-    standard: "IEC 60364-6 / NETA ATS: 1 MΩ minimum per 1000V operating voltage."
+    stepsId: [
+      "MATIKAN daya dan lakukan LOTO (Lock Out / Tag Out).",
+      "Lepas semua kabel dari VSD / PLC untuk menghindari kerusakan.",
+      "Hubungkan terminal EARTH ke screen kabel atau tanah.",
+      "Hubungkan terminal LINE ke konduktor fasa.",
+      "Terapkan tegangan uji (500 V untuk kabel <1 kV, 1000 V untuk MV).",
+      "Tahan 60 detik dan baca nilai MΩ.",
+      "DISCHARGE kabel ke tanah selama ≥ 4× waktu uji setelah selesai."
+    ],
+    nominal: "> 1.0 MΩ (minimum) · > 100 MΩ for new LV cables",
+    nominalId: "> 1,0 MΩ (minimum) · > 100 MΩ untuk kabel baru",
+    standard: "IEC 60364-6 / IEEE 43 / NETA ATS: 1 MΩ per 1000 V operating voltage"
   },
   resistance: {
-    id: "resistance",
-    title: "Continuity & Winding Resistance",
+    titleEn: "Continuity & Winding Resistance",
     steps: [
-      "POWER OFF the circuit.",
-      "Set multimeter to Resistance (Ω) or Continuity (Buzzer) mode.",
-      "Measure across motor windings (U1-U2, V1-V2, W1-W2) or fuse links.",
-      "Values across 3 phases should be balanced within 5%."
+      "POWER OFF the circuit completely.",
+      "Set multimeter to Ω (resistance) or continuity (buzzer) mode.",
+      "Zero the leads by touching them together and noting offset.",
+      "For motor windings: measure U1–U2, V1–V2, W1–W2.",
+      "All three phases should be within 5% of each other.",
+      "For fuse check: < 1 Ω is good, OL means fuse is blown."
     ],
-    nominal: "Continuity < 2.0 Ω. Winding resistance varies by motor size (usually single digits).",
-    standard: "IEEE 43 / IEC 60034"
+    stepsId: [
+      "MATIKAN daya sepenuhnya.",
+      "Atur multitester ke mode Ω (hambatan) atau kontinuitas (buzzer).",
+      "Nol-kan probe dengan menempel keduanya dan catat offset.",
+      "Untuk belitan motor: ukur U1–U2, V1–V2, W1–W2.",
+      "Ketiga fasa harus dalam rentang 5% satu sama lain.",
+      "Untuk sekering: < 1 Ω = baik, OL = sekering putus."
+    ],
+    nominal: "Continuity < 2.0 Ω · Motor winding balance within 5%",
+    nominalId: "Kontinuitas < 2,0 Ω · Keseimbangan belitan motor dalam 5%",
+    standard: "IEEE 43 / IEC 60034-1"
   },
   ground: {
-    id: "ground",
-    title: "Grounding / Earth Resistance",
+    titleEn: "Grounding / Earth Resistance",
     steps: [
-      "Use an Earth Resistance Tester (3-pole or clamp method).",
-      "For 3-pole: Drive auxiliary spikes at 62% distance.",
-      "Inject current and measure voltage drop.",
-      "For simple checks, measure neutral-to-earth voltage (should be near 0V)."
+      "Use a 3-pole earth resistance tester (Megger, Kyoritsu, etc.).",
+      "Drive Current spike (C) and Potential spike (P) into soil.",
+      "Place P at 62% of total distance from the Earth Electrode.",
+      "Press TEST and inject AC current — read resistance in Ω.",
+      "Alternative: clamp method for bonded ground ring measurement.",
+      "Neutral-to-Earth voltage check: should be < 2 V (IEC 60364)."
     ],
-    nominal: "< 5.0 Ω for general installations, < 1.0 Ω for sensitive electronics / substations.",
-    standard: "PUIL / IEEE 80 / NEC Article 250"
+    stepsId: [
+      "Gunakan earth resistance tester 3-kutub (Megger, Kyoritsu, dll).",
+      "Tancapkan spike Arus (C) dan spike Potensial (P) ke tanah.",
+      "Letakkan P pada 62% jarak total dari Elektroda Tanah.",
+      "Tekan TEST dan injeksikan arus AC — baca resistansi dalam Ω.",
+      "Alternatif: metode clamp untuk pengukuran ground ring.",
+      "Cek tegangan Netral-ke-Tanah: harus < 2 V (IEC 60364)."
+    ],
+    nominal: "< 5.0 Ω general · < 1.0 Ω substation / sensitive electronics",
+    nominalId: "< 5,0 Ω umum · < 1,0 Ω gardu / elektronika sensitif",
+    standard: "PUIL 2011 / IEC 60364 / IEEE 80 / NEC Article 250"
   }
 };
 
+// ─── Animated SVG Probe Diagram ───────────────────────────────────────────────
 function AnimatedProbes({ type }: { type: TutCategory }) {
-  // SVG Animation logic based on type
+  const reading = { voltage: "398.2", megger: ">999", resistance: "0.5", ground: "1.2" }[type];
+
   return (
-    <div style={{ width: "100%", background: "rgba(0,0,0,0.5)", borderRadius: 12, border: "1px solid rgba(201,168,76,0.2)", position: "relative", overflow: "hidden", display: "flex", flexDirection: "column", boxShadow: "0 10px 30px rgba(0,0,0,0.5)" }}>
-      {/* Video Player Header */}
-      <div style={{ padding: "8px 16px", background: "rgba(201,168,76,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(201,168,76,0.2)" }}>
+    <div style={{
+      width: "100%", background: "rgba(0,0,0,0.55)", borderRadius: 12,
+      border: "1px solid rgba(201,168,76,0.25)", overflow: "hidden",
+      display: "flex", flexDirection: "column", boxShadow: "0 10px 30px rgba(0,0,0,0.5)"
+    }}>
+      {/* Player header */}
+      <div style={{ padding: "8px 16px", background: "rgba(201,168,76,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(201,168,76,0.15)" }}>
         <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--accent)", fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 6, height: 6, borderRadius: "50%", background: "red", boxShadow: "0 0 5px red", animation: "pulseRed 1.5s infinite" }} />
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#f44", display: "inline-block", boxShadow: "0 0 6px #f44", animation: "pulseRed 1.5s infinite" }} />
           LIVE SIMULATION
         </span>
-        <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)" }}>0:00 / ∞ LOOP</span>
+        <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)" }}>∞ LOOP</span>
       </div>
-      <div style={{ width: "100%", height: 220, position: "relative" }}>
-        <svg width="100%" height="100%" viewBox="0 0 300 200" fill="none" stroke="currentColor">
-        {/* The Multimeter Body */}
-        <rect x="20" y="50" width="80" height="120" rx="8" stroke="var(--accent)" strokeWidth="2" fill="rgba(201,168,76,0.1)" />
-        <rect x="30" y="60" width="60" height="30" rx="4" stroke="var(--accent)" fill="rgba(0,0,0,0.5)" />
-        <circle cx="60" cy="120" r="15" stroke="var(--accent)" />
-        <text x="60" y="80" fill="var(--accent)" fontSize="12" textAnchor="middle" fontFamily="monospace">
-          {type === "voltage" ? "398.2" : type === "megger" ? ">999" : type === "ground" ? "1.2" : "0.5"}
-        </text>
 
-        {/* The Component Under Test */}
+      {/* SVG */}
+      <svg width="100%" height="220" viewBox="0 0 320 200" fill="none">
+        {/* CSS keyframes */}
+        <defs>
+          <style>{`
+            @keyframes pulseRed { 0%,100%{opacity:1} 50%{opacity:0.25} }
+            @keyframes dashMove { to { stroke-dashoffset: -20; } }
+            @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+            .probe-red { animation: dashMove 1.2s linear infinite; stroke-dasharray: 6 4; }
+            .probe-blk { animation: dashMove 1.2s linear infinite 0.4s; stroke-dasharray: 6 4; }
+            .reading-blink { animation: pulseRed 2s ease-in-out infinite; }
+          `}</style>
+        </defs>
+
+        {/* ── Multimeter body ── */}
+        <rect x="10" y="30" width="90" height="140" rx="8" stroke="#e4c759" strokeWidth="1.5" fill="rgba(228,199,89,0.08)" />
+        {/* Screen */}
+        <rect x="18" y="40" width="74" height="38" rx="3" fill="rgba(0,0,0,0.7)" stroke="#e4c759" strokeWidth="1" />
+        <text x="55" y="65" fill="#e4c759" fontSize="14" textAnchor="middle" fontFamily="monospace" className="reading-blink">{reading}</text>
+        {/* Rotary dial */}
+        <circle cx="55" cy="120" r="18" stroke="#e4c759" strokeWidth="1.2" fill="rgba(0,0,0,0.4)" />
+        <circle cx="55" cy="120" r="4" fill="#e4c759" />
+        {/* Probe jacks */}
+        <circle cx="35" cy="155" r="4" fill="#f44" stroke="#f44" />
+        <circle cx="55" cy="155" r="4" fill="#333" stroke="#aaa" />
+        <circle cx="75" cy="155" r="4" fill="#333" stroke="#666" />
+        <text x="35" y="172" fill="#f44" fontSize="7" textAnchor="middle" fontFamily="monospace">VΩ</text>
+        <text x="75" y="172" fill="#aaa" fontSize="7" textAnchor="middle" fontFamily="monospace">COM</text>
+
+        {/* ── Component Under Test ── */}
         {type === "voltage" && (
-          <g transform="translate(180, 80)">
-            <rect x="0" y="0" width="80" height="60" rx="4" stroke="var(--fg)" />
-            <circle cx="20" cy="20" r="4" fill="var(--fg)" />
-            <circle cx="60" cy="20" r="4" fill="var(--fg)" />
-            <text x="40" y="45" fill="var(--fg)" fontSize="10" textAnchor="middle">Breaker</text>
-            <path d="M60 140 Q 120 180 200 100" stroke="red" strokeWidth="2" fill="none" className="probe-red" strokeDasharray="5 5">
-              <animate attributeName="d" values="M70 150 Q 100 100 70 150; M70 150 Q 120 150 200 100" dur="1s" fill="freeze" />
-            </path>
-            <path d="M50 140 Q 100 160 240 100" stroke="black" strokeWidth="2" fill="none" className="probe-blk">
-               <animate attributeName="d" values="M50 150 Q 80 120 50 150; M50 150 Q 100 120 240 100" dur="1s" fill="freeze" />
-            </path>
+          <g>
+            {/* Breaker panel */}
+            <rect x="200" y="40" width="100" height="120" rx="4" stroke="var(--fg)" strokeWidth="1.5" fill="rgba(255,255,255,0.04)" />
+            <rect x="210" y="50" width="30" height="50" rx="2" fill="rgba(255,255,255,0.05)" stroke="#555" />
+            <rect x="250" y="50" width="30" height="50" rx="2" fill="rgba(255,255,255,0.05)" stroke="#555" />
+            <text x="250" y="140" fill="var(--muted)" fontSize="8" textAnchor="middle" fontFamily="monospace">L1 / L2</text>
+            {/* Probe cables */}
+            <path d="M35 155 Q 100 185 200 70" stroke="#f44" strokeWidth="2" fill="none" className="probe-red" />
+            <path d="M75 155 Q 130 185 250 70" stroke="#ccc" strokeWidth="2" fill="none" className="probe-blk" />
+            {/* Probe tips */}
+            <circle cx="200" cy="70" r="3" fill="#f44" />
+            <circle cx="250" cy="70" r="3" fill="#ccc" />
           </g>
         )}
+
         {type === "megger" && (
-          <g transform="translate(180, 60)">
-            <rect x="0" y="0" width="60" height="100" rx="8" stroke="var(--fg)" />
-            <text x="30" y="55" fill="var(--fg)" fontSize="10" textAnchor="middle">Motor</text>
-            <line x1="30" y1="100" x2="30" y2="130" stroke="green" strokeWidth="2" />
-            <circle cx="30" cy="130" r="4" fill="green" />
-            <path d="M70 150 Q 120 150 210 60" stroke="red" strokeWidth="2" fill="none" />
-            <path d="M50 150 Q 100 160 210 190" stroke="black" strokeWidth="2" fill="none" />
+          <g>
+            {/* Motor body */}
+            <rect x="200" y="55" width="80" height="80" rx="6" stroke="var(--fg)" strokeWidth="1.5" fill="rgba(255,255,255,0.04)" />
+            <circle cx="240" cy="95" r="22" stroke="#555" strokeDasharray="4 3" />
+            {/* Ground spike */}
+            <line x1="240" y1="135" x2="240" y2="160" stroke="#0d0" strokeWidth="2" />
+            <line x1="228" y1="160" x2="252" y2="160" stroke="#0d0" strokeWidth="2" />
+            <line x1="232" y1="165" x2="248" y2="165" stroke="#0d0" strokeWidth="1.5" />
+            <line x1="236" y1="170" x2="244" y2="170" stroke="#0d0" strokeWidth="1" />
+            <text x="240" y="95" fill="var(--muted)" fontSize="8" textAnchor="middle" fontFamily="monospace">Motor</text>
+            {/* Probe cables */}
+            <path d="M35 155 Q 100 170 200 75" stroke="#f44" strokeWidth="2" fill="none" className="probe-red" />
+            <path d="M55 155 Q 120 175 240 135" stroke="#0d0" strokeWidth="2" fill="none" className="probe-blk" />
+            <circle cx="200" cy="75" r="3" fill="#f44" />
           </g>
         )}
+
         {type === "resistance" && (
-          <g transform="translate(160, 90)">
-            <path d="M0 20 Q 10 0 20 20 T 40 20 T 60 20 T 80 20" stroke="var(--fg)" strokeWidth="3" fill="none" />
-            <text x="40" y="50" fill="var(--fg)" fontSize="10" textAnchor="middle">Coil</text>
-            <path d="M70 150 Q 120 150 160 110" stroke="red" strokeWidth="2" fill="none" />
-            <path d="M50 150 Q 100 160 240 110" stroke="black" strokeWidth="2" fill="none" />
+          <g>
+            {/* Motor winding symbol */}
+            <path d="M190 90 Q200 75 210 90 Q220 105 230 90 Q240 75 250 90 Q260 105 270 90 Q280 75 290 90" stroke="var(--fg)" strokeWidth="2" fill="none" />
+            <text x="240" y="115" fill="var(--muted)" fontSize="8" textAnchor="middle" fontFamily="monospace">U1–U2 Winding</text>
+            {/* Probe cables */}
+            <path d="M35 155 Q 100 170 190 90" stroke="#f44" strokeWidth="2" fill="none" className="probe-red" />
+            <path d="M75 155 Q 150 170 290 90" stroke="#ccc" strokeWidth="2" fill="none" className="probe-blk" />
+            <circle cx="190" cy="90" r="3" fill="#f44" />
+            <circle cx="290" cy="90" r="3" fill="#ccc" />
           </g>
         )}
+
         {type === "ground" && (
-          <g transform="translate(150, 100)">
-            <line x1="0" y1="50" x2="120" y2="50" stroke="var(--fg)" strokeWidth="1" strokeDasharray="4 4" />
-            <rect x="20" y="10" width="10" height="60" fill="rgba(201,168,76,0.5)" />
-            <rect x="80" y="10" width="10" height="60" fill="rgba(201,168,76,0.5)" />
-            <path d="M70 150 Q 120 120 175 110" stroke="red" strokeWidth="2" fill="none" />
-            <path d="M50 150 Q 100 120 235 110" stroke="black" strokeWidth="2" fill="none" />
+          <g>
+            {/* Earth electrodes in soil */}
+            <rect x="165" y="100" width="130" height="80" fill="rgba(139,90,43,0.15)" stroke="rgba(139,90,43,0.4)" strokeWidth="1" rx="2" />
+            <text x="230" y="190" fill="rgba(139,90,43,0.8)" fontSize="8" textAnchor="middle" fontFamily="monospace">SOIL</text>
+            {/* Main electrode */}
+            <rect x="215" y="80" width="10" height="80" fill="rgba(228,199,89,0.6)" stroke="#e4c759" strokeWidth="1" />
+            {/* C spike */}
+            <rect x="270" y="95" width="8" height="60" fill="rgba(100,100,200,0.5)" stroke="#88f" strokeWidth="1" />
+            <text x="274" y="92" fill="#88f" fontSize="7" textAnchor="middle" fontFamily="monospace">C</text>
+            {/* P spike */}
+            <rect x="180" y="105" width="8" height="50" fill="rgba(100,200,100,0.5)" stroke="#8d8" strokeWidth="1" />
+            <text x="184" y="102" fill="#8d8" fontSize="7" textAnchor="middle" fontFamily="monospace">P</text>
+            {/* Probe cables */}
+            <path d="M35 155 Q 100 180 220 80" stroke="#f44" strokeWidth="2" fill="none" className="probe-red" />
+            <path d="M75 155 Q 120 165 184 105" stroke="#8d8" strokeWidth="2" fill="none" className="probe-blk" />
+            <circle cx="220" cy="80" r="3" fill="#f44" />
           </g>
         )}
       </svg>
-      {/* CSS Animation Styles */}
-      <style>{`
-        .probe-red { animation: probeMove 2s ease-in-out infinite alternate; }
-        @keyframes probeMove {
-          0% { stroke-dashoffset: 20; }
-          100% { stroke-dashoffset: 0; }
-        }
-        @keyframes pulseRed {
-          0% { opacity: 1; }
-          50% { opacity: 0.3; }
-          100% { opacity: 1; }
-        }
-      `}</style>
-      </div>
     </div>
   );
 }
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
+const TAB_KEYS: TutCategory[] = ["voltage", "megger", "resistance", "ground"];
+
 export default function TutorialsPage() {
-  const { t } = useLang();
-  const tt = t.tutorials || {
-    title: "Testing Tutorials", subtitle: "Multimeter & Insulation Test Guides", concept: "Learn standard procedures for taking electrical field measurements.",
-    voltage: "Voltage", megger: "Megger", resistance: "Resistance", ground: "Grounding",
-    steps: "Measurement Steps", nominal: "Nominal Values", standard: "Reference Standard"
-  };
+  const { t, lang } = useLang();
+  const tt = t.tutorials;
 
   const [activeTab, setActiveTab] = useState<TutCategory>("voltage");
-
   const data = tutData[activeTab];
 
+  // pick translated tab label
+  const tabLabel: Record<TutCategory, string> = {
+    voltage:    tt.voltage,
+    megger:     tt.megger,
+    resistance: tt.resistance,
+    ground:     tt.ground,
+  };
+
+  const steps  = lang === "id" ? data.stepsId  : data.steps;
+  const nominal = lang === "id" ? data.nominalId : data.nominal;
+
   return (
-    <CalcShell
-      label="Tutorials"
-      title={tt.title}
-      subtitle={tt.subtitle}
-      concept={tt.concept}
-    >
+    <CalcShell label="Tutorials" title={tt.title} subtitle={tt.subtitle} concept={tt.concept}>
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-        
+
         {/* Tabs */}
-        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, borderBottom: "1px solid var(--glass-border)" }}>
-          {(["voltage", "megger", "resistance", "ground"] as TutCategory[]).map(key => (
+        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, borderBottom: "1px solid var(--glass-border)" }}>
+          {TAB_KEYS.map(key => (
             <button
               key={key}
               onClick={() => setActiveTab(key)}
               style={{
-                padding: "8px 16px",
+                padding: "8px 18px",
                 borderRadius: 20,
                 background: activeTab === key ? "var(--accent)" : "transparent",
                 color: activeTab === key ? "#000" : "var(--fg)",
                 border: "1px solid",
                 borderColor: activeTab === key ? "var(--accent)" : "var(--glass-border)",
                 cursor: "pointer",
-                fontWeight: activeTab === key ? 600 : 400,
+                fontWeight: activeTab === key ? 700 : 400,
+                fontSize: 13,
                 whiteSpace: "nowrap",
-                transition: "all 0.2s"
+                transition: "all 0.2s",
               }}
             >
-              {tt[key] || tutData[key].title}
+              {tabLabel[key]}
             </button>
           ))}
         </div>
 
-        {/* Animation Box */}
+        {/* Live Simulation Panel */}
         <AnimatedProbes type={activeTab} />
 
         {/* Info Box */}
         <div style={{
           background: "rgba(255,255,255,0.02)",
           border: "1px solid var(--glass-border)",
-          borderRadius: "var(--r-md)",
+          borderRadius: 10,
           padding: 24,
           display: "flex",
           flexDirection: "column",
           gap: 20
         }}>
           <h3 style={{ fontFamily: "var(--font-display)", fontSize: 20, margin: 0, color: "var(--accent)" }}>
-            {data.title}
+            {lang === "id" ? tabLabel[activeTab] : data.titleEn}
           </h3>
 
+          {/* Steps */}
           <div>
-            <h4 style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--muted)", margin: "0 0 12px 0" }}>{tt.steps}</h4>
-            <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-              {data.steps.map((step, i) => (
-                <li key={i} style={{ color: "var(--fg)", lineHeight: 1.5 }}>{step}</li>
+            <h4 style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--muted)", margin: "0 0 12px 0", fontFamily: "var(--font-mono)" }}>
+              {tt.steps}
+            </h4>
+            <ol style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+              {steps.map((step, i) => (
+                <li key={i} style={{ color: "var(--fg)", lineHeight: 1.6, fontSize: 14 }}>{step}</li>
               ))}
-            </ul>
+            </ol>
           </div>
 
-          <div style={{ background: "rgba(201,168,76,0.1)", padding: 16, borderRadius: 8, border: "1px solid rgba(201,168,76,0.3)" }}>
-            <h4 style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--accent)", margin: "0 0 8px 0" }}>{tt.nominal}</h4>
-            <p style={{ margin: 0, color: "var(--fg)", lineHeight: 1.5 }}>{data.nominal}</p>
+          {/* Nominal */}
+          <div style={{ background: "rgba(228,199,89,0.08)", padding: "14px 16px", borderRadius: 8, border: "1px solid rgba(228,199,89,0.25)" }}>
+            <h4 style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--accent)", margin: "0 0 8px 0", fontFamily: "var(--font-mono)" }}>
+              {tt.nominal}
+            </h4>
+            <p style={{ margin: 0, color: "var(--fg)", lineHeight: 1.6, fontFamily: "var(--font-mono)", fontSize: 14 }}>{nominal}</p>
           </div>
 
+          {/* Standard */}
           <div>
-            <h4 style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--muted)", margin: "0 0 8px 0" }}>{tt.standard}</h4>
-            <p style={{ margin: 0, color: "var(--fg)", fontSize: 14 }}>{data.standard}</p>
+            <h4 style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--muted)", margin: "0 0 6px 0", fontFamily: "var(--font-mono)" }}>
+              {tt.standard}
+            </h4>
+            <p style={{ margin: 0, color: "var(--fg-soft)", fontSize: 13, fontFamily: "var(--font-mono)" }}>{data.standard}</p>
           </div>
         </div>
 
