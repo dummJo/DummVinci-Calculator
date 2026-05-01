@@ -19,13 +19,14 @@ Route tasks to the right model by specialty:
 
 | Task Type | Primary Model | Fallback |
 |---|---|---|
-| Engineering formula validation (IEC / ABB / STAHL) | **claude-opus-4-7** | claude-sonnet-4-6 |
-| UI/UX components, Next.js App Router pages | **claude-sonnet-4-6** | claude-haiku-4-5 |
+| Engineering formula validation (IEC / ABB / STAHL) | **claude-opus-4-7** | chatgpt-oss |
+| UI/UX components, Next.js App Router pages | **claude-sonnet-4-6** | chatgpt-oss |
 | Bulk catalog JSON generation (product tables) | **claude-haiku-4-5** | gemini-flash |
-| Code review, security, type safety | **claude-opus-4-7** | — |
+| Advanced Context / Mass Refactoring (1M+ tokens) | **gemini-pro** | claude-sonnet-4-6 |
+| Code review, security, type safety | **claude-opus-4-7** | chatgpt-oss |
 | SEO metadata, copy, i18n strings | **gemini-pro** | claude-sonnet-4-6 |
-| Rapid scaffolding / boilerplate | **claude-haiku-4-5** | gemini-flash |
-| Architecture decisions, cross-domain reasoning | **claude-opus-4-7** | — |
+| Rapid scaffolding / boilerplate | **chatgpt-oss** | claude-haiku-4-5 |
+| Architecture decisions, cross-domain reasoning | **claude-opus-4-7** | gemini-pro |
 
 ---
 
@@ -99,7 +100,7 @@ Agent C (Sonnet) → Update FieldSelect options in affected pages
 
 ## Advanced Orchestration & Subagent Protocol
 
-To maximize productivity and utilize the full spectrum of available models (Gemini, Opus, Sonnet, Haiku), the Orchestrator AI (Primary Agent) must strictly follow these advanced collaboration techniques:
+To maximize productivity and utilize the full spectrum of available models (Gemini Pro, ChatGPT-OSS, Opus, Sonnet, Haiku), the Orchestrator AI (Primary Agent) must strictly follow these advanced collaboration techniques:
 
 ### 1. The Orchestrator Role (You)
 As the primary agent, your job is **Orchestration**, not just coding. Break down complex user requests into parallel tracks. If the user requests a new calculator + UI + research, **do not execute them sequentially**.
