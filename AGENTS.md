@@ -1,3 +1,5 @@
+# DummVinci Calculator — Agent & LLM Collaboration Guide
+
 <!-- BEGIN:nextjs-agent-rules -->
 ## This is NOT the Next.js you know
 
@@ -5,8 +7,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- END:nextjs-agent-rules -->
 
 ---
-
-# DummVinci Calculator — Agent & LLM Collaboration Guide
 
 > **DummVinci** is positioned at multinational-consultant level.  
 > All AI contributions must meet that standard — no placeholder logic, no intern-grade output.
