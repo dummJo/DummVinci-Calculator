@@ -183,9 +183,20 @@ function SwapIcon() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ConvertPage() {
   const { t } = useLang();
-  const tc = t.convert || {
-    title: "Electrical Converter", subtitle: "Quick field unit conversions",
-    concept: "Select a category, enter value, select units."
+  const tc = t.convert;
+
+  const catLabels: Record<string, string> = {
+    power:       tc.catPower,
+    energy:      tc.catEnergy,
+    current:     tc.catCurrent,
+    voltage:     tc.catVoltage,
+    resistance:  tc.catResistance,
+    length:      tc.catLength,
+    area:        tc.catArea,
+    temperature: tc.catTemp,
+    pressure:    tc.catPressure,
+    torque:      tc.catTorque,
+    flow:        tc.catFlow,
   };
 
   const catKeys = Object.keys(CATEGORIES);
@@ -253,7 +264,7 @@ export default function ConvertPage() {
                 whiteSpace: "nowrap",
               }}
             >
-              {CATEGORIES[k].label}
+              {catLabels[k] ?? CATEGORIES[k].label}
             </button>
           ))}
         </div>
@@ -269,13 +280,13 @@ export default function ConvertPage() {
           gap: 16,
         }}>
           <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, color: "var(--accent)" }}>
-            {cat.label}
+            {catLabels[catKey] ?? cat.label}
           </h3>
 
           {/* Input Row */}
           <div>
             <label style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 6 }}>
-              Value
+              {tc.value ?? "Value"}
             </label>
             <input
               type="number"
@@ -359,7 +370,7 @@ export default function ConvertPage() {
             gap: 4,
           }}>
             <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-              Result
+              {tc.result ?? "Result"}
             </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
               <span style={{ fontSize: 36, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--accent)", lineHeight: 1 }}>

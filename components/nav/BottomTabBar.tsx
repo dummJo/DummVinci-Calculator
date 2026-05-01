@@ -274,7 +274,7 @@ export default function BottomTabBar() {
               boxShadow: "0 4px 15px rgba(201,168,76,0.3)",
               transition: "transform 0.1s"
             }} onMouseDown={e => e.currentTarget.style.transform="scale(0.98)"} onMouseUp={e => e.currentTarget.style.transform="scale(1)"}>
-              LET'S GO! 🚀
+              LET&apos;S GO! 🚀
             </button>
 
             <div style={{ marginTop: 24, textAlign: "center", opacity: 0.3, fontSize: 10, fontFamily: "var(--font-mono)" }}>
