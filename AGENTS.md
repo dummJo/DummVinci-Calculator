@@ -1,5 +1,5 @@
 <!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+## This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
@@ -18,7 +18,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 Route tasks to the right model by specialty:
 
 | Task Type | Primary Model | Fallback |
-|---|---|---|
+| --- | --- | --- |
 | Engineering formula validation (IEC / ABB / STAHL) | **claude-opus-4-7** | chatgpt-oss |
 | UI/UX components, Next.js App Router pages | **claude-sonnet-4-6** | chatgpt-oss |
 | Bulk catalog JSON generation (product tables) | **claude-haiku-4-5** | gemini-flash |
@@ -32,7 +32,7 @@ Route tasks to the right model by specialty:
 
 ## Project Structure Quick Reference
 
-```
+```text
 app/                        ← Next.js App Router pages (all "use client")
   cable/page.tsx            ← Cable sizing: IEC 60364-5-52 / PUIL
   vsd/page.tsx              ← ABB ACQ580 & ACS880 + panel airflow
@@ -54,7 +54,7 @@ data/                       ← Static JSON product catalogs (ABB, Siemens, STAH
 ## Engineering Standards Enforced
 
 | Domain | Standard / Source |
-|---|---|
+| --- | --- |
 | Cable ampacity | IEC 60364-5-52 Table B.52.4, PUIL 2011 (Indonesia) |
 | ABB drive catalog | ACQ580 HW Manual 3AUA0000099584, ACS880 HW Manual 3AUA0000078093 |
 | MCCB/MCB selection | IEC 60947-2 (MCCB), IEC 60898 (MCB) — Siemens European series |
@@ -70,27 +70,30 @@ data/                       ← Static JSON product catalogs (ABB, Siemens, STAH
 ## Agent Grouping Patterns
 
 ### Pattern 1 — Parallel Feature Build
+
 When adding a new calculator, launch 3 agents simultaneously:
 
-```
+```text
 Agent A (Opus)   → Engineering logic in lib/calc/new-feature.ts
 Agent B (Sonnet) → UI page in app/new-feature/page.tsx
 Agent C (Haiku)  → Seed JSON in data/new-feature.json
 ```
 
 ### Pattern 2 — Review Chain
+
 After any significant change:
 
-```
+```text
 Agent 1 (Haiku)  → Type-check lib/calc/*.ts, report any TS errors
 Agent 2 (Sonnet) → Visual review: does ResultCard show all key outputs with correct accent rows?
 Agent 3 (Opus)   → Engineering review: formulas vs. IEC/ABB/STAHL standard
 ```
 
 ### Pattern 3 — Catalog Expansion
+
 When adding new product families (e.g., 690V drives, new Siemens MCCB frame):
 
-```
+```text
 Agent A (Haiku)  → Generate raw JSON entries from datasheet values
 Agent B (Opus)   → Cross-validate 3 entries against known reference values
 Agent C (Sonnet) → Update FieldSelect options in affected pages
@@ -103,20 +106,26 @@ Agent C (Sonnet) → Update FieldSelect options in affected pages
 To maximize productivity and utilize the full spectrum of available models (Gemini Pro, ChatGPT-OSS, Opus, Sonnet, Haiku), the Orchestrator AI (Primary Agent) must strictly follow these advanced collaboration techniques:
 
 ### 1. The Orchestrator Role (You)
+
 As the primary agent, your job is **Orchestration**, not just coding. Break down complex user requests into parallel tracks. If the user requests a new calculator + UI + research, **do not execute them sequentially**.
 
 ### 2. Multi-Model Delegation & Subagents
+
 Whenever possible, utilize specific tools and subagents to offload context-heavy tasks:
+
 - **`browser_subagent` (Web & Research)**: If a task requires fetching live ABB datasheets, scraping IEC standards, or doing competitive UI/UX research, spawn a `browser_subagent`. Give it a highly detailed `Task` prompt to ensure it fetches the exact engineering data needed.
 - **`code-review-graph` (Architecture)**: **NEVER** use standard `grep` for complex architecture tracing. ALWAYS use the `code-review-graph` MCP tools (`get_impact_radius`, `query_graph`) to let the graph model analyze the blast radius before refactoring.
 - **`generate_image` (UI/UX Mockups)**: If the user requests a new dashboard layout, use the `generate_image` tool to spawn an image generation model to create a visual mockup *before* writing the CSS.
 
 ### 3. Asynchronous & Parallel Execution
+
 - When running long terminal commands (e.g., `npm run build` or `npm run lint` via `run_command` sent to background), **DO NOT WAIT IDLY**. Immediately use `command_status` in parallel with other tool calls (like writing documentation or updating `i18n.ts`).
 - Bundle multiple `multi_replace_file_content` calls together if modifying loosely coupled files (e.g., updating UI components and localized strings simultaneously).
 
 ### 4. Tool Prioritization Rules
+
 To prevent context overflow and save tokens across models:
+
 - **Use Specific Tools**: `grep_search` instead of `grep` in bash. `replace_file_content` instead of `sed`. `view_file` instead of `cat`.
 - **Minimize Read Radius**: Do not read a 1000-line file if you only need the imports. Use targeted `StartLine` and `EndLine`.
 
