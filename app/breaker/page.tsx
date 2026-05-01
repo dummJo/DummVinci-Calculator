@@ -12,6 +12,7 @@ import { sizeBreaker, BreakerResult } from "@/lib/calc/breaker";
 import type { Curve, Region } from "@/lib/calc/breaker";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import Footnote from "@/components/calc/Footnote";
 
 export default function BreakerPage() {
   const { t } = useLang();
@@ -171,6 +172,7 @@ export default function BreakerPage() {
         </div>
       )}
 
+      <Footnote />
       <Footer />
     </CalcShell>
   );

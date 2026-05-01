@@ -12,6 +12,7 @@ import { sizeBusbar, BusbarResult } from "@/lib/calc/busbar";
 import type { Material } from "@/lib/calc/busbar";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import Footnote from "@/components/calc/Footnote";
 
 export default function BusbarPage() {
   const { t } = useLang();
@@ -146,6 +147,7 @@ export default function BusbarPage() {
         </div>
       )}
 
+      <Footnote />
       <Footer />
     </CalcShell>
   );

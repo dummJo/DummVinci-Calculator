@@ -12,6 +12,7 @@ import { estimatePanelLayout, LayoutResult } from "@/lib/calc/panel-layout";
 import type { VsdFrame, BusbarTier, LayoutInput } from "@/lib/calc/panel-layout";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import Footnote from "@/components/calc/Footnote";
 import { Layers, Ruler } from "lucide-react";
 
 function InfoRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
@@ -322,6 +323,7 @@ export default function PanelPage() {
         </div>
       )}
 
+      <Footnote />
       <Footer />
     </CalcShell>
   );

@@ -6,6 +6,7 @@ import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import Footnote from "@/components/calc/Footnote";
 import { simulatePid, EquipmentType, PidResult, SimPoint } from "@/lib/calc/pid";
 import { Activity } from "lucide-react";
 
@@ -177,6 +178,7 @@ export default function PidPage() {
         )}
 
       </div>
+      <Footnote />
       <Footer />
     </CalcShell>
   );

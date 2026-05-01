@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import Footnote from "@/components/calc/Footnote";
 import { ChevronDown, Layers, ArrowUpDown } from "lucide-react";
 
 // ─── Conversion Database ──────────────────────────────────────────────────────
@@ -14,6 +15,7 @@ type Category = {
   label: string;
   units: Record<string, UnitDef>;
   note?: string;
+  isSpecial?: boolean;
 };
 
 const CATEGORIES: Record<string, Category> = {
@@ -29,6 +31,15 @@ const CATEGORIES: Record<string, Category> = {
     },
     note: "1 HP (IEC metric) = 0.74569987 kW",
   },
+  kva_amps: {
+    label: "kVA ↔ Amps",
+    isSpecial: true,
+    units: {
+      kva: { label: "Apparent Power (kVA)", factor: 1 },
+      amps: { label: "Current (Amps)", factor: 1 },
+    },
+    note: "Formula: I = (kVA × 1000) / (V × Phase_Factor)",
+  },
   energy: {
     label: "Energy",
     units: {
@@ -43,13 +54,12 @@ const CATEGORIES: Record<string, Category> = {
     note: "1 kWh = 3600 kJ = 3412.14 BTU",
   },
   current: {
-    label: "Current",
+    label: "Current Units",
     units: {
       A:    { label: "Ampere (A)",               factor: 1 },
       mA:   { label: "Milliampere (mA)",         factor: 0.001 },
       kA:   { label: "Kiloampere (kA)",          factor: 1000 },
     },
-    note: "Amperage at rated voltage",
   },
   voltage: {
     label: "Voltage",
@@ -67,7 +77,6 @@ const CATEGORIES: Record<string, Category> = {
       kΩ:   { label: "Kilohm (kΩ)",              factor: 1000 },
       MΩ:   { label: "Megaohm (MΩ)",             factor: 1000000 },
     },
-    note: "IEC 60364-6: Insulation resistance > 1 MΩ required",
   },
   length: {
     label: "Length / Distance",
@@ -81,7 +90,6 @@ const CATEGORIES: Record<string, Category> = {
       yd:   { label: "Yard (yd)",                factor: 0.9144 },
       mi:   { label: "Mile (mi)",                factor: 1609.344 },
     },
-    note: "1 m = 39.3701 in = 3.28084 ft",
   },
   area: {
     label: "Cable Area",
@@ -91,7 +99,6 @@ const CATEGORIES: Record<string, Category> = {
       in2:  { label: "in²",                      factor: 645.16 },
       kcmil:{ label: "kcmil / MCM",              factor: 0.5067 },
     },
-    note: "AWG lookup: #10 = 5.26 mm², #4 = 21.15 mm²",
   },
   temperature: {
     label: "Temperature",
@@ -132,57 +139,11 @@ const CATEGORIES: Record<string, Category> = {
   },
 };
 
-// ─── Converters ──────────────────────────────────────────────────────────────
-
-function convertTemp(value: number, from: string, to: string): number {
-  let celsius: number;
-  switch (from) {
-    case "F": celsius = (value - 32) * 5 / 9; break;
-    case "K": celsius = value - 273.15; break;
-    default:  celsius = value;
-  }
-  switch (to) {
-    case "F": return celsius * 9 / 5 + 32;
-    case "K": return celsius + 273.15;
-    default:  return celsius;
-  }
-}
-
-function convertValue(value: number, from: string, to: string, catKey: string): number {
-  if (catKey === "temperature") return convertTemp(value, from, to);
-  const cat = CATEGORIES[catKey];
-  const fromFactor = cat.units[from]?.factor ?? 1;
-  const toFactor   = cat.units[to]?.factor   ?? 1;
-  return (value * fromFactor) / toFactor;
-}
-
-function fmt(n: number): string {
-  if (!isFinite(n)) return "—";
-  if (Math.abs(n) >= 1e6)  return n.toExponential(4);
-  if (Math.abs(n) >= 1000) return n.toLocaleString("en-US", { maximumFractionDigits: 4 });
-  if (Math.abs(n) >= 1)    return n.toLocaleString("en-US", { maximumFractionDigits: 6 });
-  return n.toPrecision(6);
-}
-
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function ConvertPage() {
   const { t } = useLang();
   const tc = t.convert;
-
-  const catLabels: Record<string, string> = {
-    power:       tc.catPower,
-    energy:      tc.catEnergy,
-    current:     tc.catCurrent,
-    voltage:     tc.catVoltage,
-    resistance:  tc.catResistance,
-    length:      tc.catLength,
-    area:        tc.catArea,
-    temperature: tc.catTemp,
-    pressure:    tc.catPressure,
-    torque:      tc.catTorque,
-    flow:        tc.catFlow,
-  };
 
   const catKeys = Object.keys(CATEGORIES);
   const [catKey, setCatKey] = useState(catKeys[0]);
@@ -195,6 +156,10 @@ export default function ConvertPage() {
   const [from, setFrom] = useState(unitKeys[0]);
   const [to,   setTo]   = useState(unitKeys[1] ?? unitKeys[0]);
   const [input, setInput] = useState("1");
+  
+  // Special kVA state
+  const [voltage, setVoltage] = useState(400);
+  const [phase, setPhase] = useState("3ph");
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -213,6 +178,12 @@ export default function ConvertPage() {
     setTo(units[1] ?? units[0]);
     setInput("1");
     setIsMenuOpen(false);
+    
+    // Default voltage for kVA
+    if (key === "kva_amps") {
+       setVoltage(400);
+       setPhase("3ph");
+    }
   };
 
   const handleSwap = useCallback(() => {
@@ -221,27 +192,70 @@ export default function ConvertPage() {
   }, [from, to]);
 
   const numVal = parseFloat(input);
-  const result = !isNaN(numVal) ? convertValue(numVal, from, to, catKey) : null;
+  
+  const calculateResult = () => {
+    if (isNaN(numVal)) return null;
+    
+    // Temperature special case
+    if (catKey === "temperature") {
+      let celsius: number;
+      switch (from) {
+        case "F": celsius = (numVal - 32) * 5 / 9; break;
+        case "K": celsius = numVal - 273.15; break;
+        default:  celsius = numVal;
+      }
+      switch (to) {
+        case "F": return celsius * 9 / 5 + 32;
+        case "K": return celsius + 273.15;
+        default:  return celsius;
+      }
+    }
+
+    // kVA <-> Amps special case
+    if (catKey === "kva_amps") {
+      const pFact = phase === "3ph" ? 1.732 : 1;
+      if (from === "kva") {
+        // kVA -> Amps: I = (kVA * 1000) / (V * PF)
+        return (numVal * 1000) / (voltage * pFact);
+      } else {
+        // Amps -> kVA: kVA = (V * I * PF) / 1000
+        return (voltage * numVal * pFact) / 1000;
+      }
+    }
+
+    // Generic factor-based
+    const fromFactor = cat.units[from]?.factor ?? 1;
+    const toFactor   = cat.units[to]?.factor   ?? 1;
+    return (numVal * fromFactor) / toFactor;
+  };
+
+  const result = calculateResult();
+
+  const fmt = (n: number) => {
+    if (!isFinite(n)) return "—";
+    if (Math.abs(n) >= 1e6)  return n.toExponential(4);
+    if (Math.abs(n) >= 1000) return n.toLocaleString("en-US", { maximumFractionDigits: 4 });
+    return n.toLocaleString("en-US", { maximumFractionDigits: 6 });
+  };
+
+  const catLabels: Record<string, string> = {
+    power: tc.catPower, energy: tc.catEnergy, current: tc.catCurrent, voltage: tc.catVoltage,
+    resistance: tc.catResistance, length: tc.catLength, area: tc.catArea, temperature: tc.catTemp,
+    pressure: tc.catPressure, torque: tc.catTorque, flow: tc.catFlow, kva_amps: "kVA ↔ Amps"
+  };
 
   return (
     <CalcShell label="Convert" title={tc.title} subtitle={tc.subtitle} concept={tc.concept}>
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-        {/* COMPACT POPOUT SELECTOR */}
+        {/* POPOUT SELECTOR */}
         <div style={{ position: "relative" }} ref={menuRef}>
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "14px 20px",
-              background: "rgba(228,199,89,0.12)",
-              border: "1px solid var(--accent)",
-              borderRadius: 14,
-              cursor: "pointer",
-              transition: "all 0.2s",
+              width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "14px 20px", background: "rgba(228,199,89,0.12)", border: "1px solid var(--accent)",
+              borderRadius: 14, cursor: "pointer", transition: "all 0.2s",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -250,50 +264,23 @@ export default function ConvertPage() {
                 {catLabels[catKey] ?? cat.label}
               </span>
             </div>
-            <ChevronDown 
-              size={18} 
-              style={{ 
-                color: "var(--muted)", 
-                transform: isMenuOpen ? "rotate(180deg)" : "rotate(0)", 
-                transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)" 
-              }} 
-            />
+            <ChevronDown size={18} style={{ color: "var(--muted)", transform: isMenuOpen ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.3s ease" }} />
           </button>
 
-          {/* POPOUT MENU */}
           {isMenuOpen && (
             <div style={{
-              position: "absolute",
-              top: "calc(100% + 8px)",
-              left: 0,
-              right: 0,
-              background: "var(--bg-raised)",
-              backdropFilter: "blur(40px)",
-              border: "1px solid var(--glass-border)",
-              borderRadius: 16,
-              padding: "8px",
-              zIndex: 100,
-              boxShadow: "var(--glass-shadow)",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "4px",
-              animation: "popIn 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
+              position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0, background: "var(--bg-raised)",
+              backdropFilter: "blur(40px)", border: "1px solid var(--glass-border)", borderRadius: 16,
+              padding: "8px", zIndex: 100, boxShadow: "var(--glass-shadow)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px",
+              animation: "popIn 0.2s ease"
             }}>
               {catKeys.map(k => (
                 <button
-                  key={k}
-                  onClick={() => handleCatChange(k)}
+                  key={k} onClick={() => handleCatChange(k)}
                   style={{
-                    padding: "10px 14px",
-                    borderRadius: 10,
-                    border: "none",
-                    background: catKey === k ? "var(--accent-pill-bg)" : "transparent",
-                    color: catKey === k ? "var(--accent)" : "var(--fg-soft)",
-                    textAlign: "left",
-                    fontSize: 13,
-                    fontWeight: catKey === k ? 700 : 400,
-                    cursor: "pointer",
-                    transition: "all 0.15s",
+                    padding: "10px 14px", borderRadius: 10, border: "none", background: catKey === k ? "var(--accent-pill-bg)" : "transparent",
+                    color: catKey === k ? "var(--accent)" : "var(--fg-soft)", textAlign: "left", fontSize: 13,
+                    fontWeight: catKey === k ? 700 : 400, cursor: "pointer", transition: "all 0.15s",
                   }}
                 >
                   {catLabels[k] ?? CATEGORIES[k].label}
@@ -303,86 +290,58 @@ export default function ConvertPage() {
           )}
         </div>
 
-        {/* MAIN CONVERTER CARD */}
-        <div style={{
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid var(--glass-border)",
-          borderRadius: 20,
-          padding: "24px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 20,
-        }}>
+        {/* CONVERTER CARD */}
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--glass-border)", borderRadius: 20, padding: "24px", display: "flex", flexDirection: "column", gap: 20 }}>
           
+          {/* SPECIAL kVA CONFIG */}
+          {catKey === "kva_amps" && (
+             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, padding: 16, background: "rgba(255,255,255,0.02)", borderRadius: 12, border: "1px dashed var(--glass-border)" }}>
+                <div>
+                   <label style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>System Phase</label>
+                   <select value={phase} onChange={e => { setPhase(e.target.value); if(e.target.value==="1ph") setVoltage(220); else setVoltage(400); }} 
+                     style={{ width: "100%", background: "rgba(0,0,0,0.3)", color: "var(--fg)", border: "1px solid var(--glass-border)", padding: "8px", borderRadius: 8, fontSize: 12 }}>
+                      <option value="3ph">3-Phase (√3)</option>
+                      <option value="1ph">1-Phase (1.0)</option>
+                   </select>
+                </div>
+                <div>
+                   <label style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>Line Voltage (V)</label>
+                   <input type="number" value={voltage} onChange={e => setVoltage(parseFloat(e.target.value))}
+                     style={{ width: "100%", background: "rgba(0,0,0,0.3)", color: "var(--fg)", border: "1px solid var(--glass-border)", padding: "8px", borderRadius: 8, fontSize: 12 }} />
+                </div>
+             </div>
+          )}
+
           {/* VALUE INPUT */}
           <div>
             <label style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 8 }}>
-              {tc.value ?? "Value"}
+              {catKey === "kva_amps" ? (from === "kva" ? "Apparent Power Value" : "Current Value") : (tc.value ?? "Value")}
             </label>
             <input
-              type="number"
-              value={input}
-              onChange={e => setInput(e.target.value)}
+              type="number" value={input} onChange={e => setInput(e.target.value)}
               style={{
-                width: "100%",
-                background: "rgba(0,0,0,0.2)",
-                border: "1px solid var(--glass-border)",
-                borderRadius: 12,
-                color: "var(--fg)",
-                padding: "16px 20px",
-                fontSize: 32,
-                fontWeight: 700,
-                fontFamily: "var(--font-display)",
-                outline: "none",
-                transition: "border-color 0.2s"
+                width: "100%", background: "rgba(0,0,0,0.2)", border: "1px solid var(--glass-border)", borderRadius: 12,
+                color: "var(--fg)", padding: "16px 20px", fontSize: 32, fontWeight: 700, fontFamily: "var(--font-display)", outline: "none"
               }}
-              onFocus={e => e.currentTarget.style.borderColor = "var(--accent)"}
-              onBlur={e => e.currentTarget.style.borderColor = "var(--glass-border)"}
             />
           </div>
 
           {/* UNIT SELECTORS */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
-            
             <div style={{ flex: 1, minWidth: 140 }}>
-              <label style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>{tc.from ?? "From"}</label>
-              <select 
-                value={from} 
-                onChange={e => setFrom(e.target.value)} 
-                style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--glass-border)", borderRadius: 10, color: "var(--fg)", padding: "10px 14px", fontSize: 14, outline: "none", cursor: "pointer" }}
-              >
+              <label style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>{tc.from ?? "From"}</label>
+              <select value={from} onChange={e => setFrom(e.target.value)} style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--glass-border)", borderRadius: 10, color: "var(--fg)", padding: "10px 14px", fontSize: 14, cursor: "pointer" }}>
                 {unitKeys.map(k => (
                   <option key={k} value={k} style={{ background: "#16181d" }}>{cat.units[k].label}</option>
                 ))}
               </select>
             </div>
-
-            <button
-              onClick={handleSwap}
-              style={{
-                marginTop: 20,
-                width: 44, height: 44,
-                borderRadius: 12,
-                border: "1px solid var(--glass-border)",
-                background: "rgba(228,199,89,0.1)",
-                color: "var(--accent)",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.2s",
-              }}
-            >
+            <button onClick={handleSwap} style={{ marginTop: 20, width: 44, height: 44, borderRadius: 12, border: "1px solid var(--glass-border)", background: "rgba(228,199,89,0.1)", color: "var(--accent)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <ArrowUpDown size={20} />
             </button>
-
             <div style={{ flex: 1, minWidth: 140 }}>
-              <label style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>{tc.to ?? "To"}</label>
-              <select 
-                value={to} 
-                onChange={e => setTo(e.target.value)} 
-                style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--glass-border)", borderRadius: 10, color: "var(--fg)", padding: "10px 14px", fontSize: 14, outline: "none", cursor: "pointer" }}
-              >
+              <label style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>{tc.to ?? "To"}</label>
+              <select value={to} onChange={e => setTo(e.target.value)} style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--glass-border)", borderRadius: 10, color: "var(--fg)", padding: "10px 14px", fontSize: 14, cursor: "pointer" }}>
                 {unitKeys.map(k => (
                   <option key={k} value={k} style={{ background: "#16181d" }}>{cat.units[k].label}</option>
                 ))}
@@ -391,47 +350,31 @@ export default function ConvertPage() {
           </div>
 
           {/* RESULT BOX */}
-          <div style={{
-            marginTop: 8,
-            padding: "24px",
-            background: "linear-gradient(135deg, rgba(228,199,89,0.1) 0%, rgba(228,199,89,0.03) 100%)",
-            border: "1px solid rgba(228,199,89,0.3)",
-            borderRadius: 16,
-            textAlign: "center"
-          }}>
-            <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 12 }}>
-              {tc.result ?? "CONVERSION RESULT"}
-            </div>
-            <div style={{ fontSize: 42, fontWeight: 800, fontFamily: "var(--font-display)", color: "var(--fg)", lineHeight: 1.1 }}>
-              {result !== null ? fmt(result) : "—"}
-            </div>
-            <div style={{ fontSize: 16, color: "var(--muted)", fontWeight: 500, marginTop: 8 }}>
-              {cat.units[to]?.label}
-            </div>
-            
-            <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.05)", fontSize: 12, color: "var(--fg-soft)", fontFamily: "var(--font-mono)", opacity: 0.8 }}>
-              {!isNaN(numVal) && result !== null
-                ? `${numVal} ${cat.units[from]?.label} ≈ ${fmt(result)} ${cat.units[to]?.label}`
-                : "Awaiting input..."}
-            </div>
+          <div style={{ marginTop: 8, padding: "24px", background: "linear-gradient(135deg, rgba(228,199,89,0.1), rgba(228,199,89,0.03))", border: "1px solid rgba(228,199,89,0.3)", borderRadius: 16, textAlign: "center" }}>
+            <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 12 }}>{tc.result ?? "RESULT"}</div>
+            <div style={{ fontSize: 42, fontWeight: 800, fontFamily: "var(--font-display)", color: "var(--fg)", lineHeight: 1.1 }}>{result !== null ? fmt(result) : "—"}</div>
+            <div style={{ fontSize: 16, color: "var(--muted)", fontWeight: 500, marginTop: 8 }}>{cat.units[to]?.label}</div>
+            {catKey === "kva_amps" && (
+              <div style={{ marginTop: 16, fontSize: 11, color: "var(--accent)", fontFamily: "var(--font-mono)" }}>
+                 {from === "kva" ? `I = (kVA × 1000) / (${voltage}V × ${phase === "3ph" ? "1.732" : "1"})` : `kVA = (${voltage}V × I × ${phase === "3ph" ? "1.732" : "1"}) / 1000`}
+              </div>
+            )}
           </div>
 
-          {/* STANDARDS / NOTES */}
           {cat.note && (
             <div style={{ padding: "12px 16px", background: "rgba(255,255,255,0.02)", borderRadius: 10, borderLeft: "3px solid var(--accent)", fontSize: 12, color: "var(--muted)", lineHeight: 1.5 }}>
                <span style={{ color: "var(--accent)", fontWeight: 700, marginRight: 8 }}>NOTE:</span> {cat.note}
             </div>
           )}
         </div>
+        
+        {/* DYNAMIC FOOTNOTE */}
+        <Footnote />
 
       </div>
       <Footer />
-
       <style jsx global>{`
-        @keyframes popIn {
-          from { opacity: 0; transform: scale(0.96) translateY(-10px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
-        }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.96) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
       `}</style>
     </CalcShell>
   );

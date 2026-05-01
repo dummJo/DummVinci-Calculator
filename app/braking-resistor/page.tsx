@@ -10,6 +10,7 @@ import ResultCard from "@/components/calc/ResultCard";
 import { sizeBrakingResistor, BrResult } from "@/lib/calc/braking-resistor";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import Footnote from "@/components/calc/Footnote";
 
 type LineVoltage = 400 | 480 | 690;
 type EdPct       = 15 | 25 | 40 | 60;
@@ -109,6 +110,7 @@ export default function BrakingResistorPage() {
         />
       )}
 
+      <Footnote />
       <Footer />
     </CalcShell>
   );

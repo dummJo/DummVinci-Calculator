@@ -5,6 +5,7 @@ import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import Footer from "@/components/nav/Footer";
+import Footnote from "@/components/calc/Footnote";
 import { useLang } from "@/lib/i18n";
 import { sizeStarter } from "@/lib/calc/starter";
 import type { StarterInput, StarterResult, StarterType, Voltage } from "@/lib/calc/starter";
@@ -291,6 +292,7 @@ export default function StarterPage() {
         </>
       )}
 
+      <Footnote />
       <Footer />
     </CalcShell>
   );

@@ -11,6 +11,7 @@ import { sizeCable, CableResult } from "@/lib/calc/cable";
 import type { Phase, Insulation, Install } from "@/lib/calc/cable";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import Footnote from "@/components/calc/Footnote";
 import { Info } from "lucide-react";
 
 export default function CablePage() {
@@ -154,6 +155,7 @@ export default function CablePage() {
         />
       )}
 
+      <Footnote />
       <Footer />
     </CalcShell>
   );

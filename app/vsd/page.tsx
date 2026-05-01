@@ -12,6 +12,7 @@ import { sizeVsd, VsdResult, IpRating } from "@/lib/calc/vsd";
 import type { DriveApp, Voltage } from "@/lib/calc/vsd";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import Footnote from "@/components/calc/Footnote";
 
 export default function VsdPage() {
   const { t } = useLang();
@@ -181,6 +182,7 @@ export default function VsdPage() {
         />
       )}
 
+      <Footnote />
       <Footer />
     </CalcShell>
   );
