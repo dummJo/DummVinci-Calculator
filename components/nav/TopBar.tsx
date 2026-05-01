@@ -3,6 +3,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useLang, type Lang } from "@/lib/i18n";
 
 import Logo from "@/components/Logo";
+import Link from "next/link";
 
 // ─── Lang pill toggle ─────────────────────────────────────────────────────────
 function LangToggle() {
@@ -67,7 +68,7 @@ export default function TopBar() {
       }}
     >
       {/* Logo */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+      <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, textDecoration: "none" }}>
         <div style={{
           width: 32, height: 32,
           flexShrink: 0,
@@ -101,7 +102,7 @@ export default function TopBar() {
             Calculator
           </span>
         </div>
-      </div>
+      </Link>
 
       {/* Controls */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
