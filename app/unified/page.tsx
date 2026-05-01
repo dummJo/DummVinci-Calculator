@@ -5,15 +5,15 @@ import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import FieldToggle from "@/components/calc/FieldToggle";
 import ResultCard from "@/components/calc/ResultCard";
-import { useLang } from "@/lib/i18n";
+import { useLang, type Translations } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import { sizeMotorStarter, UnifiedResult, estimateAmps } from "@/lib/calc/unified";
-import type { Voltage, DriveApp } from "@/lib/calc/vsd";
+import type { Voltage, DriveApp, IpRating } from "@/lib/calc/vsd";
 import type { Insulation, Install } from "@/lib/calc/cable";
 import { Download, CheckCircle, Info } from "lucide-react";
 import RichText from "@/components/calc/RichText";
 
-function SummaryStrip({ result, t, tu }: { result: UnifiedResult, t: any, tu: any }) {
+function SummaryStrip({ result, t }: { result: UnifiedResult, t: Translations }) {
   const specs = [
     { label: t.support.colCode + "*", value: result.vsd.partCode },
     { label: t.support.colKw, value: result.vsd.ratedKw },
@@ -112,7 +112,7 @@ export default function UnifiedPage() {
   const [ambient, setAmbient] = useState("35");
   const [fault, setFault] = useState("10");
   const [variant, setVariant] = useState<"01" | "02" | "04" | "07" | "31" | "34" | "37" | "040C" | "040S">("01");
-  const [ipPref, setIpPref] = useState<any>("IP21");
+  const [ipPref, setIpPref] = useState<IpRating>("IP21");
   const [result, setResult] = useState<UnifiedResult | null>(null);
   const [step, setStep] = useState(1);
 
@@ -341,7 +341,7 @@ export default function UnifiedPage() {
             <div className="sec-label"><span>DRIVE SPECIFICATION</span></div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 24 }}>
               <FieldSelect
-                label={tu.driveVariant} value={variant} onChange={v => setVariant(v as any)}
+                label={tu.driveVariant} value={variant} onChange={v => setVariant(v as "01" | "02" | "04" | "07" | "31" | "34" | "37" | "040C" | "040S")}
                 options={[
                   { value: "01", label: t.vsd.constWall },
                   { value: "02", label: t.vsd.constCompact },
@@ -355,7 +355,7 @@ export default function UnifiedPage() {
                 ]}
               />
               <FieldSelect
-                label="Environmental Rating" value={ipPref} onChange={v => setIpPref(v as any)}
+                label="Environmental Rating" value={ipPref} onChange={v => setIpPref(v as IpRating)}
                 options={[
                   { value: "IP21", label: "IP21 — Standard Wall/Indoor" },
                   { value: "IP55", label: "IP55 — Dust/Wet Protected" },
@@ -367,9 +367,9 @@ export default function UnifiedPage() {
             <div style={{ marginTop: 16, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24 }}>
               <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>APPLICATION: {(tu as any).appLegend[app].title}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>APPLICATION: {tu.appLegend[app as keyof typeof tu.appLegend].title}</span>
                 <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
-                  <RichText text={(tu as any).appLegend[app].desc} />
+                  <RichText text={tu.appLegend[app as keyof typeof tu.appLegend].desc} />
                 </span>
               </div>
             </div>
@@ -410,9 +410,9 @@ export default function UnifiedPage() {
             <div style={{ marginTop: 0, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24 }}>
               <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METHOD: {(t.cable as any).methodLegend[install].title}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METHOD: {t.cable.methodLegend[install as keyof typeof t.cable.methodLegend].title}</span>
                 <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
-                  <RichText text={(t.cable as any).methodLegend[install].desc} />
+                  <RichText text={t.cable.methodLegend[install as keyof typeof t.cable.methodLegend].desc} />
                 </span>
               </div>
             </div>
@@ -439,7 +439,7 @@ export default function UnifiedPage() {
         {step === 3 && result && (
           <div className="calc-col-result wizard-pane">
             <div className="apple-inner-wrapper">
-              <SummaryStrip result={result} t={t} tu={tu} />
+              <SummaryStrip result={result} t={t} />
 
               <div className="result-cards-grid">
                 <ResultCard

@@ -8,7 +8,7 @@ import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { sizeStarter } from "@/lib/calc/starter";
 import type { StarterInput, StarterResult, StarterType, Voltage } from "@/lib/calc/starter";
-import { Zap, ShieldCheck, Timer, CircuitBoard, AlertTriangle, CheckCircle, Copy } from "lucide-react";
+import { Zap, ShieldCheck, CircuitBoard, AlertTriangle, CheckCircle, Copy } from "lucide-react";
 
 const CATEGORY_STYLES: Record<string, { bg: string; border: string; color: string; label: string }> = {
   MPCB:      { bg: "rgba(201,168,76,0.1)",  border: "rgba(201,168,76,0.3)",  color: "var(--accent)", label: "MPCB" },
@@ -217,7 +217,7 @@ export default function StarterPage() {
 
           {/* BOM LIST */}
           <div className="vinci-card result-card-enter" style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={{ display: "flex", justify: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <div className="sec-label" style={{ marginBottom: 0 }}><span>{ts.resBom}</span></div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", opacity: 0.7 }}>
                 {result.starterType === "STAR_DELTA" ? "3RA2 Compact Kit + Auxiliaries" : "3RT2 DOL + Auxiliaries"}

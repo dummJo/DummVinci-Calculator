@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 // ─── 8 Authentic Vincinian Icons from dummJo/portfolio ────────────────────────
 const ICONS_SVG_STRINGS = [

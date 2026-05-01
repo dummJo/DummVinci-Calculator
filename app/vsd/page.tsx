@@ -118,7 +118,7 @@ export default function VsdPage() {
             ]}
           />
           <FieldSelect
-            label={tv.construction} value={variant} onChange={v => setVariant(v as any)}
+            label={tv.construction} value={variant} onChange={v => setVariant(v as "01" | "02" | "04" | "07" | "31" | "34" | "37" | "040C" | "040S")}
             options={[
               { value: "01", label: tv.constWall },
               { value: "02", label: tv.constCompact },

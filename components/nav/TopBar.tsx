@@ -1,5 +1,4 @@
 "use client";
-import { useState, useEffect } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useLang, type Lang } from "@/lib/i18n";
 

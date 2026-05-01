@@ -150,7 +150,7 @@ function getFeatures(d: DriveFrame): string[] {
   return base;
 }
 
-function recommendation(d: DriveFrame, app: DriveApp): string {
+function recommendation(d: DriveFrame): string {
   let note = "";
   if (d.variant === "31" || d.variant === "34" || d.variant === "37") 
     note = "ULH: Ultra-Low Harmonic (THDi < 3%). No external filters needed.";

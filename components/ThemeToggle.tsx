@@ -15,9 +15,12 @@ export default function ThemeToggle() {
   useEffect(() => {
     const saved = localStorage.getItem("theme") as "dark" | "light" | null;
     const initial = saved || "dark";
-    setTheme(initial);
     document.documentElement.setAttribute("data-theme", initial);
-    setMounted(true);
+    const timeoutId = setTimeout(() => {
+      setTheme(initial);
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const toggle = useCallback(() => {

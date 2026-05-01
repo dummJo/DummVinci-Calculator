@@ -1,6 +1,6 @@
-import { sizeVsd, VsdInput, VsdResult, Voltage, DriveApp } from "./vsd";
-import { sizeCable, CableInput, CableResult, Phase, Insulation, Install } from "./cable";
-import { sizeBreaker, BreakerInput, BreakerResult, Curve } from "./breaker";
+import { sizeVsd, VsdResult, Voltage, DriveApp, IpRating } from "./vsd";
+import { sizeCable, CableResult, Insulation, Install } from "./cable";
+import { sizeBreaker, BreakerResult } from "./breaker";
 
 export interface UnifiedInput {
   motorKw: number;
@@ -15,7 +15,7 @@ export interface UnifiedInput {
   faultCurrentKa: number;    // kA for breaker
   panelDeltaT: number;       // For VSD airflow
   driveVariant: "01" | "02" | "04" | "07" | "31" | "34" | "37" | "040C" | "040S";
-  ipPreference?: any;
+  ipPreference?: IpRating;
 }
 
 export interface UnifiedResult {

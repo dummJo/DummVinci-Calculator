@@ -5,7 +5,7 @@ import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import supportData from "@/data/abb-support.json";
 import drivesData from "@/data/abb-drives.json";
-import { Search, ExternalLink, HelpCircle, X, Maximize2 } from "lucide-react";
+import { Search, ExternalLink } from "lucide-react";
 import RichText from "@/components/calc/RichText";
 
 export default function AbbSupportHub() {
@@ -72,7 +72,7 @@ export default function AbbSupportHub() {
                 </div>
               )) : (
                 <div style={{ padding: 16, textAlign: "center", color: "var(--muted)", fontSize: 13 }}>
-                  No results for "{searchCode}".
+                  No results for &quot;{searchCode}&quot;.
                 </div>
               )}
             </div>

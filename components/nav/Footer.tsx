@@ -9,7 +9,9 @@ export default function Footer() {
   const [quote, setQuote] = useState<Quote | null>(null);
 
   useEffect(() => {
-    setQuote(getRandomQuote());
+    const q = getRandomQuote();
+    const timeoutId = setTimeout(() => setQuote(q), 0);
+    return () => clearTimeout(timeoutId);
   }, []);
 
   return (

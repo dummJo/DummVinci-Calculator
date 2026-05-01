@@ -6,9 +6,7 @@ import Footer from "@/components/nav/Footer";
 import { getRandomQuote, type Quote } from "@/lib/quotes";
 import { useState, useEffect } from "react";
 import {
-  LayoutGrid, Activity, Cpu, Disc3, 
-  Cable, Zap, AlignJustify, Server, Disc, Microchip, Play,
-  ChevronRight, SortAsc, SortDesc
+  LayoutGrid, Activity, ChevronRight, SortAsc, SortDesc, Sparkles, BookOpen
 } from "lucide-react";
 
 const SPEC_STRIP = [
@@ -102,7 +100,8 @@ export default function HomePage() {
   const [heroQuote, setHeroQuote] = useState<Quote | null>(null);
 
   useEffect(() => {
-    setHeroQuote(getRandomQuote());
+    const tid = setTimeout(() => setHeroQuote(getRandomQuote()), 0);
+    return () => clearTimeout(tid);
   }, []);
 
   const [sortBy, setSortBy] = useState<"name" | "cat" | "default">("default");
@@ -120,16 +119,19 @@ export default function HomePage() {
     { href: "/panel-layout",key: "layout",  tag: "Layout",      cat: "Panel",    Icon: LayoutGrid },
     { href: "/braking-resistor", key: "brake",   tag: "Regeneration",cat: "Starter",  Icon: IconBrake },
     { href: "/panel",       key: "panel",   tag: "Enclosure",   cat: "Panel",    Icon: IconPanel },
+    { href: "/pid",         key: "pid",     tag: "Tuning",      cat: "Control",  Icon: Activity },
+    { href: "/convert",     key: "convert", tag: "Utility",     cat: "Info",     Icon: Sparkles },
+    { href: "/tutorials",   key: "tutorials", tag: "Guide",     cat: "Info",     Icon: BookOpen },
   ];
 
   const sortedCalcs = [...CALCS].sort((a, b) => {
     if (sortBy === "default") return 0;
     
-    const metaA = (th.calcs as any)[a.key];
-    const metaB = (th.calcs as any)[b.key];
+    const metaA = th.calcs[a.key as keyof typeof th.calcs];
+    const metaB = th.calcs[b.key as keyof typeof th.calcs];
     
-    let valA = sortBy === "name" ? (metaA?.title || "") : a.cat;
-    let valB = sortBy === "name" ? (metaB?.title || "") : b.cat;
+    const valA = sortBy === "name" ? (metaA?.title || "") : a.cat;
+    const valB = sortBy === "name" ? (metaB?.title || "") : b.cat;
     
     if (valA < valB) return sortOrder === "asc" ? -1 : 1;
     if (valA > valB) return sortOrder === "asc" ? 1 : -1;
@@ -339,7 +341,7 @@ export default function HomePage() {
               ].map(opt => (
                 <button
                   key={opt.id}
-                  onClick={() => setSortBy(opt.id as any)}
+                  onClick={() => setSortBy(opt.id as "name" | "cat" | "default")}
                   style={{
                     padding: "3px 10px",
                     borderRadius: 18,
@@ -392,7 +394,7 @@ export default function HomePage() {
       >
         <div className="hero-grid">
           {sortedCalcs.map((calc) => {
-            const meta = (th.calcs as any)[calc.key];
+            const meta = th.calcs[calc.key as keyof typeof th.calcs];
             return (
               <Link
                 key={calc.key}

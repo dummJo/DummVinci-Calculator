@@ -6,7 +6,7 @@ import { Hammer } from "lucide-react";
 
 export default function PanelLayoutPage() {
   const { t } = useLang();
-  const tl = (t as any).panelLayout || { title: "Panel Layout", subtitle: "Coming Soon" };
+  const tl = t.panelLayout || { title: "Panel Layout", subtitle: "Coming Soon" };
 
   return (
     <CalcShell label="IEC 61439" title={tl.title} subtitle={tl.subtitle} concept={tl.concept}>

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import {
   LayoutGrid, Activity, Cpu, Disc3, MoreHorizontal, 
-  Cable, Zap, AlignJustify, Server, Disc, X, History, Sparkles, AlertCircle, Microchip, Play
+  Cable, Zap, AlignJustify, Server, Disc, X, History, Sparkles, AlertCircle, Microchip, Play, BookOpen
 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { clsx } from "clsx";
@@ -14,6 +14,24 @@ export default function BottomTabBar() {
   const { t } = useLang();
   const [showMore, setShowMore] = useState(false);
   const [showChangelog, setShowChangelog] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const seen = localStorage.getItem("dummvinci_v2_2_seen");
+      if (!seen) {
+        // slight delay for dramatic effect
+        const tid = setTimeout(() => setShowChangelog(true), 800);
+        return () => clearTimeout(tid);
+      }
+    }
+  }, []);
+
+  const closeChangelog = () => {
+    setShowChangelog(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("dummvinci_v2_2_seen", "true");
+    }
+  };
   const navRef = useRef<HTMLDivElement>(null);
 
   const MAIN_TABS = [
@@ -31,6 +49,9 @@ export default function BottomTabBar() {
     { href: "/braking-resistor", key: "brake",   Icon: Disc         },
     { href: "/plc",              key: "plc",     Icon: Microchip    },
     { href: "/starter",          key: "starter", Icon: Play         },
+    { href: "/pid",              key: "pid",     Icon: Activity     },
+    { href: "/convert",          key: "convert", Icon: Sparkles     },
+    { href: "/tutorials",        key: "tutorials", Icon: BookOpen   },
   ];
 
   const allTabs = [...MAIN_TABS, ...UTILITY_TABS];
@@ -205,44 +226,59 @@ export default function BottomTabBar() {
 
       {/* CHANGELOG MODAL */}
       {showChangelog && (
-        <div className="modal-overlay" onClick={() => setShowChangelog(false)}>
-          <div className="changelog-card" onClick={e => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+        <div className="modal-overlay" onClick={closeChangelog}>
+          <div className="changelog-card" onClick={e => e.stopPropagation()} style={{
+            background: "linear-gradient(180deg, #16181d 0%, #0d0f12 100%)",
+            border: "1px solid rgba(201,168,76,0.3)",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(201,168,76,0.1)",
+            padding: "32px",
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
-                <span className="version-tag">STABLE v2.1.0</span>
-                <h2 style={{ fontSize: 24, fontFamily: "var(--font-display)", color: "white", margin: 0 }}>{t.nav.changelog}</h2>
+                <span className="version-tag" style={{ background: "var(--accent)", color: "#000", fontWeight: 800, letterSpacing: "0.1em" }}>SEASON 2 UPDATE</span>
+                <h2 style={{ fontSize: 28, fontFamily: "var(--font-display)", color: "white", margin: "8px 0 0 0", textShadow: "0 0 10px rgba(255,255,255,0.2)" }}>
+                  What&apos;s New!
+                </h2>
               </div>
-              <button onClick={() => setShowChangelog(false)} style={{ background: "none", border: "none", color: "var(--muted-soft)", cursor: "pointer" }}>
+              <button onClick={closeChangelog} style={{ background: "none", border: "none", color: "var(--muted-soft)", cursor: "pointer" }}>
                 <X size={24} />
               </button>
             </div>
             
-            <div style={{ marginTop: 24, fontSize: 13, lineHeight: 1.6, color: "var(--fg-soft)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--accent)", marginBottom: 12 }}>
-                <Sparkles size={16} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)" }}>LATEST UPDATE</span>
+            <div style={{ marginTop: 24, fontSize: 14, lineHeight: 1.6, color: "var(--fg-soft)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--accent)", marginBottom: 16 }}>
+                <Sparkles size={18} /> <span style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: 13, letterSpacing: "0.1em" }}>NEW ENGINEERING TOOLS (V2.2)</span>
               </div>
-              <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-                <li><b>Telegram Fluid Navigation</b>: Crisp, bouncy spring physics matching Telegram UI.</li>
-                <li><b>Claude Typography</b>: Inter (sans-serif) base stack for high legibility.</li>
-                <li><b>Minimal Indicators</b>: Removed heavy gooey gradients for a sophisticated pill-indicator.</li>
-                <li><b>Golden Ratio Refactor</b>: All grids aligned to 1.618 harmonic proportions.</li>
-                <li><b>Click-Outside Logic</b>: Auto-close overlays for cleaner mobile experience.</li>
+              <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+                <li><b><span style={{color:"white"}}>PID Loop Simulator</span></b>: Interactive step-response tuning for Process Control (Motors, Pumps, Compressors) using FOPDT modeling.</li>
+                <li><b><span style={{color:"white"}}>Testing Tutorials</span></b>: Animated, game-like visual guides for Multimeter & Megger measurements based on IEC/IEEE standards.</li>
+                <li><b><span style={{color:"white"}}>Electrical Converter</span></b>: Quick field conversions for kW ↔ HP, kVA ↔ Amps, AWG ↔ mm², and Enclosure / Routing Dimensions.</li>
               </ul>
 
-              <hr style={{ border: "none", borderTop: "1px solid rgba(255,255,255,0.05)", margin: "24px 0" }} />
+              <hr style={{ border: "none", borderTop: "1px dashed rgba(201,168,76,0.2)", margin: "24px 0" }} />
               
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--muted)", marginBottom: 12 }}>
-                <AlertCircle size={16} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)" }}>V2.0.0 CORE FEATURES</span>
+                <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>PREVIOUS CORE FEATURES (V2.1)</span>
               </div>
-              <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 8, opacity: 0.7 }}>
-                <li>ABB Support Hub (Fault Lookup & Manuals).</li>
-                <li>Full ULH (-31) High Harmonic Drive sizing.</li>
-                <li>Ambient Temp (40°C+) Derating Logic.</li>
+              <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 8, opacity: 0.6, fontSize: 13 }}>
+                <li>Telegram Fluid Navigation & Minimal Pill Indicators.</li>
+                <li>Golden Ratio Refactor & Claude Typography.</li>
               </ul>
             </div>
 
-            <div style={{ marginTop: 40, textAlign: "center", opacity: 0.5, fontSize: 10, fontFamily: "var(--font-mono)" }}>
-              DummVinci Engineering • 2026 Production Build
+            <button onClick={closeChangelog} style={{
+              width: "100%", marginTop: 32, padding: "16px", borderRadius: 8,
+              background: "linear-gradient(45deg, var(--accent), #e2c676)",
+              color: "#000", fontFamily: "var(--font-display)", fontWeight: 800,
+              fontSize: 16, border: "none", cursor: "pointer",
+              boxShadow: "0 4px 15px rgba(201,168,76,0.3)",
+              transition: "transform 0.1s"
+            }} onMouseDown={e => e.currentTarget.style.transform="scale(0.98)"} onMouseUp={e => e.currentTarget.style.transform="scale(1)"}>
+              LET'S GO! 🚀
+            </button>
+
+            <div style={{ marginTop: 24, textAlign: "center", opacity: 0.3, fontSize: 10, fontFamily: "var(--font-mono)" }}>
+              Engineered by dummJo · DummVinci Calculator
             </div>
           </div>
         </div>
