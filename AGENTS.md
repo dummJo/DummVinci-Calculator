@@ -97,6 +97,30 @@ Agent C (Sonnet) → Update FieldSelect options in affected pages
 
 ---
 
+## Advanced Orchestration & Subagent Protocol
+
+To maximize productivity and utilize the full spectrum of available models (Gemini, Opus, Sonnet, Haiku), the Orchestrator AI (Primary Agent) must strictly follow these advanced collaboration techniques:
+
+### 1. The Orchestrator Role (You)
+As the primary agent, your job is **Orchestration**, not just coding. Break down complex user requests into parallel tracks. If the user requests a new calculator + UI + research, **do not execute them sequentially**.
+
+### 2. Multi-Model Delegation & Subagents
+Whenever possible, utilize specific tools and subagents to offload context-heavy tasks:
+- **`browser_subagent` (Web & Research)**: If a task requires fetching live ABB datasheets, scraping IEC standards, or doing competitive UI/UX research, spawn a `browser_subagent`. Give it a highly detailed `Task` prompt to ensure it fetches the exact engineering data needed.
+- **`code-review-graph` (Architecture)**: **NEVER** use standard `grep` for complex architecture tracing. ALWAYS use the `code-review-graph` MCP tools (`get_impact_radius`, `query_graph`) to let the graph model analyze the blast radius before refactoring.
+- **`generate_image` (UI/UX Mockups)**: If the user requests a new dashboard layout, use the `generate_image` tool to spawn an image generation model to create a visual mockup *before* writing the CSS.
+
+### 3. Asynchronous & Parallel Execution
+- When running long terminal commands (e.g., `npm run build` or `npm run lint` via `run_command` sent to background), **DO NOT WAIT IDLY**. Immediately use `command_status` in parallel with other tool calls (like writing documentation or updating `i18n.ts`).
+- Bundle multiple `multi_replace_file_content` calls together if modifying loosely coupled files (e.g., updating UI components and localized strings simultaneously).
+
+### 4. Tool Prioritization Rules
+To prevent context overflow and save tokens across models:
+- **Use Specific Tools**: `grep_search` instead of `grep` in bash. `replace_file_content` instead of `sed`. `view_file` instead of `cat`.
+- **Minimize Read Radius**: Do not read a 1000-line file if you only need the imports. Use targeted `StartLine` and `EndLine`.
+
+---
+
 ## Code Quality Non-Negotiables
 
 - **No magic numbers** — every constant must trace to a standard (cite in short inline comment)
