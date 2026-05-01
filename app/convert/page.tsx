@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
+import { ChevronDown, Layers, ArrowUpDown } from "lucide-react";
 
 // ─── Conversion Database ──────────────────────────────────────────────────────
 
@@ -42,13 +43,13 @@ const CATEGORIES: Record<string, Category> = {
     note: "1 kWh = 3600 kJ = 3412.14 BTU",
   },
   current: {
-    label: "Current / Apparent Power",
+    label: "Current",
     units: {
       A:    { label: "Ampere (A)",               factor: 1 },
       mA:   { label: "Milliampere (mA)",         factor: 0.001 },
       kA:   { label: "Kiloampere (kA)",          factor: 1000 },
     },
-    note: "Use kVA↔Amps card below for 3-phase calculations",
+    note: "Amperage at rated voltage",
   },
   voltage: {
     label: "Voltage",
@@ -83,14 +84,14 @@ const CATEGORIES: Record<string, Category> = {
     note: "1 m = 39.3701 in = 3.28084 ft",
   },
   area: {
-    label: "Cable Cross-Section (Area)",
+    label: "Cable Area",
     units: {
       mm2:  { label: "mm² (metric standard)",    factor: 1 },
       cm2:  { label: "cm²",                      factor: 100 },
       in2:  { label: "in²",                      factor: 645.16 },
       kcmil:{ label: "kcmil / MCM",              factor: 0.5067 },
     },
-    note: "AWG lookup: 1 AWG #10 = 5.26 mm², #8 = 8.36 mm², #4 = 21.15 mm²",
+    note: "AWG lookup: #10 = 5.26 mm², #4 = 21.15 mm²",
   },
   temperature: {
     label: "Temperature",
@@ -99,7 +100,6 @@ const CATEGORIES: Record<string, Category> = {
       F:    { label: "Fahrenheit (°F)",          factor: 0, offset: 0 },
       K:    { label: "Kelvin (K)",               factor: 0, offset: 0 },
     },
-    note: "Standard motor operating range: 0–40 °C (IEC 60034)",
   },
   pressure: {
     label: "Pressure",
@@ -111,7 +111,6 @@ const CATEGORIES: Record<string, Category> = {
       psi:  { label: "PSI (lb/in²)",             factor: 0.0689476 },
       atm:  { label: "Atmosphere (atm)",         factor: 1.01325 },
     },
-    note: "Pump & compressor ratings often in bar or PSI",
   },
   torque: {
     label: "Torque",
@@ -121,22 +120,20 @@ const CATEGORIES: Record<string, Category> = {
       ftlb: { label: "Foot-pound (ft·lb)",       factor: 1.35582 },
       inlb: { label: "Inch-pound (in·lb)",       factor: 0.112985 },
     },
-    note: "Motor nameplate torque: T = 9550 × P(kW) / n(rpm)",
   },
   flow: {
     label: "Flow Rate",
     units: {
       m3h:  { label: "m³/hour",                  factor: 1 },
-      m3s:  { label: "m³/second",                factor: 3600 },
       lmin: { label: "L/min",                    factor: 0.06 },
       ls:   { label: "L/second",                 factor: 3.6 },
       GPM:  { label: "US GPM",                   factor: 0.227125 },
     },
-    note: "Pump affinity: Q ∝ n, H ∝ n², P ∝ n³",
   },
 };
 
-// ─── Temperature special-case converter ──────────────────────────────────────
+// ─── Converters ──────────────────────────────────────────────────────────────
+
 function convertTemp(value: number, from: string, to: string): number {
   let celsius: number;
   switch (from) {
@@ -151,17 +148,14 @@ function convertTemp(value: number, from: string, to: string): number {
   }
 }
 
-// ─── Generic factor-based converter ──────────────────────────────────────────
 function convertValue(value: number, from: string, to: string, catKey: string): number {
   if (catKey === "temperature") return convertTemp(value, from, to);
   const cat = CATEGORIES[catKey];
   const fromFactor = cat.units[from]?.factor ?? 1;
   const toFactor   = cat.units[to]?.factor   ?? 1;
-  // Convert to base unit first, then to target
   return (value * fromFactor) / toFactor;
 }
 
-// ─── Format output ────────────────────────────────────────────────────────────
 function fmt(n: number): string {
   if (!isFinite(n)) return "—";
   if (Math.abs(n) >= 1e6)  return n.toExponential(4);
@@ -170,17 +164,8 @@ function fmt(n: number): string {
   return n.toPrecision(6);
 }
 
-// ─── Swap icon ───────────────────────────────────────────────────────────────
-function SwapIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M7 16V4m0 0L3 8m4-4l4 4" />
-      <path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
-    </svg>
-  );
-}
+// ─── Main Component ──────────────────────────────────────────────────────────
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ConvertPage() {
   const { t } = useLang();
   const tc = t.convert;
@@ -201,6 +186,9 @@ export default function ConvertPage() {
 
   const catKeys = Object.keys(CATEGORIES);
   const [catKey, setCatKey] = useState(catKeys[0]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
   const cat = CATEGORIES[catKey];
   const unitKeys = Object.keys(cat.units);
 
@@ -208,12 +196,23 @@ export default function ConvertPage() {
   const [to,   setTo]   = useState(unitKeys[1] ?? unitKeys[0]);
   const [input, setInput] = useState("1");
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleCatChange = (key: string) => {
     setCatKey(key);
     const units = Object.keys(CATEGORIES[key].units);
     setFrom(units[0]);
     setTo(units[1] ?? units[0]);
     setInput("1");
+    setIsMenuOpen(false);
   };
 
   const handleSwap = useCallback(() => {
@@ -224,68 +223,100 @@ export default function ConvertPage() {
   const numVal = parseFloat(input);
   const result = !isNaN(numVal) ? convertValue(numVal, from, to, catKey) : null;
 
-  const selectStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid var(--glass-border)",
-    borderRadius: 8,
-    color: "var(--fg)",
-    padding: "10px 14px",
-    fontSize: 14,
-    fontFamily: "var(--font-mono)",
-    width: "100%",
-    cursor: "pointer",
-    outline: "none",
-    appearance: "none" as const,
-    WebkitAppearance: "none" as const,
-  };
-
   return (
     <CalcShell label="Convert" title={tc.title} subtitle={tc.subtitle} concept={tc.concept}>
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-        {/* Category Grid */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {catKeys.map(k => (
-            <button
-              key={k}
-              onClick={() => handleCatChange(k)}
-              style={{
-                padding: "6px 14px",
-                borderRadius: 20,
-                border: "1px solid",
-                borderColor: catKey === k ? "var(--accent)" : "var(--glass-border)",
-                background: catKey === k ? "rgba(228,199,89,0.15)" : "transparent",
-                color: catKey === k ? "var(--accent)" : "var(--fg-soft)",
-                fontSize: 12,
-                fontFamily: "var(--font-mono)",
-                fontWeight: catKey === k ? 700 : 400,
-                cursor: "pointer",
-                transition: "all 0.15s",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {catLabels[k] ?? CATEGORIES[k].label}
-            </button>
-          ))}
+        {/* COMPACT POPOUT SELECTOR */}
+        <div style={{ position: "relative" }} ref={menuRef}>
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "14px 20px",
+              background: "rgba(228,199,89,0.12)",
+              border: "1px solid var(--accent)",
+              borderRadius: 14,
+              cursor: "pointer",
+              transition: "all 0.2s",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <Layers size={18} style={{ color: "var(--accent)" }} />
+              <span style={{ fontSize: 15, fontWeight: 700, color: "var(--fg)", fontFamily: "var(--font-display)" }}>
+                {catLabels[catKey] ?? cat.label}
+              </span>
+            </div>
+            <ChevronDown 
+              size={18} 
+              style={{ 
+                color: "var(--muted)", 
+                transform: isMenuOpen ? "rotate(180deg)" : "rotate(0)", 
+                transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)" 
+              }} 
+            />
+          </button>
+
+          {/* POPOUT MENU */}
+          {isMenuOpen && (
+            <div style={{
+              position: "absolute",
+              top: "calc(100% + 8px)",
+              left: 0,
+              right: 0,
+              background: "var(--bg-raised)",
+              backdropFilter: "blur(40px)",
+              border: "1px solid var(--glass-border)",
+              borderRadius: 16,
+              padding: "8px",
+              zIndex: 100,
+              boxShadow: "var(--glass-shadow)",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "4px",
+              animation: "popIn 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
+            }}>
+              {catKeys.map(k => (
+                <button
+                  key={k}
+                  onClick={() => handleCatChange(k)}
+                  style={{
+                    padding: "10px 14px",
+                    borderRadius: 10,
+                    border: "none",
+                    background: catKey === k ? "var(--accent-pill-bg)" : "transparent",
+                    color: catKey === k ? "var(--accent)" : "var(--fg-soft)",
+                    textAlign: "left",
+                    fontSize: 13,
+                    fontWeight: catKey === k ? 700 : 400,
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  {catLabels[k] ?? CATEGORIES[k].label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Converter Card */}
+        {/* MAIN CONVERTER CARD */}
         <div style={{
           background: "rgba(255,255,255,0.03)",
           border: "1px solid var(--glass-border)",
-          borderRadius: 12,
+          borderRadius: 20,
           padding: "24px",
           display: "flex",
           flexDirection: "column",
-          gap: 16,
+          gap: 20,
         }}>
-          <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, color: "var(--accent)" }}>
-            {catLabels[catKey] ?? cat.label}
-          </h3>
-
-          {/* Input Row */}
+          
+          {/* VALUE INPUT */}
           <div>
-            <label style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 6 }}>
+            <label style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 8 }}>
               {tc.value ?? "Value"}
             </label>
             <input
@@ -293,110 +324,115 @@ export default function ConvertPage() {
               value={input}
               onChange={e => setInput(e.target.value)}
               style={{
-                ...selectStyle,
-                fontSize: 24,
-                fontWeight: 600,
+                width: "100%",
+                background: "rgba(0,0,0,0.2)",
+                border: "1px solid var(--glass-border)",
+                borderRadius: 12,
                 color: "var(--fg)",
-                letterSpacing: "-0.02em",
-                padding: "12px 16px",
+                padding: "16px 20px",
+                fontSize: 32,
+                fontWeight: 700,
+                fontFamily: "var(--font-display)",
+                outline: "none",
+                transition: "border-color 0.2s"
               }}
+              onFocus={e => e.currentTarget.style.borderColor = "var(--accent)"}
+              onBlur={e => e.currentTarget.style.borderColor = "var(--glass-border)"}
             />
           </div>
 
-          {/* From / Swap / To */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "end" }}>
-            <div>
-              <label style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 6 }}>
-                From
-              </label>
-              <div style={{ position: "relative" }}>
-                <select value={from} onChange={e => setFrom(e.target.value)} style={selectStyle}>
-                  {unitKeys.map(k => (
-                    <option key={k} value={k} style={{ background: "#0b0e14" }}>
-                      {CATEGORIES[catKey].units[k].label}
-                    </option>
-                  ))}
-                </select>
-                <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "var(--muted)", fontSize: 10 }}>▼</span>
-              </div>
+          {/* UNIT SELECTORS */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
+            
+            <div style={{ flex: 1, minWidth: 140 }}>
+              <label style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>{tc.from ?? "From"}</label>
+              <select 
+                value={from} 
+                onChange={e => setFrom(e.target.value)} 
+                style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--glass-border)", borderRadius: 10, color: "var(--fg)", padding: "10px 14px", fontSize: 14, outline: "none", cursor: "pointer" }}
+              >
+                {unitKeys.map(k => (
+                  <option key={k} value={k} style={{ background: "#16181d" }}>{cat.units[k].label}</option>
+                ))}
+              </select>
             </div>
 
             <button
               onClick={handleSwap}
               style={{
-                padding: "10px",
-                borderRadius: 8,
+                marginTop: 20,
+                width: 44, height: 44,
+                borderRadius: 12,
                 border: "1px solid var(--glass-border)",
-                background: "rgba(228,199,89,0.08)",
+                background: "rgba(228,199,89,0.1)",
                 color: "var(--accent)",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                transition: "all 0.15s",
-                flexShrink: 0,
+                transition: "all 0.2s",
               }}
-              title="Swap units"
             >
-              <SwapIcon />
+              <ArrowUpDown size={20} />
             </button>
 
-            <div>
-              <label style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 6 }}>
-                To
-              </label>
-              <div style={{ position: "relative" }}>
-                <select value={to} onChange={e => setTo(e.target.value)} style={selectStyle}>
-                  {unitKeys.map(k => (
-                    <option key={k} value={k} style={{ background: "#0b0e14" }}>
-                      {CATEGORIES[catKey].units[k].label}
-                    </option>
-                  ))}
-                </select>
-                <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "var(--muted)", fontSize: 10 }}>▼</span>
-              </div>
+            <div style={{ flex: 1, minWidth: 140 }}>
+              <label style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>{tc.to ?? "To"}</label>
+              <select 
+                value={to} 
+                onChange={e => setTo(e.target.value)} 
+                style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--glass-border)", borderRadius: 10, color: "var(--fg)", padding: "10px 14px", fontSize: 14, outline: "none", cursor: "pointer" }}
+              >
+                {unitKeys.map(k => (
+                  <option key={k} value={k} style={{ background: "#16181d" }}>{cat.units[k].label}</option>
+                ))}
+              </select>
             </div>
           </div>
 
-          {/* Result */}
+          {/* RESULT BOX */}
           <div style={{
-            marginTop: 4,
-            padding: "20px 20px",
-            background: "linear-gradient(135deg, rgba(228,199,89,0.08), rgba(228,199,89,0.03))",
-            border: "1px solid rgba(228,199,89,0.25)",
-            borderRadius: 10,
-            display: "flex",
-            flexDirection: "column",
-            gap: 4,
+            marginTop: 8,
+            padding: "24px",
+            background: "linear-gradient(135deg, rgba(228,199,89,0.1) 0%, rgba(228,199,89,0.03) 100%)",
+            border: "1px solid rgba(228,199,89,0.3)",
+            borderRadius: 16,
+            textAlign: "center"
           }}>
-            <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-              {tc.result ?? "Result"}
+            <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 12 }}>
+              {tc.result ?? "CONVERSION RESULT"}
             </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 36, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--accent)", lineHeight: 1 }}>
-                {result !== null ? fmt(result) : "—"}
-              </span>
-              <span style={{ fontSize: 16, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-                {cat.units[to]?.label}
-              </span>
+            <div style={{ fontSize: 42, fontWeight: 800, fontFamily: "var(--font-display)", color: "var(--fg)", lineHeight: 1.1 }}>
+              {result !== null ? fmt(result) : "—"}
             </div>
-            <div style={{ fontSize: 13, color: "var(--fg-soft)", marginTop: 4, fontFamily: "var(--font-mono)" }}>
+            <div style={{ fontSize: 16, color: "var(--muted)", fontWeight: 500, marginTop: 8 }}>
+              {cat.units[to]?.label}
+            </div>
+            
+            <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.05)", fontSize: 12, color: "var(--fg-soft)", fontFamily: "var(--font-mono)", opacity: 0.8 }}>
               {!isNaN(numVal) && result !== null
-                ? `${numVal} ${cat.units[from]?.label} = ${fmt(result)} ${cat.units[to]?.label}`
-                : "Enter a value above"}
+                ? `${numVal} ${cat.units[from]?.label} ≈ ${fmt(result)} ${cat.units[to]?.label}`
+                : "Awaiting input..."}
             </div>
           </div>
 
-          {/* Note */}
+          {/* STANDARDS / NOTES */}
           {cat.note && (
-            <div style={{ fontSize: 12, color: "var(--muted)", fontFamily: "var(--font-mono)", padding: "8px 12px", background: "rgba(255,255,255,0.02)", borderRadius: 6, borderLeft: "2px solid var(--accent)" }}>
-              📐 {cat.note}
+            <div style={{ padding: "12px 16px", background: "rgba(255,255,255,0.02)", borderRadius: 10, borderLeft: "3px solid var(--accent)", fontSize: 12, color: "var(--muted)", lineHeight: 1.5 }}>
+               <span style={{ color: "var(--accent)", fontWeight: 700, marginRight: 8 }}>NOTE:</span> {cat.note}
             </div>
           )}
         </div>
 
       </div>
       <Footer />
+
+      <style jsx global>{`
+        @keyframes popIn {
+          from { opacity: 0; transform: scale(0.96) translateY(-10px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      `}</style>
     </CalcShell>
   );
 }

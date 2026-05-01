@@ -202,12 +202,12 @@ export default function BottomTabBar() {
           max-width: 500px;
           max-height: 80vh;
           overflow-y: auto;
-          background: #0d1017;
+          background: var(--bg-raised);
           border: 1px solid var(--accent);
           border-radius: 28px;
           padding: 32px;
           position: relative;
-          box-shadow: 0 32px 64px rgba(0,0,0,0.8);
+          box-shadow: var(--glass-shadow);
         }
         .version-tag {
           display: inline-block;
@@ -228,15 +228,15 @@ export default function BottomTabBar() {
       {showChangelog && (
         <div className="modal-overlay" onClick={closeChangelog}>
           <div className="changelog-card" onClick={e => e.stopPropagation()} style={{
-            background: "linear-gradient(180deg, #16181d 0%, #0d0f12 100%)",
-            border: "1px solid rgba(201,168,76,0.3)",
-            boxShadow: "0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(201,168,76,0.1)",
+            background: "var(--bg-raised)",
+            border: "1px solid var(--glass-border)",
+            boxShadow: "var(--glass-shadow)",
             padding: "32px",
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
                 <span className="version-tag" style={{ background: "var(--accent)", color: "#000", fontWeight: 800, letterSpacing: "0.1em" }}>SEASON 2 UPDATE</span>
-                <h2 style={{ fontSize: 28, fontFamily: "var(--font-display)", color: "white", margin: "8px 0 0 0", textShadow: "0 0 10px rgba(255,255,255,0.2)" }}>
+                <h2 style={{ fontSize: 28, fontFamily: "var(--font-display)", color: "var(--fg)", margin: "8px 0 0 0" }}>
                   What&apos;s New!
                 </h2>
               </div>
@@ -250,9 +250,9 @@ export default function BottomTabBar() {
                 <Sparkles size={18} /> <span style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: 13, letterSpacing: "0.1em" }}>NEW ENGINEERING TOOLS (V2.2)</span>
               </div>
               <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
-                <li><b><span style={{color:"white"}}>PID Loop Simulator</span></b>: Interactive step-response tuning for Process Control (Motors, Pumps, Compressors) using FOPDT modeling.</li>
-                <li><b><span style={{color:"white"}}>Testing Tutorials</span></b>: Animated, game-like visual guides for Multimeter & Megger measurements based on IEC/IEEE standards.</li>
-                <li><b><span style={{color:"white"}}>Electrical Converter</span></b>: Quick field conversions for kW ↔ HP, kVA ↔ Amps, AWG ↔ mm², and Enclosure / Routing Dimensions.</li>
+                <li><b><span style={{color:"var(--fg)"}}>PID Loop Simulator</span></b>: Interactive step-response tuning for Process Control (Motors, Pumps, Compressors) using FOPDT modeling.</li>
+                <li><b><span style={{color:"var(--fg)"}}>Testing Tutorials</span></b>: Animated, game-like visual guides for Multimeter & Megger measurements based on IEC/IEEE standards.</li>
+                <li><b><span style={{color:"var(--fg)"}}>Electrical Converter</span></b>: Quick field conversions for kW ↔ HP, kVA ↔ Amps, AWG ↔ mm², and Enclosure / Routing Dimensions.</li>
               </ul>
 
               <hr style={{ border: "none", borderTop: "1px dashed rgba(201,168,76,0.2)", margin: "24px 0" }} />
@@ -341,9 +341,9 @@ export default function BottomTabBar() {
           style={{ 
             gridColumn: "span 3",
             display: "flex", alignItems: "center", gap: 12, padding: "14px 20px",
-            background: "linear-gradient(90deg, rgba(201,168,76,0.1) 0%, rgba(201,168,76,0.02) 100%)",
-            border: "1px solid rgba(201,168,76,0.2)",
-            borderRadius: 20, cursor: "pointer", color: "white", transition: "all 0.2s ease"
+            background: "var(--glass-bg)",
+            border: "1px solid var(--glass-border)",
+            borderRadius: 20, cursor: "pointer", color: "var(--fg)", transition: "all 0.2s ease"
           }}
           className="hover-lift"
         >
