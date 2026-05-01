@@ -400,6 +400,7 @@ export const T = {
       subtitle: "Multimeter & Insulation Test Guides",
       concept: "Learn standard procedures for taking electrical field measurements.",
       voltage: "Voltage", megger: "Megger", resistance: "Resistance", ground: "Grounding",
+      current: "Current Clamp", rotation: "Phase Rotation", diode: "Diode/IGBT", capacitor: "Capacitor", contact: "Contact Res.", pi: "PI Test",
       steps: "Measurement Steps", nominal: "Nominal Values", standard: "Reference Standard"
     },
   },
@@ -800,6 +801,7 @@ export const T = {
       subtitle: "Panduan Pengukuran Multitester & Isolasi",
       concept: "Pelajari prosedur standar untuk mengambil pengukuran kelistrikan di lapangan.",
       voltage: "Tegangan", megger: "Megger", resistance: "Hambatan", ground: "Grounding",
+      current: "Tang Ampere", rotation: "Rotasi Fasa", diode: "Dioda/IGBT", capacitor: "Kapasitor", contact: "Res. Kontak", pi: "Uji PI",
       steps: "Langkah Pengukuran", nominal: "Nilai Nominal Standar", standard: "Standar Referensi"
     },
   },
