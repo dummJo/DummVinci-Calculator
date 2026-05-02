@@ -137,7 +137,7 @@ To prevent context overflow and save tokens across models:
 - **No `any` types** — use interfaces exported from `lib/calc/*.ts`
 - **No placeholder part codes** — show real code or explain why lookup failed
 - **Mobile-first always** — verify layout at 390 px viewport width before marking done
-- **Trademark on every page** — footer: `"Engineered by dummJo · DummVinci Calculator"`
+- **Trademark on every page** — footer: `"By DummVinci · DummVinci Calculator"`
 
 ---
 
@@ -154,7 +154,7 @@ Push to GitHub → Vercel handles production builds cleanly.
 
 ## Brand Identity
 
-> *"Engineered by dummJo"* — appears on every page, every export, every shared link.
+> *"By DummVinci"* — appears on every page, every export, every shared link.
 
-DummVinci Calculator is an internal tool brand of **dummJo Engineering & Consulting**, ABB Value Partner.  
+DummVinci Calculator is an internal tool brand of **DummVinci**, ABB Value Partner.  
 Presales standard tool for VSD, cable, protection, and panel sizing across Indonesia and Southeast Asia.

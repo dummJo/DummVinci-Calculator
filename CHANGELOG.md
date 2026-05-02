@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] — 2026-05-02
+
+### Added
+- **PID Loop Simulator**: Interactive step-response tuning for motor, pump, and compressor control loops using FOPDT modeling.
+- **Testing Tutorials**: High-fidelity visual guides for electrical measurements (Multimeter, Megger, Earth Tester) with step-by-step animations and IEC/IEEE reference values.
+- **Electrical Converter Hub**: Redesigned unit conversion system covering 10 engineering categories with optimized kVA ↔ Amps and Power/Energy field tools.
+- **Engineering Wisdom Engine**: New `funFacts.ts` integration providing contextual engineering tips, formulas, and "did-you-know" snippets across the platform.
+- **By DummVinci Branding**: Standardized internal brand identity across all calculators, metadata, and production assets.
+
+### Changed
+- **Enhanced UI Contrast**: Globally improved readability with high-contrast background/text pairings and refined "Season 2" visual identity.
+- **Telegram-Style Navigation**: Optimized the `BottomTabBar` with liquid pop animations and a compact "More" utility overlay.
+
+### Fixed
+- **Mobile Navigation Stability**: Resolved overlap issues and improved click-outside closure logic for the utility menu.
+
 ## [2.2.0] — 2026-04-20
 
 ### Added

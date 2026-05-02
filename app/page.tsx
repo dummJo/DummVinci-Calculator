@@ -5,6 +5,8 @@ import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import { getRandomQuote, type Quote } from "@/lib/quotes";
 import { useState, useEffect } from "react";
+
+
 import {
   LayoutGrid, Activity, ChevronRight, SortAsc, SortDesc, Sparkles, BookOpen
 } from "lucide-react";

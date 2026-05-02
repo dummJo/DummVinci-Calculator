@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+
+
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
@@ -44,7 +46,7 @@ function SummaryStrip({ result, t }: { result: UnifiedResult, t: Translations })
               fontSize: 20, 
               color: "var(--fg)", 
               fontWeight: 400, 
-              letterSpacing: "-0.04em",
+              letterSpacing: "-0.02em",
               lineHeight: 1
             }}>
               <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.6 }}>Unified</span>
@@ -69,7 +71,8 @@ function SummaryStrip({ result, t }: { result: UnifiedResult, t: Translations })
               fontSize: 13, 
               fontWeight: 700, 
               color: "var(--accent)",
-              whiteSpace: "nowrap"
+              wordBreak: "break-all",
+              lineHeight: 1.2
             }}>
               {s.value}
             </span>
@@ -209,7 +212,10 @@ export default function UnifiedPage() {
           .summary-specs-grid { grid-template-columns: repeat(4, 1fr); row-gap: 20px; }
         }
         @media (max-width: 600px) {
-          .summary-specs-grid { grid-template-columns: repeat(2, 1fr); }
+          .summary-specs-grid { 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 16px 12px;
+          }
         }
         
         /* Wizard Animations */

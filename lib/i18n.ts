@@ -13,13 +13,13 @@ export const T = {
     },
     common: {
       resultLabel: "◈ Result",
-      managedBy: "Engineered by dummJo · DummVinci Calculator",
+      managedBy: "◈ By DummVinci",
       guidanceTheory: "Guidance & Theory",
     },
     home: {
       heroTitle: "DummVinci",
       heroSub: "Calculator",
-      heroSubtitle: "Precision Sizing. Engineered by dummJo.",
+      heroSubtitle: "Precision Sizing. By DummVinci.",
       secCalculators: "Calculators",
       ctaOpen: "Open Calculator",
       calcs: {
@@ -413,13 +413,13 @@ export const T = {
     },
     common: {
       resultLabel: "◈ Hasil Seleksi",
-      managedBy: "Engineered by dummJo · DummVinci Calculator",
+      managedBy: "◈ Oleh DummVinci",
       guidanceTheory: "Panduan & Teori",
     },
     home: {
       heroTitle: "DummVinci",
       heroSub: "Calculator",
-      heroSubtitle: "Sizing Presisi. Dirancang oleh dummJo.",
+      heroSubtitle: "Sizing Presisi. Oleh DummVinci.",
       secCalculators: "Katalog Kalkulator",
       ctaOpen: "Buka Kalkulator",
       calcs: {

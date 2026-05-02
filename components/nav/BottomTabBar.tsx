@@ -278,7 +278,7 @@ export default function BottomTabBar() {
             </button>
 
             <div style={{ marginTop: 24, textAlign: "center", opacity: 0.3, fontSize: 10, fontFamily: "var(--font-mono)" }}>
-              Engineered by dummJo · DummVinci Calculator
+              By DummVinci · DummVinci Calculator
             </div>
           </div>
         </div>

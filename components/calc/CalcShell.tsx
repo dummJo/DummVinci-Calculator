@@ -42,9 +42,9 @@ export default function CalcShell({ label, title, subtitle, concept, children }:
         fontSize: "clamp(34px, 7vw, 60px)",
         fontWeight: 400,
         color: "var(--fg)",
-        letterSpacing: "-0.04em",
-        lineHeight: 0.9,
-        margin: "0 0 20px",
+        letterSpacing: "-0.035em",
+        lineHeight: 1.0,
+        margin: "0 0 24px",
       }}>
         {title.includes(" ") ? (
           <>
