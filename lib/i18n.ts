@@ -8,7 +8,7 @@ export const T = {
   en: {
     nav: {
       home: "Home", unified: "Fast", cable: "Cable", drive: "Drive", breaker: "Breaker",
-      busbar: "Busbar", brake: "Brake", panel: "Panel", support: "ABB Hub",
+      busbar: "Busbar", brake: "Brake", panel: "Panel", support: "ABB Support",
       plc: "PLC", starter: "Starter", pid: "PID Sim", convert: "Convert", tutorials: "Tutorials", more: "More", close: "Close", changelog: "What's New",
     },
     common: {
@@ -408,7 +408,7 @@ export const T = {
   id: {
     nav: {
       home: "Beranda", unified: "Fast", cable: "Kabel", drive: "Drive", breaker: "Breaker",
-      busbar: "Busbar", brake: "Resistor", panel: "Panel", support: "ABB Hub",
+      busbar: "Busbar", brake: "Resistor", panel: "Panel", support: "ABB Support",
       plc: "PLC", starter: "Starter", pid: "Sim PID", convert: "Konversi", tutorials: "Tutorial", more: "Lainnya", close: "Tutup", changelog: "Info Update",
     },
     common: {

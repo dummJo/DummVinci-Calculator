@@ -3,8 +3,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import {
-  LayoutGrid, Activity, Cpu, Disc3, MoreHorizontal, 
-  Cable, Zap, AlignJustify, Server, Disc, X, History, Sparkles, AlertCircle, Microchip, Play, BookOpen
+  LayoutGrid, Activity, Cpu, MoreHorizontal, 
+  Cable, Zap, AlignJustify, Server, Disc, X, History, Sparkles, AlertCircle, Microchip, Play, BookOpen,
+  Settings2, ShieldPlus, Repeat, MonitorPlay, ZapOff, Columns, BoxSelect, Waves, Power, LineChart, Home, HelpCircle, HardDrive
 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { clsx } from "clsx";
@@ -35,23 +36,23 @@ export default function BottomTabBar() {
   const navRef = useRef<HTMLDivElement>(null);
 
   const MAIN_TABS = [
-    { href: "/",            key: "home",    Icon: LayoutGrid },
-    { href: "/unified",     key: "unified", Icon: Activity   },
-    { href: "/vsd",         key: "drive",   Icon: Cpu        },
-    { href: "/abb-support", key: "support", Icon: Disc3      },
+    { href: "/",            key: "home",    Icon: Home      },
+    { href: "/unified",     key: "unified", Icon: Zap       },
+    { href: "/vsd",         key: "drive",   Icon: Settings2 },
+    { href: "/abb-support", key: "support", Icon: ShieldPlus},
   ];
 
   const UTILITY_TABS = [
     { href: "/cable",            key: "cable",   Icon: Cable        },
-    { href: "/breaker",          key: "breaker", Icon: Zap          },
-    { href: "/busbar",           key: "busbar",  Icon: AlignJustify },
-    { href: "/panel",            key: "panel",   Icon: Server       },
-    { href: "/braking-resistor", key: "brake",   Icon: Disc         },
-    { href: "/plc",              key: "plc",     Icon: Microchip    },
-    { href: "/starter",          key: "starter", Icon: Play         },
-    { href: "/pid",              key: "pid",     Icon: Activity     },
-    { href: "/convert",          key: "convert", Icon: Sparkles     },
-    { href: "/tutorials",        key: "tutorials", Icon: BookOpen   },
+    { href: "/breaker",          key: "breaker", Icon: ZapOff       },
+    { href: "/busbar",           key: "busbar",  Icon: Columns      },
+    { href: "/panel",            key: "panel",   Icon: BoxSelect    },
+    { href: "/braking-resistor", key: "brake",   Icon: Waves        },
+    { href: "/plc",              key: "plc",     Icon: HardDrive    },
+    { href: "/starter",          key: "starter", Icon: Power        },
+    { href: "/pid",              key: "pid",     Icon: LineChart    },
+    { href: "/convert",          key: "convert", Icon: Repeat       },
+    { href: "/tutorials",        key: "tutorials", Icon: MonitorPlay   },
   ];
 
   const allTabs = [...MAIN_TABS, ...UTILITY_TABS];
@@ -377,13 +378,13 @@ export default function BottomTabBar() {
             const active = tab.href === "/" ? path === "/" : path.startsWith(tab.href);
             return (
               <Link key={tab.href} href={tab.href} className={clsx("tab-item", active && "tab-active")} onClick={() => setShowMore(false)}>
-                <tab.Icon size={24} strokeWidth={1.5} className={active ? "active-icon" : "inactive-icon"} />
+                <tab.Icon size={24} strokeWidth={2.4} className={active ? "active-icon" : "inactive-icon"} />
                 <span className="tab-label">{t.nav[tab.key as keyof typeof t.nav]}</span>
               </Link>
             );
           })}
           <button className={clsx("tab-item", (showMore || isUtilityActive) && "tab-active")} style={{ background: "none", border: "none", cursor: "pointer" }} onClick={(e) => { e.stopPropagation(); setShowMore(!showMore); }}>
-            {showMore ? <X size={24} strokeWidth={1.5} style={{ color: "var(--accent)" }} /> : <MoreHorizontal size={24} strokeWidth={1.5} className={(showMore || isUtilityActive) ? "active-icon" : "inactive-icon"} />}
+            {showMore ? <X size={24} strokeWidth={2.4} style={{ color: "var(--accent)" }} /> : <MoreHorizontal size={24} strokeWidth={2.4} className={(showMore || isUtilityActive) ? "active-icon" : "inactive-icon"} />}
             <span className="tab-label">{showMore ? t.nav.close : t.nav.more}</span>
           </button>
         </div>
