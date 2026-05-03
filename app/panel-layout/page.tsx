@@ -4,7 +4,7 @@ import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, Filter, Box, Minimize2, Printer, Settings2, Grid, Layers, MousePointer2 } from "lucide-react";
+import { Plus, Trash2, Filter, Box, Minimize2, Printer, Settings2, Grid, Layers, MousePointer2, Copy } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
@@ -40,6 +40,9 @@ export default function PanelLayoutPage() {
   const [dragOffsets, setDragOffsets] = useState<{ id: string; ox: number; oy: number }[]>([]);
   const [marquee, setMarquee] = useState<{ sx: number; sy: number; cx: number; cy: number } | null>(null);
 
+  // Clipboard
+  const [clipboard, setClipboard] = useState<PlacedItem[]>([]);
+
   const canvasRef = useRef<HTMLDivElement>(null);
 
   // Load from local storage on mount
@@ -63,6 +66,101 @@ export default function PanelLayoutPage() {
       localStorage.setItem("dummvinci_estimator_enc", encId);
     }
   }, [items, encId, isLoaded]);
+
+  // --- Keyboard Shortcuts (AutoCAD Feel) ---
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input box
+      if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "SELECT") return;
+
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const cmdOrCtrl = isMac ? e.metaKey : e.ctrlKey;
+
+      // Delete / Backspace
+      if (e.key === "Delete" || e.key === "Backspace") {
+         if (selectedIds.length > 0) {
+            e.preventDefault();
+            setItems(prev => prev.filter(i => !selectedIds.includes(i.id)));
+            setSelectedIds([]);
+         }
+      }
+
+      // Escape to deselect
+      if (e.key === "Escape") {
+         e.preventDefault();
+         setSelectedIds([]);
+         setMarquee(null);
+      }
+
+      // Ctrl+C (Copy)
+      if (cmdOrCtrl && e.key.toLowerCase() === "c") {
+         const selected = items.filter(i => selectedIds.includes(i.id));
+         if (selected.length > 0) {
+            e.preventDefault();
+            setClipboard(selected);
+         }
+      }
+
+      // Ctrl+V (Paste)
+      if (cmdOrCtrl && e.key.toLowerCase() === "v") {
+         if (clipboard.length > 0) {
+            e.preventDefault();
+            const newIds: string[] = [];
+            const newItems = clipboard.map(item => {
+               const newId = Math.random().toString(36).substring(2, 9);
+               newIds.push(newId);
+               return { ...item, id: newId, x: item.x + 25, y: item.y + 25 }; // Offset paste 25mm
+            });
+            setItems(prev => [...prev, ...newItems]);
+            setSelectedIds(newIds);
+            
+            // Switch viewmode if pasting outer components
+            const isOuter = ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(newItems[0].comp.category);
+            setViewMode(isOuter ? "outer" : "inner");
+         }
+      }
+
+      // Ctrl+A (Select All in current view)
+      if (cmdOrCtrl && e.key.toLowerCase() === "a") {
+         e.preventDefault();
+         const viewItems = items.filter(it => {
+            const isOuter = ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(it.comp.category);
+            return viewMode === "outer" ? isOuter : !isOuter;
+         });
+         setSelectedIds(viewItems.map(i => i.id));
+      }
+
+      // Arrow Keys (Nudge)
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+         if (selectedIds.length > 0) {
+            e.preventDefault();
+            const step = e.shiftKey ? 25 : 1; // Shift jumps by grid size (25mm), otherwise 1mm
+            let dx = 0; let dy = 0;
+            if (e.key === "ArrowUp") dy = -step;
+            if (e.key === "ArrowDown") dy = step;
+            if (e.key === "ArrowLeft") dx = -step;
+            if (e.key === "ArrowRight") dx = step;
+
+            setItems(prev => prev.map(it => {
+               if (selectedIds.includes(it.id)) {
+                  let nx = it.x + dx; let ny = it.y + dy;
+                  const cw = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
+                  const ch = viewMode === "outer" ? activeEnc.extH : activeEnc.h;
+                  if (nx < 0) nx = 0; if (ny < 0) ny = 0;
+                  if (nx + it.w > cw) nx = cw - it.w;
+                  if (ny + it.h > ch) ny = ch - it.h;
+                  return { ...it, x: nx, y: ny };
+               }
+               return it;
+            }));
+         }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [items, selectedIds, clipboard, viewMode, activeEnc]);
+
 
   const categories = ["All", ...Array.from(new Set(componentLibrary.map((c) => c.category)))];
   const filteredLibrary = activeCategory === "All" 
@@ -121,6 +219,20 @@ export default function PanelLayoutPage() {
       setItems([]);
       setSelectedIds([]);
     }
+  };
+
+  const duplicateSelected = () => {
+     const selected = items.filter(i => selectedIds.includes(i.id));
+     if (selected.length === 0) return;
+     
+     const newIds: string[] = [];
+     const newItems = selected.map(item => {
+        const newId = Math.random().toString(36).substring(2, 9);
+        newIds.push(newId);
+        return { ...item, id: newId, x: item.x + 25, y: item.y + 25 }; 
+     });
+     setItems(prev => [...prev, ...newItems]);
+     setSelectedIds(newIds);
   };
 
   const onCanvasPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -655,16 +767,28 @@ export default function PanelLayoutPage() {
                         </div>
                       )}
                       
-                      <button 
-                        onClick={() => handleRemoveItems([selItem.id])} 
-                        style={{ 
-                          marginTop: 8, background: "transparent", color: "#ef4444", 
-                          border: "1px solid #ef4444", padding: "6px", borderRadius: 4, 
-                          cursor: "pointer", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6
-                        }}
-                      >
-                        <Trash2 size={14} /> Delete Component
-                      </button>
+                      <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                        <button 
+                          onClick={duplicateSelected}
+                          style={{ 
+                            flex: 1, background: "transparent", color: "var(--fg)", 
+                            border: "1px solid var(--border)", padding: "6px", borderRadius: 4, 
+                            cursor: "pointer", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+                          }}
+                        >
+                          <Copy size={14} /> Duplicate
+                        </button>
+                        <button 
+                          onClick={() => handleRemoveItems([selItem.id])} 
+                          style={{ 
+                            flex: 1, background: "transparent", color: "#ef4444", 
+                            border: "1px solid #ef4444", padding: "6px", borderRadius: 4, 
+                            cursor: "pointer", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+                          }}
+                        >
+                          <Trash2 size={14} /> Delete
+                        </button>
+                      </div>
                     </>
                   );
                 })()}
@@ -674,117 +798,141 @@ export default function PanelLayoutPage() {
                     <div style={{ fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
                       <MousePointer2 size={16} /> {selectedIds.length} Items Selected
                     </div>
-                    <button 
-                      onClick={() => handleRemoveItems(selectedIds)} 
-                      style={{ 
-                        marginTop: 8, background: "transparent", color: "#ef4444", 
-                        border: "1px solid #ef4444", padding: "6px", borderRadius: 4, 
-                        cursor: "pointer", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6
-                      }}
-                    >
-                      <Trash2 size={14} /> Delete Selection Group
-                    </button>
+                    <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                      <button 
+                        onClick={duplicateSelected}
+                        style={{ 
+                          flex: 1, background: "transparent", color: "var(--fg)", 
+                          border: "1px solid var(--border)", padding: "6px", borderRadius: 4, 
+                          cursor: "pointer", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+                        }}
+                      >
+                        <Copy size={14} /> Duplicate Group
+                      </button>
+                      <button 
+                        onClick={() => handleRemoveItems(selectedIds)} 
+                        style={{ 
+                          flex: 1, background: "transparent", color: "#ef4444", 
+                          border: "1px solid #ef4444", padding: "6px", borderRadius: 4, 
+                          cursor: "pointer", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+                        }}
+                      >
+                        <Trash2 size={14} /> Delete Group
+                      </button>
+                    </div>
                   </>
                 )}
+                
+                <div style={{ fontSize: 10, color: "var(--muted)", marginTop: 12, borderTop: "1px solid var(--border)", paddingTop: 12, display: "flex", flexDirection: "column", gap: 4 }}>
+                   <div><b>Pro Tips (Keyboard):</b></div>
+                   <div>• <b>Ctrl+C / Ctrl+V</b> to Copy Paste</div>
+                   <div>• <b>Arrow Keys</b> to Nudge (Shift to jump)</div>
+                   <div>• <b>Delete</b> to Remove</div>
+                   <div>• <b>Ctrl+A</b> to Select All</div>
+                </div>
               </div>
             )}
           </div>
 
           {/* Canvas Area */}
           <div className="print-area" style={{ flex: "2 1 450px", display: "flex", justifyContent: "center", background: "rgba(0,0,0,0.3)", borderRadius: 12, padding: 32, border: "1px dashed var(--border)" }}>
-            
-            {/* INNER VIEW (Mounting Plate) */}
+                 {/* INNER VIEW (Mounting Plate) */}
             {viewMode === "inner" && (
-              <div
-                ref={canvasRef}
-                onPointerDown={onCanvasPointerDown}
-                onPointerMove={onPointerMove}
-                onPointerUp={onPointerUp}
-                style={{
-                  position: "relative", width: "100%", maxWidth: 500,
-                  aspectRatio: `${activeEnc.w} / ${activeEnc.h}`,
-                  background: "#fdfdfd", // Galvanized plate color
-                  boxShadow: "0 10px 40px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.05)",
-                  border: "2px solid #aaa", overflow: "hidden", touchAction: "none",
-                  transition: "aspect-ratio 0.3s ease", cursor: "crosshair"
-                }}
-              >
-                {/* Grid Background */}
-                <div className="no-print" style={{
-                  position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
-                  backgroundImage: "linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px)",
-                  backgroundSize: `${(50 / activeEnc.w) * 100}% ${(50 / activeEnc.h) * 100}%`,
-                  opacity: 0.5, pointerEvents: "none"
-                }} />
+              <div style={{
+                 position: "relative", width: "100%", maxWidth: 500 * (activeEnc.extW / activeEnc.w),
+                 aspectRatio: `${activeEnc.extW} / ${activeEnc.extH}`,
+                 background: "repeating-linear-gradient(45deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px)",
+                 border: "2px solid #888", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center",
+                 boxShadow: "inset 0 4px 10px rgba(0,0,0,0.1)"
+              }}>
+                <div
+                  ref={canvasRef}
+                  onPointerDown={onCanvasPointerDown}
+                  onPointerMove={onPointerMove}
+                  onPointerUp={onPointerUp}
+                  style={{
+                    position: "relative", width: `${(activeEnc.w / activeEnc.extW) * 100}%`, height: `${(activeEnc.h / activeEnc.extH) * 100}%`,
+                    background: "#fdfdfd", // Galvanized plate color
+                    boxShadow: "0 10px 40px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.05)",
+                    border: "2px solid #aaa", overflow: "hidden", touchAction: "none", cursor: "crosshair"
+                  }}
+                >
+                  {/* Grid Background */}
+                  <div className="no-print" style={{
+                    position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundImage: "linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px)",
+                    backgroundSize: `${(50 / activeEnc.w) * 100}% ${(50 / activeEnc.h) * 100}%`,
+                    opacity: 0.5, pointerEvents: "none"
+                  }} />
 
-                {/* Marquee Selection Box */}
-                {marquee && (
-                   <div style={{
-                     position: "absolute",
-                     left: `${(Math.min(marquee.sx, marquee.cx) / currentViewW) * 100}%`,
-                     top: `${(Math.min(marquee.sy, marquee.cy) / currentViewH) * 100}%`,
-                     width: `${(Math.abs(marquee.cx - marquee.sx) / currentViewW) * 100}%`,
-                     height: `${(Math.abs(marquee.cy - marquee.sy) / currentViewH) * 100}%`,
-                     background: "rgba(16, 185, 129, 0.2)",
-                     border: "1px dashed #10b981",
-                     pointerEvents: "none", zIndex: 100
-                   }} />
-                )}
+                  {/* Marquee Selection Box */}
+                  {marquee && (
+                     <div style={{
+                       position: "absolute",
+                       left: `${(Math.min(marquee.sx, marquee.cx) / currentViewW) * 100}%`,
+                       top: `${(Math.min(marquee.sy, marquee.cy) / currentViewH) * 100}%`,
+                       width: `${(Math.abs(marquee.cx - marquee.sx) / currentViewW) * 100}%`,
+                       height: `${(Math.abs(marquee.cy - marquee.sy) / currentViewH) * 100}%`,
+                       background: "rgba(16, 185, 129, 0.2)",
+                       border: "1px dashed #10b981",
+                       pointerEvents: "none", zIndex: 100
+                     }} />
+                  )}
 
-                {/* Items */}
-                {items.map((item) => {
-                  const wPct = (item.w / activeEnc.w) * 100;
-                  const hPct = (item.h / activeEnc.h) * 100;
-                  const xPct = (item.x / activeEnc.w) * 100;
-                  const yPct = (item.y / activeEnc.h) * 100;
-                  const isSelected = selectedIds.includes(item.id);
-                  const isItemDragging = isDragging && isSelected;
+                  {/* Items */}
+                  {items.map((item) => {
+                    const wPct = (item.w / activeEnc.w) * 100;
+                    const hPct = (item.h / activeEnc.h) * 100;
+                    const xPct = (item.x / activeEnc.w) * 100;
+                    const yPct = (item.y / activeEnc.h) * 100;
+                    const isSelected = selectedIds.includes(item.id);
+                    const isItemDragging = isDragging && isSelected;
 
-                  // Only show internal components
-                  if (["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(item.comp.category)) {
-                     return null; 
-                  }
+                    // Only show internal components
+                    if (["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(item.comp.category)) {
+                       return null; 
+                    }
 
-                  return (
-                    <div
-                      key={item.id}
-                      onPointerDown={(e) => onItemPointerDown(e, item.id)}
-                      style={{
-                        position: "absolute", left: `${xPct}%`, top: `${yPct}%`,
-                        width: `${wPct}%`, height: `${hPct}%`,
-                        boxShadow: isItemDragging ? "0 20px 30px rgba(0,0,0,0.5)" : (isSelected ? "0 0 0 2px var(--accent), 0 4px 8px rgba(0,0,0,0.3)" : "0 4px 8px rgba(0,0,0,0.3)"),
-                        opacity: isItemDragging ? 0.85 : 1,
-                        cursor: isItemDragging ? "grabbing" : "grab",
-                        zIndex: isItemDragging ? 10 : (isSelected ? 5 : 1),
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        transform: isItemDragging ? "scale(1.02)" : "scale(1)",
-                        transition: isItemDragging ? "none" : "box-shadow 0.2s, transform 0.2s, top 0.1s, left 0.1s"
-                      }}
-                    >
-                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden", pointerEvents: "none" }}>
-                        {renderCADVisual(item)}
-                      </div>
-                      
-                      {item.comp.category !== "Cooling" && (
-                        <div style={{
-                          position: "relative", zIndex: 1, color: "#000",
-                          fontSize: "clamp(6px, 1vw, 10px)", fontWeight: 800, textAlign: "center",
-                          fontFamily: "var(--font-mono)", textShadow: "0 0 3px #fff, 0 0 1px #fff",
-                          padding: 2, pointerEvents: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%"
-                        }}>
-                          {item.comp.partCode}
+                    return (
+                      <div
+                        key={item.id}
+                        onPointerDown={(e) => onItemPointerDown(e, item.id)}
+                        style={{
+                          position: "absolute", left: `${xPct}%`, top: `${yPct}%`,
+                          width: `${wPct}%`, height: `${hPct}%`,
+                          boxShadow: isItemDragging ? "0 20px 30px rgba(0,0,0,0.5)" : (isSelected ? "0 0 0 2px var(--accent), 0 4px 8px rgba(0,0,0,0.3)" : "0 4px 8px rgba(0,0,0,0.3)"),
+                          opacity: isItemDragging ? 0.85 : 1,
+                          cursor: isItemDragging ? "grabbing" : "grab",
+                          zIndex: isItemDragging ? 10 : (isSelected ? 5 : 1),
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          transform: isItemDragging ? "scale(1.02)" : "scale(1)",
+                          transition: isItemDragging ? "none" : "box-shadow 0.2s, transform 0.2s, top 0.1s, left 0.1s"
+                        }}
+                      >
+                        <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden", pointerEvents: "none" }}>
+                          {renderCADVisual(item)}
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
+                        
+                        {item.comp.category !== "Cooling" && (
+                          <div style={{
+                            position: "relative", zIndex: 1, color: "#000",
+                            fontSize: "clamp(6px, 1vw, 10px)", fontWeight: 800, textAlign: "center",
+                            fontFamily: "var(--font-mono)", textShadow: "0 0 3px #fff, 0 0 1px #fff",
+                            padding: 2, pointerEvents: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%"
+                          }}>
+                            {item.comp.partCode}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
 
                 {/* Print Context Overlay */}
-                <div style={{ display: "none", position: "absolute", bottom: 8, left: 8, right: 8, justifyContent: "space-between", color: "#000", fontSize: 12, fontFamily: "var(--font-mono)" }} className="print-footer">
+                <div style={{ display: "none", position: "absolute", bottom: -20, left: 0, right: 0, justifyContent: "space-between", color: "#000", fontSize: 12, fontFamily: "var(--font-mono)" }} className="print-footer">
                   <div><b>DUMMVINCI ESTIMATOR</b></div>
                   <div>Enclosure: {activeEnc.name} (Mounting Area: {activeEnc.w}x{activeEnc.h}mm)</div>
                 </div>
-
               </div>
             )}
 
