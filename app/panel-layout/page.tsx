@@ -477,17 +477,11 @@ export default function PanelLayoutPage() {
         let imgUrl = "";
         if (comp.brand === "ABB") imgUrl = "https://upload.wikimedia.org/wikipedia/commons/0/00/ABB_logo.svg";
         else if (comp.brand === "Siemens") imgUrl = "https://upload.wikimedia.org/wikipedia/commons/5/5f/Siemens-logo.svg";
-        else if (comp.brand === "PTTS") {
-           return (
-             <div style={{ width: "100%", height: "100%", background: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #1d4ed8", boxShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
-                <span style={{ color: "#1d4ed8", fontWeight: 900, fontSize: "clamp(8px, 2.5vw, 24px)", fontFamily: "var(--font-display)" }}>PTTS</span>
-             </div>
-           );
-        }
+        else if (comp.brand === "PTTS") imgUrl = "https://www.ptts.co.id/uploads/1/3/3/7/133745061/logo-web_orig.png";
 
         if (imgUrl) {
            return (
-             <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#fff", borderRadius: 2, padding: "5%" }}>
+             <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#fff", borderRadius: comp.brand === "PTTS" ? "50%" : 2, padding: "5%" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={imgUrl} alt={comp.brand} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
              </div>
