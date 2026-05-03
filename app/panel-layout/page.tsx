@@ -4,7 +4,7 @@ import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, MousePointer2, Filter, Box, Minimize2, Wind, Printer, Settings2 } from "lucide-react";
+import { Plus, Trash2, MousePointer2, Filter, Box, Minimize2, Wind, Printer, Settings2, Grid } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
@@ -26,7 +26,7 @@ export default function PanelLayoutPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   
   const [viewMode, setViewMode] = useState<"inner" | "outer">("inner");
-  const [includeFans, setIncludeFans] = useState(false);
+  const [snapToGrid, setSnapToGrid] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Dragging state
@@ -40,12 +40,42 @@ export default function PanelLayoutPage() {
     : componentLibrary.filter((c) => c.category === activeCategory);
 
   const handleAddComponent = (comp: PanelComponent) => {
-    // Drop exactly in the middle to prevent off-screen
+    let startX = 20;
+    let startY = 20;
+    const gap = 15; // 15mm human-readable gap
+    const gridStep = 25;
+
+    // Smart placement: next to selected item OR last added item
+    const referenceItem = items.find(i => i.id === selectedId) || items[items.length - 1];
+
+    if (referenceItem) {
+      // Place to the right by default
+      startX = referenceItem.x + referenceItem.w + gap;
+      startY = referenceItem.y;
+
+      // If it overflows the right edge, carriage return: move below the reference item
+      if (startX + comp.width > activeEnc.w) {
+        startX = 20; // reset to left margin
+        startY = referenceItem.y + referenceItem.h + gap; // move down
+      }
+      
+      // If it also overflows the bottom edge, reset to top-left
+      if (startY + comp.height > activeEnc.h) {
+         startX = 20;
+         startY = 20;
+      }
+    }
+
+    if (snapToGrid) {
+       startX = Math.round(startX / gridStep) * gridStep;
+       startY = Math.round(startY / gridStep) * gridStep;
+    }
+
     const newItem: PlacedItem = {
       id: Math.random().toString(36).substring(2, 9),
       comp,
-      x: (activeEnc.w - comp.width) / 2,
-      y: (activeEnc.h - comp.height) / 2,
+      x: startX,
+      y: startY,
       w: comp.width,
       h: comp.height
     };
@@ -93,6 +123,12 @@ export default function PanelLayoutPage() {
 
     let newX = mouseX - dragOffset.x;
     let newY = mouseY - dragOffset.y;
+
+    if (snapToGrid) {
+      const gridStep = 25; // 25mm grid snaps
+      newX = Math.round(newX / gridStep) * gridStep;
+      newY = Math.round(newY / gridStep) * gridStep;
+    }
 
     setItems((prev) =>
       prev.map((item) => {
@@ -164,6 +200,8 @@ export default function PanelLayoutPage() {
             <div style={{ flex: 1, background: "#1a1c26", borderRadius: 2, border: "1px solid #000" }} />
           </div>
         );
+      case "Cooling":
+        return renderFanFilter();
       case "Control":
       default:
         return (
@@ -253,17 +291,19 @@ export default function PanelLayoutPage() {
 
           <div style={{ width: 1, height: 32, background: "var(--border)" }} />
 
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <input 
-              type="checkbox" 
-              id="fanToggle" 
-              checked={includeFans} 
-              onChange={(e) => setIncludeFans(e.target.checked)} 
-              style={{ width: 16, height: 16, cursor: "pointer", accentColor: "var(--accent)" }}
-            />
-            <label htmlFor="fanToggle" style={{ fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-              <Wind size={16} /> Fan / Filters
-            </label>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <input 
+                type="checkbox" 
+                id="snapToggle" 
+                checked={snapToGrid} 
+                onChange={(e) => setSnapToGrid(e.target.checked)} 
+                style={{ width: 16, height: 16, cursor: "pointer", accentColor: "var(--accent)" }}
+              />
+              <label htmlFor="snapToggle" style={{ fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+                <Grid size={16} /> Snap to Grid (25mm)
+              </label>
+            </div>
           </div>
 
           <div style={{ flex: 1 }} />
@@ -341,7 +381,7 @@ export default function PanelLayoutPage() {
               </div>
             </div>
 
-            {/* Properties Panel for Wiring Components */}
+            {/* Properties Panel */}
             {selectedId && items.find(i => i.id === selectedId) && (
               <div className="vinci-card" style={{ marginTop: 16, padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--accent)" }}>
@@ -547,20 +587,6 @@ export default function PanelLayoutPage() {
                       width: "30%", height: "15%", background: "#000", borderRadius: "50%"
                     }} />
                   </div>
-
-                  {/* Tent / Fort Fan Filters */}
-                  {includeFans && (
-                    <>
-                      {/* Bottom Left (Intake) */}
-                      <div style={{ position: "absolute", bottom: "8%", left: "8%", width: activeEnc.extW >= 800 ? "20%" : "25%" }}>
-                        {renderFanFilter()}
-                      </div>
-                      {/* Top Right (Exhaust) */}
-                      <div style={{ position: "absolute", top: "8%", right: activeEnc.extW >= 1000 ? "58%" : "8%", width: activeEnc.extW >= 800 ? "20%" : "25%" }}>
-                        {renderFanFilter()}
-                      </div>
-                    </>
-                  )}
                   
                   <div style={{
                     position: "absolute", top: "50%", left: activeEnc.extW >= 1000 ? "25%" : "50%", transform: "translate(-50%, -50%)",

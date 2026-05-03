@@ -1,7 +1,7 @@
 export interface PanelComponent {
   id: string;
   brand: "ABB" | "Siemens" | "Weidmuller" | "Fort" | "Schneider" | "KSS";
-  category: "VSD" | "MCCB" | "Terminal Block" | "Control" | "Networking" | "Wiring";
+  category: "VSD" | "MCCB" | "Terminal Block" | "Control" | "Networking" | "Wiring" | "Cooling";
   partCode: string;
   width: number; // mm
   height: number; // mm
@@ -71,6 +71,10 @@ export const componentLibrary: PanelComponent[] = [
   { id: "kss-duct-45x45-600", brand: "KSS", category: "Wiring", partCode: "Duct H 45x45 600", width: 600, height: 45, depth: 45, color: "#dcdcdc" },
   { id: "kss-duct-v-45x45-400", brand: "KSS", category: "Wiring", partCode: "Duct V 45x45 400", width: 45, height: 400, depth: 45, color: "#dcdcdc" },
   { id: "kss-duct-v-45x45-600", brand: "KSS", category: "Wiring", partCode: "Duct V 45x45 600", width: 45, height: 600, depth: 45, color: "#dcdcdc" },
+
+  // Cooling
+  { id: "fort-fan-200", brand: "Fort", category: "Cooling", partCode: "Fan Filter 200", width: 200, height: 200, depth: 80, color: "#dcdcdc" },
+  { id: "fort-fan-320", brand: "Fort", category: "Cooling", partCode: "Fan Filter 320", width: 320, height: 320, depth: 80, color: "#dcdcdc" },
 ];
 
 export const ENCLOSURES = [
