@@ -29,6 +29,11 @@ export default function PanelLayoutPage() {
   const [viewMode, setViewMode] = useState<"inner" | "outer" | "iso">("inner");
   const [snapToGrid, setSnapToGrid] = useState(true);
   
+  // Iso 3D Rotation State
+  const [isoRot, setIsoRot] = useState({ x: -15, y: -25 });
+  const [isIsoDragging, setIsIsoDragging] = useState(false);
+  const [isoDragStart, setIsoDragStart] = useState({ mouseX: 0, mouseY: 0, rotX: 0, rotY: 0 });
+  
   // Selection & Grouping
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -228,7 +233,33 @@ export default function PanelLayoutPage() {
   const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     if (marquee) setMarquee(null);
     if (isDragging) setIsDragging(false);
-    if (canvasRef.current) canvasRef.current.releasePointerCapture(e.pointerId);
+    if (canvasRef.current && canvasRef.current.hasPointerCapture(e.pointerId)) {
+       canvasRef.current.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  const onIsoPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsIsoDragging(true);
+    setIsoDragStart({ mouseX: e.clientX, mouseY: e.clientY, rotX: isoRot.x, rotY: isoRot.y });
+  };
+
+  const onIsoPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isIsoDragging) return;
+    const deltaX = e.clientX - isoDragStart.mouseX;
+    const deltaY = e.clientY - isoDragStart.mouseY;
+    setIsoRot({
+      x: isoDragStart.rotX - deltaY * 0.5,
+      y: isoDragStart.rotY + deltaX * 0.5
+    });
+  };
+
+  const onIsoPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    setIsIsoDragging(false);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
   };
 
   const renderFanFilter = () => (
@@ -880,84 +911,77 @@ export default function PanelLayoutPage() {
               const pxW = activeEnc.extW * baseScale;
               const pxH = activeEnc.extH * baseScale;
               const pxD = (activeEnc.extD || 200) * baseScale;
-              const innerW = activeEnc.w * baseScale;
-              const innerH = activeEnc.h * baseScale;
 
               return (
               <div
+                onPointerDown={onIsoPointerDown}
+                onPointerMove={onIsoPointerMove}
+                onPointerUp={onIsoPointerUp}
                 style={{
                   position: "relative", width: "100%", height: 600,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  perspective: 1500
+                  perspective: 1500, cursor: isIsoDragging ? "grabbing" : "grab",
+                  background: "radial-gradient(circle at center, #444 0%, #111 100%)",
+                  borderRadius: 12, border: "2px solid #555", overflow: "hidden",
+                  boxShadow: "inset 0 0 40px rgba(0,0,0,0.8)"
                 }}
               >
+                <div style={{ position: "absolute", top: 16, right: 16, color: "#aaa", fontSize: 12, fontFamily: "var(--font-mono)" }}>
+                  Hint: Drag to rotate
+                </div>
+                
                 <div style={{
                   position: "relative", width: pxW, height: pxH,
                   transformStyle: "preserve-3d",
-                  transform: "rotateX(-15deg) rotateY(-25deg)",
-                  transition: "transform 0.5s ease"
+                  transform: `rotateX(${isoRot.x}deg) rotateY(${isoRot.y}deg)`,
+                  transition: isIsoDragging ? "none" : "transform 0.1s ease"
                 }}>
                   
-                  {/* Back / Inner Plate */}
-                  <div style={{
-                    position: "absolute", width: innerW, height: innerH, background: "rgba(240, 240, 240, 0.95)",
-                    border: "2px solid #aaa", 
-                    left: (pxW - innerW) / 2, top: (pxH - innerH) / 2,
-                    transform: `translateZ(-${pxD / 2}px) translateZ(5px)`, // slightly forward from true back
-                  }}>
-                     {/* Grid Background */}
-                     <div style={{
-                        position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
-                        backgroundImage: "linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px)",
-                        backgroundSize: `${(50 / activeEnc.w) * 100}% ${(50 / activeEnc.h) * 100}%`,
-                        opacity: 0.5, pointerEvents: "none"
-                     }} />
-
-                     {/* Render Inner Items */}
-                     {items.filter(i => !["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(i.comp.category)).map(item => {
-                      const wPct = (item.w / activeEnc.w) * 100;
-                      const hPct = (item.h / activeEnc.h) * 100;
-                      const xPct = (item.x / activeEnc.w) * 100;
-                      const yPct = (item.y / activeEnc.h) * 100;
-                      
-                      return (
-                        <div key={item.id} style={{ position: "absolute", left: `${xPct}%`, top: `${yPct}%`, width: `${wPct}%`, height: `${hPct}%`, pointerEvents: "none" }}>
-                          {renderCADVisual(item)}
-                        </div>
-                      )
-                    })}
-                  </div>
-
                   {/* Left Face */}
                   <div style={{
-                    position: "absolute", width: pxD, height: pxH, background: "#a0a0a0",
-                    border: "2px solid #777", transform: `rotateY(-90deg) translateZ(${pxW / 2}px)`
+                    position: "absolute", width: pxD, height: pxH, background: "linear-gradient(to right, #666, #999)",
+                    border: "1px solid #444", transform: `rotateY(-90deg) translateZ(${pxW / 2}px)`
                   }} />
 
                   {/* Right Face */}
                   <div style={{
-                    position: "absolute", width: pxD, height: pxH, background: "#c0c0c0",
-                    border: "2px solid #777", transform: `rotateY(90deg) translateZ(${pxW / 2}px)`
+                    position: "absolute", width: pxD, height: pxH, background: "linear-gradient(to right, #999, #777)",
+                    border: "1px solid #444", transform: `rotateY(90deg) translateZ(${pxW / 2}px)`
                   }} />
 
                   {/* Top Face */}
                   <div style={{
-                    position: "absolute", width: pxW, height: pxD, background: "#dcdcdc",
-                    border: "2px solid #888", transform: `rotateX(90deg) translateZ(${pxH / 2}px)`
+                    position: "absolute", width: pxW, height: pxD, background: "#ccc",
+                    border: "1px solid #444", transform: `rotateX(90deg) translateZ(${pxH / 2}px)`
                   }} />
 
                   {/* Bottom Face */}
                   <div style={{
-                    position: "absolute", width: pxW, height: pxD, background: "#888",
-                    border: "2px solid #555", transform: `rotateX(-90deg) translateZ(${pxH / 2}px)`
+                    position: "absolute", width: pxW, height: pxD, background: "#444",
+                    border: "1px solid #222", transform: `rotateX(-90deg) translateZ(${pxH / 2}px)`
                   }} />
 
-                  {/* Front Door (Translucent to see inside) */}
+                  {/* Back Face */}
                   <div style={{
-                    position: "absolute", width: pxW, height: pxH, background: "rgba(220, 220, 220, 0.4)",
-                    border: "2px solid #888", transform: `translateZ(${pxD / 2}px)`,
+                    position: "absolute", width: pxW, height: pxH, background: "#777",
+                    border: "1px solid #444", transform: `translateZ(-${pxD / 2}px) rotateY(180deg)`
+                  }} />
+
+                  {/* Front Door (Solid) */}
+                  <div style={{
+                    position: "absolute", width: pxW, height: pxH, 
+                    background: "linear-gradient(135deg, #d8d8d8 0%, #a8a8a8 100%)",
+                    border: "2px solid #666", transform: `translateZ(${pxD / 2}px)`,
                     boxShadow: "inset 0 0 10px rgba(0,0,0,0.1)"
                   }}>
+                    {/* Double Door Seam if width >= 1000 */}
+                    {activeEnc.extW >= 1000 && (
+                      <div style={{
+                        position: "absolute", left: "50%", top: 0, bottom: 0, width: "2px",
+                        background: "rgba(0,0,0,0.2)", boxShadow: "1px 0 0 rgba(255,255,255,0.6)"
+                      }} />
+                    )}
+
                     {/* Render Outer Door Items */}
                     {items.filter(i => ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(i.comp.category)).map(item => {
                       const wPct = (item.w / activeEnc.extW) * 100;
@@ -976,13 +1000,25 @@ export default function PanelLayoutPage() {
                   {activeEnc.extH >= 1700 && (
                     <div style={{
                       position: "absolute", width: pxW, height: 30, background: "#333",
-                      border: "2px solid #111", transform: `translateY(${pxH}px) translateZ(${pxD / 2 - 15}px)`
+                      border: "1px solid #111", transform: `translateY(${pxH}px) translateZ(${pxD / 2 - 15}px)`
                     }} />
                   )}
                   {activeEnc.extH >= 1700 && (
                     <div style={{
-                      position: "absolute", width: pxW, height: 30, background: "#333",
-                      border: "2px solid #111", transform: `translateY(${pxH}px) translateZ(-${pxD / 2 - 15}px)`
+                      position: "absolute", width: pxW, height: 30, background: "#222",
+                      border: "1px solid #111", transform: `translateY(${pxH}px) translateZ(-${pxD / 2 - 15}px)`
+                    }} />
+                  )}
+                  {activeEnc.extH >= 1700 && (
+                    <div style={{
+                      position: "absolute", width: pxD, height: 30, background: "#2a2a2a",
+                      border: "1px solid #111", transform: `translateY(${pxH}px) rotateY(-90deg) translateZ(${pxW / 2}px)`
+                    }} />
+                  )}
+                  {activeEnc.extH >= 1700 && (
+                    <div style={{
+                      position: "absolute", width: pxD, height: 30, background: "#2a2a2a",
+                      border: "1px solid #111", transform: `translateY(${pxH}px) rotateY(90deg) translateZ(${pxW / 2}px)`
                     }} />
                   )}
 
