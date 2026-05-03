@@ -28,6 +28,7 @@ export default function PanelLayoutPage() {
   
   const [viewMode, setViewMode] = useState<"inner" | "outer" | "iso">("inner");
   const [snapToGrid, setSnapToGrid] = useState(true);
+  const [showDimensions, setShowDimensions] = useState(false);
   
   // Iso 3D Rotation State
   const [isoRot, setIsoRot] = useState({ x: -15, y: -25 });
@@ -613,6 +614,18 @@ export default function PanelLayoutPage() {
                 <Grid size={16} /> Snap to Grid (25mm)
               </label>
             </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <input 
+                type="checkbox" 
+                id="dimToggle" 
+                checked={showDimensions} 
+                onChange={(e) => setShowDimensions(e.target.checked)} 
+                style={{ width: 16, height: 16, cursor: "pointer", accentColor: "#10b981" }}
+              />
+              <label htmlFor="dimToggle" style={{ fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, color: "#10b981" }}>
+                <Layers size={16} /> Show Dimensions (CAD)
+              </label>
+            </div>
           </div>
 
           <div style={{ flex: 1 }} />
@@ -931,6 +944,24 @@ export default function PanelLayoutPage() {
                             {item.comp.partCode}
                           </div>
                         )}
+
+                        {showDimensions && (
+                           <>
+                             <div style={{ position: "absolute", top: -8, left: 0, width: "100%", height: 1, background: "#10b981", pointerEvents: "none", zIndex: 20 }}>
+                                <div style={{ position: "absolute", top: -3, left: 0, width: 1, height: 7, background: "#10b981" }} />
+                                <div style={{ position: "absolute", top: -3, right: 0, width: 1, height: 7, background: "#10b981" }} />
+                                <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", color: "#10b981", fontSize: 8, fontWeight: 800, fontFamily: "var(--font-mono)", textShadow: "1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000" }}>W: {item.w}</div>
+                             </div>
+                             <div style={{ position: "absolute", top: 0, left: -8, width: 1, height: "100%", background: "#10b981", pointerEvents: "none", zIndex: 20 }}>
+                                <div style={{ position: "absolute", top: 0, left: -3, width: 7, height: 1, background: "#10b981" }} />
+                                <div style={{ position: "absolute", bottom: 0, left: -3, width: 7, height: 1, background: "#10b981" }} />
+                                <div style={{ position: "absolute", top: "50%", left: -16, transform: "translateY(-50%) rotate(-90deg)", color: "#10b981", fontSize: 8, fontWeight: 800, fontFamily: "var(--font-mono)", textShadow: "1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000" }}>H: {item.h}</div>
+                             </div>
+                             <div style={{ position: "absolute", top: -20, left: -24, color: "#10b981", fontSize: 8, fontWeight: 800, fontFamily: "var(--font-mono)", textShadow: "1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000", pointerEvents: "none", zIndex: 20 }}>
+                                ({Math.round(item.x)}, {Math.round(item.y)})
+                             </div>
+                           </>
+                        )}
                       </div>
                     );
                   })}
@@ -1069,6 +1100,24 @@ export default function PanelLayoutPage() {
                       <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden", pointerEvents: "none" }}>
                         {renderCADVisual(item)}
                       </div>
+
+                      {showDimensions && (
+                         <>
+                           <div style={{ position: "absolute", top: -8, left: 0, width: "100%", height: 1, background: "#10b981", pointerEvents: "none", zIndex: 20 }}>
+                              <div style={{ position: "absolute", top: -3, left: 0, width: 1, height: 7, background: "#10b981" }} />
+                              <div style={{ position: "absolute", top: -3, right: 0, width: 1, height: 7, background: "#10b981" }} />
+                              <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", color: "#10b981", fontSize: 8, fontWeight: 800, fontFamily: "var(--font-mono)", textShadow: "1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000" }}>W: {item.w}</div>
+                           </div>
+                           <div style={{ position: "absolute", top: 0, left: -8, width: 1, height: "100%", background: "#10b981", pointerEvents: "none", zIndex: 20 }}>
+                              <div style={{ position: "absolute", top: 0, left: -3, width: 7, height: 1, background: "#10b981" }} />
+                              <div style={{ position: "absolute", bottom: 0, left: -3, width: 7, height: 1, background: "#10b981" }} />
+                              <div style={{ position: "absolute", top: "50%", left: -16, transform: "translateY(-50%) rotate(-90deg)", color: "#10b981", fontSize: 8, fontWeight: 800, fontFamily: "var(--font-mono)", textShadow: "1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000" }}>H: {item.h}</div>
+                           </div>
+                           <div style={{ position: "absolute", top: -20, left: -24, color: "#10b981", fontSize: 8, fontWeight: 800, fontFamily: "var(--font-mono)", textShadow: "1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000", pointerEvents: "none", zIndex: 20 }}>
+                              ({Math.round(item.x)}, {Math.round(item.y)})
+                           </div>
+                         </>
+                      )}
                     </div>
                   );
                 })}
