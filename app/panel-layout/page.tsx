@@ -4,7 +4,7 @@ import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, MousePointer2, Filter, Box, Minimize2, Wind, Printer, Settings2, Grid } from "lucide-react";
+import { Plus, Trash2, Filter, Box, Minimize2, Printer, Settings2, Grid } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
@@ -13,6 +13,7 @@ interface PlacedItem {
   y: number;
   w: number;
   h: number;
+  label?: string; // used for custom nameplates
 }
 
 export default function PanelLayoutPage() {
@@ -77,11 +78,18 @@ export default function PanelLayoutPage() {
       x: startX,
       y: startY,
       w: comp.width,
-      h: comp.height
+      h: comp.height,
+      label: comp.category === "Label" ? "PANEL NAME" : undefined
     };
     setItems((prev) => [...prev, newItem]);
     setSelectedId(newItem.id);
-    setViewMode("inner"); // Force back to inner view to place it
+    
+    // Automatically switch to outer view if it's a door component (Door Accessory, Meter, Label, Logo)
+    if (["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(comp.category)) {
+       setViewMode("outer");
+    } else {
+       setViewMode("inner");
+    }
   };
 
   const handleRemoveItem = (id: string) => {
@@ -90,7 +98,7 @@ export default function PanelLayoutPage() {
   };
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
-    if (e.button !== 0 || viewMode === "outer") return;
+    if (e.button !== 0) return;
     e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
     
@@ -99,8 +107,10 @@ export default function PanelLayoutPage() {
     const item = items.find((i) => i.id === id);
     if (!item || !canvasRef.current) return;
 
+    // Calculate scale correctly whether we are on inner plate or outer door
+    const currentW = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
     const canvasRect = canvasRef.current.getBoundingClientRect();
-    const scale = canvasRect.width / activeEnc.w;
+    const scale = canvasRect.width / currentW;
 
     const mouseX = (e.clientX - canvasRect.left) / scale;
     const mouseY = (e.clientY - canvasRect.top) / scale;
@@ -115,8 +125,11 @@ export default function PanelLayoutPage() {
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!draggingId || !canvasRef.current) return;
     
+    const currentW = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
+    const currentH = viewMode === "outer" ? activeEnc.extH : activeEnc.h;
+    
     const canvasRect = canvasRef.current.getBoundingClientRect();
-    const scale = canvasRect.width / activeEnc.w;
+    const scale = canvasRect.width / currentW;
 
     const mouseX = (e.clientX - canvasRect.left) / scale;
     const mouseY = (e.clientY - canvasRect.top) / scale;
@@ -133,11 +146,11 @@ export default function PanelLayoutPage() {
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === draggingId) {
-          // Snap to bounds smoothly
+          // Snap to bounds smoothly based on current view area
           if (newX < 0) newX = 0;
           if (newY < 0) newY = 0;
-          if (newX + item.w > activeEnc.w) newX = activeEnc.w - item.w;
-          if (newY + item.h > activeEnc.h) newY = activeEnc.h - item.h;
+          if (newX + item.w > currentW) newX = currentW - item.w;
+          if (newY + item.h > currentH) newY = currentH - item.h;
 
           return { ...item, x: newX, y: newY };
         }
@@ -153,7 +166,23 @@ export default function PanelLayoutPage() {
     }
   };
 
-  const renderCADVisual = (comp: PanelComponent, w: number, h: number) => {
+  const renderFanFilter = () => (
+    <div style={{
+      width: "100%", height: "100%", background: "#dcdcdc", 
+      border: "1px solid #aaa", borderRadius: 4, display: "flex", 
+      alignItems: "center", justifyContent: "center",
+      boxShadow: "inset 0 4px 10px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.2)"
+    }}>
+      <div style={{
+        width: "90%", height: "90%", 
+        backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 4px, #aaa 4px, #aaa 8px)",
+        borderRadius: 2, border: "1px solid #999"
+      }} />
+    </div>
+  );
+
+  const renderCADVisual = (item: PlacedItem) => {
+    const { comp, w, h, label } = item;
     switch (comp.category) {
       case "VSD":
         return (
@@ -202,6 +231,48 @@ export default function PanelLayoutPage() {
         );
       case "Cooling":
         return renderFanFilter();
+      case "Door Accessory":
+        const isEstop = comp.partCode.includes("E-Stop");
+        const isSelector = comp.partCode.includes("Selector");
+        return (
+           <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#d4d4d4", borderRadius: w === h ? "50%" : 4, border: "2px solid #a0a0a0", boxShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
+              <div style={{ width: "70%", height: "70%", background: comp.color, borderRadius: isEstop ? "10%" : "50%", border: "1px solid rgba(0,0,0,0.2)", boxShadow: "inset 0 4px 6px rgba(255,255,255,0.4)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                 {isSelector && <div style={{ width: "20%", height: "80%", background: "#fff", borderRadius: 2 }} />}
+              </div>
+           </div>
+        );
+      case "Meter":
+        const isDigital = comp.partCode.includes("Digital");
+        return (
+           <div style={{ width: "100%", height: "100%", background: comp.color, border: "2px solid #444", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "10%", boxShadow: "inset 0 2px 10px rgba(0,0,0,0.2)" }}>
+              {isDigital ? (
+                <div style={{ background: "#111", padding: "4%", borderRadius: 2, color: "#f00", fontFamily: "var(--font-mono)", fontSize: "clamp(8px, 2vw, 16px)", fontWeight: 800 }}>000.0</div>
+              ) : (
+                <>
+                  <div style={{ width: "60%", height: "30%", borderTop: "2px solid #111", borderTopLeftRadius: "50%", borderTopRightRadius: "50%", position: "relative" }}>
+                     <div style={{ position: "absolute", bottom: 0, left: "10%", width: "2px", height: "120%", background: "#f00", transform: "rotate(30deg)", transformOrigin: "bottom" }} />
+                  </div>
+                  <div style={{ fontSize: "clamp(4px, 1vw, 10px)", color: "#111", fontWeight: 700 }}>A</div>
+                </>
+              )}
+           </div>
+        );
+      case "Label":
+        return (
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #e0e0e0, #c0c0c0)", border: "1px solid #777", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 2, boxShadow: "inset 0 1px 2px #fff, 0 2px 4px rgba(0,0,0,0.2)" }}>
+             <span style={{ fontSize: "clamp(8px, 1.5vw, 14px)", fontWeight: 800, color: "#111", textTransform: "uppercase", textAlign: "center", padding: "0 4px" }}>
+               {label || "LABEL"}
+             </span>
+          </div>
+        );
+      case "Logo":
+        return (
+          <div style={{ width: "100%", height: "100%", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
+             <span style={{ fontSize: "clamp(12px, 3vw, 32px)", fontWeight: 900, color: comp.color, letterSpacing: comp.brand === "ABB" ? "-0.05em" : "0.05em", fontFamily: "var(--font-display)", textShadow: "1px 1px 0 #fff" }}>
+               {comp.brand === "DummVinci" ? "By DummVinci" : comp.brand}
+             </span>
+          </div>
+        );
       case "Control":
       default:
         return (
@@ -211,21 +282,6 @@ export default function PanelLayoutPage() {
         );
     }
   };
-
-  const renderFanFilter = () => (
-    <div style={{
-      width: "100%", aspectRatio: "1", background: "#dcdcdc", 
-      border: "1px solid #aaa", borderRadius: 4, display: "flex", 
-      alignItems: "center", justifyContent: "center",
-      boxShadow: "inset 0 4px 10px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.2)"
-    }}>
-      <div style={{
-        width: "90%", height: "90%", 
-        backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 4px, #aaa 4px, #aaa 8px)",
-        borderRadius: 2, border: "1px solid #999"
-      }} />
-    </div>
-  );
 
   return (
     <CalcShell label="IEC 61439" title={tl.title} subtitle={tl.subtitle} concept={tl.concept}>
@@ -392,14 +448,34 @@ export default function PanelLayoutPage() {
                 {(() => {
                   const selItem = items.find(i => i.id === selectedId)!;
                   const isWiring = selItem.comp.category === "Wiring";
+                  const isLabel = selItem.comp.category === "Label";
                   
                   return (
                     <>
                       <div style={{ fontSize: 14, fontWeight: 600 }}>{selItem.comp.partCode}</div>
                       
-                      {isWiring ? (
+                      {isLabel && (
                         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                          <label style={{ fontSize: 12, color: "var(--muted)" }}>Length Dimension (mm):</label>
+                          <label style={{ fontSize: 12, color: "var(--muted)" }}>Nameplate Text:</label>
+                          <input 
+                            type="text" 
+                            value={selItem.label || ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setItems(prev => prev.map(i => i.id === selectedId ? { ...i, label: val } : i));
+                            }}
+                            style={{
+                              background: "rgba(0,0,0,0.2)", border: "1px solid var(--border)",
+                              color: "var(--fg)", padding: "8px", borderRadius: 4, fontFamily: "var(--font-mono)",
+                              fontSize: 14, width: "100%", outline: "none"
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      {(isWiring || isLabel) ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          <label style={{ fontSize: 12, color: "var(--muted)" }}>Length (mm):</label>
                           <input 
                             type="number" 
                             min="10"
@@ -421,9 +497,6 @@ export default function PanelLayoutPage() {
                               fontSize: 14, width: "100%", outline: "none"
                             }}
                           />
-                          <span style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>
-                            * Adjust DIN Rail / Duct length directly
-                          </span>
                         </div>
                       ) : (
                         <div style={{ fontSize: 12, color: "var(--muted)" }}>
@@ -481,6 +554,11 @@ export default function PanelLayoutPage() {
                   const isDragging = draggingId === item.id;
                   const isSelected = selectedId === item.id;
 
+                  // Only show internal components
+                  if (["Door Accessory", "Meter", "Label", "Logo"].includes(item.comp.category)) {
+                     return null; 
+                  }
+
                   return (
                     <div
                       key={item.id}
@@ -500,17 +578,19 @@ export default function PanelLayoutPage() {
                       }}
                     >
                       <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden" }}>
-                        {renderCADVisual(item.comp, item.w, item.h)}
+                        {renderCADVisual(item)}
                       </div>
 
-                      <div style={{
-                        position: "relative", zIndex: 1, color: "#000",
-                        fontSize: "clamp(6px, 1vw, 10px)", fontWeight: 800, textAlign: "center",
-                        fontFamily: "var(--font-mono)", textShadow: "0 0 3px #fff, 0 0 1px #fff",
-                        padding: 2, pointerEvents: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%"
-                      }}>
-                        {item.comp.partCode}
-                      </div>
+                      {item.comp.category !== "Cooling" && (
+                        <div style={{
+                          position: "relative", zIndex: 1, color: "#000",
+                          fontSize: "clamp(6px, 1vw, 10px)", fontWeight: 800, textAlign: "center",
+                          fontFamily: "var(--font-mono)", textShadow: "0 0 3px #fff, 0 0 1px #fff",
+                          padding: 2, pointerEvents: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%"
+                        }}>
+                          {item.comp.partCode}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -527,12 +607,13 @@ export default function PanelLayoutPage() {
             {/* OUTER VIEW (Enclosure Box) */}
             {viewMode === "outer" && (
               <div
+                ref={canvasRef}
                 style={{
                   position: "relative", width: "100%", maxWidth: 450,
                   aspectRatio: `${activeEnc.extW} / ${activeEnc.extH}`,
                   background: "linear-gradient(135deg, #e6e6e6 0%, #c0c0c0 100%)", // Metallic gradient
                   boxShadow: "0 25px 50px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,255,0.9), inset -2px -2px 5px rgba(0,0,0,0.2)",
-                  borderRadius: 4, overflow: "hidden",
+                  borderRadius: 4, overflow: "hidden", touchAction: "none",
                   border: "2px solid #a0a0a0",
                   transition: "aspect-ratio 0.3s ease"
                 }}
@@ -543,7 +624,7 @@ export default function PanelLayoutPage() {
                      position: "absolute", bottom: 0, left: 0, right: 0, height: "8%",
                      background: "linear-gradient(to bottom, #444 0%, #222 100%)", 
                      borderTop: "3px solid #111",
-                     boxShadow: "inset 0 4px 6px rgba(0,0,0,0.8)"
+                     boxShadow: "inset 0 4px 6px rgba(0,0,0,0.8)", pointerEvents: "none"
                    }} />
                 )}
 
@@ -555,6 +636,7 @@ export default function PanelLayoutPage() {
                   border: "2px solid rgba(0,0,0,0.2)", borderRadius: 2,
                   boxShadow: "inset 2px 2px 5px rgba(255,255,255,0.7), inset -2px -2px 5px rgba(0,0,0,0.3)",
                   background: "linear-gradient(135deg, #d8d8d8 0%, #b8b8b8 100%)",
+                  pointerEvents: "none"
                 }}>
                   {/* Hinges (Left side) */}
                   <div style={{ position: "absolute", left: "-2px", top: "15%", width: "4px", height: "8%", background: "#888", borderRadius: 2, border: "1px solid #555" }} />
@@ -597,6 +679,45 @@ export default function PanelLayoutPage() {
                     {activeEnc.extW}x{activeEnc.extH}
                   </div>
                 </div>
+
+                {/* Items on Outer Door (Accessories, Meters, Logos, Cooling) */}
+                {items.map((item) => {
+                  const wPct = (item.w / activeEnc.extW) * 100;
+                  const hPct = (item.h / activeEnc.extH) * 100;
+                  const xPct = (item.x / activeEnc.extW) * 100;
+                  const yPct = (item.y / activeEnc.extH) * 100;
+                  const isDragging = draggingId === item.id;
+                  const isSelected = selectedId === item.id;
+
+                  // Only show external components
+                  if (!["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(item.comp.category)) {
+                     return null; 
+                  }
+
+                  return (
+                    <div
+                      key={item.id}
+                      onPointerDown={(e) => onPointerDown(e, item.id)}
+                      onPointerMove={onPointerMove}
+                      onPointerUp={onPointerUp}
+                      style={{
+                        position: "absolute", left: `${xPct}%`, top: `${yPct}%`,
+                        width: `${wPct}%`, height: `${hPct}%`,
+                        boxShadow: isDragging ? "0 20px 30px rgba(0,0,0,0.5)" : (isSelected ? "0 0 0 2px var(--accent), 0 4px 8px rgba(0,0,0,0.3)" : "none"),
+                        opacity: isDragging ? 0.85 : 1,
+                        cursor: isDragging ? "grabbing" : "grab",
+                        zIndex: isDragging ? 10 : (isSelected ? 5 : 2),
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        transform: isDragging ? "scale(1.02)" : "scale(1)",
+                        transition: isDragging ? "none" : "box-shadow 0.2s, transform 0.2s, top 0.1s, left 0.1s"
+                      }}
+                    >
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden" }}>
+                        {renderCADVisual(item)}
+                      </div>
+                    </div>
+                  );
+                })}
                 
                 {/* Print Context Overlay */}
                 <div style={{ display: "none", position: "absolute", bottom: -20, left: 0, right: 0, justifyContent: "space-between", color: "#000", fontSize: 12, fontFamily: "var(--font-mono)" }} className="print-footer">

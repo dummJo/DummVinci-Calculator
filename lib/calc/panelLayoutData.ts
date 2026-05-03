@@ -1,7 +1,7 @@
 export interface PanelComponent {
   id: string;
-  brand: "ABB" | "Siemens" | "Weidmuller" | "Fort" | "Schneider" | "KSS";
-  category: "VSD" | "MCCB" | "Terminal Block" | "Control" | "Networking" | "Wiring" | "Cooling";
+  brand: "ABB" | "Siemens" | "Weidmuller" | "Fort" | "Schneider" | "KSS" | "Generic" | "PTTS" | "DummVinci";
+  category: "VSD" | "MCCB" | "Terminal Block" | "Control" | "Networking" | "Wiring" | "Cooling" | "Door Accessory" | "Meter" | "Label" | "Logo";
   partCode: string;
   width: number; // mm
   height: number; // mm
@@ -72,9 +72,32 @@ export const componentLibrary: PanelComponent[] = [
   { id: "kss-duct-v-45x45-400", brand: "KSS", category: "Wiring", partCode: "Duct V 45x45 400", width: 45, height: 400, depth: 45, color: "#dcdcdc" },
   { id: "kss-duct-v-45x45-600", brand: "KSS", category: "Wiring", partCode: "Duct V 45x45 600", width: 45, height: 600, depth: 45, color: "#dcdcdc" },
 
-  // Cooling
-  { id: "fort-fan-200", brand: "Fort", category: "Cooling", partCode: "Fan Filter 200", width: 200, height: 200, depth: 80, color: "#dcdcdc" },
-  { id: "fort-fan-320", brand: "Fort", category: "Cooling", partCode: "Fan Filter 320", width: 320, height: 320, depth: 80, color: "#dcdcdc" },
+  // Cooling (Tent Tibox / Fort standard cutouts)
+  { id: "tent-fan-150", brand: "Fort", category: "Cooling", partCode: "Fan Filter 150", width: 150, height: 150, depth: 80, color: "#dcdcdc" },
+  { id: "tent-fan-204", brand: "Fort", category: "Cooling", partCode: "Fan Filter 204", width: 204, height: 204, depth: 80, color: "#dcdcdc" },
+  { id: "tent-fan-255", brand: "Fort", category: "Cooling", partCode: "Fan Filter 255", width: 255, height: 255, depth: 80, color: "#dcdcdc" },
+  { id: "tent-fan-323", brand: "Fort", category: "Cooling", partCode: "Fan Filter 323", width: 323, height: 323, depth: 80, color: "#dcdcdc" },
+
+  // Door Accessories
+  { id: "fort-pilot-g", brand: "Fort", category: "Door Accessory", partCode: "Pilot Green 22mm", width: 30, height: 30, depth: 50, color: "#10b981" },
+  { id: "fort-pilot-r", brand: "Fort", category: "Door Accessory", partCode: "Pilot Red 22mm", width: 30, height: 30, depth: 50, color: "#ef4444" },
+  { id: "fort-pilot-y", brand: "Fort", category: "Door Accessory", partCode: "Pilot Yellow 22mm", width: 30, height: 30, depth: 50, color: "#f59e0b" },
+  { id: "fort-pb-start", brand: "Fort", category: "Door Accessory", partCode: "PB Start (Green)", width: 30, height: 30, depth: 50, color: "#10b981" },
+  { id: "fort-pb-stop", brand: "Fort", category: "Door Accessory", partCode: "PB Stop (Red)", width: 30, height: 30, depth: 50, color: "#ef4444" },
+  { id: "fort-sel-3p", brand: "Fort", category: "Door Accessory", partCode: "Selector A/O/M", width: 30, height: 30, depth: 50, color: "#222" },
+  { id: "fort-estop", brand: "Fort", category: "Door Accessory", partCode: "E-Stop 40mm", width: 45, height: 45, depth: 50, color: "#ef4444" },
+
+  // Meters
+  { id: "meter-v-ana", brand: "Generic", category: "Meter", partCode: "Analog Voltmeter 96", width: 96, height: 96, depth: 60, color: "#fff" },
+  { id: "meter-a-ana", brand: "Generic", category: "Meter", partCode: "Analog Ammeter 96", width: 96, height: 96, depth: 60, color: "#fff" },
+  { id: "meter-v-dig", brand: "Generic", category: "Meter", partCode: "Digital Meter 72", width: 72, height: 72, depth: 60, color: "#222" },
+
+  // Labels & Logos
+  { id: "label-custom", brand: "Generic", category: "Label", partCode: "Custom Nameplate", width: 100, height: 30, depth: 2, color: "#e5e5e5" },
+  { id: "logo-abb", brand: "ABB", category: "Logo", partCode: "ABB Logo Sticker", width: 150, height: 60, depth: 1, color: "#e4002b" },
+  { id: "logo-sie", brand: "Siemens", category: "Logo", partCode: "Siemens Logo Sticker", width: 150, height: 30, depth: 1, color: "#009999" },
+  { id: "logo-ptts", brand: "PTTS", category: "Logo", partCode: "PTTS Logo Sticker", width: 160, height: 60, depth: 1, color: "#1d4ed8" },
+  { id: "logo-dvm", brand: "DummVinci", category: "Logo", partCode: "DummVinci Logo", width: 160, height: 50, depth: 1, color: "#111" },
 ];
 
 export const ENCLOSURES = [
