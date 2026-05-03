@@ -1,6 +1,6 @@
 export interface PanelComponent {
   id: string;
-  brand: "ABB" | "Siemens" | "Weidmuller" | "Fort" | "Schneider" | "KSS" | "Generic" | "PTTS" | "DummVinci";
+  brand: "ABB" | "Siemens" | "Weidmuller" | "Fort" | "Schneider" | "KSS" | "Omron" | "Generic" | "PTTS" | "DummVinci";
   category: "VSD" | "MCCB" | "Terminal Block" | "Control" | "Networking" | "Wiring" | "Cooling" | "Door Accessory" | "Meter" | "Label" | "Logo";
   partCode: string;
   width: number; // mm
@@ -41,11 +41,15 @@ export const componentLibrary: PanelComponent[] = [
   { id: "sie-3va21", brand: "Siemens", category: "MCCB", partCode: "3VA21 (160A)", width: 105, height: 181, depth: 86, color: "#009999" },
   { id: "sie-3va23", brand: "Siemens", category: "MCCB", partCode: "3VA23 (400A)", width: 138, height: 248, depth: 110, color: "#009999" },
 
-  // Weidmuller Terminal Blocks (representing a block of 10)
+  // Weidmuller Terminal Blocks (WDU & SAKDU)
   { id: "wei-wdu25", brand: "Weidmuller", category: "Terminal Block", partCode: "WDU 2.5 (x10)", width: 51, height: 60, depth: 47, color: "#f4a261" },
   { id: "wei-wdu4", brand: "Weidmuller", category: "Terminal Block", partCode: "WDU 4 (x10)", width: 61, height: 60, depth: 47, color: "#f4a261" },
   { id: "wei-wdu6", brand: "Weidmuller", category: "Terminal Block", partCode: "WDU 6 (x10)", width: 79, height: 60, depth: 47, color: "#f4a261" },
   { id: "wei-wdu10", brand: "Weidmuller", category: "Terminal Block", partCode: "WDU 10 (x10)", width: 99, height: 60, depth: 47, color: "#f4a261" },
+  { id: "wei-sakdu25", brand: "Weidmuller", category: "Terminal Block", partCode: "SAKDU 2.5N (x10)", width: 51, height: 44, depth: 40, color: "#e8cfb3" },
+  { id: "wei-sakdu4", brand: "Weidmuller", category: "Terminal Block", partCode: "SAKDU 4N (x10)", width: 61, height: 44, depth: 40, color: "#e8cfb3" },
+  { id: "wei-sakdu6", brand: "Weidmuller", category: "Terminal Block", partCode: "SAKDU 6N (x10)", width: 79, height: 44, depth: 40, color: "#e8cfb3" },
+  { id: "wei-sakdu10", brand: "Weidmuller", category: "Terminal Block", partCode: "SAKDU 10N (x10)", width: 99, height: 44, depth: 40, color: "#e8cfb3" },
 
   // Fort Components
   { id: "fort-mcb1p", brand: "Fort", category: "Control", partCode: "MCB 1P 6A", width: 18, height: 80, depth: 70, color: "#264653" },
@@ -56,8 +60,13 @@ export const componentLibrary: PanelComponent[] = [
 
   // Weidmuller Networking & Relays
   { id: "wei-sw-vl05m", brand: "Weidmuller", category: "Networking", partCode: "Switch VL05M", width: 30, height: 115, depth: 70, color: "#f4a261" },
+  { id: "sie-scalance", brand: "Siemens", category: "Networking", partCode: "Scalance Switch", width: 60, height: 125, depth: 124, color: "#009999" },
   { id: "wei-trs-24vdc", brand: "Weidmuller", category: "Control", partCode: "Slim Relay TRS (x10)", width: 64, height: 90, depth: 88, color: "#f4a261" },
   
+  // Power Supplies
+  { id: "omron-psu", brand: "Omron", category: "Control", partCode: "PSU S8VK 24V", width: 40, height: 90, depth: 90, color: "#a8c0d8" },
+  { id: "wei-proeco", brand: "Weidmuller", category: "Control", partCode: "PSU PROeco 24V", width: 40, height: 125, depth: 100, color: "#f4a261" },
+
   // Schneider Relays
   { id: "sch-rxm4ab2p7", brand: "Schneider", category: "Control", partCode: "Relay RXM + Base", width: 27, height: 80, depth: 75, color: "#32CD32" },
   
@@ -86,6 +95,7 @@ export const componentLibrary: PanelComponent[] = [
   { id: "fort-pb-stop", brand: "Fort", category: "Door Accessory", partCode: "PB Stop (Red)", width: 30, height: 30, depth: 50, color: "#ef4444" },
   { id: "fort-sel-3p", brand: "Fort", category: "Door Accessory", partCode: "Selector A/O/M", width: 30, height: 30, depth: 50, color: "#222" },
   { id: "fort-estop", brand: "Fort", category: "Door Accessory", partCode: "E-Stop 40mm", width: 45, height: 45, depth: 50, color: "#ef4444" },
+  { id: "abb-dpmp", brand: "ABB", category: "Door Accessory", partCode: "Keypad DPMP-04", width: 72, height: 105, depth: 15, color: "#222" },
 
   // Meters
   { id: "meter-v-ana", brand: "Generic", category: "Meter", partCode: "Analog Voltmeter 96", width: 96, height: 96, depth: 60, color: "#fff" },
@@ -102,16 +112,16 @@ export const componentLibrary: PanelComponent[] = [
 
 export const ENCLOSURES = [
   // Wallmount Boxes (Tibox / XLTC / Rittal AX)
-  { id: "wm-400x300", name: "Wallbox 400x300", w: 250, h: 350, extW: 300, extH: 400 },
-  { id: "wm-500x400", name: "Wallbox 500x400", w: 350, h: 450, extW: 400, extH: 500 },
-  { id: "wm-600x400", name: "Wallbox 600x400", w: 350, h: 550, extW: 400, extH: 600 },
-  { id: "wm-700x500", name: "Wallbox 700x500", w: 450, h: 650, extW: 500, extH: 700 },
-  { id: "wm-800x600", name: "Wallbox 800x600", w: 550, h: 750, extW: 600, extH: 800 },
-  { id: "wm-1000x800", name: "Wallbox 1000x800", w: 750, h: 950, extW: 800, extH: 1000 },
-  { id: "wm-1200x800", name: "Wallbox 1200x800", w: 750, h: 1150, extW: 800, extH: 1200 },
+  { id: "wm-400x300", name: "Wallbox 400x300", w: 250, h: 350, extW: 300, extH: 400, extD: 200 },
+  { id: "wm-500x400", name: "Wallbox 500x400", w: 350, h: 450, extW: 400, extH: 500, extD: 200 },
+  { id: "wm-600x400", name: "Wallbox 600x400", w: 350, h: 550, extW: 400, extH: 600, extD: 250 },
+  { id: "wm-700x500", name: "Wallbox 700x500", w: 450, h: 650, extW: 500, extH: 700, extD: 250 },
+  { id: "wm-800x600", name: "Wallbox 800x600", w: 550, h: 750, extW: 600, extH: 800, extD: 300 },
+  { id: "wm-1000x800", name: "Wallbox 1000x800", w: 750, h: 950, extW: 800, extH: 1000, extD: 300 },
+  { id: "wm-1200x800", name: "Wallbox 1200x800", w: 750, h: 1150, extW: 800, extH: 1200, extD: 300 },
 
   // Floorstand Cabinets (XLTC / Rittal TS8)
-  { id: "fs-1800x800", name: "Floorstand 1800x800", w: 700, h: 1700, extW: 800, extH: 1800 },
-  { id: "fs-2000x800", name: "Floorstand 2000x800", w: 700, h: 1900, extW: 800, extH: 2000 },
-  { id: "fs-2000x1000", name: "Floorstand 2000x1000 (Double)", w: 900, h: 1900, extW: 1000, extH: 2000 },
+  { id: "fs-1800x800", name: "Floorstand 1800x800", w: 700, h: 1700, extW: 800, extH: 1800, extD: 600 },
+  { id: "fs-2000x800", name: "Floorstand 2000x800", w: 700, h: 1900, extW: 800, extH: 2000, extD: 600 },
+  { id: "fs-2000x1000", name: "Floorstand 2000x1000 (Double)", w: 900, h: 1900, extW: 1000, extH: 2000, extD: 600 },
 ];

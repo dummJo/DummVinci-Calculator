@@ -442,15 +442,29 @@ export default function PanelLayoutPage() {
       case "Door Accessory":
         const isEstop = comp.partCode.includes("E-Stop");
         const isSelector = comp.partCode.includes("Selector");
+        const isKeypad = comp.partCode.includes("Keypad");
+        
+        if (isKeypad) {
+           return (
+             <div style={{ width: "100%", height: "100%", background: "#111", borderRadius: 4, border: "2px solid #333", display: "flex", flexDirection: "column", padding: "5%", boxSizing: "border-box", boxShadow: "0 4px 6px rgba(0,0,0,0.5)" }}>
+                <div style={{ width: "100%", height: "40%", background: "#4dabf7", borderRadius: 2, marginBottom: "10%" }} />
+                <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "5%" }}>
+                   {Array.from({length: 9}).map((_, i) => <div key={i} style={{ background: "#444", borderRadius: "50%" }} />)}
+                </div>
+             </div>
+           );
+        }
+
         return (
            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#d4d4d4", borderRadius: w === h ? "50%" : 4, border: "2px solid #a0a0a0", boxShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
               <div style={{ width: "70%", height: "70%", background: comp.color, borderRadius: isEstop ? "10%" : "50%", border: "1px solid rgba(0,0,0,0.2)", boxShadow: "inset 0 4px 6px rgba(255,255,255,0.4)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                 {isSelector && <div style={{ width: "20%", height: "80%", background: "#fff", borderRadius: 2 }} />}
+                 {isSelector && <div style={{ width: "20%", height: "80%", background: "#fff", borderRadius: 2, transform: "rotate(45deg)" }} />}
               </div>
            </div>
         );
       case "Meter":
         const isDigital = comp.partCode.includes("Digital");
+        const isVolt = comp.partCode.includes("Volt");
         return (
            <div style={{ width: "100%", height: "100%", background: comp.color, border: "2px solid #444", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "10%", boxShadow: "inset 0 2px 10px rgba(0,0,0,0.2)" }}>
               {isDigital ? (
@@ -460,7 +474,7 @@ export default function PanelLayoutPage() {
                   <div style={{ width: "60%", height: "30%", borderTop: "2px solid #111", borderTopLeftRadius: "50%", borderTopRightRadius: "50%", position: "relative" }}>
                      <div style={{ position: "absolute", bottom: 0, left: "10%", width: "2px", height: "120%", background: "#f00", transform: "rotate(30deg)", transformOrigin: "bottom" }} />
                   </div>
-                  <div style={{ fontSize: "clamp(4px, 1vw, 10px)", color: "#111", fontWeight: 700 }}>A</div>
+                  <div style={{ fontSize: "clamp(4px, 1vw, 10px)", color: "#111", fontWeight: 900 }}>{isVolt ? "V" : "A"}</div>
                 </>
               )}
            </div>
