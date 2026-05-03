@@ -4,7 +4,7 @@ import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, MousePointer2, Filter } from "lucide-react";
+import { Plus, Trash2, MousePointer2, Filter, Box, Minimize2, Maximize2, Wind } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
@@ -23,6 +23,9 @@ export default function PanelLayoutPage() {
   const [items, setItems] = useState<PlacedItem[]>([]);
   const [activeCategory, setActiveCategory] = useState("All");
   
+  const [viewMode, setViewMode] = useState<"inner" | "outer">("inner");
+  const [includeFans, setIncludeFans] = useState(false);
+
   // Dragging state
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -34,13 +37,15 @@ export default function PanelLayoutPage() {
     : componentLibrary.filter((c) => c.category === activeCategory);
 
   const handleAddComponent = (comp: PanelComponent) => {
+    // Drop exactly in the middle to prevent off-screen
     const newItem: PlacedItem = {
       id: Math.random().toString(36).substring(2, 9),
       comp,
-      x: 20,
-      y: 20,
+      x: (activeEnc.w - comp.width) / 2,
+      y: (activeEnc.h - comp.height) / 2,
     };
     setItems((prev) => [...prev, newItem]);
+    setViewMode("inner"); // Force back to inner view to place it
   };
 
   const handleRemoveItem = (id: string) => {
@@ -48,7 +53,7 @@ export default function PanelLayoutPage() {
   };
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
-    if (e.button !== 0) return; // Only left click
+    if (e.button !== 0 || viewMode === "outer") return;
     e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
     
@@ -83,7 +88,7 @@ export default function PanelLayoutPage() {
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === draggingId) {
-          // Snap to bounds
+          // Snap to bounds smoothly
           if (newX < 0) newX = 0;
           if (newY < 0) newY = 0;
           if (newX + item.comp.width > activeEnc.w) newX = activeEnc.w - item.comp.width;
@@ -128,13 +133,13 @@ export default function PanelLayoutPage() {
           </div>
         );
       case "Wiring":
-        if (comp.brand === "Weidmuller") { // DIN Rail
+        if (comp.brand === "Weidmuller") { 
           return (
             <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #f0f0f0 0%, #b0b0b0 40%, #808080 50%, #b0b0b0 60%, #f0f0f0 100%)", boxSizing: "border-box", borderTop: "1px solid #fff", borderBottom: "1px solid #666" }}>
                <div style={{ width: "100%", height: "15%", background: "rgba(0,0,0,0.1)", marginTop: "42%" }} />
             </div>
           );
-        } else { // Duct
+        } else { 
           const isHorizontal = comp.width > comp.height;
           return (
             <div style={{ width: "100%", height: "100%", background: "#a0a0a0", boxSizing: "border-box", display: "flex", flexDirection: isHorizontal ? "row" : "column", border: "1px solid #888" }}>
@@ -160,28 +165,39 @@ export default function PanelLayoutPage() {
     }
   };
 
+  const renderFanFilter = () => (
+    <div style={{
+      width: "100%", aspectRatio: "1", background: "#dcdcdc", 
+      border: "1px solid #aaa", borderRadius: 4, display: "flex", 
+      alignItems: "center", justifyContent: "center",
+      boxShadow: "inset 0 4px 10px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.2)"
+    }}>
+      <div style={{
+        width: "90%", height: "90%", 
+        backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 4px, #aaa 4px, #aaa 8px)",
+        borderRadius: 2, border: "1px solid #999"
+      }} />
+    </div>
+  );
+
   return (
     <CalcShell label="IEC 61439" title={tl.title} subtitle={tl.subtitle} concept={tl.concept}>
       
       <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 40 }}>
-        {/* Settings Bar */}
-        <div className="vinci-card" style={{ padding: 16, display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
-          <div>
-            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--muted)", marginBottom: 4, textTransform: "uppercase" }}>
-              Enclosure Usable Size
+        
+        {/* Top Controls Bar */}
+        <div className="vinci-card" style={{ padding: 16, display: "flex", flexWrap: "wrap", gap: 24, alignItems: "center" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <label style={{ fontSize: 11, fontWeight: 800, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Panel Frame (XLTC / Rittal)
             </label>
             <select
               value={encId}
               onChange={(e) => setEncId(e.target.value)}
               style={{
-                background: "var(--bg-card)",
-                border: "1px solid var(--border)",
-                color: "var(--fg)",
-                padding: "8px 12px",
-                borderRadius: 6,
-                fontFamily: "var(--font-mono)",
-                fontSize: 14,
-                outline: "none"
+                background: "var(--bg)", border: "1px solid var(--border)",
+                color: "var(--fg)", padding: "8px 12px", borderRadius: 6,
+                fontFamily: "var(--font-mono)", fontSize: 13, outline: "none", cursor: "pointer"
               }}
             >
               {ENCLOSURES.map((e) => (
@@ -192,18 +208,61 @@ export default function PanelLayoutPage() {
             </select>
           </div>
 
-          <div style={{ flex: 1 }} />
-          
-          <div style={{ fontSize: 12, color: "var(--muted)", display: "flex", alignItems: "center", gap: 8 }}>
-            <MousePointer2 size={16} />
-            <span>Drag CAD blocks on the backplate. Scale is automatic.</span>
+          <div style={{ width: 1, height: 32, background: "var(--border)" }} />
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <label style={{ fontSize: 11, fontWeight: 800, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              View Mode
+            </label>
+            <div style={{ display: "flex", background: "rgba(0,0,0,0.2)", padding: 4, borderRadius: 8, gap: 4 }}>
+              <button
+                onClick={() => setViewMode("inner")}
+                style={{
+                  background: viewMode === "inner" ? "var(--accent)" : "transparent",
+                  color: viewMode === "inner" ? "#000" : "var(--fg)",
+                  border: "none", padding: "6px 16px", borderRadius: 6,
+                  fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
+                  display: "flex", alignItems: "center", gap: 8
+                }}
+              >
+                <Minimize2 size={14} /> Inner Plate
+              </button>
+              <button
+                onClick={() => setViewMode("outer")}
+                style={{
+                  background: viewMode === "outer" ? "var(--accent)" : "transparent",
+                  color: viewMode === "outer" ? "#000" : "var(--fg)",
+                  border: "none", padding: "6px 16px", borderRadius: 6,
+                  fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
+                  display: "flex", alignItems: "center", gap: 8
+                }}
+              >
+                <Box size={14} /> Outer Door
+              </button>
+            </div>
           </div>
+
+          <div style={{ width: 1, height: 32, background: "var(--border)" }} />
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <input 
+              type="checkbox" 
+              id="fanToggle" 
+              checked={includeFans} 
+              onChange={(e) => setIncludeFans(e.target.checked)} 
+              style={{ width: 16, height: 16, cursor: "pointer", accentColor: "var(--accent)" }}
+            />
+            <label htmlFor="fanToggle" style={{ fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+              <Wind size={16} /> Tent / Fort Fan Filters
+            </label>
+          </div>
+
         </div>
 
         {/* Editor Layout */}
-        <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
           
-          {/* Component Palette */}
+          {/* Sidebar */}
           <div style={{ flex: "1 1 250px", minWidth: 250 }}>
             <div className="vinci-card" style={{ padding: 16, maxHeight: 650, display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -217,10 +276,10 @@ export default function PanelLayoutPage() {
                 value={activeCategory}
                 onChange={(e) => setActiveCategory(e.target.value)}
                 style={{
-                  background: "rgba(0,0,0,0.05)", border: "1px solid var(--border)",
+                  background: "var(--bg)", border: "1px solid var(--border)",
                   color: "var(--fg)", padding: "8px", borderRadius: 6,
                   fontFamily: "var(--font-mono)", fontSize: 13, outline: "none",
-                  width: "100%"
+                  width: "100%", cursor: "pointer"
                 }}
               >
                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
@@ -248,6 +307,8 @@ export default function PanelLayoutPage() {
                         display: "flex", alignItems: "center", justifyContent: "center",
                         cursor: "pointer", transition: "all 0.2s", flexShrink: 0
                       }}
+                      onMouseOver={(e) => (e.currentTarget.style.background = "var(--accent)", e.currentTarget.style.color = "#000")}
+                      onMouseOut={(e) => (e.currentTarget.style.background = "var(--bg)", e.currentTarget.style.color = "var(--fg)")}
                       title={`Add ${c.partCode}`}
                     >
                       <Plus size={16} />
@@ -259,107 +320,162 @@ export default function PanelLayoutPage() {
           </div>
 
           {/* Canvas Area */}
-          <div style={{ flex: "2 1 450px", display: "flex", justifyContent: "center", alignItems: "flex-start", background: "var(--bg-card)", borderRadius: 12, padding: 24, border: "1px dashed var(--border)" }}>
+          <div style={{ flex: "2 1 450px", display: "flex", justifyContent: "center", background: "rgba(0,0,0,0.3)", borderRadius: 12, padding: 32, border: "1px dashed var(--border)" }}>
             
-            <div
-              ref={canvasRef}
-              style={{
-                position: "relative",
-                width: "100%",
-                maxWidth: 450, // Visual limit
-                aspectRatio: `${activeEnc.w} / ${activeEnc.h}`,
-                background: "#f0f0f0", // Backplate color (galvanized steel simulation)
-                boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
-                border: "2px solid #999",
-                overflow: "hidden",
-                touchAction: "none" // Prevent scrolling while dragging
-              }}
-            >
-              {/* Grid Background */}
-              <div style={{
-                position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
-                backgroundImage: "linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px)",
-                backgroundSize: `${(50 / activeEnc.w) * 100}% ${(50 / activeEnc.h) * 100}%`,
-                opacity: 0.5, pointerEvents: "none"
-              }} />
+            {/* INNER VIEW (Mounting Plate) */}
+            {viewMode === "inner" && (
+              <div
+                ref={canvasRef}
+                style={{
+                  position: "relative", width: "100%", maxWidth: 500,
+                  aspectRatio: `${activeEnc.w} / ${activeEnc.h}`,
+                  background: "#fdfdfd", // Galvanized plate color
+                  boxShadow: "0 10px 40px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.05)",
+                  border: "2px solid #aaa", overflow: "hidden", touchAction: "none",
+                  transition: "aspect-ratio 0.3s ease"
+                }}
+              >
+                {/* Grid Background */}
+                <div style={{
+                  position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+                  backgroundImage: "linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px)",
+                  backgroundSize: `${(50 / activeEnc.w) * 100}% ${(50 / activeEnc.h) * 100}%`,
+                  opacity: 0.5, pointerEvents: "none"
+                }} />
 
-              {/* Items */}
-              {items.map((item) => {
-                const wPct = (item.comp.width / activeEnc.w) * 100;
-                const hPct = (item.comp.height / activeEnc.h) * 100;
-                const xPct = (item.x / activeEnc.w) * 100;
-                const yPct = (item.y / activeEnc.h) * 100;
+                {/* Items */}
+                {items.map((item) => {
+                  const wPct = (item.comp.width / activeEnc.w) * 100;
+                  const hPct = (item.comp.height / activeEnc.h) * 100;
+                  const xPct = (item.x / activeEnc.w) * 100;
+                  const yPct = (item.y / activeEnc.h) * 100;
+                  const isDragging = draggingId === item.id;
 
-                const isDragging = draggingId === item.id;
+                  return (
+                    <div
+                      key={item.id}
+                      onPointerDown={(e) => onPointerDown(e, item.id)}
+                      onPointerMove={onPointerMove}
+                      onPointerUp={onPointerUp}
+                      style={{
+                        position: "absolute", left: `${xPct}%`, top: `${yPct}%`,
+                        width: `${wPct}%`, height: `${hPct}%`,
+                        boxShadow: isDragging ? "0 20px 30px rgba(0,0,0,0.5)" : "0 4px 8px rgba(0,0,0,0.3)",
+                        opacity: isDragging ? 0.85 : 1,
+                        cursor: isDragging ? "grabbing" : "grab",
+                        zIndex: isDragging ? 10 : 1,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        transform: isDragging ? "scale(1.02)" : "scale(1)",
+                        transition: isDragging ? "none" : "box-shadow 0.2s, transform 0.2s, top 0.1s, left 0.1s"
+                      }}
+                    >
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden" }}>
+                        {renderCADVisual(item.comp)}
+                      </div>
 
-                return (
-                  <div
-                    key={item.id}
-                    onPointerDown={(e) => onPointerDown(e, item.id)}
-                    onPointerMove={onPointerMove}
-                    onPointerUp={onPointerUp}
-                    style={{
-                      position: "absolute",
-                      left: `${xPct}%`,
-                      top: `${yPct}%`,
-                      width: `${wPct}%`,
-                      height: `${hPct}%`,
-                      boxShadow: isDragging ? "0 12px 24px rgba(0,0,0,0.4)" : "0 4px 8px rgba(0,0,0,0.2)",
-                      opacity: isDragging ? 0.8 : 1,
-                      cursor: isDragging ? "grabbing" : "grab",
-                      zIndex: isDragging ? 10 : 1,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      transition: isDragging ? "none" : "box-shadow 0.2s"
-                    }}
-                  >
-                    {/* Render CAD Graphic */}
-                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden" }}>
-                      {renderCADVisual(item.comp)}
+                      <div style={{
+                        position: "absolute", top: 0, right: 0, 
+                        transform: "translate(50%, -50%)", zIndex: 11,
+                        display: isDragging ? "none" : "block",
+                        opacity: 0, transition: "opacity 0.2s"
+                      }} className="del-btn-container">
+                        <button
+                          onPointerDown={(e) => e.stopPropagation()} 
+                          onClick={(e) => { e.stopPropagation(); handleRemoveItem(item.id); }}
+                          style={{
+                            background: "#ef4444", color: "#fff", border: "1px solid #991b1b",
+                            width: 24, height: 24, borderRadius: "50%",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            cursor: "pointer", boxShadow: "0 4px 8px rgba(0,0,0,0.4)", padding: 0
+                          }}
+                          title="Remove Component"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+
+                      <div style={{
+                        position: "relative", zIndex: 1, color: "#000",
+                        fontSize: "clamp(6px, 1vw, 10px)", fontWeight: 800, textAlign: "center",
+                        fontFamily: "var(--font-mono)", textShadow: "0 0 3px #fff, 0 0 1px #fff",
+                        padding: 2, pointerEvents: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%"
+                      }}>
+                        {item.comp.partCode}
+                      </div>
                     </div>
+                  );
+                })}
+              </div>
+            )}
 
-                    {/* Delete Button */}
-                    <div style={{
-                      position: "absolute", top: 0, right: 0, 
-                      transform: "translate(50%, -50%)", zIndex: 11,
-                      display: isDragging ? "none" : "block"
-                    }}>
-                      <button
-                        onPointerDown={(e) => e.stopPropagation()} // Prevents drag capture bug
-                        onClick={(e) => { e.stopPropagation(); handleRemoveItem(item.id); }}
-                        style={{
-                          background: "#ff4444", color: "#fff", border: "none",
-                          width: 20, height: 20, borderRadius: "50%",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          cursor: "pointer", boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-                          padding: 0
-                        }}
-                        title="Remove"
-                      >
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
+            {/* OUTER VIEW (Enclosure Box) */}
+            {viewMode === "outer" && (
+              <div
+                style={{
+                  position: "relative", width: "100%", maxWidth: 500,
+                  aspectRatio: `${activeEnc.extW} / ${activeEnc.extH}`,
+                  background: "#d3d3d3", // RAL 7035 Grey
+                  boxShadow: "0 20px 50px rgba(0,0,0,0.6), inset 0 2px 10px rgba(255,255,255,0.8)",
+                  borderRadius: 4, overflow: "hidden",
+                  border: "1px solid #a0a0a0",
+                  transition: "aspect-ratio 0.3s ease"
+                }}
+              >
+                {/* Door seam */}
+                <div style={{
+                  position: "absolute", top: "2%", left: "2%", right: "2%", bottom: "2%",
+                  border: "2px solid rgba(0,0,0,0.15)", borderRadius: 2,
+                  boxShadow: "inset 0 0 5px rgba(0,0,0,0.1)"
+                }} />
 
-                    {/* Label inside box */}
-                    <div style={{
-                      position: "relative", zIndex: 1,
-                      color: "#000", fontSize: "clamp(6px, 1.2vw, 10px)", fontWeight: 800,
-                      textAlign: "center", fontFamily: "var(--font-mono)",
-                      textShadow: "0 0 3px rgba(255,255,255,1), 0 0 1px rgba(255,255,255,1)", padding: 2,
-                      pointerEvents: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%"
-                    }}>
-                      {item.comp.partCode}
+                {/* Handle / Lock */}
+                <div style={{
+                  position: "absolute", top: "50%", right: "4%", width: "4%", height: "15%",
+                  background: "#222", transform: "translateY(-50%)", borderRadius: 2,
+                  boxShadow: "2px 2px 5px rgba(0,0,0,0.4)"
+                }} />
+
+                {/* Optional Plinth for Floorstand */}
+                {activeEnc.extH >= 1200 && (
+                   <div style={{
+                     position: "absolute", bottom: 0, left: 0, right: 0, height: "8%",
+                     background: "#444", borderTop: "2px solid #222"
+                   }} />
+                )}
+
+                {/* Tent / Fort Fan Filters */}
+                {includeFans && (
+                  <>
+                    {/* Bottom Left (Intake) */}
+                    <div style={{ position: "absolute", bottom: activeEnc.extH >= 1200 ? "15%" : "8%", left: "8%", width: "25%" }}>
+                      {renderFanFilter()}
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-            
+                    {/* Top Right (Exhaust) */}
+                    <div style={{ position: "absolute", top: "8%", right: "12%", width: "25%" }}>
+                      {renderFanFilter()}
+                    </div>
+                  </>
+                )}
+
+                <div style={{
+                  position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+                  color: "rgba(0,0,0,0.3)", fontSize: 24, fontWeight: 800, fontFamily: "var(--font-display)",
+                  textTransform: "uppercase", letterSpacing: "0.2em", pointerEvents: "none"
+                }}>
+                  {activeEnc.extW}x{activeEnc.extH}
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
 
       </div>
+      
+      <style dangerouslySetInnerHTML={{__html: `
+        .del-btn-container { opacity: 0; }
+        div[style*="cursor: grab"]:hover .del-btn-container { opacity: 1 !important; }
+      `}} />
       <Footer />
     </CalcShell>
   );
