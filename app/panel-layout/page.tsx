@@ -4,7 +4,7 @@ import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, Filter, Box, Minimize2, Printer, Settings2, Grid, Layers } from "lucide-react";
+import { Plus, Trash2, Filter, Box, Minimize2, Printer, Settings2, Grid, Layers, MousePointer2 } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
@@ -28,7 +28,14 @@ export default function PanelLayoutPage() {
   
   const [viewMode, setViewMode] = useState<"inner" | "outer" | "iso">("inner");
   const [snapToGrid, setSnapToGrid] = useState(true);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  
+  // Selection & Grouping
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffsets, setDragOffsets] = useState<{ id: string; ox: number; oy: number }[]>([]);
+  const [marquee, setMarquee] = useState<{ sx: number; sy: number; cx: number; cy: number } | null>(null);
+
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   // Load from local storage on mount
   const [isLoaded, setIsLoaded] = useState(false);
@@ -52,11 +59,6 @@ export default function PanelLayoutPage() {
     }
   }, [items, encId, isLoaded]);
 
-  // Dragging state
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const canvasRef = useRef<HTMLDivElement>(null);
-
   const categories = ["All", ...Array.from(new Set(componentLibrary.map((c) => c.category)))];
   const filteredLibrary = activeCategory === "All" 
     ? componentLibrary 
@@ -72,21 +74,16 @@ export default function PanelLayoutPage() {
     const boundsW = isOuter ? activeEnc.extW : activeEnc.w;
     const boundsH = isOuter ? activeEnc.extH : activeEnc.h;
 
-    // Smart placement: next to selected item OR last added item
-    const referenceItem = items.find(i => i.id === selectedId) || items[items.length - 1];
+    // Smart placement: next to last selected item OR last added item
+    const referenceItem = items.find(i => selectedIds.includes(i.id)) || items[items.length - 1];
 
     if (referenceItem) {
-      // Place to the right by default
       startX = referenceItem.x + referenceItem.w + gap;
       startY = referenceItem.y;
-
-      // If it overflows the right edge, carriage return: move below the reference item
       if (startX + comp.width > boundsW) {
-        startX = 20; // reset to left margin
-        startY = referenceItem.y + referenceItem.h + gap; // move down
+        startX = 20; 
+        startY = referenceItem.y + referenceItem.h + gap;
       }
-      
-      // If it also overflows the bottom edge, reset to top-left
       if (startY + comp.height > boundsH) {
          startX = 20;
          startY = 20;
@@ -100,99 +97,138 @@ export default function PanelLayoutPage() {
 
     const newItem: PlacedItem = {
       id: Math.random().toString(36).substring(2, 9),
-      comp,
-      x: startX,
-      y: startY,
-      w: comp.width,
-      h: comp.height,
+      comp, x: startX, y: startY, w: comp.width, h: comp.height,
       label: comp.category === "Label" ? "PANEL NAME" : undefined
     };
-    setItems((prev) => [...prev, newItem]);
-    setSelectedId(newItem.id);
     
-    // Automatically switch to outer view if it's a door component
+    setItems((prev) => [...prev, newItem]);
+    setSelectedIds([newItem.id]);
     setViewMode(isOuter ? "outer" : "inner");
   };
 
-  const handleRemoveItem = (id: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
-    if (selectedId === id) setSelectedId(null);
+  const handleRemoveItems = (ids: string[]) => {
+    setItems((prev) => prev.filter((i) => !ids.includes(i.id)));
+    setSelectedIds(prev => prev.filter(id => !ids.includes(id)));
   };
 
   const clearAllItems = () => {
     if (confirm("Are you sure you want to clear the entire layout?")) {
       setItems([]);
-      setSelectedId(null);
+      setSelectedIds([]);
     }
   };
 
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
+  const onCanvasPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 || viewMode === "iso") return;
+    
+    // Only start marquee if clicking directly on the canvas background
+    if (e.target === e.currentTarget) {
+       e.currentTarget.setPointerCapture(e.pointerId);
+       
+       const currentW = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
+       const rect = canvasRef.current!.getBoundingClientRect();
+       const scale = rect.width / currentW;
+       const mouseX = (e.clientX - rect.left) / scale;
+       const mouseY = (e.clientY - rect.top) / scale;
+
+       setMarquee({ sx: mouseX, sy: mouseY, cx: mouseX, cy: mouseY });
+       setSelectedIds([]);
+    }
+  };
+
+  const onItemPointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
     if (e.button !== 0 || viewMode === "iso") return;
     e.stopPropagation();
-    e.currentTarget.setPointerCapture(e.pointerId);
     
-    setSelectedId(id);
+    if (canvasRef.current) canvasRef.current.setPointerCapture(e.pointerId);
     
-    const item = items.find((i) => i.id === id);
-    if (!item || !canvasRef.current) return;
-
-    // Calculate scale correctly whether we are on inner plate or outer door
+    let newSelection = selectedIds;
+    // If holding Shift, add to selection. Otherwise, if not in selection, select only this.
+    if (e.shiftKey) {
+      if (!selectedIds.includes(id)) newSelection = [...selectedIds, id];
+    } else {
+      if (!selectedIds.includes(id)) newSelection = [id];
+    }
+    setSelectedIds(newSelection);
+    
     const currentW = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
-    const canvasRect = canvasRef.current.getBoundingClientRect();
-    const scale = canvasRect.width / currentW;
+    const rect = canvasRef.current!.getBoundingClientRect();
+    const scale = rect.width / currentW;
+    const mouseX = (e.clientX - rect.left) / scale;
+    const mouseY = (e.clientY - rect.top) / scale;
 
-    const mouseX = (e.clientX - canvasRect.left) / scale;
-    const mouseY = (e.clientY - canvasRect.top) / scale;
-
-    setDragOffset({
-      x: mouseX - item.x,
-      y: mouseY - item.y,
+    const offsets = newSelection.map(selId => {
+       const it = items.find(i => i.id === selId);
+       return { id: selId, ox: mouseX - (it ? it.x : 0), oy: mouseY - (it ? it.y : 0) };
     });
-    setDraggingId(id);
+    setDragOffsets(offsets);
+    setIsDragging(true);
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!draggingId || !canvasRef.current || viewMode === "iso") return;
+    if (!canvasRef.current || viewMode === "iso") return;
     
     const currentW = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
     const currentH = viewMode === "outer" ? activeEnc.extH : activeEnc.h;
-    
-    const canvasRect = canvasRef.current.getBoundingClientRect();
-    const scale = canvasRect.width / currentW;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const scale = rect.width / currentW;
+    const mouseX = (e.clientX - rect.left) / scale;
+    const mouseY = (e.clientY - rect.top) / scale;
 
-    const mouseX = (e.clientX - canvasRect.left) / scale;
-    const mouseY = (e.clientY - canvasRect.top) / scale;
+    if (marquee) {
+       setMarquee(prev => prev ? { ...prev, cx: mouseX, cy: mouseY } : null);
+       
+       const left = Math.min(marquee.sx, mouseX);
+       const right = Math.max(marquee.sx, mouseX);
+       const top = Math.min(marquee.sy, mouseY);
+       const bottom = Math.max(marquee.sy, mouseY);
 
-    let newX = mouseX - dragOffset.x;
-    let newY = mouseY - dragOffset.y;
+       const intersectingIds = items.filter(it => {
+         const isOuter = ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(it.comp.category);
+         if (viewMode === "inner" && isOuter) return false;
+         if (viewMode === "outer" && !isOuter) return false;
 
-    if (snapToGrid) {
-      const gridStep = 25; // 25mm grid snaps
-      newX = Math.round(newX / gridStep) * gridStep;
-      newY = Math.round(newY / gridStep) * gridStep;
+         const itRight = it.x + it.w;
+         const itBottom = it.y + it.h;
+         return !(it.x > right || itRight < left || it.y > bottom || itBottom < top);
+       }).map(it => it.id);
+
+       setSelectedIds(intersectingIds);
+       return;
     }
 
-    setItems((prev) =>
-      prev.map((item) => {
-        if (item.id === draggingId) {
-          // Snap to bounds smoothly based on current view area
-          if (newX < 0) newX = 0;
-          if (newY < 0) newY = 0;
-          if (newX + item.w > currentW) newX = currentW - item.w;
-          if (newY + item.h > currentH) newY = currentH - item.h;
+    if (isDragging) {
+      setItems(prev => {
+        const next = [...prev];
+        dragOffsets.forEach(off => {
+           const itIndex = next.findIndex(i => i.id === off.id);
+           if (itIndex > -1) {
+              const it = next[itIndex];
+              let newX = mouseX - off.ox;
+              let newY = mouseY - off.oy;
 
-          return { ...item, x: newX, y: newY };
-        }
-        return item;
-      })
-    );
+              if (snapToGrid) {
+                 newX = Math.round(newX / 25) * 25;
+                 newY = Math.round(newY / 25) * 25;
+              }
+
+              if (newX < 0) newX = 0;
+              if (newY < 0) newY = 0;
+              if (newX + it.w > currentW) newX = currentW - it.w;
+              if (newY + it.h > currentH) newY = currentH - it.h;
+
+              next[itIndex] = { ...it, x: newX, y: newY };
+           }
+        });
+        return next;
+      });
+    }
   };
 
   const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (draggingId) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-      setDraggingId(null);
-    }
+    if (marquee) setMarquee(null);
+    if (isDragging) setIsDragging(false);
+    if (canvasRef.current) canvasRef.current.releasePointerCapture(e.pointerId);
   };
 
   const renderFanFilter = () => (
@@ -313,6 +349,9 @@ export default function PanelLayoutPage() {
   };
 
   if (!isLoaded) return null;
+
+  const currentViewW = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
+  const currentViewH = viewMode === "outer" ? activeEnc.extH : activeEnc.h;
 
   return (
     <CalcShell label="IEC 61439" title={tl.title} subtitle={tl.subtitle} concept={tl.concept}>
@@ -496,15 +535,17 @@ export default function PanelLayoutPage() {
             </div>
 
             {/* Properties Panel */}
-            {selectedId && items.find(i => i.id === selectedId) && (
+            {selectedIds.length > 0 && (
               <div className="vinci-card" style={{ marginTop: 16, padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--accent)" }}>
                   <Settings2 size={16} />
                   <span style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase" }}>Properties</span>
                 </div>
                 
-                {(() => {
-                  const selItem = items.find(i => i.id === selectedId)!;
+                {selectedIds.length === 1 && (() => {
+                  const selItem = items.find(i => i.id === selectedIds[0]);
+                  if (!selItem) return null;
+
                   const isWiring = selItem.comp.category === "Wiring";
                   const isLabel = selItem.comp.category === "Label";
                   
@@ -520,7 +561,7 @@ export default function PanelLayoutPage() {
                             value={selItem.label || ""}
                             onChange={(e) => {
                               const val = e.target.value;
-                              setItems(prev => prev.map(i => i.id === selectedId ? { ...i, label: val } : i));
+                              setItems(prev => prev.map(i => i.id === selItem.id ? { ...i, label: val } : i));
                             }}
                             style={{
                               background: "rgba(0,0,0,0.2)", border: "1px solid var(--border)",
@@ -542,7 +583,7 @@ export default function PanelLayoutPage() {
                             onChange={(e) => {
                               const val = parseInt(e.target.value) || 10;
                               setItems(prev => prev.map(i => {
-                                if (i.id === selectedId) {
+                                if (i.id === selItem.id) {
                                   if (i.w > i.h) return { ...i, w: val };
                                   return { ...i, h: val };
                                 }
@@ -563,7 +604,7 @@ export default function PanelLayoutPage() {
                       )}
                       
                       <button 
-                        onClick={() => handleRemoveItem(selectedId)} 
+                        onClick={() => handleRemoveItems([selItem.id])} 
                         style={{ 
                           marginTop: 8, background: "transparent", color: "#ef4444", 
                           border: "1px solid #ef4444", padding: "6px", borderRadius: 4, 
@@ -575,6 +616,24 @@ export default function PanelLayoutPage() {
                     </>
                   );
                 })()}
+
+                {selectedIds.length > 1 && (
+                  <>
+                    <div style={{ fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+                      <MousePointer2 size={16} /> {selectedIds.length} Items Selected
+                    </div>
+                    <button 
+                      onClick={() => handleRemoveItems(selectedIds)} 
+                      style={{ 
+                        marginTop: 8, background: "transparent", color: "#ef4444", 
+                        border: "1px solid #ef4444", padding: "6px", borderRadius: 4, 
+                        cursor: "pointer", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+                      }}
+                    >
+                      <Trash2 size={14} /> Delete Selection Group
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -586,13 +645,16 @@ export default function PanelLayoutPage() {
             {viewMode === "inner" && (
               <div
                 ref={canvasRef}
+                onPointerDown={onCanvasPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
                 style={{
                   position: "relative", width: "100%", maxWidth: 500,
                   aspectRatio: `${activeEnc.w} / ${activeEnc.h}`,
                   background: "#fdfdfd", // Galvanized plate color
                   boxShadow: "0 10px 40px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.05)",
                   border: "2px solid #aaa", overflow: "hidden", touchAction: "none",
-                  transition: "aspect-ratio 0.3s ease"
+                  transition: "aspect-ratio 0.3s ease", cursor: "crosshair"
                 }}
               >
                 {/* Grid Background */}
@@ -603,14 +665,28 @@ export default function PanelLayoutPage() {
                   opacity: 0.5, pointerEvents: "none"
                 }} />
 
+                {/* Marquee Selection Box */}
+                {marquee && (
+                   <div style={{
+                     position: "absolute",
+                     left: `${(Math.min(marquee.sx, marquee.cx) / currentViewW) * 100}%`,
+                     top: `${(Math.min(marquee.sy, marquee.cy) / currentViewH) * 100}%`,
+                     width: `${(Math.abs(marquee.cx - marquee.sx) / currentViewW) * 100}%`,
+                     height: `${(Math.abs(marquee.cy - marquee.sy) / currentViewH) * 100}%`,
+                     background: "rgba(16, 185, 129, 0.2)",
+                     border: "1px dashed #10b981",
+                     pointerEvents: "none", zIndex: 100
+                   }} />
+                )}
+
                 {/* Items */}
                 {items.map((item) => {
                   const wPct = (item.w / activeEnc.w) * 100;
                   const hPct = (item.h / activeEnc.h) * 100;
                   const xPct = (item.x / activeEnc.w) * 100;
                   const yPct = (item.y / activeEnc.h) * 100;
-                  const isDragging = draggingId === item.id;
-                  const isSelected = selectedId === item.id;
+                  const isSelected = selectedIds.includes(item.id);
+                  const isItemDragging = isDragging && isSelected;
 
                   // Only show internal components
                   if (["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(item.comp.category)) {
@@ -620,47 +696,23 @@ export default function PanelLayoutPage() {
                   return (
                     <div
                       key={item.id}
-                      onPointerDown={(e) => onPointerDown(e, item.id)}
-                      onPointerMove={onPointerMove}
-                      onPointerUp={onPointerUp}
+                      onPointerDown={(e) => onItemPointerDown(e, item.id)}
                       style={{
                         position: "absolute", left: `${xPct}%`, top: `${yPct}%`,
                         width: `${wPct}%`, height: `${hPct}%`,
-                        boxShadow: isDragging ? "0 20px 30px rgba(0,0,0,0.5)" : (isSelected ? "0 0 0 2px var(--accent), 0 4px 8px rgba(0,0,0,0.3)" : "0 4px 8px rgba(0,0,0,0.3)"),
-                        opacity: isDragging ? 0.85 : 1,
-                        cursor: isDragging ? "grabbing" : "grab",
-                        zIndex: isDragging ? 10 : (isSelected ? 5 : 1),
+                        boxShadow: isItemDragging ? "0 20px 30px rgba(0,0,0,0.5)" : (isSelected ? "0 0 0 2px var(--accent), 0 4px 8px rgba(0,0,0,0.3)" : "0 4px 8px rgba(0,0,0,0.3)"),
+                        opacity: isItemDragging ? 0.85 : 1,
+                        cursor: isItemDragging ? "grabbing" : "grab",
+                        zIndex: isItemDragging ? 10 : (isSelected ? 5 : 1),
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        transform: isDragging ? "scale(1.02)" : "scale(1)",
-                        transition: isDragging ? "none" : "box-shadow 0.2s, transform 0.2s, top 0.1s, left 0.1s"
+                        transform: isItemDragging ? "scale(1.02)" : "scale(1)",
+                        transition: isItemDragging ? "none" : "box-shadow 0.2s, transform 0.2s, top 0.1s, left 0.1s"
                       }}
                     >
-                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden" }}>
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden", pointerEvents: "none" }}>
                         {renderCADVisual(item)}
                       </div>
                       
-                      {/* Delete Button Handle */}
-                      <div style={{
-                        position: "absolute", top: 0, right: 0, 
-                        transform: "translate(50%, -50%)", zIndex: 11,
-                        display: isDragging ? "none" : "block",
-                        opacity: 0, transition: "opacity 0.2s"
-                      }} className="del-btn-container no-print">
-                        <button
-                          onPointerDown={(e) => e.stopPropagation()} 
-                          onClick={(e) => { e.stopPropagation(); handleRemoveItem(item.id); }}
-                          style={{
-                            background: "#ef4444", color: "#fff", border: "1px solid #991b1b",
-                            width: 24, height: 24, borderRadius: "50%",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            cursor: "pointer", boxShadow: "0 4px 8px rgba(0,0,0,0.4)", padding: 0
-                          }}
-                          title="Remove Component"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-
                       {item.comp.category !== "Cooling" && (
                         <div style={{
                           position: "relative", zIndex: 1, color: "#000",
@@ -688,6 +740,9 @@ export default function PanelLayoutPage() {
             {viewMode === "outer" && (
               <div
                 ref={canvasRef}
+                onPointerDown={onCanvasPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
                 style={{
                   position: "relative", width: "100%", maxWidth: 450,
                   aspectRatio: `${activeEnc.extW} / ${activeEnc.extH}`,
@@ -695,7 +750,7 @@ export default function PanelLayoutPage() {
                   boxShadow: "0 25px 50px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,255,0.9), inset -2px -2px 5px rgba(0,0,0,0.2)",
                   borderRadius: 4, overflow: "hidden", touchAction: "none",
                   border: "2px solid #a0a0a0",
-                  transition: "aspect-ratio 0.3s ease"
+                  transition: "aspect-ratio 0.3s ease", cursor: "crosshair"
                 }}
               >
                 {/* Optional Plinth for Floorstand */}
@@ -743,7 +798,6 @@ export default function PanelLayoutPage() {
                     boxShadow: "2px 4px 6px rgba(0,0,0,0.5), inset 1px 1px 2px rgba(255,255,255,0.2)",
                     border: "1px solid #000"
                   }}>
-                    {/* Keyhole */}
                     <div style={{
                       position: "absolute", top: "20%", left: "50%", transform: "translateX(-50%)",
                       width: "30%", height: "15%", background: "#000", borderRadius: "50%"
@@ -760,14 +814,28 @@ export default function PanelLayoutPage() {
                   </div>
                 </div>
 
+                {/* Marquee Selection Box */}
+                {marquee && (
+                   <div style={{
+                     position: "absolute",
+                     left: `${(Math.min(marquee.sx, marquee.cx) / currentViewW) * 100}%`,
+                     top: `${(Math.min(marquee.sy, marquee.cy) / currentViewH) * 100}%`,
+                     width: `${(Math.abs(marquee.cx - marquee.sx) / currentViewW) * 100}%`,
+                     height: `${(Math.abs(marquee.cy - marquee.sy) / currentViewH) * 100}%`,
+                     background: "rgba(16, 185, 129, 0.2)",
+                     border: "1px dashed #10b981",
+                     pointerEvents: "none", zIndex: 100
+                   }} />
+                )}
+
                 {/* Items on Outer Door */}
                 {items.map((item) => {
                   const wPct = (item.w / activeEnc.extW) * 100;
                   const hPct = (item.h / activeEnc.extH) * 100;
                   const xPct = (item.x / activeEnc.extW) * 100;
                   const yPct = (item.y / activeEnc.extH) * 100;
-                  const isDragging = draggingId === item.id;
-                  const isSelected = selectedId === item.id;
+                  const isSelected = selectedIds.includes(item.id);
+                  const isItemDragging = isDragging && isSelected;
 
                   // Only show external components
                   if (!["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(item.comp.category)) {
@@ -777,47 +845,22 @@ export default function PanelLayoutPage() {
                   return (
                     <div
                       key={item.id}
-                      onPointerDown={(e) => onPointerDown(e, item.id)}
-                      onPointerMove={onPointerMove}
-                      onPointerUp={onPointerUp}
+                      onPointerDown={(e) => onItemPointerDown(e, item.id)}
                       style={{
                         position: "absolute", left: `${xPct}%`, top: `${yPct}%`,
                         width: `${wPct}%`, height: `${hPct}%`,
-                        boxShadow: isDragging ? "0 20px 30px rgba(0,0,0,0.5)" : (isSelected ? "0 0 0 2px var(--accent), 0 4px 8px rgba(0,0,0,0.3)" : "none"),
-                        opacity: isDragging ? 0.85 : 1,
-                        cursor: isDragging ? "grabbing" : "grab",
-                        zIndex: isDragging ? 10 : (isSelected ? 5 : 2),
+                        boxShadow: isItemDragging ? "0 20px 30px rgba(0,0,0,0.5)" : (isSelected ? "0 0 0 2px var(--accent), 0 4px 8px rgba(0,0,0,0.3)" : "none"),
+                        opacity: isItemDragging ? 0.85 : 1,
+                        cursor: isItemDragging ? "grabbing" : "grab",
+                        zIndex: isItemDragging ? 10 : (isSelected ? 5 : 2),
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        transform: isDragging ? "scale(1.02)" : "scale(1)",
-                        transition: isDragging ? "none" : "box-shadow 0.2s, transform 0.2s, top 0.1s, left 0.1s"
+                        transform: isItemDragging ? "scale(1.02)" : "scale(1)",
+                        transition: isItemDragging ? "none" : "box-shadow 0.2s, transform 0.2s, top 0.1s, left 0.1s"
                       }}
                     >
-                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden" }}>
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden", pointerEvents: "none" }}>
                         {renderCADVisual(item)}
                       </div>
-                      
-                      {/* Delete Button Handle */}
-                      <div style={{
-                        position: "absolute", top: 0, right: 0, 
-                        transform: "translate(50%, -50%)", zIndex: 11,
-                        display: isDragging ? "none" : "block",
-                        opacity: 0, transition: "opacity 0.2s"
-                      }} className="del-btn-container no-print">
-                        <button
-                          onPointerDown={(e) => e.stopPropagation()} 
-                          onClick={(e) => { e.stopPropagation(); handleRemoveItem(item.id); }}
-                          style={{
-                            background: "#ef4444", color: "#fff", border: "1px solid #991b1b",
-                            width: 24, height: 24, borderRadius: "50%",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            cursor: "pointer", boxShadow: "0 4px 8px rgba(0,0,0,0.4)", padding: 0
-                          }}
-                          title="Remove Component"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                      
                     </div>
                   );
                 })}
@@ -954,9 +997,6 @@ export default function PanelLayoutPage() {
       </div>
       
       <style dangerouslySetInnerHTML={{__html: `
-        .del-btn-container { opacity: 0; }
-        div[style*="cursor: grab"]:hover .del-btn-container { opacity: 1 !important; }
-
         @media print {
           body * { visibility: hidden; }
           
