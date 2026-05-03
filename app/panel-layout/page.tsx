@@ -4,13 +4,15 @@ import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, MousePointer2, Filter, Box, Minimize2, Maximize2, Wind } from "lucide-react";
+import { Plus, Trash2, MousePointer2, Filter, Box, Minimize2, Wind, Printer, Settings2 } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
   comp: PanelComponent;
   x: number;
   y: number;
+  w: number;
+  h: number;
 }
 
 export default function PanelLayoutPage() {
@@ -25,6 +27,7 @@ export default function PanelLayoutPage() {
   
   const [viewMode, setViewMode] = useState<"inner" | "outer">("inner");
   const [includeFans, setIncludeFans] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Dragging state
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -43,19 +46,25 @@ export default function PanelLayoutPage() {
       comp,
       x: (activeEnc.w - comp.width) / 2,
       y: (activeEnc.h - comp.height) / 2,
+      w: comp.width,
+      h: comp.height
     };
     setItems((prev) => [...prev, newItem]);
+    setSelectedId(newItem.id);
     setViewMode("inner"); // Force back to inner view to place it
   };
 
   const handleRemoveItem = (id: string) => {
     setItems((prev) => prev.filter((i) => i.id !== id));
+    if (selectedId === id) setSelectedId(null);
   };
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
     if (e.button !== 0 || viewMode === "outer") return;
     e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
+    
+    setSelectedId(id);
     
     const item = items.find((i) => i.id === id);
     if (!item || !canvasRef.current) return;
@@ -91,8 +100,8 @@ export default function PanelLayoutPage() {
           // Snap to bounds smoothly
           if (newX < 0) newX = 0;
           if (newY < 0) newY = 0;
-          if (newX + item.comp.width > activeEnc.w) newX = activeEnc.w - item.comp.width;
-          if (newY + item.comp.height > activeEnc.h) newY = activeEnc.h - item.comp.height;
+          if (newX + item.w > activeEnc.w) newX = activeEnc.w - item.w;
+          if (newY + item.h > activeEnc.h) newY = activeEnc.h - item.h;
 
           return { ...item, x: newX, y: newY };
         }
@@ -108,7 +117,7 @@ export default function PanelLayoutPage() {
     }
   };
 
-  const renderCADVisual = (comp: PanelComponent) => {
+  const renderCADVisual = (comp: PanelComponent, w: number, h: number) => {
     switch (comp.category) {
       case "VSD":
         return (
@@ -136,11 +145,11 @@ export default function PanelLayoutPage() {
         if (comp.brand === "Weidmuller") { 
           return (
             <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #f0f0f0 0%, #b0b0b0 40%, #808080 50%, #b0b0b0 60%, #f0f0f0 100%)", boxSizing: "border-box", borderTop: "1px solid #fff", borderBottom: "1px solid #666" }}>
-               <div style={{ width: "100%", height: "15%", background: "rgba(0,0,0,0.1)", marginTop: "42%" }} />
+               <div style={{ width: "100%", height: "15%", background: "rgba(0,0,0,0.1)", marginTop: "12px" }} />
             </div>
           );
         } else { 
-          const isHorizontal = comp.width > comp.height;
+          const isHorizontal = w > h;
           return (
             <div style={{ width: "100%", height: "100%", background: "#a0a0a0", boxSizing: "border-box", display: "flex", flexDirection: isHorizontal ? "row" : "column", border: "1px solid #888" }}>
                <div style={{ flex: 1, backgroundImage: `repeating-linear-gradient(${isHorizontal ? 'to right' : 'to bottom'}, transparent, transparent 6px, rgba(0,0,0,0.25) 6px, rgba(0,0,0,0.25) 10px)` }} />
@@ -186,7 +195,7 @@ export default function PanelLayoutPage() {
       <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 40 }}>
         
         {/* Top Controls Bar */}
-        <div className="vinci-card" style={{ padding: 16, display: "flex", flexWrap: "wrap", gap: 24, alignItems: "center" }}>
+        <div className="vinci-card no-print" style={{ padding: 16, display: "flex", flexWrap: "wrap", gap: 24, alignItems: "center" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <label style={{ fontSize: 11, fontWeight: 800, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               Panel Frame (XLTC / Rittal)
@@ -253,9 +262,23 @@ export default function PanelLayoutPage() {
               style={{ width: 16, height: 16, cursor: "pointer", accentColor: "var(--accent)" }}
             />
             <label htmlFor="fanToggle" style={{ fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-              <Wind size={16} /> Tent / Fort Fan Filters
+              <Wind size={16} /> Fan / Filters
             </label>
           </div>
+
+          <div style={{ flex: 1 }} />
+
+          <button
+            onClick={() => window.print()}
+            style={{
+              background: "#10b981", color: "#fff", border: "none",
+              padding: "10px 16px", borderRadius: 6, fontSize: 13, fontWeight: 700,
+              display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
+              boxShadow: "0 2px 4px rgba(16, 185, 129, 0.4)"
+            }}
+          >
+            <Printer size={16} /> Export PDF
+          </button>
 
         </div>
 
@@ -263,7 +286,7 @@ export default function PanelLayoutPage() {
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
           
           {/* Sidebar */}
-          <div style={{ flex: "1 1 250px", minWidth: 250 }}>
+          <div className="no-print" style={{ flex: "1 1 250px", minWidth: 250 }}>
             <div className="vinci-card" style={{ padding: 16, maxHeight: 650, display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, textTransform: "uppercase", color: "var(--muted)", margin: 0 }}>
@@ -317,10 +340,76 @@ export default function PanelLayoutPage() {
                 ))}
               </div>
             </div>
+
+            {/* Properties Panel for Wiring Components */}
+            {selectedId && items.find(i => i.id === selectedId) && (
+              <div className="vinci-card" style={{ marginTop: 16, padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--accent)" }}>
+                  <Settings2 size={16} />
+                  <span style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase" }}>Properties</span>
+                </div>
+                
+                {(() => {
+                  const selItem = items.find(i => i.id === selectedId)!;
+                  const isWiring = selItem.comp.category === "Wiring";
+                  
+                  return (
+                    <>
+                      <div style={{ fontSize: 14, fontWeight: 600 }}>{selItem.comp.partCode}</div>
+                      
+                      {isWiring ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          <label style={{ fontSize: 12, color: "var(--muted)" }}>Length Dimension (mm):</label>
+                          <input 
+                            type="number" 
+                            min="10"
+                            step="10"
+                            value={selItem.w > selItem.h ? selItem.w : selItem.h}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value) || 10;
+                              setItems(prev => prev.map(i => {
+                                if (i.id === selectedId) {
+                                  if (i.w > i.h) return { ...i, w: val };
+                                  return { ...i, h: val };
+                                }
+                                return i;
+                              }));
+                            }}
+                            style={{
+                              background: "rgba(0,0,0,0.2)", border: "1px solid var(--border)",
+                              color: "var(--fg)", padding: "8px", borderRadius: 4, fontFamily: "var(--font-mono)",
+                              fontSize: 14, width: "100%", outline: "none"
+                            }}
+                          />
+                          <span style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>
+                            * Adjust DIN Rail / Duct length directly
+                          </span>
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: 12, color: "var(--muted)" }}>
+                          Size: {selItem.w} x {selItem.h} mm
+                        </div>
+                      )}
+                      
+                      <button 
+                        onClick={() => handleRemoveItem(selectedId)} 
+                        style={{ 
+                          marginTop: 8, background: "transparent", color: "#ef4444", 
+                          border: "1px solid #ef4444", padding: "6px", borderRadius: 4, 
+                          cursor: "pointer", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+                        }}
+                      >
+                        <Trash2 size={14} /> Delete Component
+                      </button>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
           </div>
 
           {/* Canvas Area */}
-          <div style={{ flex: "2 1 450px", display: "flex", justifyContent: "center", background: "rgba(0,0,0,0.3)", borderRadius: 12, padding: 32, border: "1px dashed var(--border)" }}>
+          <div className="print-area" style={{ flex: "2 1 450px", display: "flex", justifyContent: "center", background: "rgba(0,0,0,0.3)", borderRadius: 12, padding: 32, border: "1px dashed var(--border)" }}>
             
             {/* INNER VIEW (Mounting Plate) */}
             {viewMode === "inner" && (
@@ -336,7 +425,7 @@ export default function PanelLayoutPage() {
                 }}
               >
                 {/* Grid Background */}
-                <div style={{
+                <div className="no-print" style={{
                   position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
                   backgroundImage: "linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px)",
                   backgroundSize: `${(50 / activeEnc.w) * 100}% ${(50 / activeEnc.h) * 100}%`,
@@ -345,11 +434,12 @@ export default function PanelLayoutPage() {
 
                 {/* Items */}
                 {items.map((item) => {
-                  const wPct = (item.comp.width / activeEnc.w) * 100;
-                  const hPct = (item.comp.height / activeEnc.h) * 100;
+                  const wPct = (item.w / activeEnc.w) * 100;
+                  const hPct = (item.h / activeEnc.h) * 100;
                   const xPct = (item.x / activeEnc.w) * 100;
                   const yPct = (item.y / activeEnc.h) * 100;
                   const isDragging = draggingId === item.id;
+                  const isSelected = selectedId === item.id;
 
                   return (
                     <div
@@ -360,38 +450,17 @@ export default function PanelLayoutPage() {
                       style={{
                         position: "absolute", left: `${xPct}%`, top: `${yPct}%`,
                         width: `${wPct}%`, height: `${hPct}%`,
-                        boxShadow: isDragging ? "0 20px 30px rgba(0,0,0,0.5)" : "0 4px 8px rgba(0,0,0,0.3)",
+                        boxShadow: isDragging ? "0 20px 30px rgba(0,0,0,0.5)" : (isSelected ? "0 0 0 2px var(--accent), 0 4px 8px rgba(0,0,0,0.3)" : "0 4px 8px rgba(0,0,0,0.3)"),
                         opacity: isDragging ? 0.85 : 1,
                         cursor: isDragging ? "grabbing" : "grab",
-                        zIndex: isDragging ? 10 : 1,
+                        zIndex: isDragging ? 10 : (isSelected ? 5 : 1),
                         display: "flex", alignItems: "center", justifyContent: "center",
                         transform: isDragging ? "scale(1.02)" : "scale(1)",
                         transition: isDragging ? "none" : "box-shadow 0.2s, transform 0.2s, top 0.1s, left 0.1s"
                       }}
                     >
                       <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden" }}>
-                        {renderCADVisual(item.comp)}
-                      </div>
-
-                      <div style={{
-                        position: "absolute", top: 0, right: 0, 
-                        transform: "translate(50%, -50%)", zIndex: 11,
-                        display: isDragging ? "none" : "block",
-                        opacity: 0, transition: "opacity 0.2s"
-                      }} className="del-btn-container">
-                        <button
-                          onPointerDown={(e) => e.stopPropagation()} 
-                          onClick={(e) => { e.stopPropagation(); handleRemoveItem(item.id); }}
-                          style={{
-                            background: "#ef4444", color: "#fff", border: "1px solid #991b1b",
-                            width: 24, height: 24, borderRadius: "50%",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            cursor: "pointer", boxShadow: "0 4px 8px rgba(0,0,0,0.4)", padding: 0
-                          }}
-                          title="Remove Component"
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                        {renderCADVisual(item.comp, item.w, item.h)}
                       </div>
 
                       <div style={{
@@ -405,6 +474,13 @@ export default function PanelLayoutPage() {
                     </div>
                   );
                 })}
+
+                {/* Print Context Overlay */}
+                <div style={{ display: "none", position: "absolute", bottom: 8, left: 8, right: 8, justifyContent: "space-between", color: "#000", fontSize: 12, fontFamily: "var(--font-mono)" }} className="print-footer">
+                  <div><b>DUMMVINCI ESTIMATOR</b></div>
+                  <div>Enclosure: {activeEnc.name} (Mounting Area: {activeEnc.w}x{activeEnc.h}mm)</div>
+                </div>
+
               </div>
             )}
 
@@ -495,6 +571,13 @@ export default function PanelLayoutPage() {
                     {activeEnc.extW}x{activeEnc.extH}
                   </div>
                 </div>
+                
+                {/* Print Context Overlay */}
+                <div style={{ display: "none", position: "absolute", bottom: -20, left: 0, right: 0, justifyContent: "space-between", color: "#000", fontSize: 12, fontFamily: "var(--font-mono)" }} className="print-footer">
+                  <div><b>DUMMVINCI ESTIMATOR</b></div>
+                  <div>Outer Dimension: {activeEnc.extW}x{activeEnc.extH}mm</div>
+                </div>
+
               </div>
             )}
 
@@ -504,8 +587,22 @@ export default function PanelLayoutPage() {
       </div>
       
       <style dangerouslySetInnerHTML={{__html: `
-        .del-btn-container { opacity: 0; }
-        div[style*="cursor: grab"]:hover .del-btn-container { opacity: 1 !important; }
+        @media print {
+          body * { visibility: hidden; }
+          
+          /* Show canvas area and force it to fill the page cleanly */
+          .print-area, .print-area * { visibility: visible; }
+          .print-area { 
+            position: absolute; left: 0; top: 0; width: 100%; height: auto;
+            margin: 0; padding: 0 !important; background: none !important; border: none !important; box-shadow: none !important; 
+          }
+          
+          /* Hide non-printable elements */
+          .no-print { display: none !important; }
+          
+          /* Show custom print footers */
+          .print-footer { display: flex !important; }
+        }
       `}} />
       <Footer />
     </CalcShell>
