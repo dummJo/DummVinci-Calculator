@@ -1249,6 +1249,13 @@ export default function PanelLayoutPage() {
                   )}
 
                 </div>
+                
+                {/* Print Context Overlay */}
+                <div style={{ display: "none", position: "absolute", bottom: 8, left: 16, right: 16, justifyContent: "space-between", color: "#fff", fontSize: 12, fontFamily: "var(--font-mono)", textShadow: "0 1px 2px #000" }} className="print-footer">
+                  <div><b>DUMMVINCI ESTIMATOR</b></div>
+                  <div>Isometric View: {activeEnc.name}</div>
+                </div>
+
               </div>
               );
             })()}
@@ -1267,8 +1274,23 @@ export default function PanelLayoutPage() {
           .print-area { 
             position: absolute; left: 0; top: 0; width: 100%; height: auto;
             margin: 0; padding: 0 !important; background: none !important; border: none !important; box-shadow: none !important; 
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
           
+          /* Fix Isometric 3D printing */
+          .print-area > div[style*="perspective"] {
+            overflow: visible !important;
+            background: #fff !important;
+            border: none !important;
+            box-shadow: none !important;
+            height: 800px !important;
+          }
+          .print-area > div[style*="perspective"] .print-footer {
+            color: #000 !important;
+            text-shadow: none !important;
+          }
+
           /* Hide non-printable elements */
           .no-print { display: none !important; }
           
