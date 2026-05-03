@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, Filter, Box, Minimize2, Printer, Settings2, Grid } from "lucide-react";
+import { Plus, Trash2, Filter, Box, Minimize2, Printer, Settings2, Grid, Layers } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
@@ -26,9 +26,31 @@ export default function PanelLayoutPage() {
   const [items, setItems] = useState<PlacedItem[]>([]);
   const [activeCategory, setActiveCategory] = useState("All");
   
-  const [viewMode, setViewMode] = useState<"inner" | "outer">("inner");
+  const [viewMode, setViewMode] = useState<"inner" | "outer" | "iso">("inner");
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Load from local storage on mount
+  const [isLoaded, setIsLoaded] = useState(false);
+  useEffect(() => {
+    const savedItems = localStorage.getItem("dummvinci_estimator_items");
+    const savedEnc = localStorage.getItem("dummvinci_estimator_enc");
+    if (savedItems) {
+      try { setItems(JSON.parse(savedItems)); } catch (e) {}
+    }
+    if (savedEnc && ENCLOSURES.some(e => e.id === savedEnc)) {
+      setEncId(savedEnc);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Save to local storage on change
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem("dummvinci_estimator_items", JSON.stringify(items));
+      localStorage.setItem("dummvinci_estimator_enc", encId);
+    }
+  }, [items, encId, isLoaded]);
 
   // Dragging state
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -46,6 +68,10 @@ export default function PanelLayoutPage() {
     const gap = 15; // 15mm human-readable gap
     const gridStep = 25;
 
+    const isOuter = ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(comp.category);
+    const boundsW = isOuter ? activeEnc.extW : activeEnc.w;
+    const boundsH = isOuter ? activeEnc.extH : activeEnc.h;
+
     // Smart placement: next to selected item OR last added item
     const referenceItem = items.find(i => i.id === selectedId) || items[items.length - 1];
 
@@ -55,13 +81,13 @@ export default function PanelLayoutPage() {
       startY = referenceItem.y;
 
       // If it overflows the right edge, carriage return: move below the reference item
-      if (startX + comp.width > activeEnc.w) {
+      if (startX + comp.width > boundsW) {
         startX = 20; // reset to left margin
         startY = referenceItem.y + referenceItem.h + gap; // move down
       }
       
       // If it also overflows the bottom edge, reset to top-left
-      if (startY + comp.height > activeEnc.h) {
+      if (startY + comp.height > boundsH) {
          startX = 20;
          startY = 20;
       }
@@ -84,12 +110,8 @@ export default function PanelLayoutPage() {
     setItems((prev) => [...prev, newItem]);
     setSelectedId(newItem.id);
     
-    // Automatically switch to outer view if it's a door component (Door Accessory, Meter, Label, Logo)
-    if (["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(comp.category)) {
-       setViewMode("outer");
-    } else {
-       setViewMode("inner");
-    }
+    // Automatically switch to outer view if it's a door component
+    setViewMode(isOuter ? "outer" : "inner");
   };
 
   const handleRemoveItem = (id: string) => {
@@ -97,8 +119,15 @@ export default function PanelLayoutPage() {
     if (selectedId === id) setSelectedId(null);
   };
 
+  const clearAllItems = () => {
+    if (confirm("Are you sure you want to clear the entire layout?")) {
+      setItems([]);
+      setSelectedId(null);
+    }
+  };
+
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 || viewMode === "iso") return;
     e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
     
@@ -123,7 +152,7 @@ export default function PanelLayoutPage() {
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!draggingId || !canvasRef.current) return;
+    if (!draggingId || !canvasRef.current || viewMode === "iso") return;
     
     const currentW = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
     const currentH = viewMode === "outer" ? activeEnc.extH : activeEnc.h;
@@ -259,8 +288,8 @@ export default function PanelLayoutPage() {
         );
       case "Label":
         return (
-          <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #e0e0e0, #c0c0c0)", border: "1px solid #777", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 2, boxShadow: "inset 0 1px 2px #fff, 0 2px 4px rgba(0,0,0,0.2)" }}>
-             <span style={{ fontSize: "clamp(8px, 1.5vw, 14px)", fontWeight: 800, color: "#111", textTransform: "uppercase", textAlign: "center", padding: "0 4px" }}>
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #e0e0e0, #c0c0c0)", border: "1px solid #777", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 2, boxShadow: "inset 0 1px 2px #fff, 0 2px 4px rgba(0,0,0,0.2)", overflow: "hidden" }}>
+             <span style={{ fontSize: "clamp(8px, 1.5vw, 14px)", fontWeight: 800, color: "#111", textTransform: "uppercase", textAlign: "center", padding: "0 4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>
                {label || "LABEL"}
              </span>
           </div>
@@ -282,6 +311,8 @@ export default function PanelLayoutPage() {
         );
     }
   };
+
+  if (!isLoaded) return null;
 
   return (
     <CalcShell label="IEC 61439" title={tl.title} subtitle={tl.subtitle} concept={tl.concept}>
@@ -342,6 +373,18 @@ export default function PanelLayoutPage() {
               >
                 <Box size={14} /> Outer Door
               </button>
+              <button
+                onClick={() => setViewMode("iso")}
+                style={{
+                  background: viewMode === "iso" ? "var(--accent)" : "transparent",
+                  color: viewMode === "iso" ? "#000" : "var(--fg)",
+                  border: "none", padding: "6px 16px", borderRadius: 6,
+                  fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
+                  display: "flex", alignItems: "center", gap: 8
+                }}
+              >
+                <Layers size={14} /> Isometric
+              </button>
             </div>
           </div>
 
@@ -364,17 +407,32 @@ export default function PanelLayoutPage() {
 
           <div style={{ flex: 1 }} />
 
-          <button
-            onClick={() => window.print()}
-            style={{
-              background: "#10b981", color: "#fff", border: "none",
-              padding: "10px 16px", borderRadius: 6, fontSize: 13, fontWeight: 700,
-              display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
-              boxShadow: "0 2px 4px rgba(16, 185, 129, 0.4)"
-            }}
-          >
-            <Printer size={16} /> Export PDF
-          </button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              onClick={clearAllItems}
+              style={{
+                background: "transparent", color: "var(--muted)", border: "1px solid var(--border)",
+                padding: "10px 16px", borderRadius: 6, fontSize: 13, fontWeight: 700,
+                display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+              onMouseOver={(e) => { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.borderColor = "#ef4444"; }}
+              onMouseOut={(e) => { e.currentTarget.style.color = "var(--muted)"; e.currentTarget.style.borderColor = "var(--border)"; }}
+            >
+              Clear Layout
+            </button>
+            <button
+              onClick={() => window.print()}
+              style={{
+                background: "#10b981", color: "#fff", border: "none",
+                padding: "10px 16px", borderRadius: 6, fontSize: 13, fontWeight: 700,
+                display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(16, 185, 129, 0.4)"
+              }}
+            >
+              <Printer size={16} /> Export PDF
+            </button>
+          </div>
 
         </div>
 
@@ -555,7 +613,7 @@ export default function PanelLayoutPage() {
                   const isSelected = selectedId === item.id;
 
                   // Only show internal components
-                  if (["Door Accessory", "Meter", "Label", "Logo"].includes(item.comp.category)) {
+                  if (["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(item.comp.category)) {
                      return null; 
                   }
 
@@ -579,6 +637,28 @@ export default function PanelLayoutPage() {
                     >
                       <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden" }}>
                         {renderCADVisual(item)}
+                      </div>
+                      
+                      {/* Delete Button Handle */}
+                      <div style={{
+                        position: "absolute", top: 0, right: 0, 
+                        transform: "translate(50%, -50%)", zIndex: 11,
+                        display: isDragging ? "none" : "block",
+                        opacity: 0, transition: "opacity 0.2s"
+                      }} className="del-btn-container no-print">
+                        <button
+                          onPointerDown={(e) => e.stopPropagation()} 
+                          onClick={(e) => { e.stopPropagation(); handleRemoveItem(item.id); }}
+                          style={{
+                            background: "#ef4444", color: "#fff", border: "1px solid #991b1b",
+                            width: 24, height: 24, borderRadius: "50%",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            cursor: "pointer", boxShadow: "0 4px 8px rgba(0,0,0,0.4)", padding: 0
+                          }}
+                          title="Remove Component"
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </div>
 
                       {item.comp.category !== "Cooling" && (
@@ -680,7 +760,7 @@ export default function PanelLayoutPage() {
                   </div>
                 </div>
 
-                {/* Items on Outer Door (Accessories, Meters, Logos, Cooling) */}
+                {/* Items on Outer Door */}
                 {items.map((item) => {
                   const wPct = (item.w / activeEnc.extW) * 100;
                   const hPct = (item.h / activeEnc.extH) * 100;
@@ -715,6 +795,29 @@ export default function PanelLayoutPage() {
                       <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden" }}>
                         {renderCADVisual(item)}
                       </div>
+                      
+                      {/* Delete Button Handle */}
+                      <div style={{
+                        position: "absolute", top: 0, right: 0, 
+                        transform: "translate(50%, -50%)", zIndex: 11,
+                        display: isDragging ? "none" : "block",
+                        opacity: 0, transition: "opacity 0.2s"
+                      }} className="del-btn-container no-print">
+                        <button
+                          onPointerDown={(e) => e.stopPropagation()} 
+                          onClick={(e) => { e.stopPropagation(); handleRemoveItem(item.id); }}
+                          style={{
+                            background: "#ef4444", color: "#fff", border: "1px solid #991b1b",
+                            width: 24, height: 24, borderRadius: "50%",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            cursor: "pointer", boxShadow: "0 4px 8px rgba(0,0,0,0.4)", padding: 0
+                          }}
+                          title="Remove Component"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      
                     </div>
                   );
                 })}
@@ -728,12 +831,132 @@ export default function PanelLayoutPage() {
               </div>
             )}
 
+            {/* ISOMETRIC 3D VIEW */}
+            {viewMode === "iso" && (() => {
+              const baseScale = activeEnc.extH >= 1700 ? 300 / activeEnc.extH : 400 / activeEnc.extH;
+              const pxW = activeEnc.extW * baseScale;
+              const pxH = activeEnc.extH * baseScale;
+              const pxD = (activeEnc.extD || 200) * baseScale;
+              const innerW = activeEnc.w * baseScale;
+              const innerH = activeEnc.h * baseScale;
+
+              return (
+              <div
+                style={{
+                  position: "relative", width: "100%", height: 600,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  perspective: 1500
+                }}
+              >
+                <div style={{
+                  position: "relative", width: pxW, height: pxH,
+                  transformStyle: "preserve-3d",
+                  transform: "rotateX(-15deg) rotateY(-25deg)",
+                  transition: "transform 0.5s ease"
+                }}>
+                  
+                  {/* Back / Inner Plate */}
+                  <div style={{
+                    position: "absolute", width: innerW, height: innerH, background: "rgba(240, 240, 240, 0.95)",
+                    border: "2px solid #aaa", 
+                    left: (pxW - innerW) / 2, top: (pxH - innerH) / 2,
+                    transform: `translateZ(-${pxD / 2}px) translateZ(5px)`, // slightly forward from true back
+                  }}>
+                     {/* Grid Background */}
+                     <div style={{
+                        position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+                        backgroundImage: "linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px)",
+                        backgroundSize: `${(50 / activeEnc.w) * 100}% ${(50 / activeEnc.h) * 100}%`,
+                        opacity: 0.5, pointerEvents: "none"
+                     }} />
+
+                     {/* Render Inner Items */}
+                     {items.filter(i => !["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(i.comp.category)).map(item => {
+                      const wPct = (item.w / activeEnc.w) * 100;
+                      const hPct = (item.h / activeEnc.h) * 100;
+                      const xPct = (item.x / activeEnc.w) * 100;
+                      const yPct = (item.y / activeEnc.h) * 100;
+                      
+                      return (
+                        <div key={item.id} style={{ position: "absolute", left: `${xPct}%`, top: `${yPct}%`, width: `${wPct}%`, height: `${hPct}%`, pointerEvents: "none" }}>
+                          {renderCADVisual(item)}
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Left Face */}
+                  <div style={{
+                    position: "absolute", width: pxD, height: pxH, background: "#a0a0a0",
+                    border: "2px solid #777", transform: `rotateY(-90deg) translateZ(${pxW / 2}px)`
+                  }} />
+
+                  {/* Right Face */}
+                  <div style={{
+                    position: "absolute", width: pxD, height: pxH, background: "#c0c0c0",
+                    border: "2px solid #777", transform: `rotateY(90deg) translateZ(${pxW / 2}px)`
+                  }} />
+
+                  {/* Top Face */}
+                  <div style={{
+                    position: "absolute", width: pxW, height: pxD, background: "#dcdcdc",
+                    border: "2px solid #888", transform: `rotateX(90deg) translateZ(${pxH / 2}px)`
+                  }} />
+
+                  {/* Bottom Face */}
+                  <div style={{
+                    position: "absolute", width: pxW, height: pxD, background: "#888",
+                    border: "2px solid #555", transform: `rotateX(-90deg) translateZ(${pxH / 2}px)`
+                  }} />
+
+                  {/* Front Door (Translucent to see inside) */}
+                  <div style={{
+                    position: "absolute", width: pxW, height: pxH, background: "rgba(220, 220, 220, 0.4)",
+                    border: "2px solid #888", transform: `translateZ(${pxD / 2}px)`,
+                    boxShadow: "inset 0 0 10px rgba(0,0,0,0.1)"
+                  }}>
+                    {/* Render Outer Door Items */}
+                    {items.filter(i => ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(i.comp.category)).map(item => {
+                      const wPct = (item.w / activeEnc.extW) * 100;
+                      const hPct = (item.h / activeEnc.extH) * 100;
+                      const xPct = (item.x / activeEnc.extW) * 100;
+                      const yPct = (item.y / activeEnc.extH) * 100;
+                      return (
+                        <div key={item.id} style={{ position: "absolute", left: `${xPct}%`, top: `${yPct}%`, width: `${wPct}%`, height: `${hPct}%`, pointerEvents: "none" }}>
+                          {renderCADVisual(item)}
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Plinth for Floorstand */}
+                  {activeEnc.extH >= 1700 && (
+                    <div style={{
+                      position: "absolute", width: pxW, height: 30, background: "#333",
+                      border: "2px solid #111", transform: `translateY(${pxH}px) translateZ(${pxD / 2 - 15}px)`
+                    }} />
+                  )}
+                  {activeEnc.extH >= 1700 && (
+                    <div style={{
+                      position: "absolute", width: pxW, height: 30, background: "#333",
+                      border: "2px solid #111", transform: `translateY(${pxH}px) translateZ(-${pxD / 2 - 15}px)`
+                    }} />
+                  )}
+
+                </div>
+              </div>
+              );
+            })()}
+
           </div>
         </div>
 
       </div>
       
       <style dangerouslySetInnerHTML={{__html: `
+        .del-btn-container { opacity: 0; }
+        div[style*="cursor: grab"]:hover .del-btn-container { opacity: 1 !important; }
+
         @media print {
           body * { visibility: hidden; }
           
