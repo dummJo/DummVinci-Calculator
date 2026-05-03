@@ -10,13 +10,30 @@ export interface PanelComponent {
 }
 
 export const componentLibrary: PanelComponent[] = [
-  // ABB Drives
+  // ABB ACS880-01 Drives
   { id: "abb-acs880-r1", brand: "ABB", category: "VSD", partCode: "ACS880-01 R1", width: 155, height: 409, depth: 226, color: "#e4002b" },
   { id: "abb-acs880-r2", brand: "ABB", category: "VSD", partCode: "ACS880-01 R2", width: 155, height: 409, depth: 249, color: "#e4002b" },
   { id: "abb-acs880-r3", brand: "ABB", category: "VSD", partCode: "ACS880-01 R3", width: 172, height: 475, depth: 261, color: "#e4002b" },
-  { id: "abb-acs580-r1", brand: "ABB", category: "VSD", partCode: "ACS580-01 R1", width: 125, height: 373, depth: 223, color: "#f26522" },
-  { id: "abb-acs580-r2", brand: "ABB", category: "VSD", partCode: "ACS580-01 R2", width: 125, height: 473, depth: 229, color: "#f26522" },
+  { id: "abb-acs880-r4", brand: "ABB", category: "VSD", partCode: "ACS880-01 R4", width: 203, height: 576, depth: 274, color: "#e4002b" },
+  { id: "abb-acs880-r5", brand: "ABB", category: "VSD", partCode: "ACS880-01 R5", width: 203, height: 730, depth: 274, color: "#e4002b" },
+  { id: "abb-acs880-r6", brand: "ABB", category: "VSD", partCode: "ACS880-01 R6", width: 251, height: 726, depth: 357, color: "#e4002b" },
+  { id: "abb-acs880-r7", brand: "ABB", category: "VSD", partCode: "ACS880-01 R7", width: 284, height: 880, depth: 365, color: "#e4002b" },
+
+  // ABB ACQ580-01 / ACS580-01 Drives
+  { id: "abb-acq580-r1", brand: "ABB", category: "VSD", partCode: "ACQ580-01 R1", width: 125, height: 373, depth: 223, color: "#f26522" },
+  { id: "abb-acq580-r2", brand: "ABB", category: "VSD", partCode: "ACQ580-01 R2", width: 125, height: 473, depth: 229, color: "#f26522" },
+  { id: "abb-acq580-r3", brand: "ABB", category: "VSD", partCode: "ACQ580-01 R3", width: 203, height: 490, depth: 229, color: "#f26522" },
+  { id: "abb-acq580-r4", brand: "ABB", category: "VSD", partCode: "ACQ580-01 R4", width: 203, height: 636, depth: 257, color: "#f26522" },
+  { id: "abb-acq580-r5", brand: "ABB", category: "VSD", partCode: "ACQ580-01 R5", width: 203, height: 732, depth: 295, color: "#f26522" },
+  { id: "abb-acq580-r6", brand: "ABB", category: "VSD", partCode: "ACQ580-01 R6", width: 252, height: 726, depth: 369, color: "#f26522" },
+  { id: "abb-acq580-r7", brand: "ABB", category: "VSD", partCode: "ACQ580-01 R7", width: 284, height: 880, depth: 370, color: "#f26522" },
+
+  // ABB ACS380 Drives
   { id: "abb-acs380-r0", brand: "ABB", category: "VSD", partCode: "ACS380 R0", width: 70, height: 223, depth: 174, color: "#ffc20e" },
+  { id: "abb-acs380-r1", brand: "ABB", category: "VSD", partCode: "ACS380 R1", width: 70, height: 223, depth: 174, color: "#ffc20e" },
+  { id: "abb-acs380-r2", brand: "ABB", category: "VSD", partCode: "ACS380 R2", width: 95, height: 223, depth: 174, color: "#ffc20e" },
+  { id: "abb-acs380-r3", brand: "ABB", category: "VSD", partCode: "ACS380 R3", width: 169, height: 223, depth: 174, color: "#ffc20e" },
+  { id: "abb-acs380-r4", brand: "ABB", category: "VSD", partCode: "ACS380 R4", width: 260, height: 240, depth: 174, color: "#ffc20e" },
   
   // Siemens MCCB
   { id: "sie-3va11", brand: "Siemens", category: "MCCB", partCode: "3VA11 (160A)", width: 76.2, height: 130, depth: 70, color: "#009999" },
@@ -57,9 +74,9 @@ export const componentLibrary: PanelComponent[] = [
 ];
 
 export const ENCLOSURES = [
-  { id: "enc-600x400", name: "Wallbox 600x400 (Plat 350x550)", w: 350, h: 550 },
-  { id: "enc-800x600", name: "Wallbox 800x600 (Plat 550x750)", w: 550, h: 750 },
-  { id: "enc-1000x800", name: "Wallbox 1000x800 (Plat 750x950)", w: 750, h: 950 },
-  { id: "enc-1200x800", name: "Floorstand 1200x800 (Plat 750x1150)", w: 750, h: 1150 },
-  { id: "enc-2000x800", name: "Floorstand 2000x800 (Plat 750x1900)", w: 750, h: 1900 },
+  { id: "enc-600x400", name: "Wallbox 600x400 (Plat 350x550)", w: 350, h: 550, extW: 400, extH: 600 },
+  { id: "enc-800x600", name: "Wallbox 800x600 (Plat 550x750)", w: 550, h: 750, extW: 600, extH: 800 },
+  { id: "enc-1000x800", name: "Wallbox 1000x800 (Plat 750x950)", w: 750, h: 950, extW: 800, extH: 1000 },
+  { id: "enc-1200x800", name: "Floorstand 1200x800 (Plat 750x1150)", w: 750, h: 1150, extW: 800, extH: 1200 },
+  { id: "enc-2000x800", name: "Floorstand 2000x800 (Plat 750x1900)", w: 750, h: 1900, extW: 800, extH: 2000 },
 ];
