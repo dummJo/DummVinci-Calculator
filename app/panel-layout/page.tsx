@@ -362,9 +362,29 @@ export default function PanelLayoutPage() {
           </div>
         );
       case "Logo":
+        let imgUrl = "";
+        if (comp.brand === "ABB") imgUrl = "https://upload.wikimedia.org/wikipedia/commons/0/00/ABB_logo.svg";
+        else if (comp.brand === "Siemens") imgUrl = "https://upload.wikimedia.org/wikipedia/commons/5/5f/Siemens-logo.svg";
+        else if (comp.brand === "PTTS") {
+           return (
+             <div style={{ width: "100%", height: "100%", background: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #1d4ed8", boxShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
+                <span style={{ color: "#1d4ed8", fontWeight: 900, fontSize: "clamp(8px, 2.5vw, 24px)", fontFamily: "var(--font-display)" }}>PTTS</span>
+             </div>
+           );
+        }
+
+        if (imgUrl) {
+           return (
+             <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#fff", borderRadius: 2, padding: "5%" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={imgUrl} alt={comp.brand} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+             </div>
+           );
+        }
+
         return (
           <div style={{ width: "100%", height: "100%", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
-             <span style={{ fontSize: "clamp(12px, 3vw, 32px)", fontWeight: 900, color: comp.color, letterSpacing: comp.brand === "ABB" ? "-0.05em" : "0.05em", fontFamily: "var(--font-display)", textShadow: "1px 1px 0 #fff" }}>
+             <span style={{ fontSize: "clamp(12px, 3vw, 32px)", fontWeight: 900, color: comp.color, letterSpacing: "0.05em", fontFamily: "var(--font-display)", textShadow: "1px 1px 0 #fff" }}>
                {comp.brand === "DummVinci" ? "By DummVinci" : comp.brand}
              </span>
           </div>
@@ -579,6 +599,7 @@ export default function PanelLayoutPage() {
 
                   const isWiring = selItem.comp.category === "Wiring";
                   const isLabel = selItem.comp.category === "Label";
+                  const isLogo = selItem.comp.category === "Logo";
                   
                   return (
                     <>
@@ -603,30 +624,30 @@ export default function PanelLayoutPage() {
                         </div>
                       )}
 
-                      {(isWiring || isLabel) ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                          <label style={{ fontSize: 12, color: "var(--muted)" }}>Length (mm):</label>
-                          <input 
-                            type="number" 
-                            min="10"
-                            step="10"
-                            value={selItem.w > selItem.h ? selItem.w : selItem.h}
-                            onChange={(e) => {
-                              const val = parseInt(e.target.value) || 10;
-                              setItems(prev => prev.map(i => {
-                                if (i.id === selItem.id) {
-                                  if (i.w > i.h) return { ...i, w: val };
-                                  return { ...i, h: val };
-                                }
-                                return i;
-                              }));
-                            }}
-                            style={{
-                              background: "rgba(0,0,0,0.2)", border: "1px solid var(--border)",
-                              color: "var(--fg)", padding: "8px", borderRadius: 4, fontFamily: "var(--font-mono)",
-                              fontSize: 14, width: "100%", outline: "none"
-                            }}
-                          />
+                      {(isWiring || isLabel || isLogo) ? (
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
+                            <label style={{ fontSize: 12, color: "var(--muted)" }}>Width (mm):</label>
+                            <input 
+                              type="number" min="10" step="10" value={selItem.w}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value) || 10;
+                                setItems(prev => prev.map(i => i.id === selItem.id ? { ...i, w: val } : i));
+                              }}
+                              style={{ background: "rgba(0,0,0,0.2)", border: "1px solid var(--border)", color: "var(--fg)", padding: "8px", borderRadius: 4, width: "100%", outline: "none" }}
+                            />
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
+                            <label style={{ fontSize: 12, color: "var(--muted)" }}>Height (mm):</label>
+                            <input 
+                              type="number" min="10" step="10" value={selItem.h}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value) || 10;
+                                setItems(prev => prev.map(i => i.id === selItem.id ? { ...i, h: val } : i));
+                              }}
+                              style={{ background: "rgba(0,0,0,0.2)", border: "1px solid var(--border)", color: "var(--fg)", padding: "8px", borderRadius: 4, width: "100%", outline: "none" }}
+                            />
+                          </div>
                         </div>
                       ) : (
                         <div style={{ fontSize: 12, color: "var(--muted)" }}>
