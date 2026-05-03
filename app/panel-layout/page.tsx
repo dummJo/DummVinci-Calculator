@@ -412,57 +412,88 @@ export default function PanelLayoutPage() {
             {viewMode === "outer" && (
               <div
                 style={{
-                  position: "relative", width: "100%", maxWidth: 500,
+                  position: "relative", width: "100%", maxWidth: 450,
                   aspectRatio: `${activeEnc.extW} / ${activeEnc.extH}`,
-                  background: "#d3d3d3", // RAL 7035 Grey
-                  boxShadow: "0 20px 50px rgba(0,0,0,0.6), inset 0 2px 10px rgba(255,255,255,0.8)",
+                  background: "linear-gradient(135deg, #e6e6e6 0%, #c0c0c0 100%)", // Metallic gradient
+                  boxShadow: "0 25px 50px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,255,0.9), inset -2px -2px 5px rgba(0,0,0,0.2)",
                   borderRadius: 4, overflow: "hidden",
-                  border: "1px solid #a0a0a0",
+                  border: "2px solid #a0a0a0",
                   transition: "aspect-ratio 0.3s ease"
                 }}
               >
-                {/* Door seam */}
-                <div style={{
-                  position: "absolute", top: "2%", left: "2%", right: "2%", bottom: "2%",
-                  border: "2px solid rgba(0,0,0,0.15)", borderRadius: 2,
-                  boxShadow: "inset 0 0 5px rgba(0,0,0,0.1)"
-                }} />
-
-                {/* Handle / Lock */}
-                <div style={{
-                  position: "absolute", top: "50%", right: "4%", width: "4%", height: "15%",
-                  background: "#222", transform: "translateY(-50%)", borderRadius: 2,
-                  boxShadow: "2px 2px 5px rgba(0,0,0,0.4)"
-                }} />
-
                 {/* Optional Plinth for Floorstand */}
-                {activeEnc.extH >= 1200 && (
+                {activeEnc.extH >= 1700 && (
                    <div style={{
                      position: "absolute", bottom: 0, left: 0, right: 0, height: "8%",
-                     background: "#444", borderTop: "2px solid #222"
+                     background: "linear-gradient(to bottom, #444 0%, #222 100%)", 
+                     borderTop: "3px solid #111",
+                     boxShadow: "inset 0 4px 6px rgba(0,0,0,0.8)"
                    }} />
                 )}
 
-                {/* Tent / Fort Fan Filters */}
-                {includeFans && (
-                  <>
-                    {/* Bottom Left (Intake) */}
-                    <div style={{ position: "absolute", bottom: activeEnc.extH >= 1200 ? "15%" : "8%", left: "8%", width: "25%" }}>
-                      {renderFanFilter()}
-                    </div>
-                    {/* Top Right (Exhaust) */}
-                    <div style={{ position: "absolute", top: "8%", right: "12%", width: "25%" }}>
-                      {renderFanFilter()}
-                    </div>
-                  </>
-                )}
-
+                {/* Door / Bevel */}
                 <div style={{
-                  position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-                  color: "rgba(0,0,0,0.3)", fontSize: 24, fontWeight: 800, fontFamily: "var(--font-display)",
-                  textTransform: "uppercase", letterSpacing: "0.2em", pointerEvents: "none"
+                  position: "absolute", 
+                  top: "1.5%", left: "1.5%", right: "1.5%", 
+                  bottom: activeEnc.extH >= 1700 ? "9.5%" : "1.5%",
+                  border: "2px solid rgba(0,0,0,0.2)", borderRadius: 2,
+                  boxShadow: "inset 2px 2px 5px rgba(255,255,255,0.7), inset -2px -2px 5px rgba(0,0,0,0.3)",
+                  background: "linear-gradient(135deg, #d8d8d8 0%, #b8b8b8 100%)",
                 }}>
-                  {activeEnc.extW}x{activeEnc.extH}
+                  {/* Hinges (Left side) */}
+                  <div style={{ position: "absolute", left: "-2px", top: "15%", width: "4px", height: "8%", background: "#888", borderRadius: 2, border: "1px solid #555" }} />
+                  <div style={{ position: "absolute", left: "-2px", bottom: "15%", width: "4px", height: "8%", background: "#888", borderRadius: 2, border: "1px solid #555" }} />
+                  {activeEnc.extH >= 1000 && (
+                    <div style={{ position: "absolute", left: "-2px", top: "50%", transform: "translateY(-50%)", width: "4px", height: "8%", background: "#888", borderRadius: 2, border: "1px solid #555" }} />
+                  )}
+
+                  {/* Double Door Seam if width >= 1000 */}
+                  {activeEnc.extW >= 1000 && (
+                    <div style={{
+                      position: "absolute", left: "50%", top: 0, bottom: 0, width: "2px",
+                      background: "rgba(0,0,0,0.2)", boxShadow: "1px 0 0 rgba(255,255,255,0.6)"
+                    }} />
+                  )}
+
+                  {/* Handle / Lock */}
+                  <div style={{
+                    position: "absolute", top: "50%", 
+                    right: activeEnc.extW >= 1000 ? "51.5%" : "3%", 
+                    width: activeEnc.extW >= 1000 ? "2%" : "4%", height: "12%",
+                    background: "linear-gradient(to right, #333 0%, #111 100%)", 
+                    transform: "translateY(-50%)", borderRadius: 3,
+                    boxShadow: "2px 4px 6px rgba(0,0,0,0.5), inset 1px 1px 2px rgba(255,255,255,0.2)",
+                    border: "1px solid #000"
+                  }}>
+                    {/* Keyhole */}
+                    <div style={{
+                      position: "absolute", top: "20%", left: "50%", transform: "translateX(-50%)",
+                      width: "30%", height: "15%", background: "#000", borderRadius: "50%"
+                    }} />
+                  </div>
+
+                  {/* Tent / Fort Fan Filters */}
+                  {includeFans && (
+                    <>
+                      {/* Bottom Left (Intake) */}
+                      <div style={{ position: "absolute", bottom: "8%", left: "8%", width: activeEnc.extW >= 800 ? "20%" : "25%" }}>
+                        {renderFanFilter()}
+                      </div>
+                      {/* Top Right (Exhaust) */}
+                      <div style={{ position: "absolute", top: "8%", right: activeEnc.extW >= 1000 ? "58%" : "8%", width: activeEnc.extW >= 800 ? "20%" : "25%" }}>
+                        {renderFanFilter()}
+                      </div>
+                    </>
+                  )}
+                  
+                  <div style={{
+                    position: "absolute", top: "50%", left: activeEnc.extW >= 1000 ? "25%" : "50%", transform: "translate(-50%, -50%)",
+                    color: "rgba(0,0,0,0.15)", fontSize: "clamp(16px, 4vw, 24px)", fontWeight: 800, fontFamily: "var(--font-display)",
+                    textTransform: "uppercase", letterSpacing: "0.2em", pointerEvents: "none",
+                    textShadow: "1px 1px 0px rgba(255,255,255,0.4)"
+                  }}>
+                    {activeEnc.extW}x{activeEnc.extH}
+                  </div>
                 </div>
               </div>
             )}

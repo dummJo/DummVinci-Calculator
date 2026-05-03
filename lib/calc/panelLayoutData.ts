@@ -74,9 +74,17 @@ export const componentLibrary: PanelComponent[] = [
 ];
 
 export const ENCLOSURES = [
-  { id: "enc-600x400", name: "Wallbox 600x400 (Plat 350x550)", w: 350, h: 550, extW: 400, extH: 600 },
-  { id: "enc-800x600", name: "Wallbox 800x600 (Plat 550x750)", w: 550, h: 750, extW: 600, extH: 800 },
-  { id: "enc-1000x800", name: "Wallbox 1000x800 (Plat 750x950)", w: 750, h: 950, extW: 800, extH: 1000 },
-  { id: "enc-1200x800", name: "Floorstand 1200x800 (Plat 750x1150)", w: 750, h: 1150, extW: 800, extH: 1200 },
-  { id: "enc-2000x800", name: "Floorstand 2000x800 (Plat 750x1900)", w: 750, h: 1900, extW: 800, extH: 2000 },
+  // Wallmount Boxes (Tibox / XLTC / Rittal AX)
+  { id: "wm-400x300", name: "Wallbox 400x300", w: 250, h: 350, extW: 300, extH: 400 },
+  { id: "wm-500x400", name: "Wallbox 500x400", w: 350, h: 450, extW: 400, extH: 500 },
+  { id: "wm-600x400", name: "Wallbox 600x400", w: 350, h: 550, extW: 400, extH: 600 },
+  { id: "wm-700x500", name: "Wallbox 700x500", w: 450, h: 650, extW: 500, extH: 700 },
+  { id: "wm-800x600", name: "Wallbox 800x600", w: 550, h: 750, extW: 600, extH: 800 },
+  { id: "wm-1000x800", name: "Wallbox 1000x800", w: 750, h: 950, extW: 800, extH: 1000 },
+  { id: "wm-1200x800", name: "Wallbox 1200x800", w: 750, h: 1150, extW: 800, extH: 1200 },
+
+  // Floorstand Cabinets (XLTC / Rittal TS8)
+  { id: "fs-1800x800", name: "Floorstand 1800x800", w: 700, h: 1700, extW: 800, extH: 1800 },
+  { id: "fs-2000x800", name: "Floorstand 2000x800", w: 700, h: 1900, extW: 800, extH: 2000 },
+  { id: "fs-2000x1000", name: "Floorstand 2000x1000 (Double)", w: 900, h: 1900, extW: 1000, extH: 2000 },
 ];
