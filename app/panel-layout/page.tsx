@@ -4,7 +4,7 @@ import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, Search, Box, Minimize2, Printer, Settings2, Grid, Layers, MousePointer2, Copy } from "lucide-react";
+import { Plus, Trash2, Search, Box, Minimize2, Printer, Settings2, Grid, Layers, MousePointer2, Copy, Activity } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
@@ -27,17 +27,14 @@ export default function PanelLayoutPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   
-  const [viewMode, setViewMode] = useState<"inner" | "outer" | "iso">("inner");
+  const [viewMode, setViewMode] = useState<"inner" | "outer" | "sld">("inner");
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [showDimensions, setShowDimensions] = useState(false);
   
   const [projectName, setProjectName] = useState("DummVinci Industrial Case");
   const [customerName, setCustomerName] = useState("PT Prima Tekindo Tirta Sejahtera");
   
-  // Iso 3D Rotation State
-  const [isoRot, setIsoRot] = useState({ x: -15, y: -25 });
-  const [isIsoDragging, setIsIsoDragging] = useState(false);
-  const [isoDragStart, setIsoDragStart] = useState({ mouseX: 0, mouseY: 0, rotX: 0, rotY: 0 });
+
   
   // Selection & Grouping
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -245,7 +242,7 @@ export default function PanelLayoutPage() {
   };
 
   const onCanvasPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0 || viewMode === "iso") return;
+    if (e.button !== 0 || viewMode === "sld") return;
     
     // Only start marquee if clicking directly on the canvas background
     if (e.target === e.currentTarget) {
@@ -263,7 +260,7 @@ export default function PanelLayoutPage() {
   };
 
   const onItemPointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
-    if (e.button !== 0 || viewMode === "iso") return;
+    if (e.button !== 0 || viewMode === "sld") return;
     e.stopPropagation();
     
     if (canvasRef.current) canvasRef.current.setPointerCapture(e.pointerId);
@@ -292,7 +289,7 @@ export default function PanelLayoutPage() {
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!canvasRef.current || viewMode === "iso") return;
+    if (!canvasRef.current || viewMode === "sld") return;
     
     const currentW = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
     const currentH = viewMode === "outer" ? activeEnc.extH : activeEnc.h;
@@ -359,29 +356,7 @@ export default function PanelLayoutPage() {
     }
   };
 
-  const onIsoPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0) return;
-    e.currentTarget.setPointerCapture(e.pointerId);
-    setIsIsoDragging(true);
-    setIsoDragStart({ mouseX: e.clientX, mouseY: e.clientY, rotX: isoRot.x, rotY: isoRot.y });
-  };
 
-  const onIsoPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isIsoDragging) return;
-    const deltaX = e.clientX - isoDragStart.mouseX;
-    const deltaY = e.clientY - isoDragStart.mouseY;
-    setIsoRot({
-      x: isoDragStart.rotX - deltaY * 0.5,
-      y: isoDragStart.rotY + deltaX * 0.5
-    });
-  };
-
-  const onIsoPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    setIsIsoDragging(false);
-    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    }
-  };
 
   const PrintHeader = () => (
     <div className="print-header" style={{ display: "none" }}>
@@ -846,16 +821,16 @@ export default function PanelLayoutPage() {
                 <Box size={14} /> Outer Door
               </button>
               <button
-                onClick={() => setViewMode("iso")}
+                onClick={() => setViewMode("sld")}
                 style={{
-                  background: viewMode === "iso" ? "var(--accent)" : "transparent",
-                  color: viewMode === "iso" ? "#000" : "var(--fg)",
+                  background: viewMode === "sld" ? "var(--accent)" : "transparent",
+                  color: viewMode === "sld" ? "#000" : "var(--fg)",
                   border: "none", padding: "6px 16px", borderRadius: 6,
                   fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
                   display: "flex", alignItems: "center", gap: 8
                 }}
               >
-                <Layers size={14} /> Isometric
+                <Activity size={14} /> SLD Schema
               </button>
             </div>
           </div>
@@ -1441,164 +1416,155 @@ export default function PanelLayoutPage() {
               </div>
             )}
 
-            {/* ISOMETRIC 3D VIEW */}
-            {viewMode === "iso" && (() => {
-              const baseScale = activeEnc.extH >= 1700 ? 300 / activeEnc.extH : 400 / activeEnc.extH;
-              const pxW = activeEnc.extW * baseScale;
-              const pxH = activeEnc.extH * baseScale;
-              const pxD = (activeEnc.extD || 200) * baseScale;
+            {/* SLD SCHEMA VIEW */}
+            {viewMode === "sld" && (() => {
+              const renderSLDSymbol = (item: PlacedItem) => {
+                const { comp } = item;
+                
+                const SymbolBox = ({ children, label, rating }: { children: React.ReactNode, label?: string, rating?: string }) => (
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 100 }}>
+                    <div style={{ 
+                      width: 60, height: 60, position: "relative", 
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      border: "1.5px solid #000", background: "#fff"
+                    }}>
+                      {children}
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                      <span style={{ fontSize: 10, fontWeight: 800, color: "#000", fontFamily: "var(--font-mono)" }}>{label || comp.partCode}</span>
+                      {rating && <span style={{ fontSize: 8, color: "#666", fontWeight: 600 }}>{rating}</span>}
+                    </div>
+                  </div>
+                );
 
-              const innerItems = items.filter(i => !["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(i.comp.category));
-              const outerItems = items.filter(i => ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(i.comp.category));
+                switch (comp.category) {
+                  case "MCCB":
+                    return (
+                      <SymbolBox label={item.comp.brand + " MCCB"} rating="Incomer">
+                        <svg width="40" height="40" viewBox="0 0 40 40">
+                          <rect x="5" y="5" width="30" height="30" fill="none" stroke="#000" strokeWidth="2" />
+                          <path d="M5 35 L35 5" stroke="#000" strokeWidth="2" />
+                          <circle cx="20" cy="20" r="4" fill="#000" />
+                        </svg>
+                      </SymbolBox>
+                    );
+                  case "VSD":
+                    return (
+                      <SymbolBox label={item.comp.brand + " VSD"}>
+                        <svg width="40" height="40" viewBox="0 0 40 40">
+                          <rect x="5" y="5" width="30" height="30" fill="none" stroke="#000" strokeWidth="1.5" />
+                          <path d="M5 35 L35 5" stroke="#000" strokeWidth="1.5" />
+                          <text x="8" y="18" fontSize="8" fontWeight="900">~</text>
+                          <text x="24" y="32" fontSize="8" fontWeight="900">=</text>
+                        </svg>
+                      </SymbolBox>
+                    );
+                  case "MCB":
+                    return (
+                      <SymbolBox label={item.comp.brand + " MCB"}>
+                        <svg width="40" height="40" viewBox="0 0 40 40">
+                          <path d="M20 5 L20 15 M20 15 L30 25 M20 25 L20 35" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" />
+                          <circle cx="20" cy="15" r="2" fill="#000" />
+                        </svg>
+                      </SymbolBox>
+                    );
+                  case "Contactor":
+                    return (
+                      <SymbolBox label="Contactor">
+                        <svg width="40" height="40" viewBox="0 0 40 40">
+                          <rect x="10" y="10" width="20" height="20" fill="none" stroke="#000" strokeWidth="1.5" />
+                          <path d="M5 20 H10 M30 20 H35" stroke="#000" strokeWidth="1.5" />
+                          <path d="M15 10 V30 M25 10 V30" stroke="#000" strokeWidth="1" strokeDasharray="2 2" />
+                        </svg>
+                      </SymbolBox>
+                    );
+                  case "Transformer":
+                    return (
+                      <SymbolBox label="XFMR">
+                        <svg width="40" height="40" viewBox="0 0 40 40">
+                          <circle cx="15" cy="20" r="10" fill="none" stroke="#000" strokeWidth="1.5" />
+                          <circle cx="25" cy="20" r="10" fill="none" stroke="#000" strokeWidth="1.5" />
+                        </svg>
+                      </SymbolBox>
+                    );
+                  case "PLC":
+                    return (
+                      <SymbolBox label="PLC / CPU">
+                        <div style={{ width: "80%", height: "80%", border: "1px dashed #000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900 }}>CPU</div>
+                      </SymbolBox>
+                    );
+                  default:
+                    return (
+                      <SymbolBox label={comp.category}>
+                        <div style={{ width: 30, height: 30, border: "1px solid #ccc", borderRadius: "50%" }} />
+                      </SymbolBox>
+                    );
+                }
+              };
 
+              const incomer = items.find(i => i.comp.category === "MCCB" || i.comp.category === "MCB") || items[0];
+              const feeders = items.filter(i => i.id !== (incomer?.id));
+              
               return (
-              <div
-                onPointerDown={onIsoPointerDown}
-                onPointerMove={onIsoPointerMove}
-                onPointerUp={onIsoPointerUp}
-                style={{
-                  position: "relative", width: "100%", height: 600,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  perspective: 1800, cursor: isIsoDragging ? "grabbing" : "grab",
-                  background: "radial-gradient(circle at center, #333 0%, #0a0a0a 100%)",
-                  borderRadius: 12, border: "2px solid #555", overflow: "hidden",
-                  boxShadow: "inset 0 0 40px rgba(0,0,0,0.8)"
-                }}
-              >
-                <div style={{ position: "absolute", top: 16, right: 16, color: "#aaa", fontSize: 12, fontFamily: "var(--font-mono)" }}>
-                  Drag to rotate · {innerItems.length + outerItems.length} items
-                </div>
-                
                 <div style={{
-                  position: "relative", width: pxW, height: pxH,
-                  transformStyle: "preserve-3d",
-                  transformOrigin: `${pxW / 2}px ${pxH / 2}px ${-pxD / 2}px`,
-                  transform: `rotateX(${isoRot.x}deg) rotateY(${isoRot.y}deg)`,
-                  transition: isIsoDragging ? "none" : "transform 0.1s ease"
+                  width: "100%", minHeight: 600, background: "#fff", border: "2px solid #000",
+                  borderRadius: 4, padding: 40, overflowX: "auto", position: "relative",
+                  display: "flex", flexDirection: "column", alignItems: "center",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.1)"
                 }}>
-                  
-                  {/* Back Face — shows inner mounting plate with components */}
-                  <div style={{
-                    position: "absolute", width: pxW, height: pxH, background: "#f5f5f5",
-                    border: "1px solid #aaa", backfaceVisibility: "hidden",
-                    transform: `translateZ(-${pxD / 2}px) rotateY(180deg)`,
-                    overflow: "hidden"
-                  }}>
-                    {/* Grid on mounting plate */}
-                    <div style={{
-                      position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
-                      backgroundImage: "linear-gradient(#ddd 1px, transparent 1px), linear-gradient(90deg, #ddd 1px, transparent 1px)",
-                      backgroundSize: `${(50 / activeEnc.extW) * 100}% ${(50 / activeEnc.extH) * 100}%`,
-                      opacity: 0.4, pointerEvents: "none"
-                    }} />
-                    {/* Inner items on mounting plate */}
-                    {innerItems.map(item => {
-                      const wPct = (item.w / activeEnc.w) * (activeEnc.w / activeEnc.extW) * 100;
-                      const hPct = (item.h / activeEnc.h) * (activeEnc.h / activeEnc.extH) * 100;
-                      const offsetX = ((activeEnc.extW - activeEnc.w) / 2 / activeEnc.extW) * 100;
-                      const offsetY = ((activeEnc.extH - activeEnc.h) / 2 / activeEnc.extH) * 100;
-                      const xPct = (item.x / activeEnc.w) * (activeEnc.w / activeEnc.extW) * 100 + offsetX;
-                      const yPct = (item.y / activeEnc.h) * (activeEnc.h / activeEnc.extH) * 100 + offsetY;
-                      return (
-                        <div key={item.id} style={{ position: "absolute", left: `${xPct}%`, top: `${yPct}%`, width: `${wPct}%`, height: `${hPct}%`, pointerEvents: "none" }}>
-                          {renderCADVisual(item)}
-                        </div>
-                      );
-                    })}
+                  {/* SLD Header */}
+                  <div style={{ alignSelf: "flex-start", marginBottom: 40, borderLeft: "4px solid #000", paddingLeft: 16 }}>
+                    <div style={{ fontSize: 18, fontWeight: 900, color: "#000", textTransform: "uppercase", letterSpacing: "0.05em" }}>Single Line Diagram</div>
+                    <div style={{ fontSize: 11, color: "#444", fontFamily: "var(--font-mono)", marginTop: 4 }}>Ref: {projectName} · {activeEnc.name}</div>
                   </div>
 
-                  {/* Left Face */}
-                  <div style={{
-                    position: "absolute", width: pxD, height: pxH, background: "linear-gradient(to right, #666, #999)",
-                    border: "1px solid #444", backfaceVisibility: "hidden",
-                    transform: `rotateY(-90deg) translateZ(${pxW / 2}px)`
-                  }} />
+                  {/* SLD Generator Logic */}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+                    {/* Incoming Supply */}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                      <div style={{ width: 2, height: 40, background: "#000" }} />
+                      <div style={{ position: "relative" }}>
+                        <div style={{ position: "absolute", top: -15, left: "50%", transform: "translateX(-50%)", fontSize: 8, fontWeight: 900 }}>SOURCE</div>
+                        {incomer ? renderSLDSymbol(incomer) : <div style={{ width: 60, height: 60, border: "2px solid #000" }} />}
+                      </div>
+                      <div style={{ width: 2, height: 40, background: "#000" }} />
+                    </div>
 
-                  {/* Right Face */}
-                  <div style={{
-                    position: "absolute", width: pxD, height: pxH, background: "linear-gradient(to right, #999, #777)",
-                    border: "1px solid #444", backfaceVisibility: "hidden",
-                    transform: `rotateY(90deg) translateZ(${pxW / 2}px)`
-                  }} />
+                    {/* Main Busbar */}
+                    <div style={{ width: "90%", height: 4, background: "#000", position: "relative", margin: "0 auto" }}>
+                      <div style={{ position: "absolute", top: -18, left: 20, fontSize: 10, fontWeight: 900, color: "#000", fontFamily: "var(--font-mono)" }}>MAIN BUSBAR: 400V / 3PH / 50Hz</div>
+                      {/* Connection point dots */}
+                      {feeders.filter(f => !["Label", "Logo", "Cooling"].includes(f.comp.category)).map((_, idx) => (
+                         <div key={idx} style={{ position: "absolute", top: -2, left: `${(idx + 1) * (100 / (feeders.length + 1))}%`, width: 8, height: 8, background: "#000", borderRadius: "50%", transform: "translateX(-50%)" }} />
+                      ))}
+                    </div>
 
-                  {/* Top Face */}
-                  <div style={{
-                    position: "absolute", width: pxW, height: pxD, background: "#ccc",
-                    border: "1px solid #444", backfaceVisibility: "hidden",
-                    transform: `rotateX(90deg) translateZ(${pxH / 2}px)`
-                  }} />
-
-                  {/* Bottom Face */}
-                  <div style={{
-                    position: "absolute", width: pxW, height: pxD, background: "#444",
-                    border: "1px solid #222", backfaceVisibility: "hidden",
-                    transform: `rotateX(-90deg) translateZ(${pxH / 2}px)`
-                  }} />
-
-                  {/* Back wall (visible from front when door not blocking) */}
-                  <div style={{
-                    position: "absolute", width: pxW, height: pxH, background: "#888",
-                    border: "1px solid #555", backfaceVisibility: "hidden",
-                    transform: `translateZ(-${pxD / 2}px)`
-                  }} />
-
-                  {/* Front Door */}
-                  <div style={{
-                    position: "absolute", width: pxW, height: pxH, 
-                    background: "linear-gradient(135deg, #d8d8d8 0%, #a8a8a8 100%)",
-                    border: "2px solid #666", backfaceVisibility: "hidden",
-                    transform: `translateZ(${pxD / 2}px)`,
-                    boxShadow: "inset 0 0 10px rgba(0,0,0,0.1)"
-                  }}>
-                    {/* Double Door Seam if width >= 1000 */}
-                    {activeEnc.extW >= 1000 && (
-                      <div style={{
-                        position: "absolute", left: "50%", top: 0, bottom: 0, width: "2px",
-                        background: "rgba(0,0,0,0.2)", boxShadow: "1px 0 0 rgba(255,255,255,0.6)"
-                      }} />
-                    )}
-
-                    {/* Handle */}
-                    <div style={{
-                      position: "absolute", top: "45%", right: activeEnc.extW >= 1000 ? "48%" : "4%",
-                      width: activeEnc.extW >= 1000 ? "2%" : "5%", height: "10%",
-                      background: "#333", borderRadius: 3, border: "1px solid #111",
-                      boxShadow: "2px 3px 5px rgba(0,0,0,0.4)"
-                    }} />
-
-                    {/* Render Outer Door Items */}
-                    {outerItems.map(item => {
-                      const wPct = (item.w / activeEnc.extW) * 100;
-                      const hPct = (item.h / activeEnc.extH) * 100;
-                      const xPct = (item.x / activeEnc.extW) * 100;
-                      const yPct = (item.y / activeEnc.extH) * 100;
-                      return (
-                        <div key={item.id} style={{ position: "absolute", left: `${xPct}%`, top: `${yPct}%`, width: `${wPct}%`, height: `${hPct}%`, pointerEvents: "none" }}>
-                          {renderCADVisual(item)}
+                    {/* Feeders Grid */}
+                    <div style={{ 
+                      display: "flex", justifyContent: "space-around", width: "90%", 
+                      padding: "0 20px", flexWrap: "nowrap", overflowX: "auto" 
+                    }}>
+                      {feeders.filter(f => !["Label", "Logo", "Cooling"].includes(f.comp.category)).map((feeder, idx) => (
+                        <div key={feeder.id} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                          <div style={{ width: 2, height: 40, background: "#000" }} />
+                          {renderSLDSymbol(feeder)}
+                          <div style={{ width: 2, height: 40, background: "#000" }} />
+                          <div style={{ width: 14, height: 14, border: "2.5px solid #000", borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                             <div style={{ width: 4, height: 4, background: "#000", borderRadius: "50%" }} />
+                          </div>
+                          <span style={{ fontSize: 9, fontWeight: 800, marginTop: 6, color: "#000", fontFamily: "var(--font-mono)" }}>LOAD_{idx+1}</span>
+                          <span style={{ fontSize: 7, color: "#666", fontWeight: 700 }}>{feeder.comp.category}</span>
                         </div>
-                      )
-                    })}
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Plinth for Floorstand */}
-                  {activeEnc.extH >= 1700 && (
-                    <>
-                      <div style={{ position: "absolute", width: pxW, height: 30, background: "#333", border: "1px solid #111", backfaceVisibility: "hidden", transform: `translateY(${pxH}px) translateZ(${pxD / 2 - 15}px)` }} />
-                      <div style={{ position: "absolute", width: pxW, height: 30, background: "#222", border: "1px solid #111", backfaceVisibility: "hidden", transform: `translateY(${pxH}px) translateZ(-${pxD / 2 - 15}px)` }} />
-                      <div style={{ position: "absolute", width: pxD, height: 30, background: "#2a2a2a", border: "1px solid #111", backfaceVisibility: "hidden", transform: `translateY(${pxH}px) rotateY(-90deg) translateZ(${pxW / 2}px)` }} />
-                      <div style={{ position: "absolute", width: pxD, height: 30, background: "#2a2a2a", border: "1px solid #111", backfaceVisibility: "hidden", transform: `translateY(${pxH}px) rotateY(90deg) translateZ(${pxW / 2}px)` }} />
-                    </>
-                  )}
-
+                  {/* SLD Footer / Metadata */}
+                  <div style={{ marginTop: 60, width: "100%", display: "flex", justifyContent: "space-between", borderTop: "2px solid #000", paddingTop: 12 }}>
+                    <div style={{ fontSize: 9, fontWeight: 800, fontFamily: "var(--font-mono)" }}>DUMMVINCI SLD ENGINE v2.4.0</div>
+                    <div style={{ fontSize: 9, color: "#000", fontWeight: 800 }}>{customerName} · CONFIDENTIAL</div>
+                  </div>
                 </div>
-                
-                {/* Print Context Overlay */}
-                <div style={{ display: "none", position: "absolute", bottom: 8, left: 16, right: 16, justifyContent: "space-between", color: "#fff", fontSize: 12, fontFamily: "var(--font-mono)", textShadow: "0 1px 2px #000" }} className="print-footer">
-                  <div><b>DUMMVINCI ESTIMATOR</b></div>
-                  <div>Isometric View: {activeEnc.name}</div>
-                </div>
-
-              </div>
               );
             })()}
 
@@ -1636,20 +1602,6 @@ export default function PanelLayoutPage() {
           .print-header-left { display: flex; flex-direction: column; gap: 4px; }
           .print-header-right { text-align: right; }
           
-          /* Fix Isometric 3D printing */
-          .print-area > div[style*="perspective"] {
-            overflow: visible !important;
-            background: #fff !important;
-            border: 1px solid #eee !important;
-            box-shadow: none !important;
-            height: 900px !important;
-            width: 100% !important;
-          }
-          .print-area > div[style*="perspective"] .print-footer {
-            color: #000 !important;
-            text-shadow: none !important;
-          }
-
           /* Hide non-printable elements */
           .no-print { display: none !important; }
           

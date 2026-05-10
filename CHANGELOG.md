@@ -11,13 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Industrial Panel Estimator Expansion**: Integrated 40+ professional-grade components including Siemens S7-1200/1500 PLCs, ABB contactors, and control transformers with high-fidelity CSS CAD visuals.
 - **Searchable Component Library**: Replaced legacy dropdowns with a real-time fuzzy search and scrollable category pill-tabs for faster layout building.
+- **Professional SLD Schema Engine**: Deprecated the non-functional 3D Isometric view in favor of a clinical, industrial-grade Single Line Diagram generator. Automatically creates 2D schematic hierarchies for Incomers, Busbars, and Feeders.
 - **PTTS Brand Integration**: Added "DummVinci x PTTS" collaborative logo, favicon, and a dedicated partner hyperlink in the hero section.
 - **Live Terminal Widget**: Deployed a dynamic IP address, location, and live clock widget to the global footer, bringing the "dummjo.dev" hacker aesthetic to the calculator hub.
 - **Showroom Spec Marquee**: Upgraded the static standards list into an infinite, auto-sliding marquee carousel featuring newly added engineering specifications (IEC 60890, Rittal TS 8, etc.).
 
+### Removed
+
+- **Isometric 3D View**: Excised the flawed 3D engine and associated perspective logic from the Panel Estimator to improve performance and focus on professional drafting tools.
+
 ### Fixed
 
-- **Isometric 3D Rendering**: Resolved Z-fighting and rotation bugs in the panel estimator; internal DIN-rail components now correctly render on the backplane with `backface-visibility: hidden`.
+- **Component Drag Stability**: Improved pointer capture logic to prevent item "sticking" when dragging components near canvas boundaries.
 
 ## [2.3.0] — 2026-05-02
 

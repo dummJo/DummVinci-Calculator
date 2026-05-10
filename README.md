@@ -36,7 +36,7 @@ We extend our deepest gratitude to PTTS for their continued support, domain expe
 │   ├── 📄  cable/              # Cable Ampacity (IEC 60364-5-52)
 │   ├── 📄  vsd/                # VSD/Drive Sizing (ABB ACQ580/ACS880)
 │   ├── 📄  breaker/            # MCCB/MCB Protection
-│   ├── 📄  panel-layout/       # 3D Industrial Panel Estimator
+│   ├── 📄  panel-layout/       # Professional SLD & Layout Estimator
 │   └── 📄  page.tsx            # Unified Calculator Dashboard
 │
 ├── 🧩  components/             # UI Components
