@@ -70,11 +70,13 @@ export default function TopBar() {
       {/* Logo */}
       <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, textDecoration: "none" }}>
         <div style={{
-          width: 32, height: 32,
+          height: 32,
           flexShrink: 0,
-          color: "var(--accent)"
+          display: "flex",
+          alignItems: "center"
         }}>
-          <Logo size={32} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-dv-ptts.png" alt="DummVinci x PTTS" style={{ height: "100%", width: "auto", objectFit: "contain" }} />
         </div>
         <div style={{
           fontFamily: "var(--font-display)",
@@ -106,6 +108,30 @@ export default function TopBar() {
 
       {/* Controls */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        <a 
+          href="https://www.ptts.co.id" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "4px 10px",
+            background: "rgba(29, 78, 216, 0.1)",
+            border: "1px solid rgba(29, 78, 216, 0.3)",
+            borderRadius: "var(--r-pill)",
+            color: "var(--fg)",
+            textDecoration: "none",
+            fontFamily: "var(--font-mono)",
+            fontSize: 10,
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            transition: "all 0.2s ease"
+          }}
+        >
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#1d4ed8", boxShadow: "0 0 4px #1d4ed8" }} />
+          PTTS Partner
+        </a>
         <LangToggle />
         <ThemeToggle />
       </div>
