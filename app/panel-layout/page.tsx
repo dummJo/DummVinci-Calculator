@@ -1834,22 +1834,29 @@ export default function PanelLayoutPage() {
                     )}
                   </div>
 
-                  {/* Floating Focus Library (Simurelay style) */}
+                  {/* Floating Focus Library (Machined Industrial Style) */}
                   {isFullScreen && showFocusLibrary && (
-                    <div style={{ position: "absolute", left: 20, top: 80, bottom: 60, width: 280, background: "rgba(0,0,0,0.9)", border: "1px solid #444", borderRadius: 12, backdropFilter: "blur(20px)", zIndex: 300, display: "flex", flexDirection: "column", padding: 16, boxShadow: "0 20px 50px rgba(0,0,0,0.6)" }}>
-                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-                          <div style={{ fontSize: 12, fontWeight: 900, color: "var(--accent)", display: "flex", alignItems: "center", gap: 8 }}><Box size={14}/> QUICK COMPONENTS</div>
-                          <button onClick={() => setShowFocusLibrary(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer" }}><ChevronLeft size={16}/></button>
+                    <div style={{ position: "absolute", left: 20, top: 80, bottom: 60, width: 280, background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)", border: "1.5px solid #333", borderRadius: 4, backdropFilter: "blur(20px)", zIndex: 300, display: "flex", flexDirection: "column", padding: 16, boxShadow: "0 20px 50px rgba(0,0,0,0.8), inset 0 0 10px rgba(0,0,0,0.5)", backgroundImage: "radial-gradient(#333 1px, transparent 1px)", backgroundSize: "20px 20px" }}>
+                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, borderBottom: "1px solid #333", paddingBottom: 10 }}>
+                          <div style={{ fontSize: 10, fontWeight: 900, color: "var(--accent)", display: "flex", alignItems: "center", gap: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                             <Box size={14}/> 
+                             <span>Component Repository</span>
+                             <div style={{ width: 6, height: 6, background: "#10b981", borderRadius: "50%", boxShadow: "0 0 4px #10b981" }} /> {/* Status LED */}
+                          </div>
+                          <button onClick={() => setShowFocusLibrary(false)} style={{ background: "#222", border: "1px solid #444", color: "#fff", cursor: "pointer", padding: "2px 6px", borderRadius: 2 }}><ChevronLeft size={14}/></button>
                        </div>
                        
-                       <input 
-                         placeholder="Search symbols..."
-                         value={searchQuery}
-                         onChange={e => setSearchQuery(e.target.value)}
-                         style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid #333", borderRadius: 6, color: "#fff", padding: "8px 12px", fontSize: 12, marginBottom: 12, outline: "none" }}
-                       />
+                       <div style={{ position: "relative", marginBottom: 12 }}>
+                         <input 
+                           placeholder="FILTER PARTS..."
+                           value={searchQuery}
+                           onChange={e => setSearchQuery(e.target.value)}
+                           style={{ width: "100%", background: "#000", border: "1px solid #444", borderRadius: 2, color: "var(--accent)", padding: "8px 12px", fontSize: 10, outline: "none", fontFamily: "var(--font-mono)", fontWeight: 700 }}
+                         />
+                         <div style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontSize: 8, color: "#444" }}>[CTRL+F]</div>
+                       </div>
 
-                       <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6 }} className="custom-scrollbar">
+                       <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }} className="custom-scrollbar">
                           {componentLibrary
                             .filter(c => !["Label", "Logo", "Cooling", "Wiring"].includes(c.category))
                             .filter(c => c.partCode.toLowerCase().includes(searchQuery.toLowerCase()) || c.category.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -1857,42 +1864,64 @@ export default function PanelLayoutPage() {
                             <div 
                               key={c.partCode} 
                               onClick={() => { handleAddComponent(c); setShowFocusLibrary(false); }}
-                              style={{ padding: "10px", borderRadius: 6, background: "rgba(255,255,255,0.05)", border: "1px solid #333", cursor: "pointer", transition: "all 0.2s" }}
-                              onMouseEnter={e => e.currentTarget.style.borderColor = "var(--accent)"}
-                              onMouseLeave={e => e.currentTarget.style.borderColor = "#333"}
+                              style={{ padding: "12px", borderRadius: 2, background: "#111", border: "1px solid #222", cursor: "pointer", transition: "all 0.15s", position: "relative", overflow: "hidden" }}
+                              onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.background = "#1a1a1a"; }}
+                              onMouseLeave={e => { e.currentTarget.style.borderColor = "#222"; e.currentTarget.style.background = "#111"; }}
                             >
-                               <div style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>{c.partCode}</div>
-                               <div style={{ fontSize: 9, color: "#888", display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+                               <div style={{ fontSize: 11, fontWeight: 900, color: "#fff", letterSpacing: "0.02em" }}>{c.partCode}</div>
+                               <div style={{ fontSize: 8, color: "#666", display: "flex", justifyContent: "space-between", marginTop: 4, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
                                   <span>{c.category}</span>
-                                  <span>{c.brand}</span>
+                                  <span style={{ color: "var(--accent)", opacity: 0.7 }}>{c.brand}</span>
                                </div>
+                               {/* Industrial accent line */}
+                               <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 2, background: c.color || "#444" }} />
                             </div>
                           ))}
+                       </div>
+                       
+                       <div style={{ marginTop: 12, paddingTop: 8, borderTop: "1px solid #222", fontSize: 8, color: "#444", fontFamily: "var(--font-mono)", display: "flex", justifyContent: "space-between" }}>
+                          <span>PTTS_CAD_V2.8</span>
+                          <span>{componentLibrary.length} SYMBOLS</span>
                        </div>
                     </div>
                   )}
 
-                  {/* Engineering Floating Toolbar */}
-                  <div className="no-print" style={{ position: "absolute", left: isFullScreen ? "50%" : 30, bottom: isFullScreen ? 40 : 120, transform: isFullScreen ? "translateX(-50%)" : "none", background: "rgba(0,0,0,0.85)", border: "1px solid #444", borderRadius: 32, padding: "6px 12px", display: "flex", alignItems: "center", gap: 12, zIndex: 400, backdropFilter: "blur(10px)", boxShadow: "0 10px 30px rgba(0,0,0,0.5)" }}>
-                     <button onClick={() => setSelectedIds([])} style={{ background: "none", border: "none", color: selectedIds.length === 0 ? "var(--accent)" : "#fff", cursor: "pointer", padding: 8 }} title="Select Mode"><MousePointer2 size={18} /></button>
-                     <div style={{ width: 1, height: 20, background: "#333" }} />
-                     <button onClick={() => selectedIds.length > 0 && duplicateSelected()} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", padding: 8 }} title="Copy/Duplicate"><Copy size={18} /></button>
-                     <button onClick={() => selectedIds.forEach(id => setItems(prev => prev.filter(i => i.id !== id)))} style={{ background: "none", border: "none", color: "#f44", cursor: "pointer", padding: 8 }} title="Delete Selected"><Trash2 size={18} /></button>
-                     <div style={{ width: 1, height: 20, background: "#333" }} />
-                     <button onClick={() => setShowFocusLibrary(!showFocusLibrary)} style={{ background: "none", border: "none", color: "var(--accent)", cursor: "pointer", padding: 8 }} title="Add Components"><Plus size={18} /></button>
+                  {/* Engineering Floating Toolbar (Machined Control Strip) */}
+                  <div className="no-print" style={{ position: "absolute", left: isFullScreen ? "50%" : 30, bottom: isFullScreen ? 40 : 120, transform: isFullScreen ? "translateX(-50%)" : "none", background: "linear-gradient(to bottom, #1a1a1a, #0a0a0a)", border: "1.5px solid #444", borderRadius: 4, padding: "4px 8px", display: "flex", alignItems: "center", gap: 4, zIndex: 400, boxShadow: "0 15px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)" }}>
+                     <div style={{ padding: "0 8px", fontSize: 8, fontWeight: 900, color: "#444", fontFamily: "var(--font-mono)", borderRight: "1px solid #333" }}>TOOLS</div>
+                     
+                     <button onClick={() => setSelectedIds([])} style={{ background: selectedIds.length === 0 ? "var(--accent)" : "none", border: "none", color: selectedIds.length === 0 ? "#000" : "#fff", cursor: "pointer", padding: 8, borderRadius: 2 }} title="Select Mode"><MousePointer2 size={16} /></button>
+                     
+                     <div style={{ width: 1, height: 16, background: "#333", margin: "0 4px" }} />
+                     
+                     <button onClick={() => selectedIds.length > 0 && duplicateSelected()} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", padding: 8, borderRadius: 2 }} onMouseEnter={e => e.currentTarget.style.background = "#222"} onMouseLeave={e => e.currentTarget.style.background = "none"} title="Copy/Duplicate"><Copy size={16} /></button>
+                     <button onClick={() => selectedIds.forEach(id => setItems(prev => prev.filter(i => i.id !== id)))} style={{ background: "none", border: "none", color: "#f44", cursor: "pointer", padding: 8, borderRadius: 2 }} onMouseEnter={e => e.currentTarget.style.background = "rgba(244,67,54,0.1)"} onMouseLeave={e => e.currentTarget.style.background = "none"} title="Delete Selected"><Trash2 size={16} /></button>
+                     
+                     <div style={{ width: 1, height: 16, background: "#333", margin: "0 4px" }} />
+                     
+                     <button onClick={() => setShowFocusLibrary(!showFocusLibrary)} style={{ background: showFocusLibrary ? "var(--accent)" : "none", border: "none", color: showFocusLibrary ? "#000" : "var(--accent)", cursor: "pointer", padding: 8, borderRadius: 2 }} title="Add Components"><Plus size={16} /></button>
+                     
+                     <div style={{ width: 1, height: 16, background: "#333", margin: "0 4px" }} />
+                     
+                     <button onClick={toggleFullScreen} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", padding: 8, borderRadius: 2 }} title="Exit Focus"><Minimize2 size={16} /></button>
                   </div>
 
-                  {/* Program Status Bar (Bottom Focus Mode Only) */}
+                  {/* Program Status Bar (Industrial Console Style) */}
                   {isFullScreen && (
-                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 24, background: "#111", borderTop: "1px solid #333", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 12px", fontSize: 9, fontFamily: "var(--font-mono)", color: "#888", zIndex: 450 }}>
-                       <div style={{ display: "flex", gap: 16 }}>
-                          <span style={{ color: "var(--accent)" }}>CAD ENGINE v2.8.0</span>
-                          <span>MODE: {selectedIds.length > 0 ? `EDITING (${selectedIds.length} SELECTED)` : "IDLE"}</span>
+                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 26, background: "#050505", borderTop: "1.5px solid #222", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 12px", fontSize: 9, fontFamily: "var(--font-mono)", color: "#555", zIndex: 450, textTransform: "uppercase" }}>
+                       <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                          <div style={{ color: "var(--accent)", fontWeight: 900, display: "flex", alignItems: "center", gap: 6 }}>
+                             <div style={{ width: 8, height: 8, background: "var(--accent)", borderRadius: 1, boxShadow: "0 0 5px var(--accent)" }} />
+                             DUMMVINCI_CORE_V2.8.5
+                          </div>
+                          <span>SESSION: {new Date().toLocaleTimeString()}</span>
+                          <span style={{ color: selectedIds.length > 0 ? "#fff" : "#555" }}>OBJ_SELECTED: {selectedIds.length}</span>
                        </div>
-                       <div style={{ display: "flex", gap: 16 }}>
-                          <span>GRID: {snapToGrid ? "ON" : "OFF"}</span>
-                          <span>LAYERS: L1, L2, L3, N, PE</span>
-                          <span style={{ color: "#fff" }}>COORD: {Math.round(items[0]?.wx || 0)}, {Math.round(items[0]?.wy || 0)}</span>
+                       <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                          <span>BUSBAR: L1-L2-L3-N-PE (400V)</span>
+                          <div style={{ background: "#111", padding: "2px 8px", borderRadius: 2, border: "1px solid #333", color: "#fff" }}>
+                             X: {Math.round(items[0]?.wx || 0)} | Y: {Math.round(items[0]?.wy || 0)}
+                          </div>
                        </div>
                     </div>
                   )}
