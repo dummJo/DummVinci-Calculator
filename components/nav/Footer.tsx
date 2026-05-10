@@ -60,6 +60,32 @@ export default function Footer() {
           — {quote?.author}
         </div>
       </div>
+
+      {/* PTTS Credit */}
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        gap: 8, marginTop: 16, opacity: 0.45
+      }}>
+        <div style={{
+          width: 28, height: 28, borderRadius: "50%", overflow: "hidden",
+          background: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+          border: "1px solid rgba(255,255,255,0.1)"
+        }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://www.ptts.co.id/uploads/1/3/3/7/133745061/logo-web_orig.png"
+            alt="PTTS"
+            style={{ width: "90%", height: "90%", objectFit: "contain" }}
+          />
+        </div>
+        <span style={{
+          fontFamily: "var(--font-mono)", fontSize: 8,
+          color: "var(--muted-soft)", letterSpacing: "0.06em",
+          textTransform: "uppercase"
+        }}>
+          Supported by PT Prima Tekindo Tirta Sejahtera
+        </span>
+      </div>
     </footer>
   );
 }

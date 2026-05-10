@@ -1,7 +1,7 @@
 export interface PanelComponent {
   id: string;
   brand: "ABB" | "Siemens" | "Weidmuller" | "Fort" | "Schneider" | "KSS" | "Omron" | "Generic" | "PTTS" | "DummVinci";
-  category: "VSD" | "MCCB" | "Terminal Block" | "Control" | "Networking" | "Wiring" | "Cooling" | "Door Accessory" | "Meter" | "Label" | "Logo";
+  category: "VSD" | "MCCB" | "MCB" | "PLC" | "Relay" | "Contactor" | "SPD" | "Transformer" | "Terminal Block" | "Control" | "Networking" | "Wiring" | "Cooling" | "Door Accessory" | "Meter" | "Label" | "Logo";
   partCode: string;
   width: number; // mm
   height: number; // mm
@@ -108,6 +108,64 @@ export const componentLibrary: PanelComponent[] = [
   { id: "logo-sie", brand: "Siemens", category: "Logo", partCode: "Siemens Logo Sticker", width: 150, height: 30, depth: 1, color: "#009999" },
   { id: "logo-ptts", brand: "PTTS", category: "Logo", partCode: "PTTS Logo Sticker", width: 160, height: 60, depth: 1, color: "#1d4ed8" },
   { id: "logo-dvm", brand: "DummVinci", category: "Logo", partCode: "DummVinci Logo", width: 160, height: 50, depth: 1, color: "#111" },
+
+  // ─── Siemens S7-1200 PLC CPUs (SiePortal dimensions) ───
+  { id: "sie-1211c", brand: "Siemens", category: "PLC", partCode: "S7-1211C DC/DC/DC", width: 90, height: 100, depth: 75, color: "#009999" },
+  { id: "sie-1212c", brand: "Siemens", category: "PLC", partCode: "S7-1212C DC/DC/DC", width: 90, height: 100, depth: 75, color: "#009999" },
+  { id: "sie-1214c", brand: "Siemens", category: "PLC", partCode: "S7-1214C DC/DC/DC", width: 110, height: 100, depth: 75, color: "#009999" },
+  { id: "sie-1215c", brand: "Siemens", category: "PLC", partCode: "S7-1215C DC/DC/DC", width: 130, height: 100, depth: 75, color: "#009999" },
+  { id: "sie-1217c", brand: "Siemens", category: "PLC", partCode: "S7-1217C DC/DC/DC", width: 150, height: 100, depth: 75, color: "#009999" },
+
+  // Siemens S7-1200 Signal Modules
+  { id: "sie-sm1221-di16", brand: "Siemens", category: "PLC", partCode: "SM 1221 DI 16×24V", width: 45, height: 100, depth: 75, color: "#009999" },
+  { id: "sie-sm1222-do16", brand: "Siemens", category: "PLC", partCode: "SM 1222 DO 16×24V", width: 45, height: 100, depth: 75, color: "#009999" },
+  { id: "sie-sm1223-dido", brand: "Siemens", category: "PLC", partCode: "SM 1223 DI8/DO8", width: 45, height: 100, depth: 75, color: "#009999" },
+  { id: "sie-sm1231-ai8", brand: "Siemens", category: "PLC", partCode: "SM 1231 AI 8×13bit", width: 45, height: 100, depth: 75, color: "#009999" },
+  { id: "sie-sm1232-ao4", brand: "Siemens", category: "PLC", partCode: "SM 1232 AO 4×14bit", width: 45, height: 100, depth: 75, color: "#009999" },
+
+  // Siemens S7-1500 CPU
+  { id: "sie-1511c", brand: "Siemens", category: "PLC", partCode: "S7-1511C PN", width: 35, height: 147, depth: 130, color: "#004455" },
+  { id: "sie-1513", brand: "Siemens", category: "PLC", partCode: "S7-1513-1 PN", width: 35, height: 147, depth: 130, color: "#004455" },
+  { id: "sie-1515", brand: "Siemens", category: "PLC", partCode: "S7-1515-2 PN", width: 35, height: 147, depth: 130, color: "#004455" },
+  { id: "sie-1516", brand: "Siemens", category: "PLC", partCode: "S7-1516-3 PN/DP", width: 70, height: 147, depth: 130, color: "#004455" },
+
+  // Siemens S7-1500 Signal Modules
+  { id: "sie-sm1521-di32", brand: "Siemens", category: "PLC", partCode: "SM 521 DI 32×24V", width: 35, height: 147, depth: 130, color: "#004455" },
+  { id: "sie-sm1522-do32", brand: "Siemens", category: "PLC", partCode: "SM 522 DO 32×24V", width: 35, height: 147, depth: 130, color: "#004455" },
+  { id: "sie-sm1531-ai8", brand: "Siemens", category: "PLC", partCode: "SM 531 AI 8×16bit", width: 35, height: 147, depth: 130, color: "#004455" },
+  { id: "sie-sm1532-ao8", brand: "Siemens", category: "PLC", partCode: "SM 532 AO 8×16bit", width: 35, height: 147, depth: 130, color: "#004455" },
+
+  // ─── Siemens 3RT2 Contactors (IEC 60947-4-1) ───
+  { id: "sie-3rt2015", brand: "Siemens", category: "Contactor", partCode: "3RT2015 (7A)", width: 45, height: 82, depth: 96, color: "#009999" },
+  { id: "sie-3rt2024", brand: "Siemens", category: "Contactor", partCode: "3RT2024 (12A)", width: 45, height: 97, depth: 110, color: "#009999" },
+  { id: "sie-3rt2026", brand: "Siemens", category: "Contactor", partCode: "3RT2026 (25A)", width: 55, height: 107, depth: 110, color: "#009999" },
+  { id: "sie-3rt2036", brand: "Siemens", category: "Contactor", partCode: "3RT2036 (50A)", width: 55, height: 119, depth: 132, color: "#009999" },
+  { id: "sie-3rt2046", brand: "Siemens", category: "Contactor", partCode: "3RT2046 (95A)", width: 75, height: 137, depth: 144, color: "#009999" },
+
+  // ─── ABB AF Contactors ───
+  { id: "abb-af09", brand: "ABB", category: "Contactor", partCode: "AF09-30 (9A)", width: 45, height: 79, depth: 72, color: "#e4002b" },
+  { id: "abb-af16", brand: "ABB", category: "Contactor", partCode: "AF16-30 (16A)", width: 45, height: 79, depth: 72, color: "#e4002b" },
+  { id: "abb-af26", brand: "ABB", category: "Contactor", partCode: "AF26-30 (26A)", width: 55, height: 100, depth: 86, color: "#e4002b" },
+  { id: "abb-af38", brand: "ABB", category: "Contactor", partCode: "AF38-30 (38A)", width: 55, height: 100, depth: 86, color: "#e4002b" },
+  { id: "abb-af65", brand: "ABB", category: "Contactor", partCode: "AF65-30 (65A)", width: 75, height: 132, depth: 110, color: "#e4002b" },
+
+  // ─── Siemens Timer Relays (3RP25) ───
+  { id: "sie-3rp2505", brand: "Siemens", category: "Relay", partCode: "3RP2505 Timer 0.05s-100h", width: 22.5, height: 82, depth: 62, color: "#009999" },
+  { id: "sie-3rp2525", brand: "Siemens", category: "Relay", partCode: "3RP2525 Star-Delta Timer", width: 22.5, height: 82, depth: 62, color: "#009999" },
+  { id: "sie-3rp2535", brand: "Siemens", category: "Relay", partCode: "3RP2535 Twin Timer", width: 22.5, height: 82, depth: 62, color: "#009999" },
+
+  // ─── Siemens 5SY MCBs (IEC 60898) ───
+  { id: "sie-5sy-1p", brand: "Siemens", category: "MCB", partCode: "5SY4 1P C16", width: 18, height: 80, depth: 70, color: "#009999" },
+  { id: "sie-5sy-2p", brand: "Siemens", category: "MCB", partCode: "5SY4 2P C16", width: 36, height: 80, depth: 70, color: "#009999" },
+  { id: "sie-5sy-3p", brand: "Siemens", category: "MCB", partCode: "5SY4 3P C16", width: 54, height: 80, depth: 70, color: "#009999" },
+
+  // ─── Siemens 5SD7 SPD (Surge Protection) ───
+  { id: "sie-5sd7-t2", brand: "Siemens", category: "SPD", partCode: "5SD7 T2 3P+N", width: 72, height: 83, depth: 67, color: "#009999" },
+
+  // ─── ABB Control Transformers ───
+  { id: "abb-ct-100va", brand: "ABB", category: "Transformer", partCode: "CT 100VA 400/230V", width: 90, height: 103, depth: 96, color: "#e4002b" },
+  { id: "abb-ct-250va", brand: "ABB", category: "Transformer", partCode: "CT 250VA 400/230V", width: 120, height: 116, depth: 114, color: "#e4002b" },
+  { id: "abb-ct-630va", brand: "ABB", category: "Transformer", partCode: "CT 630VA 400/230V", width: 156, height: 145, depth: 142, color: "#e4002b" },
 ];
 
 export const ENCLOSURES = [

@@ -4,7 +4,7 @@ import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, Filter, Box, Minimize2, Printer, Settings2, Grid, Layers, MousePointer2, Copy } from "lucide-react";
+import { Plus, Trash2, Search, Box, Minimize2, Printer, Settings2, Grid, Layers, MousePointer2, Copy } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
@@ -25,6 +25,7 @@ export default function PanelLayoutPage() {
 
   const [items, setItems] = useState<PlacedItem[]>([]);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   
   const [viewMode, setViewMode] = useState<"inner" | "outer" | "iso">("inner");
   const [snapToGrid, setSnapToGrid] = useState(true);
@@ -167,9 +168,13 @@ export default function PanelLayoutPage() {
 
 
   const categories = ["All", ...Array.from(new Set(componentLibrary.map((c) => c.category)))];
-  const filteredLibrary = activeCategory === "All" 
-    ? componentLibrary 
-    : componentLibrary.filter((c) => c.category === activeCategory);
+  const filteredLibrary = componentLibrary.filter((c) => {
+    const matchesCat = activeCategory === "All" || c.category === activeCategory;
+    if (!searchQuery.trim()) return matchesCat;
+    const q = searchQuery.toLowerCase();
+    const matchesSearch = c.partCode.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q) || c.category.toLowerCase().includes(q);
+    return matchesCat && matchesSearch;
+  });
 
   const handleAddComponent = (comp: PanelComponent) => {
     let startX = 20;
@@ -638,6 +643,113 @@ export default function PanelLayoutPage() {
              </span>
           </div>
         );
+      case "PLC":
+        const isS71500 = comp.partCode.includes("S7-15") || comp.partCode.includes("SM 5");
+        return (
+          <div style={{ width: "100%", height: "100%", background: isS71500 ? "linear-gradient(to bottom, #1a3a4a, #0d2530)" : "linear-gradient(to bottom, #e8e8e8, #c8c8c8)", border: `1px solid ${isS71500 ? "#0a1e28" : "#999"}`, borderRadius: 2, display: "flex", flexDirection: "column", boxSizing: "border-box", boxShadow: "0 2px 5px rgba(0,0,0,0.3), inset 1px 1px 2px rgba(255,255,255,0.2)", overflow: "hidden", position: "relative" }}>
+            {/* Top connector strip */}
+            <div style={{ width: "100%", height: "12%", background: isS71500 ? "#0a1e28" : "#555", display: "flex", justifyContent: "space-around", alignItems: "center", padding: "0 5%", boxSizing: "border-box" }}>
+              {Array.from({length: Math.min(6, Math.round(w / 15))}).map((_, i) => <div key={i} style={{ width: "8%", height: "50%", background: "#aaa", borderRadius: 1 }} />)}
+            </div>
+            {/* Status LED strip */}
+            <div style={{ display: "flex", gap: "3%", padding: "3% 8%", boxSizing: "border-box" }}>
+              {Array.from({length: 4}).map((_, i) => <div key={i} style={{ width: "8%", paddingTop: "8%", borderRadius: "50%", background: i === 0 ? "#10b981" : i === 1 ? "#f59e0b" : "#333", boxShadow: i < 2 ? `0 0 3px ${i === 0 ? "#10b981" : "#f59e0b"}` : "none" }} />)}
+            </div>
+            {/* Brand accent */}
+            <div style={{ position: "absolute", left: 0, top: "15%", bottom: "15%", width: "4%", background: comp.color }} />
+            {/* Center label area */}
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: "65%", height: "45%", background: isS71500 ? "rgba(0,200,200,0.15)" : "#fff", border: `1px solid ${isS71500 ? "rgba(0,200,200,0.3)" : "#bbb"}`, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontSize: "clamp(4px, 0.7vw, 7px)", fontFamily: "var(--font-mono)", color: isS71500 ? "#6dd" : "#333", fontWeight: 800 }}>{isS71500 ? "S7-1500" : "S7-1200"}</span>
+              </div>
+            </div>
+            {/* Bottom connector strip */}
+            <div style={{ width: "100%", height: "12%", background: isS71500 ? "#0a1e28" : "#555", display: "flex", justifyContent: "space-around", alignItems: "center", padding: "0 5%", boxSizing: "border-box" }}>
+              {Array.from({length: Math.min(6, Math.round(w / 15))}).map((_, i) => <div key={i} style={{ width: "8%", height: "50%", background: "#aaa", borderRadius: 1 }} />)}
+            </div>
+          </div>
+        );
+      case "Contactor":
+        return (
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(to right, #c0c0c0, #e0e0e0, #c0c0c0)", border: "1px solid #666", borderRadius: 3, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", boxSizing: "border-box", padding: "3% 0", boxShadow: "0 2px 5px rgba(0,0,0,0.35), inset 1px 1px 2px #fff" }}>
+            {/* Top terminals */}
+            <div style={{ width: "80%", height: "8%", display: "flex", justifyContent: "space-around" }}>
+              {Array.from({length: 3}).map((_, i) => <div key={i} style={{ width: "18%", height: "100%", background: "#888", borderRadius: 2, border: "1px solid #555" }} />)}
+            </div>
+            {/* Arc chamber */}
+            <div style={{ width: "70%", height: "30%", background: "#333", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #222", boxShadow: "inset 0 3px 5px rgba(0,0,0,0.5)" }}>
+              <div style={{ width: "50%", height: "50%", background: "linear-gradient(to bottom, #555, #222)", borderRadius: 2, borderTop: "2px solid #777" }} />
+            </div>
+            {/* Coil section + brand strip */}
+            <div style={{ width: "85%", height: "20%", background: "rgba(0,0,0,0.06)", borderRadius: 2, display: "flex", alignItems: "center", gap: "5%", padding: "0 5%", boxSizing: "border-box" }}>
+              <div style={{ width: "30%", height: "60%", background: comp.color, borderRadius: 2, opacity: 0.9 }} />
+              <div style={{ flex: 1, height: "40%", background: "#fff", border: "1px solid #ccc", borderRadius: 1 }} />
+            </div>
+            {/* Bottom terminals */}
+            <div style={{ width: "80%", height: "8%", display: "flex", justifyContent: "space-around" }}>
+              {Array.from({length: 3}).map((_, i) => <div key={i} style={{ width: "18%", height: "100%", background: "#888", borderRadius: 2, border: "1px solid #555" }} />)}
+            </div>
+          </div>
+        );
+      case "Relay":
+        return (
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #e8e8e8, #d0d0d0)", border: "1px solid #888", borderRadius: 2, display: "flex", flexDirection: "column", alignItems: "center", padding: "8% 5%", boxSizing: "border-box", boxShadow: "0 2px 4px rgba(0,0,0,0.25), inset 1px 1px 2px #fff", position: "relative" }}>
+            {/* Brand accent line */}
+            <div style={{ position: "absolute", top: 0, left: "8%", width: "12%", height: "100%", background: comp.color, opacity: 0.7 }} />
+            {/* Timer dial / indicator */}
+            <div style={{ width: "55%", paddingTop: "55%", background: "#fff", border: "2px solid #aaa", borderRadius: "50%", position: "relative", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.15)" }}>
+              <div style={{ position: "absolute", top: "50%", left: "50%", width: "2px", height: "35%", background: comp.color, transformOrigin: "top", transform: "translate(-50%, 0) rotate(45deg)" }} />
+              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "20%", paddingTop: "20%", background: "#333", borderRadius: "50%" }} />
+            </div>
+            {/* Base */}
+            <div style={{ width: "90%", height: "25%", background: "#aaa", border: "1px solid #777", borderRadius: 2, marginTop: "auto", display: "flex", justifyContent: "space-around", alignItems: "center", padding: "0 5%", boxSizing: "border-box" }}>
+              {Array.from({length: 4}).map((_, i) => <div key={i} style={{ width: "12%", paddingTop: "12%", background: "#666", borderRadius: "50%" }} />)}
+            </div>
+          </div>
+        );
+      case "MCB":
+        return (
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(to right, #d5d5d5, #eee, #d5d5d5)", border: "1px solid #888", borderRadius: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "5% 0", boxSizing: "border-box", boxShadow: "0 2px 4px rgba(0,0,0,0.3), inset 1px 1px 2px #fff" }}>
+            {/* Top terminal */}
+            <div style={{ width: "50%", height: "8%", background: "#888", borderRadius: 2, border: "1px solid #555" }} />
+            {/* Toggle */}
+            <div style={{ width: "40%", height: "35%", background: "#333", borderRadius: 3, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "10% 0", boxSizing: "border-box", border: "1px solid #111" }}>
+              <div style={{ width: "50%", height: "60%", background: comp.color, borderRadius: 2, border: "1px solid rgba(0,0,0,0.3)" }} />
+            </div>
+            {/* Rating label */}
+            <div style={{ width: "70%", height: "12%", background: "#fff", border: "1px solid #bbb", borderRadius: 1 }} />
+            {/* Bottom terminal */}
+            <div style={{ width: "50%", height: "8%", background: "#888", borderRadius: 2, border: "1px solid #555" }} />
+          </div>
+        );
+      case "SPD":
+        return (
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #e0e0e0, #c8c8c8)", border: "1px solid #888", borderRadius: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8%", boxSizing: "border-box", boxShadow: "0 2px 4px rgba(0,0,0,0.3), inset 1px 1px 2px #fff", position: "relative" }}>
+            {/* Status window */}
+            <div style={{ width: "40%", height: "20%", background: "#10b981", borderRadius: 3, border: "1px solid #0d9668", boxShadow: "0 0 6px rgba(16,185,129,0.5)" }} />
+            {/* Lightning symbol hint */}
+            <div style={{ fontSize: "clamp(8px, 2vw, 16px)", fontWeight: 900, color: "#f59e0b", textShadow: "0 0 4px rgba(245,158,11,0.3)" }}>⚡</div>
+            {/* Brand strip */}
+            <div style={{ position: "absolute", bottom: "5%", width: "80%", height: "8%", background: comp.color, borderRadius: 1, opacity: 0.7 }} />
+          </div>
+        );
+      case "Transformer":
+        return (
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #d4d4d4, #b0b0b0)", border: "2px solid #888", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", boxShadow: "0 3px 8px rgba(0,0,0,0.35), inset 1px 1px 3px #fff", position: "relative", overflow: "hidden" }}>
+            {/* E-I lamination pattern */}
+            <div style={{ width: "60%", height: "70%", position: "relative" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundImage: "repeating-linear-gradient(to bottom, #999 0px, #999 2px, #bbb 2px, #bbb 4px)", borderRadius: 2, border: "1px solid #777" }} />
+              {/* Coil windings */}
+              <div style={{ position: "absolute", top: "15%", left: "-10%", width: "35%", height: "70%", background: comp.color, opacity: 0.7, borderRadius: "30%", border: "1px solid rgba(0,0,0,0.2)" }} />
+              <div style={{ position: "absolute", top: "15%", right: "-10%", width: "35%", height: "70%", background: "#1d4ed8", opacity: 0.6, borderRadius: "30%", border: "1px solid rgba(0,0,0,0.2)" }} />
+            </div>
+            {/* Terminals */}
+            <div style={{ position: "absolute", top: "5%", left: "10%", width: "10%", paddingTop: "10%", background: "#888", borderRadius: "50%", border: "1px solid #555" }} />
+            <div style={{ position: "absolute", top: "5%", right: "10%", width: "10%", paddingTop: "10%", background: "#888", borderRadius: "50%", border: "1px solid #555" }} />
+            <div style={{ position: "absolute", bottom: "5%", left: "10%", width: "10%", paddingTop: "10%", background: "#888", borderRadius: "50%", border: "1px solid #555" }} />
+            <div style={{ position: "absolute", bottom: "5%", right: "10%", width: "10%", paddingTop: "10%", background: "#888", borderRadius: "50%", border: "1px solid #555" }} />
+          </div>
+        );
       case "Control":
       default:
         return (
@@ -829,26 +941,57 @@ export default function PanelLayoutPage() {
           
           {/* Sidebar */}
           <div className="no-print" style={{ flex: "1 1 250px", minWidth: 250 }}>
-            <div className="vinci-card" style={{ padding: 16, maxHeight: 650, display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="vinci-card" style={{ padding: 16, maxHeight: 650, display: "flex", flexDirection: "column", gap: 12 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, textTransform: "uppercase", color: "var(--muted)", margin: 0 }}>
                   Library
                 </h3>
-                <Filter size={14} color="var(--muted)" />
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--accent)", opacity: 0.7 }}>
+                  {filteredLibrary.length} items
+                </span>
               </div>
 
-              <select
-                value={activeCategory}
-                onChange={(e) => setActiveCategory(e.target.value)}
-                style={{
-                  background: "var(--bg)", border: "1px solid var(--border)",
-                  color: "var(--fg)", padding: "8px", borderRadius: 6,
-                  fontFamily: "var(--font-mono)", fontSize: 13, outline: "none",
-                  width: "100%", cursor: "pointer"
-                }}
-              >
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
+              {/* Search Input */}
+              <div style={{ position: "relative" }}>
+                <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--muted)", pointerEvents: "none" }} />
+                <input
+                  type="text"
+                  placeholder="Search component..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: "100%", background: "var(--bg)", border: "1px solid var(--border)",
+                    color: "var(--fg)", padding: "8px 10px 8px 30px", borderRadius: 6,
+                    fontFamily: "var(--font-mono)", fontSize: 12, outline: "none",
+                    boxSizing: "border-box"
+                  }}
+                />
+              </div>
+
+              {/* Category Pill Tabs */}
+              <div style={{ display: "flex", gap: 4, overflowX: "auto", paddingBottom: 4, flexShrink: 0 }}>
+                {categories.map(c => {
+                  const count = c === "All" ? componentLibrary.length : componentLibrary.filter(x => x.category === c).length;
+                  return (
+                    <button
+                      key={c}
+                      onClick={() => setActiveCategory(c)}
+                      style={{
+                        padding: "3px 8px", borderRadius: 12, fontSize: 9,
+                        fontFamily: "var(--font-mono)", textTransform: "uppercase",
+                        letterSpacing: "0.04em", border: "1px solid",
+                        cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
+                        background: activeCategory === c ? "var(--accent)" : "transparent",
+                        color: activeCategory === c ? "#000" : "var(--muted)",
+                        borderColor: activeCategory === c ? "var(--accent)" : "var(--border)",
+                        transition: "all 0.15s ease"
+                      }}
+                    >
+                      {c} <span style={{ opacity: 0.6 }}>({count})</span>
+                    </button>
+                  );
+                })}
+              </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 8, overflowY: "auto", paddingRight: 4 }}>
                 {filteredLibrary.map((c) => (
@@ -1305,6 +1448,9 @@ export default function PanelLayoutPage() {
               const pxH = activeEnc.extH * baseScale;
               const pxD = (activeEnc.extD || 200) * baseScale;
 
+              const innerItems = items.filter(i => !["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(i.comp.category));
+              const outerItems = items.filter(i => ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(i.comp.category));
+
               return (
               <div
                 onPointerDown={onIsoPointerDown}
@@ -1313,58 +1459,95 @@ export default function PanelLayoutPage() {
                 style={{
                   position: "relative", width: "100%", height: 600,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  perspective: 1500, cursor: isIsoDragging ? "grabbing" : "grab",
-                  background: "radial-gradient(circle at center, #444 0%, #111 100%)",
+                  perspective: 1800, cursor: isIsoDragging ? "grabbing" : "grab",
+                  background: "radial-gradient(circle at center, #333 0%, #0a0a0a 100%)",
                   borderRadius: 12, border: "2px solid #555", overflow: "hidden",
                   boxShadow: "inset 0 0 40px rgba(0,0,0,0.8)"
                 }}
               >
                 <div style={{ position: "absolute", top: 16, right: 16, color: "#aaa", fontSize: 12, fontFamily: "var(--font-mono)" }}>
-                  Hint: Drag to rotate
+                  Drag to rotate · {innerItems.length + outerItems.length} items
                 </div>
                 
                 <div style={{
                   position: "relative", width: pxW, height: pxH,
                   transformStyle: "preserve-3d",
+                  transformOrigin: `${pxW / 2}px ${pxH / 2}px ${-pxD / 2}px`,
                   transform: `rotateX(${isoRot.x}deg) rotateY(${isoRot.y}deg)`,
                   transition: isIsoDragging ? "none" : "transform 0.1s ease"
                 }}>
                   
+                  {/* Back Face — shows inner mounting plate with components */}
+                  <div style={{
+                    position: "absolute", width: pxW, height: pxH, background: "#f5f5f5",
+                    border: "1px solid #aaa", backfaceVisibility: "hidden",
+                    transform: `translateZ(-${pxD / 2}px) rotateY(180deg)`,
+                    overflow: "hidden"
+                  }}>
+                    {/* Grid on mounting plate */}
+                    <div style={{
+                      position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+                      backgroundImage: "linear-gradient(#ddd 1px, transparent 1px), linear-gradient(90deg, #ddd 1px, transparent 1px)",
+                      backgroundSize: `${(50 / activeEnc.extW) * 100}% ${(50 / activeEnc.extH) * 100}%`,
+                      opacity: 0.4, pointerEvents: "none"
+                    }} />
+                    {/* Inner items on mounting plate */}
+                    {innerItems.map(item => {
+                      const wPct = (item.w / activeEnc.w) * (activeEnc.w / activeEnc.extW) * 100;
+                      const hPct = (item.h / activeEnc.h) * (activeEnc.h / activeEnc.extH) * 100;
+                      const offsetX = ((activeEnc.extW - activeEnc.w) / 2 / activeEnc.extW) * 100;
+                      const offsetY = ((activeEnc.extH - activeEnc.h) / 2 / activeEnc.extH) * 100;
+                      const xPct = (item.x / activeEnc.w) * (activeEnc.w / activeEnc.extW) * 100 + offsetX;
+                      const yPct = (item.y / activeEnc.h) * (activeEnc.h / activeEnc.extH) * 100 + offsetY;
+                      return (
+                        <div key={item.id} style={{ position: "absolute", left: `${xPct}%`, top: `${yPct}%`, width: `${wPct}%`, height: `${hPct}%`, pointerEvents: "none" }}>
+                          {renderCADVisual(item)}
+                        </div>
+                      );
+                    })}
+                  </div>
+
                   {/* Left Face */}
                   <div style={{
                     position: "absolute", width: pxD, height: pxH, background: "linear-gradient(to right, #666, #999)",
-                    border: "1px solid #444", transform: `rotateY(-90deg) translateZ(${pxW / 2}px)`
+                    border: "1px solid #444", backfaceVisibility: "hidden",
+                    transform: `rotateY(-90deg) translateZ(${pxW / 2}px)`
                   }} />
 
                   {/* Right Face */}
                   <div style={{
                     position: "absolute", width: pxD, height: pxH, background: "linear-gradient(to right, #999, #777)",
-                    border: "1px solid #444", transform: `rotateY(90deg) translateZ(${pxW / 2}px)`
+                    border: "1px solid #444", backfaceVisibility: "hidden",
+                    transform: `rotateY(90deg) translateZ(${pxW / 2}px)`
                   }} />
 
                   {/* Top Face */}
                   <div style={{
                     position: "absolute", width: pxW, height: pxD, background: "#ccc",
-                    border: "1px solid #444", transform: `rotateX(90deg) translateZ(${pxH / 2}px)`
+                    border: "1px solid #444", backfaceVisibility: "hidden",
+                    transform: `rotateX(90deg) translateZ(${pxH / 2}px)`
                   }} />
 
                   {/* Bottom Face */}
                   <div style={{
                     position: "absolute", width: pxW, height: pxD, background: "#444",
-                    border: "1px solid #222", transform: `rotateX(-90deg) translateZ(${pxH / 2}px)`
+                    border: "1px solid #222", backfaceVisibility: "hidden",
+                    transform: `rotateX(-90deg) translateZ(${pxH / 2}px)`
                   }} />
 
-                  {/* Back Face */}
+                  {/* Back wall (visible from front when door not blocking) */}
                   <div style={{
-                    position: "absolute", width: pxW, height: pxH, background: "#777",
-                    border: "1px solid #444", transform: `translateZ(-${pxD / 2}px) rotateY(180deg)`
+                    position: "absolute", width: pxW, height: pxH, background: "#888",
+                    border: "1px solid #555", backfaceVisibility: "hidden",
+                    transform: `translateZ(-${pxD / 2}px)`
                   }} />
 
-                  {/* Front Door (Solid) */}
+                  {/* Front Door */}
                   <div style={{
                     position: "absolute", width: pxW, height: pxH, 
                     background: "linear-gradient(135deg, #d8d8d8 0%, #a8a8a8 100%)",
-                    border: "2px solid #666", transform: `translateZ(${pxD / 2}px)`,
+                    border: "2px solid #666", backfaceVisibility: "hidden",
+                    transform: `translateZ(${pxD / 2}px)`,
                     boxShadow: "inset 0 0 10px rgba(0,0,0,0.1)"
                   }}>
                     {/* Double Door Seam if width >= 1000 */}
@@ -1375,8 +1558,16 @@ export default function PanelLayoutPage() {
                       }} />
                     )}
 
+                    {/* Handle */}
+                    <div style={{
+                      position: "absolute", top: "45%", right: activeEnc.extW >= 1000 ? "48%" : "4%",
+                      width: activeEnc.extW >= 1000 ? "2%" : "5%", height: "10%",
+                      background: "#333", borderRadius: 3, border: "1px solid #111",
+                      boxShadow: "2px 3px 5px rgba(0,0,0,0.4)"
+                    }} />
+
                     {/* Render Outer Door Items */}
-                    {items.filter(i => ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(i.comp.category)).map(item => {
+                    {outerItems.map(item => {
                       const wPct = (item.w / activeEnc.extW) * 100;
                       const hPct = (item.h / activeEnc.extH) * 100;
                       const xPct = (item.x / activeEnc.extW) * 100;
@@ -1391,28 +1582,12 @@ export default function PanelLayoutPage() {
 
                   {/* Plinth for Floorstand */}
                   {activeEnc.extH >= 1700 && (
-                    <div style={{
-                      position: "absolute", width: pxW, height: 30, background: "#333",
-                      border: "1px solid #111", transform: `translateY(${pxH}px) translateZ(${pxD / 2 - 15}px)`
-                    }} />
-                  )}
-                  {activeEnc.extH >= 1700 && (
-                    <div style={{
-                      position: "absolute", width: pxW, height: 30, background: "#222",
-                      border: "1px solid #111", transform: `translateY(${pxH}px) translateZ(-${pxD / 2 - 15}px)`
-                    }} />
-                  )}
-                  {activeEnc.extH >= 1700 && (
-                    <div style={{
-                      position: "absolute", width: pxD, height: 30, background: "#2a2a2a",
-                      border: "1px solid #111", transform: `translateY(${pxH}px) rotateY(-90deg) translateZ(${pxW / 2}px)`
-                    }} />
-                  )}
-                  {activeEnc.extH >= 1700 && (
-                    <div style={{
-                      position: "absolute", width: pxD, height: 30, background: "#2a2a2a",
-                      border: "1px solid #111", transform: `translateY(${pxH}px) rotateY(90deg) translateZ(${pxW / 2}px)`
-                    }} />
+                    <>
+                      <div style={{ position: "absolute", width: pxW, height: 30, background: "#333", border: "1px solid #111", backfaceVisibility: "hidden", transform: `translateY(${pxH}px) translateZ(${pxD / 2 - 15}px)` }} />
+                      <div style={{ position: "absolute", width: pxW, height: 30, background: "#222", border: "1px solid #111", backfaceVisibility: "hidden", transform: `translateY(${pxH}px) translateZ(-${pxD / 2 - 15}px)` }} />
+                      <div style={{ position: "absolute", width: pxD, height: 30, background: "#2a2a2a", border: "1px solid #111", backfaceVisibility: "hidden", transform: `translateY(${pxH}px) rotateY(-90deg) translateZ(${pxW / 2}px)` }} />
+                      <div style={{ position: "absolute", width: pxD, height: 30, background: "#2a2a2a", border: "1px solid #111", backfaceVisibility: "hidden", transform: `translateY(${pxH}px) rotateY(90deg) translateZ(${pxW / 2}px)` }} />
+                    </>
                   )}
 
                 </div>
