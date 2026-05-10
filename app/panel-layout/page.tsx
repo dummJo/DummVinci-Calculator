@@ -1544,6 +1544,21 @@ export default function PanelLayoutPage() {
                 const idx = items.filter(i => i.comp.category === item.comp.category).findIndex(i => i.id === item.id);
                 const designation = item.label || `${getDesignation(item.comp.category)}${idx + 1}`;
 
+                // Phase logic: determine if 1 or 3 phase
+                const is3P = ["MCCB", "VSD", "Transformer"].includes(item.comp.category) || 
+                             (["MCB", "Contactor"].includes(item.comp.category) && (item.comp.partCode.includes("3P") || item.comp.partCode.includes("3RT")));
+                
+                // Derivation Logic: Find parent component directly above this one
+                const parent = items.find(p => 
+                  p.id !== item.id && 
+                  !["Label", "Logo", "Cooling"].includes(p.comp.category) &&
+                  Math.abs((p.wx ?? 100) - wx) < 40 && // Roughly same column
+                  (p.wy ?? 200) < wy - 60 // Must be above
+                );
+
+                const connectionTop = parent ? (parent.wy ?? 200) + 80 : 60; // Connect to parent bottom or main busbar
+                const connectionY = connectionTop - wy;
+
                 return (
                   <div 
                     key={item.id}
@@ -1557,24 +1572,26 @@ export default function PanelLayoutPage() {
                       transform: isHovered ? "scale(1.05)" : "none"
                     }}
                   >
-                    {/* Vertical connection lines to busbar (Safety checked) */}
-                    {wy > 60 && (
-                      <>
-                        <div style={{ position: "absolute", top: -wy + 60, left: 30, width: 1, height: wy - 60, borderLeft: "1px solid #000" }} />
-                        <div style={{ position: "absolute", top: -wy + 60, left: 30, width: 4, height: 4, background: "#000", borderRadius: "50%", transform: "translate(-1.5px, -2px)" }} />
-                      </>
+                    {/* Vertical connection lines (Phased and Smart) */}
+                    <div style={{ position: "absolute", top: connectionY, left: 30, width: 1, height: -connectionY, borderLeft: "1.5px solid #000" }}>
+                       {/* Phase indicators (/// for 3P, / for 1P) */}
+                       <div style={{ position: "absolute", top: "50%", left: -5, transform: "rotate(-45deg)", fontSize: 8, fontWeight: 900, whiteSpace: "nowrap" }}>
+                         {is3P ? "///" : "/"}
+                       </div>
+                       {/* Connection dot if to busbar */}
+                       {!parent && (
+                         <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: 4, background: "#000", borderRadius: "50%", transform: "translate(-1.5px, -2px)" }} />
+                       )}
+                    </div>
+                    {is3P && !parent && wy > 80 && (
+                      <div style={{ position: "absolute", top: 80 - wy, left: 20, width: 1, height: wy - 80, borderLeft: "1px solid #000" }}>
+                        <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: 4, background: "#000", borderRadius: "50%", transform: "translate(-1.5px, -2px)" }} />
+                      </div>
                     )}
-                    {wy > 80 && (
-                      <>
-                        <div style={{ position: "absolute", top: -wy + 80, left: 20, width: 1, height: wy - 80, borderLeft: "1px solid #000" }} />
-                        <div style={{ position: "absolute", top: -wy + 80, left: 20, width: 4, height: 4, background: "#000", borderRadius: "50%", transform: "translate(-1.5px, -2px)" }} />
-                      </>
-                    )}
-                    {wy > 100 && (
-                      <>
-                        <div style={{ position: "absolute", top: -wy + 100, left: 10, width: 1, height: wy - 100, borderLeft: "1px solid #000" }} />
-                        <div style={{ position: "absolute", top: -wy + 100, left: 10, width: 4, height: 4, background: "#000", borderRadius: "50%", transform: "translate(-1.5px, -2px)" }} />
-                      </>
+                    {is3P && !parent && wy > 100 && (
+                      <div style={{ position: "absolute", top: 100 - wy, left: 10, width: 1, height: wy - 100, borderLeft: "1px solid #000" }}>
+                        <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: 4, background: "#000", borderRadius: "50%", transform: "translate(-1.5px, -2px)" }} />
+                      </div>
                     )}
 
                     <div style={{
@@ -1618,6 +1635,7 @@ export default function PanelLayoutPage() {
                     <div style={{ textAlign: "center", marginTop: 4 }}>
                       <div style={{ fontSize: 10, fontWeight: 900, color: isSelected ? "var(--accent)" : "#000", fontFamily: "var(--font-mono)" }}>{designation}</div>
                       <div style={{ fontSize: 7, color: "#666", fontWeight: 700 }}>{item.comp.brand}</div>
+                      <div style={{ fontSize: 6, color: "var(--accent)", fontWeight: 900, marginTop: 1 }}>{is3P ? "3-PHASE" : "1-PHASE"}</div>
                     </div>
                   </div>
                 );
