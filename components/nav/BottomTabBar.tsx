@@ -18,7 +18,7 @@ export default function BottomTabBar() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const seen = localStorage.getItem("dummvinci_v2_2_seen");
+      const seen = localStorage.getItem("dummvinci_v2_4_seen");
       if (!seen) {
         // slight delay for dramatic effect
         const tid = setTimeout(() => setShowChangelog(true), 800);
@@ -30,7 +30,7 @@ export default function BottomTabBar() {
   const closeChangelog = () => {
     setShowChangelog(false);
     if (typeof window !== "undefined") {
-      localStorage.setItem("dummvinci_v2_2_seen", "true");
+      localStorage.setItem("dummvinci_v2_4_seen", "true");
     }
   };
   const navRef = useRef<HTMLDivElement>(null);
@@ -236,7 +236,7 @@ export default function BottomTabBar() {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
-                <span className="version-tag" style={{ background: "var(--accent)", color: "#000", fontWeight: 800, letterSpacing: "0.1em" }}>SEASON 2 UPDATE</span>
+                <span className="version-tag" style={{ background: "var(--accent)", color: "#000", fontWeight: 800, letterSpacing: "0.1em" }}>VERSION 2.4 UPDATE</span>
                 <h2 style={{ fontSize: 28, fontFamily: "var(--font-display)", color: "var(--fg)", margin: "8px 0 0 0" }}>
                   What&apos;s New!
                 </h2>
@@ -248,22 +248,22 @@ export default function BottomTabBar() {
             
             <div style={{ marginTop: 24, fontSize: 14, lineHeight: 1.6, color: "var(--fg-soft)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--accent)", marginBottom: 16 }}>
-                <Sparkles size={18} /> <span style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: 13, letterSpacing: "0.1em" }}>NEW ENGINEERING TOOLS (V2.2)</span>
+                <Sparkles size={18} /> <span style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: 13, letterSpacing: "0.1em" }}>INDUSTRIAL ESTIMATOR (V2.4)</span>
               </div>
               <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
-                <li><b><span style={{color:"var(--fg)"}}>PID Loop Simulator</span></b>: Interactive step-response tuning for Process Control (Motors, Pumps, Compressors) using FOPDT modeling.</li>
-                <li><b><span style={{color:"var(--fg)"}}>Testing Tutorials</span></b>: Animated, game-like visual guides for Multimeter & Megger measurements based on IEC/IEEE standards.</li>
-                <li><b><span style={{color:"var(--fg)"}}>Electrical Converter</span></b>: Quick field conversions for kW ↔ HP, kVA ↔ Amps, AWG ↔ mm², and Enclosure / Routing Dimensions.</li>
+                <li><b><span style={{color:"var(--fg)"}}>Panel Layout</span></b>: 40+ professional components (Siemens PLCs, ABB contactors) with high-fidelity CAD visuals.</li>
+                <li><b><span style={{color:"var(--fg)"}}>Fuzzy Search & Pills</span></b>: Real-time searchable component browser for rapid layout building.</li>
+                <li><b><span style={{color:"var(--fg)"}}>PTTS Identity & UI</span></b>: DummVinci x PTTS branding, auto-sliding spec marquee, and live IP terminal widget.</li>
               </ul>
 
               <hr style={{ border: "none", borderTop: "1px dashed rgba(201,168,76,0.2)", margin: "24px 0" }} />
               
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--muted)", marginBottom: 12 }}>
-                <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>PREVIOUS CORE FEATURES (V2.1)</span>
+                <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>PREVIOUS TOOLS (V2.2 / V2.3)</span>
               </div>
               <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 8, opacity: 0.6, fontSize: 13 }}>
-                <li>Telegram Fluid Navigation & Minimal Pill Indicators.</li>
-                <li>Golden Ratio Refactor & Claude Typography.</li>
+                <li>PID Loop Simulator & Multimeter Tutorials.</li>
+                <li>Electrical Converter Hub & Wisdom Engine.</li>
               </ul>
             </div>
 
@@ -351,7 +351,7 @@ export default function BottomTabBar() {
           <History size={18} style={{ color: "var(--accent)" }} />
           <div style={{ flex: 1, textAlign: "left" }}>
             <div style={{ fontSize: 11, fontWeight: 800, fontFamily: "var(--font-heading)", color: "var(--accent)" }}>{t.nav.changelog}</div>
-            <div style={{ fontSize: 9, opacity: 0.6, color: "var(--fg)" }}>Stable Production v2.2.0</div>
+            <div style={{ fontSize: 9, opacity: 0.6, color: "var(--fg)" }}>Stable Production v2.4.0</div>
           </div>
         </button>
       </div>
