@@ -8,12 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.6.0] - 2026-05-10
 
 ### Added
+
 - **SLD PRO Engine**: Upgraded SLD to a professional Wiring Diagram canvas with CAD-style frames and coordinate grids.
 - **Symbol Library**: Added professional symbols for Contactors, Transformers, and PLCs.
 - **IEC Designations**: Automated IEC 61346 component tagging (Q, KM, U, T).
 - **Free Positioning**: Enabled absolute positioning and dragging for all schematic components.
 
 ### Fixed
+
 - **Coordinate Jump**: Resolved bug where components jumped 100px upon initial drag in SLD view.
 - **Line Height Safety**: Fixed negative height bug for leader lines in schematic view.
 - **Selection Engine**: Enabled marquee selection for wiring symbols.

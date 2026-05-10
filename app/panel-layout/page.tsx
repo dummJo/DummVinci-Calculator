@@ -35,8 +35,14 @@ export default function PanelLayoutPage() {
   
   const [projectName, setProjectName] = useState("DummVinci Industrial Case");
   const [customerName, setCustomerName] = useState("PT Prima Tekindo Tirta Sejahtera");
-  
 
+  // Drawing Metadata (IEC standard)
+  const [drawnBy, setDrawnBy] = useState("TEGAR");
+  const [checkedBy, setCheckedBy] = useState("ADAM");
+  const [approvedBy, setApprovedBy] = useState("DUMM");
+  const [revNo, setRevNo] = useState("01");
+  const [revDate, setRevDate] = useState(new Date().toLocaleDateString());
+  const [showMetadataForm, setShowMetadataForm] = useState(false);
   
   // Selection & Grouping
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -180,6 +186,26 @@ export default function PanelLayoutPage() {
   }, [items, selectedIds, clipboard, viewMode, activeEnc]);
 
 
+  const generateTag = (category: string, currentItems: PlacedItem[]) => {
+    const getDesignation = (cat: string) => {
+      if (cat === "MCCB" || cat === "MCB") return "Q";
+      if (cat === "VSD") return "U";
+      if (cat === "Contactor") return "KM";
+      if (cat === "Transformer") return "T";
+      if (cat === "PLC") return "K";
+      if (cat === "Terminal Block") return "X";
+      if (cat === "Cooling") return "M";
+      if (cat === "Meter") return "P";
+      return "K";
+    };
+    const prefix = getDesignation(category);
+    const count = currentItems.filter(i => {
+      const itPrefix = getDesignation(i.comp.category);
+      return itPrefix === prefix;
+    }).length;
+    return `${prefix}${count + 1}`;
+  };
+
   const categories = ["All", ...Array.from(new Set(componentLibrary.map((c) => c.category)))];
   const filteredLibrary = componentLibrary.filter((c) => {
     const matchesCat = activeCategory === "All" || c.category === activeCategory;
@@ -223,7 +249,7 @@ export default function PanelLayoutPage() {
     const newItem: PlacedItem = {
       id: Math.random().toString(36).substring(2, 9),
       comp, x: startX, y: startY, w: comp.width, h: comp.height,
-      label: comp.category === "Label" ? "PANEL NAME" : undefined
+      label: generateTag(comp.category, items)
     };
     
     setItems((prev) => [...prev, newItem]);
@@ -248,10 +274,12 @@ export default function PanelLayoutPage() {
      if (selected.length === 0) return;
      
      const newIds: string[] = [];
-     const newItems = selected.map(item => {
+     const newItems = selected.map((item, idx) => {
         const newId = Math.random().toString(36).substring(2, 9);
         newIds.push(newId);
-        return { ...item, id: newId, x: item.x + 25, y: item.y + 25 }; 
+        // Generate tag for the new item, considering the already duplicated items in the loop
+        const currentTempItems = [...items, ...selected.slice(0, idx)];
+        return { ...item, id: newId, x: item.x + 25, y: item.y + 25, label: generateTag(item.comp.category, currentTempItems) }; 
      });
      setItems(prev => [...prev, ...newItems]);
      setSelectedIds(newIds);
@@ -598,9 +626,14 @@ export default function PanelLayoutPage() {
         if (isKeypad) {
            return (
              <div style={{ width: "100%", height: "100%", background: "#111", borderRadius: 4, border: "2px solid #333", display: "flex", flexDirection: "column", padding: "5%", boxSizing: "border-box", boxShadow: "0 4px 6px rgba(0,0,0,0.5)" }}>
-                <div style={{ width: "100%", height: "40%", background: "#4dabf7", borderRadius: 2, marginBottom: "10%" }} />
+                {/* LCD Screen with backlight effect */}
+                <div style={{ width: "100%", height: "40%", background: "linear-gradient(135deg, #4dabf7, #228be6)", borderRadius: 2, marginBottom: "10%", border: "1px solid #111", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                   <div style={{ width: "80%", height: "60%", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 1 }} />
+                </div>
+                {/* Keypad buttons */}
                 <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "5%" }}>
-                   {Array.from({length: 9}).map((_, i) => <div key={i} style={{ background: "#444", borderRadius: "50%" }} />)}
+                   {Array.from({length: 3}).map((_, i) => <div key={i} style={{ background: "#d4af37", borderRadius: "50%", boxShadow: "0 1px 2px rgba(0,0,0,0.5)" }} />)}
+                   {Array.from({length: 6}).map((_, i) => <div key={i} style={{ background: "#444", borderRadius: "2px", borderBottom: "1px solid #000" }} />)}
                 </div>
              </div>
            );
@@ -1264,6 +1297,18 @@ export default function PanelLayoutPage() {
                           transition: isItemDragging ? "none" : "box-shadow 0.2s, transform 0.2s, top 0.1s, left 0.1s"
                         }}
                       >
+                        {/* Tagging Overlay (International Standard) */}
+                        <div style={{ 
+                          position: "absolute", top: -14, left: 0, 
+                          background: isSelected ? "#10b981" : "#fff", 
+                          color: isSelected ? "#fff" : "#000",
+                          fontSize: 8, fontWeight: 900, padding: "1px 4px", 
+                          borderRadius: "2px 2px 0 0", border: "1px solid #000", borderBottom: "none",
+                          zIndex: 100, fontFamily: "var(--font-mono)", whiteSpace: "nowrap"
+                        }}>
+                          {item.label}
+                        </div>
+
                         <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden", pointerEvents: "none" }}>
                           {renderCADVisual(item)}
                         </div>
@@ -1420,20 +1465,32 @@ export default function PanelLayoutPage() {
                       key={item.id}
                       onPointerDown={(e) => onItemPointerDown(e, item.id)}
                       style={{
-                        position: "absolute", left: `${xPct}%`, top: `${yPct}%`,
-                        width: `${wPct}%`, height: `${hPct}%`,
-                        boxShadow: isItemDragging ? "0 20px 30px rgba(0,0,0,0.5)" : (isSelected ? "0 0 0 2px var(--accent), 0 4px 8px rgba(0,0,0,0.3)" : "none"),
-                        opacity: isItemDragging ? 0.85 : 1,
-                        cursor: isItemDragging ? "grabbing" : "grab",
-                        zIndex: isItemDragging ? 10 : (isSelected ? 5 : 2),
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        transform: isItemDragging ? "scale(1.02)" : "scale(1)",
-                        transition: isItemDragging ? "none" : "box-shadow 0.2s, transform 0.2s, top 0.1s, left 0.1s"
+                        position: "absolute",
+                        width: `${wPct}%`,
+                        height: `${hPct}%`,
+                        left: `${xPct}%`,
+                        top: `${yPct}%`,
+                        zIndex: isSelected ? 50 : 10,
+                        cursor: "grab",
+                        border: isSelected ? "2px solid #10b981" : "1px solid transparent",
+                        boxShadow: isSelected ? "0 0 15px rgba(16, 185, 129, 0.5)" : "none",
+                        transition: isItemDragging ? "none" : "all 0.1s ease",
+                        opacity: isItemDragging ? 0.8 : 1,
                       }}
                     >
-                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: "hidden", pointerEvents: "none" }}>
-                        {renderCADVisual(item)}
+                      {/* Tagging Overlay (International Standard) */}
+                      <div style={{ 
+                        position: "absolute", top: -14, left: 0, 
+                        background: isSelected ? "#10b981" : "rgba(255,255,255,0.9)", 
+                        color: isSelected ? "#fff" : "#000",
+                        fontSize: 8, fontWeight: 900, padding: "1px 4px", 
+                        borderRadius: "1px 1px 0 0", border: "1px solid #000", borderBottom: "none",
+                        zIndex: 100, fontFamily: "var(--font-mono)", whiteSpace: "nowrap"
+                      }}>
+                        {item.label}
                       </div>
+
+                      {renderCADVisual(item)}
 
                       {showDimensions && (
                          <>
