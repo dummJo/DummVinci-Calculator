@@ -13,9 +13,10 @@ import {
 } from "lucide-react";
 
 const SPEC_STRIP = [
-  "IEC 60364", "IEC 60947", "IEC 61439",
-  "DIN 43671", "PUIL 2011", "ABB Manual",
-  "STAHL CraneSystems", "Siemens SIRIUS",
+  "IEC 60364-5-52", "IEC 60947-2", "IEC 61439-1", "IEC 60890", "IEC 60898",
+  "DIN 43671", "SNI 0225:2011 (PUIL)", "ABB ACS880", "ABB ACQ580", 
+  "STAHL CraneSystems", "Siemens SIRIUS", "Rittal TS 8", "NEMA ICS 2",
+  "N2XSY / NYFGbY", "XLTC Standard"
 ];
 
 // ── Inline SVG icons — no external dependency ────────────────────────────────
@@ -338,9 +339,9 @@ export default function HomePage() {
           <div style={{ position: "absolute", top: 16, bottom: 0, left: 0, width: 40, background: "linear-gradient(to right, var(--bg) 0%, transparent 100%)", zIndex: 2, pointerEvents: "none" }} />
           <div style={{ position: "absolute", top: 16, bottom: 0, right: 0, width: 40, background: "linear-gradient(to left, var(--bg) 0%, transparent 100%)", zIndex: 2, pointerEvents: "none" }} />
           
-          <div className="spec-marquee" style={{ gap: 8 }}>
+          <div className="spec-marquee" style={{ gap: 16 }}>
             {[...SPEC_STRIP, ...SPEC_STRIP].map((s, i) => (
-              <span key={`${s}-${i}`} className="tag" style={{ letterSpacing: "0.08em", fontSize: 10, padding: "2px 7px", whiteSpace: "nowrap" }}>
+              <span key={`${s}-${i}`} className="tag" style={{ letterSpacing: "0.08em", fontSize: 10, padding: "3px 10px", whiteSpace: "nowrap" }}>
                 {s}
               </span>
             ))}

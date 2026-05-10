@@ -507,6 +507,7 @@ a:hover {
   .home-card p {
     font-size: 10px !important;
     -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
   }
 }
 
@@ -653,3 +654,17 @@ a:hover {
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+/* ─── Auto-sliding marquee ─── */
+@keyframes marquee-slide-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.spec-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-slide-left 45s linear infinite;
+}
+.spec-marquee:hover {
+  animation-play-state: paused;
+}
