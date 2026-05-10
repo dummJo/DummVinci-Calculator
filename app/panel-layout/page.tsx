@@ -37,9 +37,9 @@ export default function PanelLayoutPage() {
   const [customerName, setCustomerName] = useState("PT Prima Tekindo Tirta Sejahtera");
 
   // Drawing Metadata (IEC standard)
-  const [drawnBy, setDrawnBy] = useState("TEGAR");
-  const [checkedBy, setCheckedBy] = useState("ADAM");
-  const [approvedBy, setApprovedBy] = useState("DUMM");
+  const [drawnBy, setDrawnBy] = useState("");
+  const [checkedBy, setCheckedBy] = useState("");
+  const [approvedBy, setApprovedBy] = useState("");
   const [revNo, setRevNo] = useState("01");
   const [revDate, setRevDate] = useState(new Date().toLocaleDateString());
   const [showMetadataForm, setShowMetadataForm] = useState(false);
