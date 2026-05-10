@@ -390,13 +390,7 @@ a:hover {
   margin: 0 0 56px;
 }
 
-/* ─── Cards — Liquid Glass ─── */
-.hero-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
+/* ─── Cards — Liquid Glass (base for calc pages) ─── */
 .vinci-card {
   padding: 14px 18px;
   border: 1px solid var(--glass-border);
@@ -419,30 +413,100 @@ a:hover {
   gap: 16px;
 }
 
-@media (max-width: 600px) {
-  .vinci-card {
-    padding: 12px 14px;
-  }
-  .vinci-card-row {
+/* ─── Home Page Card Grid ─── */
+.home-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(156px, 1fr));
+  gap: 10px;
+  padding: 0 8px;
+}
+
+.home-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 14px 16px;
+  min-height: 130px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg);
+  background: var(--glass-bg);
+  background-image: 
+    radial-gradient(circle at 1px 1px, var(--glass-border) 0.6px, transparent 0);
+  background-size: 20px 20px;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-hi);
+  overflow: hidden;
+  transition: transform var(--dur-med) var(--ease),
+              box-shadow var(--dur-med) var(--ease),
+              border-color var(--dur-med) var(--ease);
+  will-change: transform;
+}
+
+.home-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--glass-shadow), 0 0 0 1px var(--accent), inset 0 1px 0 var(--glass-hi);
+  border-color: var(--accent);
+}
+.home-card:hover .card-icon {
+  color: var(--accent) !important;
+  background: rgba(201, 168, 76, 0.10) !important;
+  border-color: rgba(201, 168, 76, 0.30) !important;
+}
+.home-card:hover .home-card-arrow {
+  opacity: 0.7 !important;
+  transform: translateX(0) !important;
+}
+.home-card:active {
+  transform: translateY(-1px) scale(0.98);
+  transition-duration: 80ms;
+}
+
+/* Tablet: 3 columns */
+@media (min-width: 601px) and (max-width: 900px) {
+  .home-card-grid {
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
   }
 }
 
+/* Desktop: 4 columns */
+@media (min-width: 901px) {
+  .home-card-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  .home-card {
+    padding: 16px 16px 18px;
+    min-height: 148px;
+  }
+}
+
+/* Mobile: 2 columns, compact */
 @media (max-width: 600px) {
-  .vinci-card {
-    padding: 12px 12px !important;
+  .home-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 0 4px;
   }
-  .vinci-card h2 {
+  .home-card {
+    padding: 12px 12px 14px;
+    min-height: 118px;
+  }
+  .home-card h2 {
     font-size: 13px !important;
-    margin-bottom: 4px !important;
   }
-  .vinci-card .card-icon {
-    width: 28px !important;
-    height: 28px !important;
+  .home-card .card-icon {
+    width: 32px !important;
+    height: 32px !important;
   }
-  .vinci-card .card-icon svg {
+  .home-card .card-icon svg {
     width: 16px !important;
     height: 16px !important;
+  }
+  .home-card p {
+    font-size: 10px !important;
+    -webkit-line-clamp: 2 !important;
   }
 }
 

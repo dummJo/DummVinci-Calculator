@@ -30,6 +30,9 @@ export default function PanelLayoutPage() {
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [showDimensions, setShowDimensions] = useState(false);
   
+  const [projectName, setProjectName] = useState("DummVinci Industrial Case");
+  const [customerName, setCustomerName] = useState("PT Prima Tekindo Tirta Sejahtera");
+  
   // Iso 3D Rotation State
   const [isoRot, setIsoRot] = useState({ x: -15, y: -25 });
   const [isIsoDragging, setIsIsoDragging] = useState(false);
@@ -375,18 +378,70 @@ export default function PanelLayoutPage() {
     }
   };
 
+  const PrintHeader = () => (
+    <div className="print-header" style={{ display: "none" }}>
+      <div className="print-header-left">
+        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 900, color: "#1d4ed8", letterSpacing: "-0.02em" }}>DUMMVINCI INDUSTRIAL ESTIMATOR</h1>
+        <p style={{ margin: 0, fontSize: 14, color: "#444", fontWeight: 700 }}>IEC 61439 | Technical Layout Proposal</p>
+        <div style={{ display: "flex", gap: 16, marginTop: 12 }}>
+           <div style={{ display: "flex", flexDirection: "column" }}>
+             <span style={{ fontSize: 9, color: "#888", textTransform: "uppercase" }}>Date</span>
+             <span style={{ fontSize: 11, fontWeight: 700, color: "#111" }}>{new Date().toLocaleDateString('en-GB')}</span>
+           </div>
+           <div style={{ display: "flex", flexDirection: "column" }}>
+             <span style={{ fontSize: 9, color: "#888", textTransform: "uppercase" }}>Project Reference</span>
+             <span style={{ fontSize: 11, fontWeight: 700, color: "#111" }}>{projectName}</span>
+           </div>
+           <div style={{ display: "flex", flexDirection: "column" }}>
+             <span style={{ fontSize: 9, color: "#888", textTransform: "uppercase" }}>Customer</span>
+             <span style={{ fontSize: 11, fontWeight: 700, color: "#111" }}>{customerName}</span>
+           </div>
+        </div>
+      </div>
+      <div className="print-header-right">
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+           {/* eslint-disable-next-line @next/next/no-img-element */}
+           <img src="https://www.ptts.co.id/uploads/1/3/3/7/133745061/logo-web_orig.png" alt="PTTS" style={{ height: 48 }} />
+           <div style={{ width: 1, height: 40, background: "#ddd" }} />
+           <div style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ fontSize: 20, fontWeight: 900, color: "#000", lineHeight: 1 }}>By DummVinci</span>
+              <span style={{ fontSize: 8, color: "#888", textAlign: "right" }}>ABB Value Partner</span>
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderFanFilter = () => (
     <div style={{
-      width: "100%", height: "100%", background: "#dcdcdc", 
-      border: "1px solid #aaa", borderRadius: 4, display: "flex", 
+      width: "100%", height: "100%", background: "linear-gradient(135deg, #e0e0e0, #bdbdbd)", 
+      border: "2px solid #999", borderRadius: 8, display: "flex", 
       alignItems: "center", justifyContent: "center",
-      boxShadow: "inset 0 4px 10px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.2)"
+      boxShadow: "inset 0 4px 10px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.3)",
+      position: "relative", overflow: "hidden"
     }}>
+      {/* Grill Mesh */}
       <div style={{
-        width: "90%", height: "90%", 
-        backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 4px, #aaa 4px, #aaa 8px)",
-        borderRadius: 2, border: "1px solid #999"
+        width: "85%", height: "85%", 
+        backgroundImage: `
+          linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px),
+          linear-gradient(0deg, rgba(0,0,0,0.1) 1px, transparent 1px)
+        `,
+        backgroundSize: "4px 4px",
+        borderRadius: 4, border: "1px solid #888",
+        boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)"
       }} />
+      {/* Louvers */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+        backgroundImage: "repeating-linear-gradient(to bottom, transparent, transparent 15%, rgba(0,0,0,0.05) 15%, rgba(0,0,0,0.05) 20%)",
+        pointerEvents: "none"
+      }} />
+      {/* Screws */}
+      <div style={{ position: "absolute", top: "5%", left: "5%", width: "4%", height: "4%", background: "#aaa", borderRadius: "50%", border: "1px solid #777" }} />
+      <div style={{ position: "absolute", top: "5%", right: "5%", width: "4%", height: "4%", background: "#aaa", borderRadius: "50%", border: "1px solid #777" }} />
+      <div style={{ position: "absolute", bottom: "5%", left: "5%", width: "4%", height: "4%", background: "#aaa", borderRadius: "50%", border: "1px solid #777" }} />
+      <div style={{ position: "absolute", bottom: "5%", right: "5%", width: "4%", height: "4%", background: "#aaa", borderRadius: "50%", border: "1px solid #777" }} />
     </div>
   );
 
@@ -394,48 +449,114 @@ export default function PanelLayoutPage() {
     const { comp, w, h, label } = item;
     switch (comp.category) {
       case "VSD":
+        const isABB = comp.brand === "ABB";
         return (
-          <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #d0d0d0 0%, #a0a0a0 100%)", borderRadius: 2, display: "flex", flexDirection: "column", padding: "5%", boxSizing: "border-box" }}>
-            <div style={{ width: "70%", height: "15%", background: "#111", margin: "0 auto", borderRadius: 2, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.5)" }} />
-            <div style={{ flex: 1 }} />
-            <div style={{ width: "90%", height: "20%", borderTop: "2px solid #666", borderBottom: "2px solid #666", margin: "0 auto", opacity: 0.4 }} />
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #e5e5e5 0%, #c0c0c0 100%)", borderRadius: 2, display: "flex", flexDirection: "column", boxSizing: "border-box", border: "1px solid #777", boxShadow: "inset 1px 1px 2px #fff, inset -1px -1px 3px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)", position: "relative", overflow: "hidden" }}>
+            {/* Vents Top */}
+            <div style={{ width: "100%", height: "10%", backgroundImage: "repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.2) 2px, rgba(0,0,0,0.2) 4px)" }} />
+            
+            {/* Main Body */}
+            <div style={{ flex: 1, padding: "5%", display: "flex", flexDirection: "column", alignItems: "center", gap: "5%", position: "relative", zIndex: 1 }}>
+               {/* Accent Strip */}
+               <div style={{ position: "absolute", left: "10%", top: 0, bottom: 0, width: "3%", background: comp.color, boxShadow: "1px 0 2px rgba(0,0,0,0.3)" }} />
+               
+               {/* Assistant Control Panel (Keypad) */}
+               <div style={{ width: "60%", height: "35%", background: "#222", borderRadius: 4, display: "flex", flexDirection: "column", padding: "3%", boxSizing: "border-box", border: "1px solid #000", boxShadow: "0 2px 5px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.2)" }}>
+                  <div style={{ width: "100%", height: "40%", background: "linear-gradient(to bottom, #d4f0ff, #8cbcd6)", borderRadius: 1, border: "1px solid #111", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ fontSize: "clamp(3px, 0.8vw, 6px)", fontFamily: "var(--font-mono)", color: "#111", transform: "scale(0.8)" }}>{isABB ? "ABB" : ""}</div>
+                  </div>
+                  <div style={{ flex: 1, marginTop: "5%", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "5%" }}>
+                     {Array.from({length: 6}).map((_, i) => <div key={i} style={{ background: "#444", borderRadius: 1, borderBottom: "1px solid #000" }} />)}
+                  </div>
+               </div>
+               
+               {/* Label Plate */}
+               <div style={{ width: "50%", height: "10%", background: "#fff", border: "1px solid #888", borderRadius: 1, alignSelf: "flex-end", marginRight: "10%" }} />
+            </div>
+
+            {/* Vents Bottom */}
+            <div style={{ width: "100%", height: "15%", background: "#333", borderTop: "2px solid #111", display: "flex", justifyContent: "space-around", alignItems: "center", padding: "0 10%", boxSizing: "border-box" }}>
+               {Array.from({length: 4}).map((_, i) => <div key={i} style={{ width: "10%", height: "60%", background: "#111", borderRadius: 1 }} />)}
+            </div>
           </div>
         );
       case "MCCB":
         return (
-          <div style={{ width: "100%", height: "100%", background: "#c8c8c8", border: "1px solid #888", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
-            <div style={{ width: "30%", height: "35%", background: "#222", borderRadius: 2, boxShadow: "inset 0 4px 0px #000, 0 2px 4px rgba(0,0,0,0.3)" }} />
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(to right, #b8b8b8, #e0e0e0, #b8b8b8)", border: "1px solid #555", borderRadius: 4, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", boxSizing: "border-box", padding: "2% 0", boxShadow: "0 2px 6px rgba(0,0,0,0.4), inset 1px 1px 2px #fff" }}>
+            {/* Top Terminals */}
+            <div style={{ width: "80%", height: "10%", display: "flex", justifyContent: "space-around" }}>
+               {Array.from({length: 3}).map((_, i) => <div key={i} style={{ width: "20%", height: "100%", background: "#888", borderRadius: "50%", border: "1px solid #444", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5)" }} />)}
+            </div>
+            
+            {/* Toggle Mechanism */}
+            <div style={{ width: "50%", height: "40%", background: "#333", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #222", boxShadow: "inset 0 4px 6px rgba(0,0,0,0.6)" }}>
+               <div style={{ width: "60%", height: "60%", background: "linear-gradient(to bottom, #444, #111)", borderRadius: 2, borderTop: "2px solid #666", borderBottom: "2px solid #000", position: "relative" }}>
+                 <div style={{ position: "absolute", top: "10%", left: "50%", transform: "translateX(-50%)", width: "40%", height: "20%", background: "#fff", opacity: 0.8 }} />
+               </div>
+            </div>
+
+            {/* Bottom Terminals & Branding Strip */}
+            <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}>
+               <div style={{ width: "80%", height: "4px", background: comp.color, opacity: 0.8 }} />
+               <div style={{ width: "80%", height: "10%", display: "flex", justifyContent: "space-around", paddingBottom: "2px" }}>
+                  {Array.from({length: 3}).map((_, i) => <div key={i} style={{ width: "20%", height: "100%", background: "#888", borderRadius: "50%", border: "1px solid #444", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.5)" }} />)}
+               </div>
+            </div>
           </div>
         );
       case "Terminal Block":
         return (
-          <div style={{ width: "100%", height: "100%", background: "#f4a261", display: "flex", flexDirection: "row", border: "1px solid #d48241", boxSizing: "border-box" }}>
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(to right, #cfaf8c, #e8cfb3, #cfaf8c)", display: "flex", flexDirection: "row", border: "1px solid #a6845e", boxSizing: "border-box", borderRadius: 1, boxShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
             {Array.from({length: 10}).map((_, i) => (
-               <div key={i} style={{ flex: 1, borderRight: "1px solid rgba(0,0,0,0.15)" }} />
+               <div key={i} style={{ flex: 1, borderRight: "1px solid rgba(0,0,0,0.15)", position: "relative", display: "flex", flexDirection: "column", alignItems: "center", padding: "10% 0" }}>
+                  {/* Top Screw */}
+                  <div style={{ width: "60%", paddingTop: "60%", background: "#888", borderRadius: "50%", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.5)", border: "1px solid #666" }} />
+                  <div style={{ flex: 1 }} />
+                  {/* Label Marker */}
+                  <div style={{ width: "80%", height: "20%", background: "#fff", border: "1px solid #ccc", margin: "20% 0" }} />
+                  <div style={{ flex: 1 }} />
+                  {/* Bottom Screw */}
+                  <div style={{ width: "60%", paddingTop: "60%", background: "#888", borderRadius: "50%", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.5)", border: "1px solid #666" }} />
+               </div>
             ))}
           </div>
         );
       case "Wiring":
-        if (comp.brand === "Weidmuller") { 
-          return (
-            <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #f0f0f0 0%, #b0b0b0 40%, #808080 50%, #b0b0b0 60%, #f0f0f0 100%)", boxSizing: "border-box", borderTop: "1px solid #fff", borderBottom: "1px solid #666" }}>
-               <div style={{ width: "100%", height: "15%", background: "rgba(0,0,0,0.1)", marginTop: "12px" }} />
-            </div>
-          );
-        } else { 
-          const isHorizontal = w > h;
-          return (
-            <div style={{ width: "100%", height: "100%", background: "#a0a0a0", boxSizing: "border-box", display: "flex", flexDirection: isHorizontal ? "row" : "column", border: "1px solid #888" }}>
-               <div style={{ flex: 1, backgroundImage: `repeating-linear-gradient(${isHorizontal ? 'to right' : 'to bottom'}, transparent, transparent 6px, rgba(0,0,0,0.25) 6px, rgba(0,0,0,0.25) 10px)` }} />
-            </div>
-          );
-        }
+        const isHorizontal = w > h;
+        return (
+          <div style={{ 
+            width: "100%", height: "100%", 
+            background: comp.brand === "Weidmuller" ? "linear-gradient(to bottom, #d4d4d4, #bbb)" : "#959595", 
+            boxSizing: "border-box", 
+            display: "flex", 
+            flexDirection: isHorizontal ? "row" : "column", 
+            border: "1px solid #666",
+            boxShadow: "inset 0 1px 2px #fff, 0 1px 3px rgba(0,0,0,0.3)"
+          }}>
+             <div style={{ 
+               flex: 1, 
+               backgroundImage: isHorizontal 
+                 ? "repeating-linear-gradient(to right, transparent, transparent 8px, rgba(0,0,0,0.3) 8px, rgba(0,0,0,0.3) 12px)" 
+                 : "repeating-linear-gradient(to bottom, transparent, transparent 8px, rgba(0,0,0,0.3) 8px, rgba(0,0,0,0.3) 12px)",
+               opacity: 0.8
+             }} />
+          </div>
+        );
       case "Networking":
         return (
-          <div style={{ width: "100%", height: "100%", background: "#2d3142", borderRadius: 2, border: "1px solid #1a1c26", padding: "10%", display: "flex", flexDirection: "column", gap: "10%", boxSizing: "border-box" }}>
-            <div style={{ flex: 1, background: "#1a1c26", borderRadius: 2, border: "1px solid #000" }} />
-            <div style={{ flex: 1, background: "#1a1c26", borderRadius: 2, border: "1px solid #000" }} />
-            <div style={{ flex: 1, background: "#1a1c26", borderRadius: 2, border: "1px solid #000" }} />
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(to right, #222, #333, #222)", borderRadius: 2, border: "1px solid #111", padding: "5%", display: "flex", flexDirection: "column", gap: "5%", boxSizing: "border-box", boxShadow: "inset 1px 1px 2px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.4)", position: "relative" }}>
+            {/* Branding Strip */}
+            <div style={{ position: "absolute", top: 0, left: "5%", width: "10%", height: "100%", background: comp.color, opacity: 0.8 }} />
+            
+            {/* Ports */}
+            {Array.from({length: 4}).map((_, i) => (
+               <div key={i} style={{ flex: 1, background: "#111", borderRadius: 2, border: "1px solid #000", position: "relative", display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: "5%", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.6)" }}>
+                 {/* RJ45 Pins */}
+                 <div style={{ width: "50%", height: "50%", backgroundImage: "repeating-linear-gradient(to right, transparent, transparent 10%, #d4af37 10%, #d4af37 20%)" }} />
+                 {/* Status LED */}
+                 <div style={{ position: "absolute", left: "10%", top: "50%", transform: "translateY(-50%)", width: "10%", paddingTop: "10%", background: "#10b981", borderRadius: "50%", boxShadow: "0 0 2px #10b981" }} />
+               </div>
+            ))}
           </div>
         );
       case "Cooling":
@@ -467,15 +588,22 @@ export default function PanelLayoutPage() {
         const isDigital = comp.partCode.includes("Digital");
         const isVolt = comp.partCode.includes("Volt");
         return (
-           <div style={{ width: "100%", height: "100%", background: comp.color, border: "2px solid #444", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "10%", boxShadow: "inset 0 2px 10px rgba(0,0,0,0.2)" }}>
+           <div style={{ width: "100%", height: "100%", background: "#fff", border: "2px solid #444", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "5%", boxShadow: "inset 0 2px 10px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.2)", position: "relative", overflow: "hidden" }}>
               {isDigital ? (
-                <div style={{ background: "#111", padding: "4%", borderRadius: 2, color: "#f00", fontFamily: "var(--font-mono)", fontSize: "clamp(8px, 2vw, 16px)", fontWeight: 800 }}>000.0</div>
+                <div style={{ background: "#111", padding: "8% 12%", borderRadius: 2, color: "#f00", fontFamily: "var(--font-mono)", fontSize: "clamp(8px, 2vw, 16px)", fontWeight: 800, border: "1px solid #333" }}>000.0</div>
               ) : (
                 <>
-                  <div style={{ width: "60%", height: "30%", borderTop: "2px solid #111", borderTopLeftRadius: "50%", borderTopRightRadius: "50%", position: "relative" }}>
-                     <div style={{ position: "absolute", bottom: 0, left: "10%", width: "2px", height: "120%", background: "#f00", transform: "rotate(30deg)", transformOrigin: "bottom" }} />
+                  {/* Scale Markings */}
+                  <div style={{ position: "absolute", top: "15%", width: "80%", height: "50%", borderTop: "2px solid #333", borderRadius: "100% 100% 0 0" }}>
+                     {Array.from({length: 11}).map((_, i) => (
+                       <div key={i} style={{ position: "absolute", bottom: 0, left: "50%", width: 1, height: i % 5 === 0 ? 8 : 4, background: "#333", transformOrigin: "bottom", transform: `translateX(-50%) rotate(${(i-5) * 15}deg) translateY(-25px)` }} />
+                     ))}
                   </div>
-                  <div style={{ fontSize: "clamp(4px, 1vw, 10px)", color: "#111", fontWeight: 900 }}>{isVolt ? "V" : "A"}</div>
+                  {/* Needle */}
+                  <div style={{ position: "absolute", bottom: "10%", left: "50%", width: "2px", height: "70%", background: "#f00", transformOrigin: "bottom", transform: "translateX(-50%) rotate(-30deg)", zIndex: 2 }} />
+                  {/* Pivot */}
+                  <div style={{ position: "absolute", bottom: "-5%", left: "50%", transform: "translateX(-50%)", width: "15%", paddingTop: "15%", background: "#222", borderRadius: "50%", zIndex: 3 }} />
+                  <div style={{ fontSize: "clamp(6px, 1.2vw, 12px)", color: "#111", fontWeight: 900, zIndex: 4, position: "absolute", bottom: "15%" }}>{isVolt ? "V" : "A"}</div>
                 </>
               )}
            </div>
@@ -513,8 +641,29 @@ export default function PanelLayoutPage() {
       case "Control":
       default:
         return (
-          <div style={{ width: "100%", height: "100%", background: "rgba(240,240,240,0.95)", border: "1px solid #999", borderRadius: 2, display: "flex", alignItems: "flex-start", padding: "10%", boxSizing: "border-box" }}>
-             <div style={{ width: "25%", aspectRatio: "1", background: comp.color, borderRadius: "50%", boxShadow: `0 0 6px ${comp.color}` }} />
+          <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #eee 0%, #ccc 100%)", border: "1px solid #999", borderRadius: 2, display: "flex", flexDirection: "column", boxSizing: "border-box", boxShadow: "0 2px 5px rgba(0,0,0,0.3), inset 1px 1px 2px #fff" }}>
+             {/* Header Area */}
+             <div style={{ width: "100%", height: "20%", background: "rgba(0,0,0,0.05)", borderBottom: "1px solid #aaa", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 10%", boxSizing: "border-box" }}>
+               {Array.from({length: 2}).map((_, i) => <div key={i} style={{ width: "15%", paddingTop: "15%", background: "#888", borderRadius: "50%", border: "1px solid #555" }} />)}
+             </div>
+             
+             {/* Body Area */}
+             <div style={{ flex: 1, padding: "10%", display: "flex", flexDirection: "column", gap: "10%", position: "relative" }}>
+                {/* Brand / Status Indicator */}
+                <div style={{ position: "absolute", top: "10%", right: "10%", width: "15%", paddingTop: "15%", background: comp.color, borderRadius: "50%", boxShadow: `0 0 4px ${comp.color}` }} />
+                
+                {/* Circuit / Component detailing */}
+                <div style={{ width: "60%", height: "40%", background: "#bbb", border: "1px solid #999", borderRadius: 2, display: "flex", gap: "2px", padding: "2px", boxSizing: "border-box" }}>
+                   <div style={{ flex: 1, background: "rgba(0,0,0,0.1)" }} />
+                   <div style={{ flex: 1, background: "rgba(0,0,0,0.1)" }} />
+                </div>
+                <div style={{ width: "80%", height: "10%", background: "#fff", border: "1px solid #aaa", borderRadius: 1 }} />
+             </div>
+
+             {/* Footer Area */}
+             <div style={{ width: "100%", height: "20%", background: "rgba(0,0,0,0.05)", borderTop: "1px solid #aaa", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 10%", boxSizing: "border-box" }}>
+               {Array.from({length: 2}).map((_, i) => <div key={i} style={{ width: "15%", paddingTop: "15%", background: "#888", borderRadius: "50%", border: "1px solid #555" }} />)}
+             </div>
           </div>
         );
     }
@@ -629,6 +778,22 @@ export default function PanelLayoutPage() {
           </div>
 
           <div style={{ flex: 1 }} />
+          
+          <div className="no-print" style={{ display: "flex", flexDirection: "column", gap: 8, padding: "0 12px" }}>
+            <label style={{ fontSize: 10, fontWeight: 800, color: "var(--muted)", textTransform: "uppercase" }}>Export Metadata</label>
+            <input 
+              placeholder="Project Name"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              style={{ background: "rgba(0,0,0,0.2)", border: "1px solid var(--border)", color: "var(--fg)", fontSize: 11, padding: "4px 8px", borderRadius: 4, outline: "none" }}
+            />
+            <input 
+              placeholder="Customer Name"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              style={{ background: "rgba(0,0,0,0.2)", border: "1px solid var(--border)", color: "var(--fg)", fontSize: 11, padding: "4px 8px", borderRadius: 4, outline: "none" }}
+            />
+          </div>
 
           <div style={{ display: "flex", gap: 8 }}>
             <button
@@ -856,7 +1021,9 @@ export default function PanelLayoutPage() {
           </div>
 
           {/* Canvas Area */}
-          <div className="print-area" style={{ flex: "2 1 450px", display: "flex", justifyContent: "center", background: "rgba(0,0,0,0.3)", borderRadius: 12, padding: 32, border: "1px dashed var(--border)" }}>
+          <div className="print-area" style={{ flex: "2 1 450px", display: "flex", flexDirection: "column", justifyContent: "center", background: "rgba(0,0,0,0.3)", borderRadius: 12, padding: 32, border: "1px dashed var(--border)" }}>
+                 <PrintHeader />
+                 
                  {/* INNER VIEW (Mounting Plate) */}
             {viewMode === "inner" && (
               <div style={{
@@ -1273,18 +1440,35 @@ export default function PanelLayoutPage() {
           .print-area, .print-area * { visibility: visible; }
           .print-area { 
             position: absolute; left: 0; top: 0; width: 100%; height: auto;
-            margin: 0; padding: 0 !important; background: none !important; border: none !important; box-shadow: none !important; 
+            margin: 0; padding: 0 !important; background: #fff !important; border: none !important; box-shadow: none !important; 
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
           }
+          
+          /* Professional Print Header */
+          .print-header {
+            display: flex !important;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #1d4ed8;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+          }
+          .print-header-left { display: flex; flex-direction: column; gap: 4px; }
+          .print-header-right { text-align: right; }
           
           /* Fix Isometric 3D printing */
           .print-area > div[style*="perspective"] {
             overflow: visible !important;
             background: #fff !important;
-            border: none !important;
+            border: 1px solid #eee !important;
             box-shadow: none !important;
-            height: 800px !important;
+            height: 900px !important;
+            width: 100% !important;
           }
           .print-area > div[style*="perspective"] .print-footer {
             color: #000 !important;
@@ -1295,7 +1479,7 @@ export default function PanelLayoutPage() {
           .no-print { display: none !important; }
           
           /* Show custom print footers */
-          .print-footer { display: flex !important; }
+          .print-footer { display: flex !important; position: static !important; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
         }
       `}} />
       <Footer />

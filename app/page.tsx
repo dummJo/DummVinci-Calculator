@@ -8,8 +8,8 @@ import { useState, useEffect } from "react";
 
 
 import {
-  LayoutGrid, Activity, ChevronRight, SortAsc, SortDesc, Sparkles, BookOpen,
-  Zap, Settings2, ShieldPlus, Repeat, MonitorPlay, LineChart, Home
+  LayoutGrid, ChevronRight,
+  ShieldPlus, Repeat, MonitorPlay, LineChart
 } from "lucide-react";
 
 const SPEC_STRIP = [
@@ -97,8 +97,19 @@ function IconStarter() {
   );
 }
 
+// ── Category config ────────────────────────────────────────────────────────
+const CATEGORY_ORDER = ["Main", "Starter", "Power", "Panel", "Control", "Info"] as const;
+const CATEGORY_LABELS: Record<string, { en: string; id: string }> = {
+  Main:    { en: "Quick Start",       id: "Mulai Cepat" },
+  Starter: { en: "Motor & Drive",     id: "Motor & Drive" },
+  Power:   { en: "Power Distribution", id: "Distribusi Daya" },
+  Panel:   { en: "Panel & Enclosure", id: "Panel & Enclosure" },
+  Control: { en: "Control & Tuning",  id: "Kontrol & Tuning" },
+  Info:    { en: "Reference & Tools", id: "Referensi & Alat" },
+};
+
 export default function HomePage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const th = t.home;
   const [heroQuote, setHeroQuote] = useState<Quote | null>(null);
 
@@ -106,9 +117,6 @@ export default function HomePage() {
     const tid = setTimeout(() => setHeroQuote(getRandomQuote()), 0);
     return () => clearTimeout(tid);
   }, []);
-
-  const [sortBy, setSortBy] = useState<"name" | "cat" | "default">("default");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const CALCS = [
     { href: "/unified",     key: "unified", tag: "Fastsizing", cat: "Main",     Icon: IconUnified, accent: true },
@@ -127,19 +135,12 @@ export default function HomePage() {
     { href: "/tutorials",   key: "tutorials", tag: "Guide",     cat: "Info",     Icon: MonitorPlay },
   ];
 
-  const sortedCalcs = [...CALCS].sort((a, b) => {
-    if (sortBy === "default") return 0;
-    
-    const metaA = th.calcs[a.key as keyof typeof th.calcs];
-    const metaB = th.calcs[b.key as keyof typeof th.calcs];
-    
-    const valA = sortBy === "name" ? (metaA?.title || "") : a.cat;
-    const valB = sortBy === "name" ? (metaB?.title || "") : b.cat;
-    
-    if (valA < valB) return sortOrder === "asc" ? -1 : 1;
-    if (valA > valB) return sortOrder === "asc" ? 1 : -1;
-    return 0;
-  });
+  // Group calcs by category in defined order
+  const grouped = CATEGORY_ORDER.map(cat => ({
+    cat,
+    label: CATEGORY_LABELS[cat][lang] || CATEGORY_LABELS[cat].en,
+    items: CALCS.filter(c => c.cat === cat),
+  })).filter(g => g.items.length > 0);
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -147,7 +148,7 @@ export default function HomePage() {
         style={{
           maxWidth: 1100,
           margin: "0 auto",
-          padding: "64px 24px 32px",
+          padding: "56px 20px 24px",
           width: "100%",
         }}
       >
@@ -316,170 +317,188 @@ export default function HomePage() {
       </header>
 
       {/* ─── Section label ─────────────────────────────────────────────── */}
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 14px", width: "100%" }}>
-        <div className="sec-label" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span>{th.secCalculators}</span>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", marginLeft: 2 }}>
-              {CALCS.length} tools
-            </span>
-          </div>
-
-          {/* Sorting Controls */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div 
-              style={{ 
-                display: "flex", 
-                background: "rgba(255,255,255,0.03)", 
-                border: "1px solid var(--hairline-soft)",
-                borderRadius: 20,
-                padding: 2,
-                gap: 2
-              }}
-            >
-              {[
-                { id: "default", label: "Default" },
-                { id: "name",    label: "Name" },
-                { id: "cat",     label: "Category" }
-              ].map(opt => (
-                <button
-                  key={opt.id}
-                  onClick={() => setSortBy(opt.id as "name" | "cat" | "default")}
-                  style={{
-                    padding: "3px 10px",
-                    borderRadius: 18,
-                    fontSize: 9,
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                    border: "none",
-                    cursor: "pointer",
-                    background: sortBy === opt.id ? "var(--accent)" : "transparent",
-                    color: sortBy === opt.id ? "var(--bg)" : "var(--muted)",
-                    transition: "all 0.2s ease"
-                  }}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
-              className="tag"
-              style={{ 
-                height: 24, 
-                padding: "0 8px", 
-                display: "flex", 
-                alignItems: "center", 
-                gap: 4, 
-                cursor: "pointer",
-                borderColor: sortOrder === "desc" ? "var(--accent)" : "var(--glass-border)",
-                color: sortOrder === "desc" ? "var(--accent)" : "var(--muted)"
-              }}
-            >
-              {sortOrder === "asc" ? <SortAsc size={12} /> : <SortDesc size={12} />}
-              <span style={{ fontSize: 9 }}>{sortOrder.toUpperCase()}</span>
-            </button>
-          </div>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px 10px", width: "100%" }}>
+        <div className="sec-label">
+          <span>{th.secCalculators}</span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", marginLeft: 2 }}>
+            {CALCS.length} tools
+          </span>
         </div>
       </div>
 
-      {/* ─── Aesthetic List View ─────────────────────────────────────────── */}
+      {/* ─── Card Grid by Category ─────────────────────────────────────── */}
       <main
         style={{
           maxWidth: 1100,
           margin: "0 auto",
-          padding: "0 16px 0px", 
+          padding: "0 12px 0",
           width: "100%",
           flex: 1,
         }}
       >
-        <div className="hero-grid">
-          {sortedCalcs.map((calc) => {
-            const meta = th.calcs[calc.key as keyof typeof th.calcs];
-            return (
-              <Link
-                key={calc.key}
-                href={calc.href}
-                className="vinci-card vinci-card-row card-hover cursor-card"
-                style={{ textDecoration: "none", padding: "18px 20px" }}
+        {grouped.map((group, gi) => (
+          <div key={group.cat} style={{ marginBottom: gi === grouped.length - 1 ? 0 : 24 }}>
+            {/* Category header */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "0 8px",
+                marginBottom: 10,
+              }}
+            >
+              <div
+                style={{
+                  width: 3,
+                  height: 14,
+                  borderRadius: 2,
+                  background: "var(--accent)",
+                  opacity: 0.6,
+                  flexShrink: 0,
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 10,
+                  fontWeight: 600,
+                  color: "var(--accent)",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  opacity: 0.8,
+                }}
               >
-                {/* Left: Icon block */}
-                <div
-                  className="card-icon"
-                  style={{
-                    width: 44,
-                    height: 44,
-                    border: "1px solid var(--glass-border)",
-                    borderRadius: "var(--r-md)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: calc.accent ? "var(--accent)" : "var(--muted)",
-                    background: calc.accent ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
-                    flexShrink: 0,
-                    marginTop: 2,
-                  }}
-                >
-                  <calc.Icon />
-                </div>
+                {group.label}
+              </span>
+              <div
+                style={{
+                  flex: 1,
+                  height: 1,
+                  background: "var(--hairline-soft)",
+                  opacity: 0.6,
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 9,
+                  color: "var(--muted-soft)",
+                  letterSpacing: "0.06em",
+                }}
+              >
+                {group.items.length}
+              </span>
+            </div>
 
-                {/* Center: Title & Descriptor */}
-                <div style={{ flex: 1, paddingLeft: 4, display: "flex", flexDirection: "column" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+            {/* Cards grid */}
+            <div className="home-card-grid">
+              {group.items.map((calc) => {
+                const meta = th.calcs[calc.key as keyof typeof th.calcs];
+                // Trim description to ~60 chars for card brevity
+                const shortDesc = meta?.desc
+                  ? meta.desc.length > 80
+                    ? meta.desc.slice(0, 77) + "…"
+                    : meta.desc
+                  : "";
+
+                return (
+                  <Link
+                    key={calc.key}
+                    href={calc.href}
+                    id={`calc-card-${calc.key}`}
+                    className="home-card cursor-card"
+                    style={{ textDecoration: "none" }}
+                  >
+                    {/* Top row: Icon + Tag */}
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 10 }}>
+                      <div
+                        className="card-icon"
+                        style={{
+                          width: 38,
+                          height: 38,
+                          border: "1px solid var(--glass-border)",
+                          borderRadius: "var(--r-md)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: calc.accent ? "var(--accent)" : "var(--muted)",
+                          background: calc.accent ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <calc.Icon />
+                      </div>
+                      <span
+                        className="tag"
+                        style={{
+                          letterSpacing: "0.06em",
+                          fontSize: 8,
+                          padding: "1px 6px",
+                          textTransform: "uppercase",
+                          opacity: 0.8,
+                          ...(calc.accent ? { color: "var(--accent)", borderColor: "rgba(201,168,76,0.5)", background: "rgba(201,168,76,0.1)" } : {}),
+                        }}
+                      >
+                        {calc.tag}
+                      </span>
+                    </div>
+
+                    {/* Title */}
                     <h2
                       style={{
                         fontFamily: "var(--font-display)",
-                        fontSize: "16px",
+                        fontSize: "14px",
                         fontWeight: 600,
                         color: "var(--fg)",
-                        letterSpacing: "-0.015em",
-                        margin: 0,
+                        letterSpacing: "-0.01em",
+                        margin: "0 0 5px",
                         lineHeight: 1.2,
                       }}
                     >
                       {meta?.title || "Untitled"}
                     </h2>
-                    <span
-                      className="tag"
+
+                    {/* Description */}
+                    <p
                       style={{
-                        letterSpacing: "0.06em",
-                        fontSize: 8,
-                        padding: "1px 6px",
-                        textTransform: "uppercase",
-                        opacity: 0.8,
-                        ...(calc.accent ? { color: "var(--accent)", borderColor: "rgba(201,168,76,0.5)", background: "rgba(201,168,76,0.1)" } : {}),
+                        fontFamily: "var(--font-body)",
+                        fontSize: "11px",
+                        color: "var(--fg-soft)",
+                        lineHeight: 1.4,
+                        margin: 0,
+                        opacity: 0.6,
+                        fontWeight: 400,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
                       }}
                     >
-                      {calc.tag}
-                    </span>
-                  </div>
-                  
-                  <p
-                    style={{
-                      fontFamily: "var(--font-body)",
-                      fontSize: "12.5px",
-                      color: "var(--fg-soft)",
-                      lineHeight: 1.45,
-                      margin: "2px 0 0",
-                      opacity: 0.7,
-                      fontWeight: 400,
-                      maxWidth: "92%",
-                    }}
-                  >
-                    {meta?.desc}
-                  </p>
-                </div>
+                      {shortDesc}
+                    </p>
 
-                {/* Right: Modern Arrow indicator */}
-                <div style={{ opacity: 0.3, color: "var(--fg-soft)", paddingRight: 4, alignSelf: "center" }}>
-                  <ChevronRight size={18} strokeWidth={1.5} />
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                    {/* Bottom arrow hint */}
+                    <div
+                      className="home-card-arrow"
+                      style={{
+                        position: "absolute",
+                        bottom: 10,
+                        right: 10,
+                        opacity: 0,
+                        color: "var(--accent)",
+                        transition: "opacity 0.2s ease, transform 0.2s ease",
+                        transform: "translateX(-4px)",
+                      }}
+                    >
+                      <ChevronRight size={14} strokeWidth={2} />
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </main>
 
       <Footer />
