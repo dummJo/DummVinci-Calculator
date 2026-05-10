@@ -324,21 +324,27 @@ export default function HomePage() {
         </a>
 
 
-        {/* Spec strip */}
+        {/* Spec strip (Auto-sliding Marquee) */}
         <div
           style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 6,
             paddingTop: 16,
             borderTop: "1px solid var(--hairline-soft)",
+            overflow: "hidden",
+            width: "100%",
+            position: "relative",
           }}
         >
-          {SPEC_STRIP.map((s) => (
-            <span key={s} className="tag" style={{ letterSpacing: "0.08em", fontSize: 10, padding: "2px 7px" }}>
-              {s}
-            </span>
-          ))}
+          {/* Gradient fade masks for smooth edges */}
+          <div style={{ position: "absolute", top: 16, bottom: 0, left: 0, width: 40, background: "linear-gradient(to right, var(--bg) 0%, transparent 100%)", zIndex: 2, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", top: 16, bottom: 0, right: 0, width: 40, background: "linear-gradient(to left, var(--bg) 0%, transparent 100%)", zIndex: 2, pointerEvents: "none" }} />
+          
+          <div className="spec-marquee" style={{ gap: 8 }}>
+            {[...SPEC_STRIP, ...SPEC_STRIP].map((s, i) => (
+              <span key={`${s}-${i}`} className="tag" style={{ letterSpacing: "0.08em", fontSize: 10, padding: "2px 7px", whiteSpace: "nowrap" }}>
+                {s}
+              </span>
+            ))}
+          </div>
         </div>
       </header>
 
