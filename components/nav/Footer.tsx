@@ -15,11 +15,16 @@ function TerminalWidget() {
     }, 1000);
     setTime(new Date().toLocaleTimeString("en-US", { hour12: true, hour: "2-digit", minute: "2-digit", second: "2-digit" }));
 
-    // IP Fetch
-    fetch("https://ipapi.co/json/")
+    // IP Fetch (Force IPv4)
+    fetch("https://api.ipify.org?format=json")
+      .then(res => res.json())
+      .then(ipData => {
+         const ipv4 = ipData.ip;
+         // Now fetch details using the forced IPv4
+         return fetch(`https://ipapi.co/${ipv4}/json/`);
+      })
       .then(res => res.json())
       .then(d => {
-        // Fallback for missing org/city
         if (!d.error) {
           setData(d);
         }
