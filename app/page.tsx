@@ -290,12 +290,38 @@ export default function HomePage() {
             fontSize: "clamp(11px, 1.4vw, 13px)",
             color: "var(--muted)",
             letterSpacing: "0.06em",
-            margin: "0 0 4px",
+            margin: "0 0 16px",
             lineHeight: 1.4,
           }}
         >
           {th.heroSubtitle}
         </p>
+        
+        <a 
+          href="https://www.ptts.co.id" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "6px 12px",
+            background: "rgba(29, 78, 216, 0.1)",
+            border: "1px solid rgba(29, 78, 216, 0.3)",
+            borderRadius: "var(--r-pill)",
+            color: "var(--fg)",
+            textDecoration: "none",
+            fontFamily: "var(--font-mono)",
+            fontSize: 11,
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            transition: "all 0.2s ease",
+            marginBottom: 16
+          }}
+        >
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#1d4ed8", boxShadow: "0 0 4px #1d4ed8" }} />
+          Supported by PT Prima Tekindo Tirta Sejahtera
+        </a>
 
 
         {/* Spec strip */}
