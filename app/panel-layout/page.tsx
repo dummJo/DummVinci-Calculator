@@ -4,7 +4,7 @@ import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, Search, Box, Minimize2, Printer, Settings2, Grid, Layers, MousePointer2, Copy, Activity, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Trash2, Search, Box, Minimize2, Maximize2, Printer, FileText, Settings2, Grid, Layers, MousePointer2, Copy, Activity, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
