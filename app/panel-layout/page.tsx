@@ -9,11 +9,13 @@ import { Plus, Trash2, Search, Box, Minimize2, Printer, Settings2, Grid, Layers,
 interface PlacedItem {
   id: string; // unique instance ID
   comp: PanelComponent;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  label?: string; // used for custom nameplates
+  x: number; // local x in panel
+  y: number; // local y in panel
+  w: number; // actual width in mm
+  h: number; // actual height in mm
+  label?: string; // custom designation (e.g. Q1, VSD1)
+  wx?: number; // wiring diagram X
+  wy?: number; // wiring diagram Y
 }
 
 export default function PanelLayoutPage() {
@@ -263,31 +265,32 @@ export default function PanelLayoutPage() {
   };
 
   const onCanvasPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0 || viewMode === "sld") return;
+    if (e.button !== 0) return;
     
     // Only start marquee if clicking directly on the canvas background
     if (e.target === e.currentTarget) {
-       e.currentTarget.setPointerCapture(e.pointerId);
-       
-       const currentW = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
-       const rect = canvasRef.current!.getBoundingClientRect();
-       const scale = rect.width / currentW;
-       const mouseX = (e.clientX - rect.left) / scale;
-       const mouseY = (e.clientY - rect.top) / scale;
+        e.currentTarget.setPointerCapture(e.pointerId);
+        
+        const currentW = viewMode === "sld" ? 1200 : (viewMode === "outer" ? activeEnc.extW : activeEnc.w);
+        const rect = canvasRef.current!.getBoundingClientRect();
+        const scale = rect.width / currentW;
+        const mouseX = (e.clientX - rect.left) / scale;
+        const mouseY = (e.clientY - rect.top) / scale;
 
-       setMarquee({ sx: mouseX, sy: mouseY, cx: mouseX, cy: mouseY });
-       setSelectedIds([]);
+        if (viewMode !== "sld") {
+          setMarquee({ sx: mouseX, sy: mouseY, cx: mouseX, cy: mouseY });
+          setSelectedIds([]);
+        }
     }
   };
 
   const onItemPointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
-    if (e.button !== 0 || viewMode === "sld") return;
+    if (e.button !== 0) return;
     e.stopPropagation();
     
     if (canvasRef.current) canvasRef.current.setPointerCapture(e.pointerId);
     
     let newSelection = selectedIds;
-    // If holding Shift, add to selection. Otherwise, if not in selection, select only this.
     if (e.shiftKey) {
       if (!selectedIds.includes(id)) newSelection = [...selectedIds, id];
     } else {
@@ -295,7 +298,7 @@ export default function PanelLayoutPage() {
     }
     setSelectedIds(newSelection);
     
-    const currentW = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
+    const currentW = viewMode === "sld" ? 1200 : (viewMode === "outer" ? activeEnc.extW : activeEnc.w);
     const rect = canvasRef.current!.getBoundingClientRect();
     const scale = rect.width / currentW;
     const mouseX = (e.clientX - rect.left) / scale;
@@ -303,23 +306,25 @@ export default function PanelLayoutPage() {
 
     const offsets = newSelection.map(selId => {
        const it = items.find(i => i.id === selId);
-       return { id: selId, ox: mouseX - (it ? it.x : 0), oy: mouseY - (it ? it.y : 0) };
+       const posX = viewMode === "sld" ? (it?.wx ?? 0) : (it?.x ?? 0);
+       const posY = viewMode === "sld" ? (it?.wy ?? 0) : (it?.y ?? 0);
+       return { id: selId, ox: mouseX - posX, oy: mouseY - posY };
     });
     setDragOffsets(offsets);
     setIsDragging(true);
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!canvasRef.current || viewMode === "sld") return;
+    if (!canvasRef.current) return;
     
-    const currentW = viewMode === "outer" ? activeEnc.extW : activeEnc.w;
-    const currentH = viewMode === "outer" ? activeEnc.extH : activeEnc.h;
+    const currentW = viewMode === "sld" ? 1200 : (viewMode === "outer" ? activeEnc.extW : activeEnc.w);
+    const currentH = viewMode === "sld" ? 800 : (viewMode === "outer" ? activeEnc.extH : activeEnc.h);
     const rect = canvasRef.current.getBoundingClientRect();
     const scale = rect.width / currentW;
     const mouseX = (e.clientX - rect.left) / scale;
     const mouseY = (e.clientY - rect.top) / scale;
 
-    if (marquee) {
+    if (marquee && viewMode !== "sld") {
        setMarquee(prev => prev ? { ...prev, cx: mouseX, cy: mouseY } : null);
        
        const left = Math.min(marquee.sx, mouseX);
@@ -356,12 +361,16 @@ export default function PanelLayoutPage() {
                  newY = Math.round(newY / 25) * 25;
               }
 
-              if (newX < 0) newX = 0;
-              if (newY < 0) newY = 0;
-              if (newX + it.w > currentW) newX = currentW - it.w;
-              if (newY + it.h > currentH) newY = currentH - it.h;
-
-              next[itIndex] = { ...it, x: newX, y: newY };
+              if (viewMode === "sld") {
+                // In SLD mode, we just update wx/wy without physical boundary checks
+                next[itIndex] = { ...it, wx: newX, wy: newY };
+              } else {
+                if (newX < 0) newX = 0;
+                if (newY < 0) newY = 0;
+                if (newX + it.w > currentW) newX = currentW - it.w;
+                if (newY + it.h > currentH) newY = currentH - it.h;
+                next[itIndex] = { ...it, x: newX, y: newY };
+              }
            }
         });
         return next;
@@ -1436,208 +1445,140 @@ export default function PanelLayoutPage() {
               </div>
             )}
 
-            {/* SLD SCHEMA VIEW */}
+            {/* PROFESSIONAL WIRING DIAGRAM VIEW (SLD PRO) */}
             {viewMode === "sld" && (() => {
               const incomer = items.find(i => i.comp.category === "MCCB" || i.comp.category === "MCB") || items[0];
-              const feeders = items.filter(i => {
-                const isOuter = ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(i.comp.category);
-                return !isOuter && i.id !== incomer?.id;
-              });
-
-              const renderSLDSymbol = (item: PlacedItem, isFeeder: boolean = true) => {
-                const { comp } = item;
+              
+              const renderWiringSymbol = (item: PlacedItem) => {
+                const isSelected = selectedIds.includes(item.id);
                 const isHovered = hoveredId === item.id;
-                
-                const SymbolBox = ({ children, label, rating, id }: { children: React.ReactNode, label?: string, rating?: string, id?: string }) => (
+                const wx = item.wx ?? 100;
+                const wy = item.wy ?? 200;
+
+                return (
                   <div 
-                    onMouseEnter={() => id && setHoveredId(id)}
+                    key={item.id}
+                    onPointerDown={(e) => onItemPointerDown(e, item.id)}
+                    onMouseEnter={() => setHoveredId(item.id)}
                     onMouseLeave={() => setHoveredId(null)}
-                    style={{ 
-                      display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 100,
-                      cursor: "default", transition: "all 0.2s",
-                      transform: isHovered ? "scale(1.08) translateY(-5px)" : "none"
+                    style={{
+                      position: "absolute", left: wx, top: wy,
+                      cursor: "grab", transition: isDragging ? "none" : "all 0.1s",
+                      zIndex: isSelected ? 100 : (isHovered ? 50 : 10),
+                      transform: isHovered ? "scale(1.05)" : "none"
                     }}
                   >
-                    <div style={{ 
-                      width: 60, height: 60, position: "relative", 
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      border: isHovered ? "2.5px solid var(--accent)" : "1.5px solid #000", 
-                      background: "#fff",
-                      boxShadow: isHovered ? "0 15px 30px rgba(0,0,0,0.2), 0 0 15px var(--accent)" : "none",
-                      zIndex: isHovered ? 50 : 1
+                    {/* Vertical connection lines to busbar if above 150px */}
+                    <div style={{ position: "absolute", top: -wy + 60, left: 30, width: 1, height: wy - 60, borderLeft: "1px solid #000" }} />
+                    <div style={{ position: "absolute", top: -wy + 80, left: 20, width: 1, height: wy - 80, borderLeft: "1px solid #000" }} />
+                    <div style={{ position: "absolute", top: -wy + 100, left: 10, width: 1, height: wy - 100, borderLeft: "1px solid #000" }} />
+
+                    <div style={{
+                      width: 60, height: 80, background: "#fff", border: isSelected ? "2px solid var(--accent)" : "1.5px solid #000",
+                      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                      boxShadow: isSelected ? "0 0 10px var(--accent)" : (isHovered ? "0 5px 15px rgba(0,0,0,0.1)" : "none")
                     }}>
-                      {/* Interaction Controls */}
-                      {isHovered && isFeeder && (
-                        <div style={{ position: "absolute", top: -20, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 4 }}>
-                          <button onClick={(e) => { e.stopPropagation(); moveFeeder(item.id, "left"); }} style={{ background: "#000", color: "#fff", border: "none", borderRadius: "50%", padding: 2, cursor: "pointer" }}><ChevronLeft size={12} /></button>
-                          <button onClick={(e) => { e.stopPropagation(); moveFeeder(item.id, "right"); }} style={{ background: "#000", color: "#fff", border: "none", borderRadius: "50%", padding: 2, cursor: "pointer" }}><ChevronRight size={12} /></button>
-                        </div>
-                      )}
-                      {children}
+                       {/* SVG Symbol inside box */}
+                       <div style={{ width: 40, height: 40 }}>
+                         {item.comp.category === "MCCB" || item.comp.category === "MCB" ? (
+                           <svg width="40" height="40" viewBox="0 0 40 40">
+                             <rect x="5" y="10" width="30" height="20" fill="none" stroke="#000" strokeWidth="1.5" />
+                             <path d="M5 30 L35 10" stroke="#000" strokeWidth="2" />
+                           </svg>
+                         ) : item.comp.category === "VSD" ? (
+                           <svg width="40" height="40" viewBox="0 0 40 40">
+                             <rect x="5" y="5" width="30" height="30" fill="none" stroke="#000" strokeWidth="1.5" />
+                             <path d="M5 35 L35 5" stroke="#000" strokeWidth="1" />
+                             <text x="8" y="18" fontSize="8" fontWeight="bold">~</text>
+                             <text x="24" y="32" fontSize="8" fontWeight="bold">=</text>
+                           </svg>
+                         ) : (
+                           <div style={{ width: 30, height: 30, border: "1px solid #999", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8 }}>{item.comp.category}</div>
+                         )}
+                       </div>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-                      <span style={{ fontSize: 10, fontWeight: 800, color: isHovered ? "var(--accent)" : "#000", fontFamily: "var(--font-mono)", maxWidth: 120 }}>{label || comp.partCode}</span>
-                      {rating && <span style={{ fontSize: 8, color: "#666", fontWeight: 600 }}>{rating}</span>}
+                    <div style={{ textAlign: "center", marginTop: 4 }}>
+                      <div style={{ fontSize: 10, fontWeight: 900, color: isSelected ? "var(--accent)" : "#000" }}>{item.label || item.comp.partCode}</div>
+                      <div style={{ fontSize: 7, color: "#666" }}>{item.comp.category}</div>
                     </div>
                   </div>
                 );
-
-                switch (comp.category) {
-                  case "MCCB":
-                    return (
-                      <SymbolBox id={item.id} label={comp.brand + " MCCB"} rating="Incomer">
-                        <svg width="40" height="40" viewBox="0 0 40 40">
-                          <rect x="5" y="5" width="30" height="30" fill="none" stroke="#000" strokeWidth="2" />
-                          <path d="M5 35 L35 5" stroke="#000" strokeWidth="2" />
-                          <circle cx="20" cy="20" r="4" fill="#000" />
-                        </svg>
-                      </SymbolBox>
-                    );
-                  case "VSD":
-                    return (
-                      <SymbolBox id={item.id} label={comp.brand + " VSD"}>
-                        <svg width="40" height="40" viewBox="0 0 40 40">
-                          <rect x="5" y="5" width="30" height="30" fill="none" stroke="#000" strokeWidth="1.5" />
-                          <path d="M5 35 L35 5" stroke="#000" strokeWidth="1.5" />
-                          <text x="8" y="18" fontSize="8" fontWeight="900">~</text>
-                          <text x="24" y="32" fontSize="8" fontWeight="900">=</text>
-                        </svg>
-                      </SymbolBox>
-                    );
-                  case "MCB":
-                    return (
-                      <SymbolBox id={item.id} label={comp.brand + " MCB"}>
-                        <svg width="40" height="40" viewBox="0 0 40 40">
-                          <path d="M20 5 L20 15 M20 15 L30 25 M20 25 L20 35" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" />
-                          <circle cx="20" cy="15" r="2" fill="#000" />
-                        </svg>
-                      </SymbolBox>
-                    );
-                  case "Contactor":
-                    return (
-                      <SymbolBox id={item.id} label="Contactor">
-                        <svg width="40" height="40" viewBox="0 0 40 40">
-                          <rect x="10" y="10" width="20" height="20" fill="none" stroke="#000" strokeWidth="1.5" />
-                          <path d="M5 20 H10 M30 20 H35" stroke="#000" strokeWidth="1.5" />
-                          <path d="M15 10 V30 M25 10 V30" stroke="#000" strokeWidth="1" strokeDasharray="2 2" />
-                        </svg>
-                      </SymbolBox>
-                    );
-                  case "Transformer":
-                    return (
-                      <SymbolBox id={item.id} label="XFMR">
-                        <svg width="40" height="40" viewBox="0 0 40 40">
-                          <circle cx="15" cy="20" r="10" fill="none" stroke="#000" strokeWidth="1.5" />
-                          <circle cx="25" cy="20" r="10" fill="none" stroke="#000" strokeWidth="1.5" />
-                        </svg>
-                      </SymbolBox>
-                    );
-                  case "PLC":
-                    return (
-                      <SymbolBox id={item.id} label="PLC / CPU">
-                        <div style={{ width: "80%", height: "80%", border: "1px dashed #000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900 }}>CPU</div>
-                      </SymbolBox>
-                    );
-                  default:
-                    return (
-                      <SymbolBox id={item.id} label={comp.category}>
-                        <div style={{ width: 30, height: 30, border: "1px solid #ccc", borderRadius: "50%" }} />
-                      </SymbolBox>
-                    );
-                }
               };
 
               return (
                 <div style={{
-                  width: "100%", minHeight: 600, background: "#fff", border: "2px solid #000",
-                  borderRadius: 4, padding: 60, overflowX: "auto", position: "relative",
-                  display: "flex", flexDirection: "column", alignItems: "center",
-                  boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+                  width: "100%", height: 800, background: "#fff", border: "2px solid #000",
+                  position: "relative", overflow: "hidden", cursor: marquee ? "crosshair" : "default"
                 }}>
-                  {/* SLD Header */}
-                  <div style={{ alignSelf: "flex-start", marginBottom: 60, borderLeft: "6px solid #000", paddingLeft: 24 }}>
-                    <div style={{ fontSize: 24, fontWeight: 900, color: "#000", textTransform: "uppercase", letterSpacing: "0.1em" }}>Single Line Diagram</div>
-                    <div style={{ fontSize: 12, color: "#444", fontFamily: "var(--font-mono)", marginTop: 6, fontWeight: 700 }}>Ref: {projectName} · {activeEnc.name}</div>
+                  {/* Drawing Frame / Coordinates */}
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 20, borderBottom: "1px solid #000", display: "flex", justifyContent: "space-around", fontSize: 9, fontWeight: 900, alignItems: "center", background: "#f8f8f8" }}>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(n => <span key={n}>{n}</span>)}
+                  </div>
+                  <div style={{ position: "absolute", top: 20, left: 0, bottom: 100, width: 20, borderRight: "1px solid #000", display: "flex", flexDirection: "column", justifyContent: "space-around", fontSize: 9, fontWeight: 900, alignItems: "center", background: "#f8f8f8" }}>
+                    {['A', 'B', 'C', 'D'].map(l => <span key={l}>{l}</span>)}
                   </div>
 
-                  {/* SLD Diagram Core */}
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", paddingBottom: 40 }}>
-                    {/* Incomer Section */}
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                      <div style={{ width: 4, height: 60, background: hoveredId === incomer?.id ? "var(--accent)" : "#000", transition: "all 0.3s" }} />
-                      <div style={{ position: "relative" }}>
-                        <div style={{ position: "absolute", top: -20, left: "50%", transform: "translateX(-50%)", fontSize: 10, fontWeight: 900, color: hoveredId === incomer?.id ? "var(--accent)" : "#000" }}>3PH SUPPLY</div>
-                        {incomer ? renderSLDSymbol(incomer, false) : <div style={{ width: 60, height: 60, border: "2px solid #000" }} />}
-                      </div>
-                      <div style={{ width: 4, height: 60, background: (hoveredId && (hoveredId === incomer?.id || feeders.some(f => f.id === hoveredId))) ? "var(--accent)" : "#000", transition: "all 0.3s" }} />
-                    </div>
+                  {/* Main Busbars (AC) */}
+                  <div style={{ position: "absolute", top: 60, left: 40, right: 40, borderTop: "1.5px solid #000" }}>
+                    <span style={{ position: "absolute", left: -30, top: -8, fontSize: 8, fontWeight: 900 }}>L1</span>
+                  </div>
+                  <div style={{ position: "absolute", top: 80, left: 40, right: 40, borderTop: "1.5px solid #000" }}>
+                    <span style={{ position: "absolute", left: -30, top: -8, fontSize: 8, fontWeight: 900 }}>L2</span>
+                  </div>
+                  <div style={{ position: "absolute", top: 100, left: 40, right: 40, borderTop: "1.5px solid #000" }}>
+                    <span style={{ position: "absolute", left: -30, top: -8, fontSize: 8, fontWeight: 900 }}>L3</span>
+                  </div>
+                  <div style={{ position: "absolute", top: 120, left: 40, right: 40, borderTop: "1px dashed #666" }}>
+                    <span style={{ position: "absolute", left: -30, top: -8, fontSize: 8, fontWeight: 900 }}>N</span>
+                  </div>
+                  <div style={{ position: "absolute", top: 140, left: 40, right: 40, borderTop: "1.5px solid #10b981" }}>
+                    <span style={{ position: "absolute", left: -30, top: -8, fontSize: 8, fontWeight: 900, color: "#10b981" }}>PE</span>
+                  </div>
 
-                    {/* Main Busbar */}
-                    <div style={{ 
-                      width: "95%", height: 8, 
-                      background: (hoveredId && feeders.some(f => f.id === hoveredId)) ? "var(--accent)" : "#000", 
-                      position: "relative", margin: "0 auto",
-                      transition: "all 0.3s",
-                      boxShadow: (hoveredId && feeders.some(f => f.id === hoveredId)) ? "0 0 20px var(--accent)" : "none",
-                      borderRadius: 4
-                    }}>
-                      <div style={{ position: "absolute", top: -25, left: 20, fontSize: 12, fontWeight: 900, color: (hoveredId && feeders.some(f => f.id === hoveredId)) ? "var(--accent)" : "#000", fontFamily: "var(--font-mono)", transition: "all 0.3s" }}>CU BUSBAR: 400V / 3PH / 50Hz</div>
-                      {/* Branch Points */}
-                      {feeders.map((f, idx) => (
-                         <div key={idx} style={{ 
-                           position: "absolute", top: -2, left: `${(idx + 1) * (100 / (feeders.length + 1))}%`, 
-                           width: 12, height: 12, 
-                           background: hoveredId === f.id ? "var(--accent)" : "#000", 
-                           borderRadius: "50%", transform: "translateX(-50%)",
-                           transition: "all 0.3s",
-                           zIndex: 10,
-                           boxShadow: hoveredId === f.id ? "0 0 10px var(--accent)" : "none"
-                         }} />
-                      ))}
-                    </div>
+                  {/* Component Rendering */}
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 100 }} onPointerDown={onCanvasPointerDown}>
+                    {items.filter(i => !["Label", "Logo", "Cooling"].includes(i.comp.category)).map(item => renderWiringSymbol(item))}
+                  </div>
 
-                    {/* Feeders Section */}
-                    <div style={{ 
-                      display: "flex", justifyContent: "space-around", width: "95%", 
-                      padding: "0 20px", flexWrap: "nowrap", overflowX: "auto",
-                      minHeight: 300, alignItems: "flex-start"
-                    }}>
-                      {feeders.map((feeder, idx) => {
-                        const isThisHovered = hoveredId === feeder.id;
-                        const isOtherHovered = hoveredId && hoveredId !== feeder.id && feeders.some(f => f.id === hoveredId);
-                        
-                        return (
-                        <div key={feeder.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", opacity: isOtherHovered ? 0.3 : 1, transition: "all 0.3s" }}>
-                          <div style={{ width: 3, height: 60, background: isThisHovered ? "var(--accent)" : "#000", transition: "all 0.3s" }} />
-                          {renderSLDSymbol(feeder, true)}
-                          <div style={{ width: 3, height: 60, background: isThisHovered ? "var(--accent)" : "#000", transition: "all 0.3s" }} />
-                          
-                          {/* Load Terminal Symbol */}
-                          <div style={{ 
-                            width: 20, height: 20, 
-                            border: `3px solid ${isThisHovered ? "var(--accent)" : "#000"}`, 
-                            borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-                            transition: "all 0.3s",
-                            boxShadow: isThisHovered ? "0 0 15px var(--accent)" : "none"
-                          }}>
-                             <div style={{ width: 6, height: 6, background: isThisHovered ? "var(--accent)" : "#000", borderRadius: "50%" }} />
-                          </div>
-                          <span style={{ fontSize: 10, fontWeight: 900, marginTop: 8, color: isThisHovered ? "var(--accent)" : "#000", fontFamily: "var(--font-mono)" }}>LOAD_{idx+1}</span>
-                          <span style={{ fontSize: 8, color: "#666", fontWeight: 800, textTransform: "uppercase" }}>{feeder.comp.category}</span>
+                  {/* Professional Title Block (Bottom) */}
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 100, borderTop: "2px solid #000", display: "flex", background: "#fff" }}>
+                     <div style={{ flex: 2, borderRight: "1px solid #000", padding: 8, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                        <div>
+                          <div style={{ fontSize: 7, color: "#666", textTransform: "uppercase" }}>Project Name / Job:</div>
+                          <div style={{ fontSize: 11, fontWeight: 900, color: "#000" }}>{projectName || "Panel Inverter For PIT 7"}</div>
                         </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* SLD Footer / Metadata */}
-                  <div style={{ marginTop: "auto", width: "100%", display: "flex", justifyContent: "space-between", borderTop: "3px solid #000", paddingTop: 20 }}>
-                    <div style={{ fontSize: 11, fontWeight: 900, fontFamily: "var(--font-mono)" }}>DUMMVINCI SLD ENGINE PRO v2.5.0</div>
-                    <div style={{ fontSize: 11, color: "#000", fontWeight: 900 }}>BY DUMMVINCI x PTTS · INTERNAL USE ONLY</div>
+                        <div>
+                          <div style={{ fontSize: 7, color: "#666", textTransform: "uppercase" }}>Client:</div>
+                          <div style={{ fontSize: 10, fontWeight: 700 }}>{customerName || "Amerta Indah Otsuka"}</div>
+                        </div>
+                     </div>
+                     <div style={{ flex: 2, borderRight: "1px solid #000", padding: 8, display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{ fontSize: 7, color: "#666", textTransform: "uppercase" }}>Drawing Title:</div>
+                        <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1 }}>WIRING DIAGRAM</div>
+                        <div style={{ fontSize: 8, color: "#444" }}>DUMMVINCI SLD ENGINE v2.6.0</div>
+                     </div>
+                     <div style={{ flex: 1.5, borderRight: "1px solid #000", padding: 8, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                        {/* PTTS Logo */}
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="https://www.ptts.co.id/uploads/1/3/3/7/133745061/logo-web_orig.png" alt="PTTS" style={{ height: 32 }} />
+                          <div style={{ textAlign: "center" }}>
+                            <div style={{ fontSize: 6, fontWeight: 800 }}>PT. PRIMA TEKINDO TIRTA</div>
+                            <div style={{ fontSize: 6, fontWeight: 800 }}>SEJAHTERA</div>
+                          </div>
+                        </div>
+                     </div>
+                     <div style={{ flex: 1, padding: 8, display: "grid", gridTemplateColumns: "1fr 1fr", fontSize: 6, gap: 4 }}>
+                        <div style={{ borderBottom: "0.5px solid #eee" }}>DATE:<br/><b>{new Date().toLocaleDateString()}</b></div>
+                        <div style={{ borderBottom: "0.5px solid #eee" }}>SCALE:<br/><b>NONE</b></div>
+                        <div style={{ borderBottom: "0.5px solid #eee" }}>DRAWN:<br/><b>TEGAR</b></div>
+                        <div style={{ borderBottom: "0.5px solid #eee" }}>SHEET:<br/><b>1 / 5</b></div>
+                     </div>
                   </div>
                 </div>
               );
             })()}
+
 
           </div>
         </div>
