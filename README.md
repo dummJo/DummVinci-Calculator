@@ -1,7 +1,17 @@
-# dummjo.id — Portfolio
+# DummVinci Calculator
 
-> Personal portfolio of Adam Jo — generalist engineer, Vincinian aesthetic.  
-> [dummjo.dev](https://dummjo.dev)
+> Professional, high-fidelity engineering calculator and industrial panel estimator.  
+> Engineered by [dummjo.dev](https://dummjo.dev)
+
+---
+
+## 🤝 Special Thanks & Supported By
+
+**This project is proudly supported by [PT Prima Tekindo Tirta Sejahtera (PTTS)](https://www.ptts.co.id/).**
+
+We extend our deepest gratitude to PTTS for their continued support, domain expertise, and collaboration in making this industrial engineering tool a reality. Their commitment to excellence in the automation and electrical sector has been instrumental in shaping the precision sizing logic, drive configurations, and panel layout libraries found within this application.
+
+*Terima kasih atas dukungannya, PTTS!*
 
 ---
 
@@ -9,79 +19,34 @@
 
 | Layer | Tech |
 |---|---|
-| Framework | Web Framework (App Router) |
-| Styling | Utility-first CSS |
-| Language | Typed JavaScript |
-| Deploy | Cloud Platform (`dummjo-teams`) |
-| Repo | `dummJo/portfolio` |
+| Framework | Next.js (App Router) |
+| Styling | CSS Variables & React Inline Styles |
+| Language | TypeScript |
+| Engine | Pure TS Engineering Algorithms |
+| Repo | `dummJo/DummVinci-Calculator` |
 
 ---
 
 ## Structure
 
-```
-📦 portfolio
+```text
+📦 DummVinci-Calculator
 │
-├── 🗂️  app/                    # Next.js App Router
-│   ├── 📄  layout.tsx          # Root layout, fonts, metadata
-│   ├── 📄  page.tsx            # Home — all sections composed here
-│   ├── 📄  template.tsx        # Page transition wrapper
-│   ├── 📄  globals.css         # CSS variables, base styles
-│   ├── 🤖  robots.ts           # robots.txt generator
-│   ├── 🗺️  sitemap.ts          # sitemap.xml generator
-│   ├── 🖼️  apple-icon.tsx      # Apple touch icon (generated)
-│   ├── 📁  changelog/          # /changelog route
-│   └── 📁  dummvinci/          # /dummvinci easter egg route
+├── 🗂️  app/                    # Next.js App Router (Calculators)
+│   ├── 📄  cable/              # Cable Ampacity (IEC 60364-5-52)
+│   ├── 📄  vsd/                # VSD/Drive Sizing (ABB ACQ580/ACS880)
+│   ├── 📄  breaker/            # MCCB/MCB Protection
+│   ├── 📄  panel-layout/       # 3D Industrial Panel Estimator
+│   └── 📄  page.tsx            # Unified Calculator Dashboard
 │
-├── 🧩  components/             # All UI components
-│   │
-│   ├── ── Page Sections ──
-│   ├── 📄  Hero.tsx            # Landing hero with intro
-│   ├── 📄  About.tsx           # About section
-│   ├── 📄  Skills.tsx          # Skills list
-│   ├── 📄  SkillGraph.tsx      # Radial skill graph
-│   ├── 📄  CareerJourney.tsx   # Timeline of career milestones
-│   ├── 📄  Projects.tsx        # Project cards
-│   ├── 📄  Contact.tsx         # Contact section
-│   ├── 📄  Footer.tsx          # Site footer
-│   │
-│   ├── ── Navigation ──
-│   ├── 📄  Navbar.tsx          # Top navigation bar
-│   ├── 📄  FloatingActions.tsx # Floating action buttons
-│   ├── 📄  BrandMarquee.tsx    # Scrolling brand ticker
-│   │
-│   ├── ── Theme & UX ──
-│   ├── 📄  ThemeToggle.tsx     # Dark/light toggle
-│   ├── 📄  LanguageSelector.tsx # EN/ID language switcher
-│   ├── 📄  CursorGlow.tsx      # Cursor glow effect
-│   ├── 📄  VisitorInfo.tsx     # Visitor geolocation badge
-│   │
-│   ├── ── Da Vinci System ──
-│   ├── 🎨  DaVinciSketches.tsx # 83 SVG sketch components (library)
-│   ├── 🎨  DaVinciWatermark.tsx # Randomized background watermarks
-│   ├── 🎨  DaVinciBackground.tsx # Static Da Vinci background layer
-│   ├── 🎨  DaVinciElements.tsx # Decorative floating elements
-│   ├── 🎨  DaVinciTrail.tsx    # Cursor ink trail effect
-│   │
-│   ├── ── Features ──
-│   ├── 📄  Changelog.tsx       # Changelog viewer
-│   ├── 📄  DummVinci.tsx       # DummVinci easter egg page
-│   └── 📄  DummVinciTeaser.tsx # DummVinci teaser component
+├── 🧩  components/             # UI Components
+│   ├── 📁  calc/               # Engineering inputs & cards
+│   └── 📁  nav/                # Telegram-style fluid navigation
 │
-├── 📚  lib/                    # Shared utilities
-│   ├── 📄  LanguageContext.tsx  # i18n React context
-│   └── 📄  translations.ts     # EN/ID translation strings
+├── 📚  lib/                    # Core Libraries
+│   ├── 📁  calc/               # Pure TS Engineering Logic
+│   └── 📄  i18n.ts             # Localization
 │
-├── 🖼️  public/                 # Static assets
-│   ├── 🧑  profile.jpg         # Profile photo
-│   ├── 🤖  robots.txt
-│   └── 🗺️  sitemap.xml
-│
-├── ⚙️  next.config.ts          # Next.js config
-├── ⚙️  tsconfig.json           # TypeScript config
-├── ⚙️  eslint.config.mjs       # ESLint rules
-├── ⚙️  postcss.config.mjs      # PostCSS (Tailwind)
-├── 📦  package.json
 └── 📋  CHANGELOG.md            # Release notes
 ```
 
@@ -90,14 +55,14 @@
 ## Dev
 
 ```bash
-pnpm install
-pnpm dev        # http://localhost:3000
-pnpm build
-pnpm lint
+npm install
+npm run dev        # http://localhost:3000
+npm run build
+npm run lint
 ```
 
 ---
 
 ## Deploy
 
-Push to `main` → auto-deploy.
+Push to `main` → auto-deploy to Vercel.
