@@ -18,7 +18,7 @@ We extend our deepest gratitude to PTTS for their continued support, domain expe
 ## Stack
 
 | Layer | Tech |
-|---|---|
+| --- | --- |
 | Framework | Next.js (App Router) |
 | Styling | CSS Variables & React Inline Styles |
 | Language | TypeScript |
