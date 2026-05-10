@@ -108,9 +108,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unified (Fast Sizing) calculator orchestrator.
 - Multi-component dependency logic (e.g., Cable sizing based on Breaker trip rating).
 - Integrated footer and navigation system for the calculator hub.
-
-### Added
-
 - Backend integration readiness for NestJS with dedicated `portfolioApi` client
 - Hybrid data orchestration: automatic API fetching with local translation fallback
 - UI Skeletons for Projects and Skills sections for improved loading UX
