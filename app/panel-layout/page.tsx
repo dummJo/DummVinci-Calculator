@@ -1836,7 +1836,7 @@ export default function PanelLayoutPage() {
 
                   {/* Floating Focus Library (Simurelay style) */}
                   {isFullScreen && showFocusLibrary && (
-                    <div style={{ position: "absolute", left: 20, top: 20, bottom: 20, width: 280, background: "rgba(0,0,0,0.9)", border: "1px solid #444", borderRadius: 12, backdropFilter: "blur(20px)", zIndex: 300, display: "flex", flexDirection: "column", padding: 16, boxShadow: "0 20px 50px rgba(0,0,0,0.6)" }}>
+                    <div style={{ position: "absolute", left: 20, top: 80, bottom: 60, width: 280, background: "rgba(0,0,0,0.9)", border: "1px solid #444", borderRadius: 12, backdropFilter: "blur(20px)", zIndex: 300, display: "flex", flexDirection: "column", padding: 16, boxShadow: "0 20px 50px rgba(0,0,0,0.6)" }}>
                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                           <div style={{ fontSize: 12, fontWeight: 900, color: "var(--accent)", display: "flex", alignItems: "center", gap: 8 }}><Box size={14}/> QUICK COMPONENTS</div>
                           <button onClick={() => setShowFocusLibrary(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer" }}><ChevronLeft size={16}/></button>
@@ -1868,6 +1868,31 @@ export default function PanelLayoutPage() {
                                </div>
                             </div>
                           ))}
+                       </div>
+                    </div>
+                  )}
+
+                  {/* Engineering Floating Toolbar */}
+                  <div className="no-print" style={{ position: "absolute", left: isFullScreen ? "50%" : 30, bottom: isFullScreen ? 40 : 120, transform: isFullScreen ? "translateX(-50%)" : "none", background: "rgba(0,0,0,0.85)", border: "1px solid #444", borderRadius: 32, padding: "6px 12px", display: "flex", alignItems: "center", gap: 12, zIndex: 400, backdropFilter: "blur(10px)", boxShadow: "0 10px 30px rgba(0,0,0,0.5)" }}>
+                     <button onClick={() => setSelectedIds([])} style={{ background: "none", border: "none", color: selectedIds.length === 0 ? "var(--accent)" : "#fff", cursor: "pointer", padding: 8 }} title="Select Mode"><MousePointer2 size={18} /></button>
+                     <div style={{ width: 1, height: 20, background: "#333" }} />
+                     <button onClick={() => selectedIds.length > 0 && duplicateSelected()} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", padding: 8 }} title="Copy/Duplicate"><Copy size={18} /></button>
+                     <button onClick={() => selectedIds.forEach(id => setItems(prev => prev.filter(i => i.id !== id)))} style={{ background: "none", border: "none", color: "#f44", cursor: "pointer", padding: 8 }} title="Delete Selected"><Trash2 size={18} /></button>
+                     <div style={{ width: 1, height: 20, background: "#333" }} />
+                     <button onClick={() => setShowFocusLibrary(!showFocusLibrary)} style={{ background: "none", border: "none", color: "var(--accent)", cursor: "pointer", padding: 8 }} title="Add Components"><Plus size={18} /></button>
+                  </div>
+
+                  {/* Program Status Bar (Bottom Focus Mode Only) */}
+                  {isFullScreen && (
+                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 24, background: "#111", borderTop: "1px solid #333", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 12px", fontSize: 9, fontFamily: "var(--font-mono)", color: "#888", zIndex: 450 }}>
+                       <div style={{ display: "flex", gap: 16 }}>
+                          <span style={{ color: "var(--accent)" }}>CAD ENGINE v2.8.0</span>
+                          <span>MODE: {selectedIds.length > 0 ? `EDITING (${selectedIds.length} SELECTED)` : "IDLE"}</span>
+                       </div>
+                       <div style={{ display: "flex", gap: 16 }}>
+                          <span>GRID: {snapToGrid ? "ON" : "OFF"}</span>
+                          <span>LAYERS: L1, L2, L3, N, PE</span>
+                          <span style={{ color: "#fff" }}>COORD: {Math.round(items[0]?.wx || 0)}, {Math.round(items[0]?.wy || 0)}</span>
                        </div>
                     </div>
                   )}
