@@ -55,11 +55,23 @@ export default function PanelLayoutPage() {
   useEffect(() => {
     const savedItems = localStorage.getItem("dummvinci_estimator_items");
     const savedEnc = localStorage.getItem("dummvinci_estimator_enc");
+    const savedMeta = localStorage.getItem("dummvinci_estimator_meta");
+    
     if (savedItems) {
       try { setItems(JSON.parse(savedItems)); } catch (e) {}
     }
     if (savedEnc && ENCLOSURES.some(e => e.id === savedEnc)) {
       setEncId(savedEnc);
+    }
+    if (savedMeta) {
+      try {
+        const meta = JSON.parse(savedMeta);
+        if (meta.drawnBy) setDrawnBy(meta.drawnBy);
+        if (meta.checkedBy) setCheckedBy(meta.checkedBy);
+        if (meta.approvedBy) setApprovedBy(meta.approvedBy);
+        if (meta.revNo) setRevNo(meta.revNo);
+        if (meta.revDate) setRevDate(meta.revDate);
+      } catch (e) {}
     }
     setIsLoaded(true);
   }, []);
@@ -69,8 +81,9 @@ export default function PanelLayoutPage() {
     if (isLoaded) {
       localStorage.setItem("dummvinci_estimator_items", JSON.stringify(items));
       localStorage.setItem("dummvinci_estimator_enc", encId);
+      localStorage.setItem("dummvinci_estimator_meta", JSON.stringify({ drawnBy, checkedBy, approvedBy, revNo, revDate }));
     }
-  }, [items, encId, isLoaded]);
+  }, [items, encId, drawnBy, checkedBy, approvedBy, revNo, revDate, isLoaded]);
 
   // --- Keyboard Shortcuts (AutoCAD Feel) ---
   useEffect(() => {
@@ -267,7 +280,6 @@ export default function PanelLayoutPage() {
   const onCanvasPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
     
-    // Only start marquee if clicking directly on the canvas background
     if (e.target === e.currentTarget) {
         e.currentTarget.setPointerCapture(e.pointerId);
         
@@ -277,10 +289,8 @@ export default function PanelLayoutPage() {
         const mouseX = (e.clientX - rect.left) / scale;
         const mouseY = (e.clientY - rect.top) / scale;
 
-        if (viewMode !== "sld") {
-          setMarquee({ sx: mouseX, sy: mouseY, cx: mouseX, cy: mouseY });
-          setSelectedIds([]);
-        }
+        setMarquee({ sx: mouseX, sy: mouseY, cx: mouseX, cy: mouseY });
+        setSelectedIds([]);
     }
   };
 
@@ -306,8 +316,9 @@ export default function PanelLayoutPage() {
 
     const offsets = newSelection.map(selId => {
        const it = items.find(i => i.id === selId);
-       const posX = viewMode === "sld" ? (it?.wx ?? 0) : (it?.x ?? 0);
-       const posY = viewMode === "sld" ? (it?.wy ?? 0) : (it?.y ?? 0);
+       // Consistent fallback with renderer
+       const posX = viewMode === "sld" ? (it?.wx ?? 100) : (it?.x ?? 0);
+       const posY = viewMode === "sld" ? (it?.wy ?? 200) : (it?.y ?? 0);
        return { id: selId, ox: mouseX - posX, oy: mouseY - posY };
     });
     setDragOffsets(offsets);
@@ -324,7 +335,7 @@ export default function PanelLayoutPage() {
     const mouseX = (e.clientX - rect.left) / scale;
     const mouseY = (e.clientY - rect.top) / scale;
 
-    if (marquee && viewMode !== "sld") {
+    if (marquee) {
        setMarquee(prev => prev ? { ...prev, cx: mouseX, cy: mouseY } : null);
        
        const left = Math.min(marquee.sx, mouseX);
@@ -333,6 +344,14 @@ export default function PanelLayoutPage() {
        const bottom = Math.max(marquee.sy, mouseY);
 
        const intersectingIds = items.filter(it => {
+         if (viewMode === "sld") {
+            const isOuter = ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(it.comp.category);
+            if (isOuter) return false;
+            const wx = it.wx ?? 100;
+            const wy = it.wy ?? 200;
+            return !(wx > right || (wx + 60) < left || wy > bottom || (wy + 80) < top);
+         }
+
          const isOuter = ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(it.comp.category);
          if (viewMode === "inner" && isOuter) return false;
          if (viewMode === "outer" && !isOuter) return false;
@@ -1455,6 +1474,19 @@ export default function PanelLayoutPage() {
                 const wx = item.wx ?? 100;
                 const wy = item.wy ?? 200;
 
+                // Professional IEC designations
+                const getDesignation = (category: string) => {
+                  if (category === "MCCB" || category === "MCB") return "Q";
+                  if (category === "VSD") return "U";
+                  if (category === "Contactor") return "KM";
+                  if (category === "Transformer") return "T";
+                  if (category === "PLC") return "K";
+                  return "X";
+                };
+
+                const idx = items.filter(i => i.comp.category === item.comp.category).findIndex(i => i.id === item.id);
+                const designation = item.label || `${getDesignation(item.comp.category)}${idx + 1}`;
+
                 return (
                   <div 
                     key={item.id}
@@ -1468,22 +1500,38 @@ export default function PanelLayoutPage() {
                       transform: isHovered ? "scale(1.05)" : "none"
                     }}
                   >
-                    {/* Vertical connection lines to busbar if above 150px */}
-                    <div style={{ position: "absolute", top: -wy + 60, left: 30, width: 1, height: wy - 60, borderLeft: "1px solid #000" }} />
-                    <div style={{ position: "absolute", top: -wy + 80, left: 20, width: 1, height: wy - 80, borderLeft: "1px solid #000" }} />
-                    <div style={{ position: "absolute", top: -wy + 100, left: 10, width: 1, height: wy - 100, borderLeft: "1px solid #000" }} />
+                    {/* Vertical connection lines to busbar (Safety checked) */}
+                    {wy > 60 && (
+                      <>
+                        <div style={{ position: "absolute", top: -wy + 60, left: 30, width: 1, height: wy - 60, borderLeft: "1px solid #000" }} />
+                        <div style={{ position: "absolute", top: -wy + 60, left: 30, width: 4, height: 4, background: "#000", borderRadius: "50%", transform: "translate(-1.5px, -2px)" }} />
+                      </>
+                    )}
+                    {wy > 80 && (
+                      <>
+                        <div style={{ position: "absolute", top: -wy + 80, left: 20, width: 1, height: wy - 80, borderLeft: "1px solid #000" }} />
+                        <div style={{ position: "absolute", top: -wy + 80, left: 20, width: 4, height: 4, background: "#000", borderRadius: "50%", transform: "translate(-1.5px, -2px)" }} />
+                      </>
+                    )}
+                    {wy > 100 && (
+                      <>
+                        <div style={{ position: "absolute", top: -wy + 100, left: 10, width: 1, height: wy - 100, borderLeft: "1px solid #000" }} />
+                        <div style={{ position: "absolute", top: -wy + 100, left: 10, width: 4, height: 4, background: "#000", borderRadius: "50%", transform: "translate(-1.5px, -2px)" }} />
+                      </>
+                    )}
 
                     <div style={{
-                      width: 60, height: 80, background: "#fff", border: isSelected ? "2px solid var(--accent)" : "1.5px solid #000",
+                      width: 60, height: 80, background: "#fff", border: isSelected ? "2.5px solid var(--accent)" : "1.5px solid #000",
                       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                      boxShadow: isSelected ? "0 0 10px var(--accent)" : (isHovered ? "0 5px 15px rgba(0,0,0,0.1)" : "none")
+                      boxShadow: isSelected ? "0 10px 20px rgba(0,0,0,0.2), 0 0 15px var(--accent)" : (isHovered ? "0 5px 15px rgba(0,0,0,0.1)" : "none")
                     }}>
                        {/* SVG Symbol inside box */}
                        <div style={{ width: 40, height: 40 }}>
                          {item.comp.category === "MCCB" || item.comp.category === "MCB" ? (
                            <svg width="40" height="40" viewBox="0 0 40 40">
-                             <rect x="5" y="10" width="30" height="20" fill="none" stroke="#000" strokeWidth="1.5" />
-                             <path d="M5 30 L35 10" stroke="#000" strokeWidth="2" />
+                             <path d="M20 5 V15 M20 25 V35" stroke="#000" strokeWidth="1.5" />
+                             <path d="M20 15 L35 25" stroke="#000" strokeWidth="2" strokeLinecap="round" />
+                             <circle cx="20" cy="15" r="1.5" fill="#000" />
                            </svg>
                          ) : item.comp.category === "VSD" ? (
                            <svg width="40" height="40" viewBox="0 0 40 40">
@@ -1492,14 +1540,27 @@ export default function PanelLayoutPage() {
                              <text x="8" y="18" fontSize="8" fontWeight="bold">~</text>
                              <text x="24" y="32" fontSize="8" fontWeight="bold">=</text>
                            </svg>
+                         ) : item.comp.category === "Contactor" ? (
+                           <svg width="40" height="40" viewBox="0 0 40 40">
+                             <rect x="10" y="10" width="20" height="20" fill="none" stroke="#000" strokeWidth="1" />
+                             <path d="M5 20 H10 M30 20 H35" stroke="#000" strokeWidth="1" />
+                             <path d="M15 10 V30 M25 10 V30" stroke="#000" strokeWidth="1" strokeDasharray="2 2" />
+                           </svg>
+                         ) : item.comp.category === "Transformer" ? (
+                           <svg width="40" height="40" viewBox="0 0 40 40">
+                             <circle cx="15" cy="20" r="10" fill="none" stroke="#000" strokeWidth="1.5" />
+                             <circle cx="25" cy="20" r="10" fill="none" stroke="#000" strokeWidth="1.5" />
+                           </svg>
+                         ) : item.comp.category === "PLC" ? (
+                           <div style={{ width: "90%", height: "90%", border: "1px dashed #000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 900 }}>CPU</div>
                          ) : (
                            <div style={{ width: 30, height: 30, border: "1px solid #999", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8 }}>{item.comp.category}</div>
                          )}
                        </div>
                     </div>
                     <div style={{ textAlign: "center", marginTop: 4 }}>
-                      <div style={{ fontSize: 10, fontWeight: 900, color: isSelected ? "var(--accent)" : "#000" }}>{item.label || item.comp.partCode}</div>
-                      <div style={{ fontSize: 7, color: "#666" }}>{item.comp.category}</div>
+                      <div style={{ fontSize: 10, fontWeight: 900, color: isSelected ? "var(--accent)" : "#000", fontFamily: "var(--font-mono)" }}>{designation}</div>
+                      <div style={{ fontSize: 7, color: "#666", fontWeight: 700 }}>{item.comp.brand}</div>
                     </div>
                   </div>
                 );
@@ -1569,11 +1630,53 @@ export default function PanelLayoutPage() {
                         </div>
                      </div>
                      <div style={{ flex: 1, padding: 8, display: "grid", gridTemplateColumns: "1fr 1fr", fontSize: 6, gap: 4 }}>
-                        <div style={{ borderBottom: "0.5px solid #eee" }}>DATE:<br/><b>{new Date().toLocaleDateString()}</b></div>
-                        <div style={{ borderBottom: "0.5px solid #eee" }}>SCALE:<br/><b>NONE</b></div>
-                        <div style={{ borderBottom: "0.5px solid #eee" }}>DRAWN:<br/><b>TEGAR</b></div>
+                        <div style={{ borderBottom: "0.5px solid #eee" }}>DATE:<br/><b>{revDate}</b></div>
+                        <div style={{ borderBottom: "0.5px solid #eee" }}>REV NO:<br/><b>{revNo}</b></div>
+                        <div style={{ borderBottom: "0.5px solid #eee" }}>DRAWN:<br/><b>{drawnBy}</b></div>
+                        <div style={{ borderBottom: "0.5px solid #eee" }}>CHECKED:<br/><b>{checkedBy}</b></div>
+                        <div style={{ borderBottom: "0.5px solid #eee" }}>APPROVED:<br/><b>{approvedBy}</b></div>
                         <div style={{ borderBottom: "0.5px solid #eee" }}>SHEET:<br/><b>1 / 5</b></div>
                      </div>
+                  </div>
+
+                  {/* Metadata Floating Form */}
+                  <div className="no-print" style={{ position: "absolute", top: 30, right: 30, zIndex: 200 }}>
+                    <button 
+                      onClick={() => setShowMetadataForm(!showMetadataForm)}
+                      style={{ background: "#000", color: "var(--accent)", border: "none", padding: "8px 16px", borderRadius: 4, fontWeight: 900, fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
+                    >
+                      <Settings2 size={14} /> EDIT SHEET INFO
+                    </button>
+                    {showMetadataForm && (
+                      <div style={{ marginTop: 8, background: "rgba(0,0,0,0.95)", color: "#fff", padding: 20, borderRadius: 8, width: 280, backdropFilter: "blur(10px)", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", border: "1px solid #444" }}>
+                        <div style={{ fontSize: 10, fontWeight: 900, color: "var(--accent)", marginBottom: 16, textTransform: "uppercase" }}>Drawing Metadata</div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                           <label style={{ fontSize: 9 }}>
+                             DRAWN BY:
+                             <input value={drawnBy} onChange={e => setDrawnBy(e.target.value.toUpperCase())} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
+                           </label>
+                           <label style={{ fontSize: 9 }}>
+                             CHECKED BY:
+                             <input value={checkedBy} onChange={e => setCheckedBy(e.target.value.toUpperCase())} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
+                           </label>
+                           <label style={{ fontSize: 9 }}>
+                             APPROVED BY:
+                             <input value={approvedBy} onChange={e => setApprovedBy(e.target.value.toUpperCase())} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
+                           </label>
+                           <div style={{ display: "flex", gap: 12 }}>
+                             <label style={{ fontSize: 9, flex: 1 }}>
+                               REV NO:
+                               <input value={revNo} onChange={e => setRevNo(e.target.value)} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
+                             </label>
+                             <label style={{ fontSize: 9, flex: 2 }}>
+                               DATE:
+                               <input value={revDate} onChange={e => setRevDate(e.target.value)} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
+                             </label>
+                           </div>
+                           <button onClick={() => setShowMetadataForm(false)} style={{ background: "var(--accent)", color: "#000", border: "none", padding: "8px", fontWeight: 900, fontSize: 10, marginTop: 8, cursor: "pointer" }}>SAVE & CLOSE</button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );

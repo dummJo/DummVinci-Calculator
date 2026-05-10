@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-05-10
+
+### Added
+- **SLD PRO Engine**: Upgraded SLD to a professional Wiring Diagram canvas with CAD-style frames and coordinate grids.
+- **Symbol Library**: Added professional symbols for Contactors, Transformers, and PLCs.
+- **IEC Designations**: Automated IEC 61346 component tagging (Q, KM, U, T).
+- **Free Positioning**: Enabled absolute positioning and dragging for all schematic components.
+
+### Fixed
+- **Coordinate Jump**: Resolved bug where components jumped 100px upon initial drag in SLD view.
+- **Line Height Safety**: Fixed negative height bug for leader lines in schematic view.
+- **Selection Engine**: Enabled marquee selection for wiring symbols.
+- **Live Terminal Widget**: Deployed a dynamic IP address, location, and live clock widget to the global footer, bringing the "dummjo.dev" hacker aesthetic to the calculator hub.
+- **Showroom Spec Marquee**: Upgraded the static standards list into an infinite, auto-sliding marquee carousel featuring newly added engineering specifications (IEC 60890, Rittal TS 8, etc.).
+
 ## [2.4.0] — 2026-05-10
 
 ### Added
