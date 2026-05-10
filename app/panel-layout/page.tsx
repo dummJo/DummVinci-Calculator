@@ -53,6 +53,27 @@ export default function PanelLayoutPage() {
   // Clipboard
   const [clipboard, setClipboard] = useState<PlacedItem[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const sldRef = useRef<HTMLDivElement>(null);
+
+  const toggleFullScreen = () => {
+    if (!sldRef.current) return;
+    if (!document.fullscreenElement) {
+      sldRef.current.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
+      setIsFullScreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullScreen(false);
+    }
+  };
+
+  useEffect(() => {
+    const onFsChange = () => setIsFullScreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", onFsChange);
+    return () => document.removeEventListener("fullscreenchange", onFsChange);
+  }, []);
 
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -1651,10 +1672,13 @@ export default function PanelLayoutPage() {
               };
 
               return (
-                <div style={{
-                  width: "100%", height: 800, background: "#fff", border: "2px solid #000",
-                  position: "relative", overflow: "hidden", cursor: marquee ? "crosshair" : "default"
-                }}>
+                <div 
+                  ref={sldRef}
+                  style={{
+                    width: "100%", height: isFullScreen ? "100vh" : 800, background: "#fff", border: isFullScreen ? "none" : "2px solid #000",
+                    position: "relative", overflow: "hidden", cursor: marquee ? "crosshair" : "default"
+                  }}
+                >
                   {/* Drawing Frame / Coordinates */}
                   <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 20, borderBottom: "1px solid #000", display: "flex", justifyContent: "space-around", fontSize: 9, fontWeight: 900, alignItems: "center", background: "#f8f8f8" }}>
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(n => <span key={n}>{n}</span>)}
@@ -1727,10 +1751,20 @@ export default function PanelLayoutPage() {
                   <div className="no-print" style={{ position: "absolute", top: 30, right: 30, zIndex: 200 }}>
                     <button 
                       onClick={() => setShowMetadataForm(!showMetadataForm)}
-                      style={{ background: "#000", color: "var(--accent)", border: "none", padding: "8px 16px", borderRadius: 4, fontWeight: 900, fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
+                      style={{ background: "#000", color: "var(--accent)", border: "none", padding: "8px 16px", borderRadius: 4, fontWeight: 900, fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}
                     >
-                      <Settings2 size={14} /> EDIT SHEET INFO
+                      <Settings2 size={14} /> {showMetadataForm ? "CLOSE SETTINGS" : "EDIT SHEET INFO"}
                     </button>
+                    
+                    {/* Full Screen Toggle Button */}
+                    <button 
+                      onClick={toggleFullScreen}
+                      style={{ marginTop: 8, background: isFullScreen ? "var(--accent)" : "#000", color: isFullScreen ? "#000" : "var(--accent)", border: "none", padding: "8px 16px", borderRadius: 4, fontWeight: 900, fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, width: "100%", justifyContent: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}
+                    >
+                      {isFullScreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />} 
+                      {isFullScreen ? "EXIT FOCUS MODE" : "FOCUS DRAFTING"}
+                    </button>
+                    
                     {showMetadataForm && (
                       <div style={{ marginTop: 8, background: "rgba(0,0,0,0.95)", color: "#fff", padding: 20, borderRadius: 8, width: 280, backdropFilter: "blur(10px)", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", border: "1px solid #444" }}>
                         <div style={{ fontSize: 10, fontWeight: 900, color: "var(--accent)", marginBottom: 16, textTransform: "uppercase" }}>Drawing Metadata</div>
