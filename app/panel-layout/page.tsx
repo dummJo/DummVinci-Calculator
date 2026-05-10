@@ -75,6 +75,12 @@ export default function PanelLayoutPage() {
     return () => document.removeEventListener("fullscreenchange", onFsChange);
   }, []);
 
+  const [exportSettings, setExportSettings] = useState({
+    paperSize: "A4",
+    orientation: "landscape",
+    isColor: true
+  });
+
   const canvasRef = useRef<HTMLDivElement>(null);
 
   // Load from local storage on mount
@@ -1766,32 +1772,52 @@ export default function PanelLayoutPage() {
                     </button>
                     
                     {showMetadataForm && (
-                      <div style={{ marginTop: 8, background: "rgba(0,0,0,0.95)", color: "#fff", padding: 20, borderRadius: 8, width: 280, backdropFilter: "blur(10px)", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", border: "1px solid #444" }}>
-                        <div style={{ fontSize: 10, fontWeight: 900, color: "var(--accent)", marginBottom: 16, textTransform: "uppercase" }}>Drawing Metadata</div>
+                      <div style={{ marginTop: 8, background: "rgba(0,0,0,0.95)", color: "#fff", padding: 20, borderRadius: 8, width: 300, backdropFilter: "blur(10px)", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", border: "1px solid #444", maxHeight: "80vh", overflowY: "auto" }}>
+                        <div style={{ fontSize: 10, fontWeight: 900, color: "var(--accent)", marginBottom: 16, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 8 }}><FileText size={14}/> SHEET & PLOT SETTINGS</div>
                         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                            <label style={{ fontSize: 9 }}>
                              DRAWN BY:
-                             <input value={drawnBy} onChange={e => setDrawnBy(e.target.value.toUpperCase())} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
+                             <input value={drawnBy} onChange={e => setDrawnBy(e.target.value.toUpperCase())} placeholder="N/A" style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
                            </label>
                            <label style={{ fontSize: 9 }}>
                              CHECKED BY:
-                             <input value={checkedBy} onChange={e => setCheckedBy(e.target.value.toUpperCase())} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
+                             <input value={checkedBy} onChange={e => setCheckedBy(e.target.value.toUpperCase())} placeholder="N/A" style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
                            </label>
                            <label style={{ fontSize: 9 }}>
                              APPROVED BY:
-                             <input value={approvedBy} onChange={e => setApprovedBy(e.target.value.toUpperCase())} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
+                             <input value={approvedBy} onChange={e => setApprovedBy(e.target.value.toUpperCase())} placeholder="N/A" style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
+                           </label>
+                           
+                           <div style={{ height: 1, background: "#444", margin: "4px 0" }} />
+                           
+                           <div style={{ fontSize: 10, fontWeight: 900, color: "var(--accent)", marginBottom: 4 }}>AUTOCAD PLOT OPTIONS</div>
+                           <label style={{ fontSize: 9 }}>
+                             PAPER SIZE:
+                             <select value={exportSettings.paperSize} onChange={e => setExportSettings(p => ({...p, paperSize: e.target.value}))} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }}>
+                               <option value="A4">ISO A4 (297 x 210 mm)</option>
+                               <option value="A3">ISO A3 (420 x 297 mm)</option>
+                             </select>
                            </label>
                            <div style={{ display: "flex", gap: 12 }}>
                              <label style={{ fontSize: 9, flex: 1 }}>
-                               REV NO:
-                               <input value={revNo} onChange={e => setRevNo(e.target.value)} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
+                               MODE:
+                               <select value={exportSettings.isColor ? "color" : "bw"} onChange={e => setExportSettings(p => ({...p, isColor: e.target.value === "color"}))} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }}>
+                                 <option value="color">Full Color</option>
+                                 <option value="bw">Technical B&W</option>
+                               </select>
                              </label>
-                             <label style={{ fontSize: 9, flex: 2 }}>
-                               DATE:
-                               <input value={revDate} onChange={e => setRevDate(e.target.value)} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }} />
+                             <label style={{ fontSize: 9, flex: 1 }}>
+                               ORIENT:
+                               <select value={exportSettings.orientation} onChange={e => setExportSettings(p => ({...p, orientation: e.target.value as any}))} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }}>
+                                 <option value="landscape">Landscape</option>
+                                 <option value="portrait">Portrait</option>
+                               </select>
                              </label>
                            </div>
-                           <button onClick={() => setShowMetadataForm(false)} style={{ background: "var(--accent)", color: "#000", border: "none", padding: "8px", fontWeight: 900, fontSize: 10, marginTop: 8, cursor: "pointer" }}>SAVE & CLOSE</button>
+
+                           <button onClick={() => { setShowMetadataForm(false); window.print(); }} style={{ background: "var(--accent)", color: "#000", border: "none", padding: "10px", fontWeight: 900, fontSize: 11, marginTop: 8, cursor: "pointer", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                             <Printer size={16} /> PLOT TO PDF
+                           </button>
                         </div>
                       </div>
                     )}
@@ -1808,38 +1834,26 @@ export default function PanelLayoutPage() {
       
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
+          @page {
+            size: ${exportSettings.paperSize} ${exportSettings.orientation};
+            margin: 0;
+          }
           body * { visibility: hidden; }
           
-          /* Show canvas area and force it to fill the page cleanly */
           .print-area, .print-area * { visibility: visible; }
           .print-area { 
-            position: absolute; left: 0; top: 0; width: 100%; height: auto;
+            position: absolute; left: 0; top: 0; width: 100%; height: 100%;
             margin: 0; padding: 0 !important; background: #fff !important; border: none !important; box-shadow: none !important; 
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            filter: ${exportSettings.isColor ? "none" : "grayscale(1) contrast(1.1)"};
           }
           
-          /* Professional Print Header */
-          .print-header {
-            display: flex !important;
-            width: 100%;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 3px solid #1d4ed8;
-            padding-bottom: 20px;
-            margin-bottom: 40px;
-          }
-          .print-header-left { display: flex; flex-direction: column; gap: 4px; }
-          .print-header-right { text-align: right; }
-          
-          /* Hide non-printable elements */
           .no-print { display: none !important; }
-          
-          /* Show custom print footers */
-          .print-footer { display: flex !important; position: static !important; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
         }
       `}} />
       <Footer />
