@@ -54,6 +54,7 @@ export default function PanelLayoutPage() {
   const [clipboard, setClipboard] = useState<PlacedItem[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [showFocusLibrary, setShowFocusLibrary] = useState(false);
   const sldRef = useRef<HTMLDivElement>(null);
 
   const toggleFullScreen = () => {
@@ -1770,6 +1771,16 @@ export default function PanelLayoutPage() {
                       {isFullScreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />} 
                       {isFullScreen ? "EXIT FOCUS MODE" : "FOCUS DRAFTING"}
                     </button>
+
+                    {/* Floating Library Toggle (Only in Focus Mode) */}
+                    {isFullScreen && (
+                      <button 
+                        onClick={() => setShowFocusLibrary(!showFocusLibrary)}
+                        style={{ marginTop: 8, background: showFocusLibrary ? "var(--accent)" : "rgba(255,255,255,0.1)", color: showFocusLibrary ? "#000" : "#fff", border: "1px solid rgba(255,255,255,0.2)", padding: "10px", borderRadius: 4, fontWeight: 900, fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, width: "100%", justifyContent: "center", backdropFilter: "blur(5px)" }}
+                      >
+                        <Box size={14} /> {showFocusLibrary ? "HIDE LIBRARY" : "SHOW LIBRARY"}
+                      </button>
+                    )}
                     
                     {showMetadataForm && (
                       <div style={{ marginTop: 8, background: "rgba(0,0,0,0.95)", color: "#fff", padding: 20, borderRadius: 8, width: 300, backdropFilter: "blur(10px)", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", border: "1px solid #444", maxHeight: "80vh", overflowY: "auto" }}>
@@ -1822,6 +1833,44 @@ export default function PanelLayoutPage() {
                       </div>
                     )}
                   </div>
+
+                  {/* Floating Focus Library (Simurelay style) */}
+                  {isFullScreen && showFocusLibrary && (
+                    <div style={{ position: "absolute", left: 20, top: 20, bottom: 20, width: 280, background: "rgba(0,0,0,0.9)", border: "1px solid #444", borderRadius: 12, backdropFilter: "blur(20px)", zIndex: 300, display: "flex", flexDirection: "column", padding: 16, boxShadow: "0 20px 50px rgba(0,0,0,0.6)" }}>
+                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                          <div style={{ fontSize: 12, fontWeight: 900, color: "var(--accent)", display: "flex", alignItems: "center", gap: 8 }}><Box size={14}/> QUICK COMPONENTS</div>
+                          <button onClick={() => setShowFocusLibrary(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer" }}><ChevronLeft size={16}/></button>
+                       </div>
+                       
+                       <input 
+                         placeholder="Search symbols..."
+                         value={searchQuery}
+                         onChange={e => setSearchQuery(e.target.value)}
+                         style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid #333", borderRadius: 6, color: "#fff", padding: "8px 12px", fontSize: 12, marginBottom: 12, outline: "none" }}
+                       />
+
+                       <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6 }} className="custom-scrollbar">
+                          {componentLibrary
+                            .filter(c => !["Label", "Logo", "Cooling", "Wiring"].includes(c.category))
+                            .filter(c => c.partCode.toLowerCase().includes(searchQuery.toLowerCase()) || c.category.toLowerCase().includes(searchQuery.toLowerCase()))
+                            .map(c => (
+                            <div 
+                              key={c.partCode} 
+                              onClick={() => { handleAddComponent(c); setShowFocusLibrary(false); }}
+                              style={{ padding: "10px", borderRadius: 6, background: "rgba(255,255,255,0.05)", border: "1px solid #333", cursor: "pointer", transition: "all 0.2s" }}
+                              onMouseEnter={e => e.currentTarget.style.borderColor = "var(--accent)"}
+                              onMouseLeave={e => e.currentTarget.style.borderColor = "#333"}
+                            >
+                               <div style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>{c.partCode}</div>
+                               <div style={{ fontSize: 9, color: "#888", display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+                                  <span>{c.category}</span>
+                                  <span>{c.brand}</span>
+                               </div>
+                            </div>
+                          ))}
+                       </div>
+                    </div>
+                  )}
                 </div>
               );
             })()}
