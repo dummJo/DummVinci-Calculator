@@ -4,7 +4,7 @@ import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, Search, Box, Minimize2, Printer, Settings2, Grid, Layers, MousePointer2, Copy, Activity } from "lucide-react";
+import { Plus, Trash2, Search, Box, Minimize2, Printer, Settings2, Grid, Layers, MousePointer2, Copy, Activity, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
@@ -44,6 +44,7 @@ export default function PanelLayoutPage() {
 
   // Clipboard
   const [clipboard, setClipboard] = useState<PlacedItem[]>([]);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -239,6 +240,26 @@ export default function PanelLayoutPage() {
      });
      setItems(prev => [...prev, ...newItems]);
      setSelectedIds(newIds);
+  };
+
+  const moveFeeder = (id: string, direction: "left" | "right") => {
+     const isOuter = (item: PlacedItem) => ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(item.comp.category);
+     const feeders = items.filter(i => !isOuter(i) && i.comp.category !== "MCCB" && i.comp.category !== "MCB");
+     const index = feeders.findIndex(f => f.id === id);
+     if (index === -1) return;
+
+     const targetIndex = direction === "left" ? index - 1 : index + 1;
+     if (targetIndex < 0 || targetIndex >= feeders.length) return;
+
+     const newItems = [...items];
+     const itemA = feeders[index];
+     const itemB = feeders[targetIndex];
+
+     const idxA = items.findIndex(i => i.id === itemA.id);
+     const idxB = items.findIndex(i => i.id === itemB.id);
+
+     [newItems[idxA], newItems[idxB]] = [newItems[idxB], newItems[idxA]];
+     setItems(newItems);
   };
 
   const onCanvasPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -1409,7 +1430,6 @@ export default function PanelLayoutPage() {
                 
                 {/* Print Context Overlay */}
                 <div style={{ display: "none", position: "absolute", bottom: -20, left: 0, right: 0, justifyContent: "space-between", color: "#000", fontSize: 12, fontFamily: "var(--font-mono)" }} className="print-footer">
-                  <div><b>DUMMVINCI ESTIMATOR</b></div>
                   <div>Outer Dimension: {activeEnc.extW}x{activeEnc.extH}mm</div>
                 </div>
 
@@ -1418,20 +1438,45 @@ export default function PanelLayoutPage() {
 
             {/* SLD SCHEMA VIEW */}
             {viewMode === "sld" && (() => {
-              const renderSLDSymbol = (item: PlacedItem) => {
+              const incomer = items.find(i => i.comp.category === "MCCB" || i.comp.category === "MCB") || items[0];
+              const feeders = items.filter(i => {
+                const isOuter = ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(i.comp.category);
+                return !isOuter && i.id !== incomer?.id;
+              });
+
+              const renderSLDSymbol = (item: PlacedItem, isFeeder: boolean = true) => {
                 const { comp } = item;
+                const isHovered = hoveredId === item.id;
                 
-                const SymbolBox = ({ children, label, rating }: { children: React.ReactNode, label?: string, rating?: string }) => (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 100 }}>
+                const SymbolBox = ({ children, label, rating, id }: { children: React.ReactNode, label?: string, rating?: string, id?: string }) => (
+                  <div 
+                    onMouseEnter={() => id && setHoveredId(id)}
+                    onMouseLeave={() => setHoveredId(null)}
+                    style={{ 
+                      display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 100,
+                      cursor: "default", transition: "all 0.2s",
+                      transform: isHovered ? "scale(1.08) translateY(-5px)" : "none"
+                    }}
+                  >
                     <div style={{ 
                       width: 60, height: 60, position: "relative", 
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      border: "1.5px solid #000", background: "#fff"
+                      border: isHovered ? "2.5px solid var(--accent)" : "1.5px solid #000", 
+                      background: "#fff",
+                      boxShadow: isHovered ? "0 15px 30px rgba(0,0,0,0.2), 0 0 15px var(--accent)" : "none",
+                      zIndex: isHovered ? 50 : 1
                     }}>
+                      {/* Interaction Controls */}
+                      {isHovered && isFeeder && (
+                        <div style={{ position: "absolute", top: -20, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 4 }}>
+                          <button onClick={(e) => { e.stopPropagation(); moveFeeder(item.id, "left"); }} style={{ background: "#000", color: "#fff", border: "none", borderRadius: "50%", padding: 2, cursor: "pointer" }}><ChevronLeft size={12} /></button>
+                          <button onClick={(e) => { e.stopPropagation(); moveFeeder(item.id, "right"); }} style={{ background: "#000", color: "#fff", border: "none", borderRadius: "50%", padding: 2, cursor: "pointer" }}><ChevronRight size={12} /></button>
+                        </div>
+                      )}
                       {children}
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                      <span style={{ fontSize: 10, fontWeight: 800, color: "#000", fontFamily: "var(--font-mono)" }}>{label || comp.partCode}</span>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+                      <span style={{ fontSize: 10, fontWeight: 800, color: isHovered ? "var(--accent)" : "#000", fontFamily: "var(--font-mono)", maxWidth: 120 }}>{label || comp.partCode}</span>
                       {rating && <span style={{ fontSize: 8, color: "#666", fontWeight: 600 }}>{rating}</span>}
                     </div>
                   </div>
@@ -1440,7 +1485,7 @@ export default function PanelLayoutPage() {
                 switch (comp.category) {
                   case "MCCB":
                     return (
-                      <SymbolBox label={item.comp.brand + " MCCB"} rating="Incomer">
+                      <SymbolBox id={item.id} label={comp.brand + " MCCB"} rating="Incomer">
                         <svg width="40" height="40" viewBox="0 0 40 40">
                           <rect x="5" y="5" width="30" height="30" fill="none" stroke="#000" strokeWidth="2" />
                           <path d="M5 35 L35 5" stroke="#000" strokeWidth="2" />
@@ -1450,7 +1495,7 @@ export default function PanelLayoutPage() {
                     );
                   case "VSD":
                     return (
-                      <SymbolBox label={item.comp.brand + " VSD"}>
+                      <SymbolBox id={item.id} label={comp.brand + " VSD"}>
                         <svg width="40" height="40" viewBox="0 0 40 40">
                           <rect x="5" y="5" width="30" height="30" fill="none" stroke="#000" strokeWidth="1.5" />
                           <path d="M5 35 L35 5" stroke="#000" strokeWidth="1.5" />
@@ -1461,7 +1506,7 @@ export default function PanelLayoutPage() {
                     );
                   case "MCB":
                     return (
-                      <SymbolBox label={item.comp.brand + " MCB"}>
+                      <SymbolBox id={item.id} label={comp.brand + " MCB"}>
                         <svg width="40" height="40" viewBox="0 0 40 40">
                           <path d="M20 5 L20 15 M20 15 L30 25 M20 25 L20 35" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" />
                           <circle cx="20" cy="15" r="2" fill="#000" />
@@ -1470,7 +1515,7 @@ export default function PanelLayoutPage() {
                     );
                   case "Contactor":
                     return (
-                      <SymbolBox label="Contactor">
+                      <SymbolBox id={item.id} label="Contactor">
                         <svg width="40" height="40" viewBox="0 0 40 40">
                           <rect x="10" y="10" width="20" height="20" fill="none" stroke="#000" strokeWidth="1.5" />
                           <path d="M5 20 H10 M30 20 H35" stroke="#000" strokeWidth="1.5" />
@@ -1480,7 +1525,7 @@ export default function PanelLayoutPage() {
                     );
                   case "Transformer":
                     return (
-                      <SymbolBox label="XFMR">
+                      <SymbolBox id={item.id} label="XFMR">
                         <svg width="40" height="40" viewBox="0 0 40 40">
                           <circle cx="15" cy="20" r="10" fill="none" stroke="#000" strokeWidth="1.5" />
                           <circle cx="25" cy="20" r="10" fill="none" stroke="#000" strokeWidth="1.5" />
@@ -1489,80 +1534,106 @@ export default function PanelLayoutPage() {
                     );
                   case "PLC":
                     return (
-                      <SymbolBox label="PLC / CPU">
+                      <SymbolBox id={item.id} label="PLC / CPU">
                         <div style={{ width: "80%", height: "80%", border: "1px dashed #000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900 }}>CPU</div>
                       </SymbolBox>
                     );
                   default:
                     return (
-                      <SymbolBox label={comp.category}>
+                      <SymbolBox id={item.id} label={comp.category}>
                         <div style={{ width: 30, height: 30, border: "1px solid #ccc", borderRadius: "50%" }} />
                       </SymbolBox>
                     );
                 }
               };
 
-              const incomer = items.find(i => i.comp.category === "MCCB" || i.comp.category === "MCB") || items[0];
-              const feeders = items.filter(i => i.id !== (incomer?.id));
-              
               return (
                 <div style={{
                   width: "100%", minHeight: 600, background: "#fff", border: "2px solid #000",
-                  borderRadius: 4, padding: 40, overflowX: "auto", position: "relative",
+                  borderRadius: 4, padding: 60, overflowX: "auto", position: "relative",
                   display: "flex", flexDirection: "column", alignItems: "center",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.1)"
+                  boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
                 }}>
                   {/* SLD Header */}
-                  <div style={{ alignSelf: "flex-start", marginBottom: 40, borderLeft: "4px solid #000", paddingLeft: 16 }}>
-                    <div style={{ fontSize: 18, fontWeight: 900, color: "#000", textTransform: "uppercase", letterSpacing: "0.05em" }}>Single Line Diagram</div>
-                    <div style={{ fontSize: 11, color: "#444", fontFamily: "var(--font-mono)", marginTop: 4 }}>Ref: {projectName} · {activeEnc.name}</div>
+                  <div style={{ alignSelf: "flex-start", marginBottom: 60, borderLeft: "6px solid #000", paddingLeft: 24 }}>
+                    <div style={{ fontSize: 24, fontWeight: 900, color: "#000", textTransform: "uppercase", letterSpacing: "0.1em" }}>Single Line Diagram</div>
+                    <div style={{ fontSize: 12, color: "#444", fontFamily: "var(--font-mono)", marginTop: 6, fontWeight: 700 }}>Ref: {projectName} · {activeEnc.name}</div>
                   </div>
 
-                  {/* SLD Generator Logic */}
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-                    {/* Incoming Supply */}
+                  {/* SLD Diagram Core */}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", paddingBottom: 40 }}>
+                    {/* Incomer Section */}
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                      <div style={{ width: 2, height: 40, background: "#000" }} />
+                      <div style={{ width: 4, height: 60, background: hoveredId === incomer?.id ? "var(--accent)" : "#000", transition: "all 0.3s" }} />
                       <div style={{ position: "relative" }}>
-                        <div style={{ position: "absolute", top: -15, left: "50%", transform: "translateX(-50%)", fontSize: 8, fontWeight: 900 }}>SOURCE</div>
-                        {incomer ? renderSLDSymbol(incomer) : <div style={{ width: 60, height: 60, border: "2px solid #000" }} />}
+                        <div style={{ position: "absolute", top: -20, left: "50%", transform: "translateX(-50%)", fontSize: 10, fontWeight: 900, color: hoveredId === incomer?.id ? "var(--accent)" : "#000" }}>3PH SUPPLY</div>
+                        {incomer ? renderSLDSymbol(incomer, false) : <div style={{ width: 60, height: 60, border: "2px solid #000" }} />}
                       </div>
-                      <div style={{ width: 2, height: 40, background: "#000" }} />
+                      <div style={{ width: 4, height: 60, background: (hoveredId && (hoveredId === incomer?.id || feeders.some(f => f.id === hoveredId))) ? "var(--accent)" : "#000", transition: "all 0.3s" }} />
                     </div>
 
                     {/* Main Busbar */}
-                    <div style={{ width: "90%", height: 4, background: "#000", position: "relative", margin: "0 auto" }}>
-                      <div style={{ position: "absolute", top: -18, left: 20, fontSize: 10, fontWeight: 900, color: "#000", fontFamily: "var(--font-mono)" }}>MAIN BUSBAR: 400V / 3PH / 50Hz</div>
-                      {/* Connection point dots */}
-                      {feeders.filter(f => !["Label", "Logo", "Cooling"].includes(f.comp.category)).map((_, idx) => (
-                         <div key={idx} style={{ position: "absolute", top: -2, left: `${(idx + 1) * (100 / (feeders.length + 1))}%`, width: 8, height: 8, background: "#000", borderRadius: "50%", transform: "translateX(-50%)" }} />
+                    <div style={{ 
+                      width: "95%", height: 8, 
+                      background: (hoveredId && feeders.some(f => f.id === hoveredId)) ? "var(--accent)" : "#000", 
+                      position: "relative", margin: "0 auto",
+                      transition: "all 0.3s",
+                      boxShadow: (hoveredId && feeders.some(f => f.id === hoveredId)) ? "0 0 20px var(--accent)" : "none",
+                      borderRadius: 4
+                    }}>
+                      <div style={{ position: "absolute", top: -25, left: 20, fontSize: 12, fontWeight: 900, color: (hoveredId && feeders.some(f => f.id === hoveredId)) ? "var(--accent)" : "#000", fontFamily: "var(--font-mono)", transition: "all 0.3s" }}>CU BUSBAR: 400V / 3PH / 50Hz</div>
+                      {/* Branch Points */}
+                      {feeders.map((f, idx) => (
+                         <div key={idx} style={{ 
+                           position: "absolute", top: -2, left: `${(idx + 1) * (100 / (feeders.length + 1))}%`, 
+                           width: 12, height: 12, 
+                           background: hoveredId === f.id ? "var(--accent)" : "#000", 
+                           borderRadius: "50%", transform: "translateX(-50%)",
+                           transition: "all 0.3s",
+                           zIndex: 10,
+                           boxShadow: hoveredId === f.id ? "0 0 10px var(--accent)" : "none"
+                         }} />
                       ))}
                     </div>
 
-                    {/* Feeders Grid */}
+                    {/* Feeders Section */}
                     <div style={{ 
-                      display: "flex", justifyContent: "space-around", width: "90%", 
-                      padding: "0 20px", flexWrap: "nowrap", overflowX: "auto" 
+                      display: "flex", justifyContent: "space-around", width: "95%", 
+                      padding: "0 20px", flexWrap: "nowrap", overflowX: "auto",
+                      minHeight: 300, alignItems: "flex-start"
                     }}>
-                      {feeders.filter(f => !["Label", "Logo", "Cooling"].includes(f.comp.category)).map((feeder, idx) => (
-                        <div key={feeder.id} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                          <div style={{ width: 2, height: 40, background: "#000" }} />
-                          {renderSLDSymbol(feeder)}
-                          <div style={{ width: 2, height: 40, background: "#000" }} />
-                          <div style={{ width: 14, height: 14, border: "2.5px solid #000", borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                             <div style={{ width: 4, height: 4, background: "#000", borderRadius: "50%" }} />
+                      {feeders.map((feeder, idx) => {
+                        const isThisHovered = hoveredId === feeder.id;
+                        const isOtherHovered = hoveredId && hoveredId !== feeder.id && feeders.some(f => f.id === hoveredId);
+                        
+                        return (
+                        <div key={feeder.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", opacity: isOtherHovered ? 0.3 : 1, transition: "all 0.3s" }}>
+                          <div style={{ width: 3, height: 60, background: isThisHovered ? "var(--accent)" : "#000", transition: "all 0.3s" }} />
+                          {renderSLDSymbol(feeder, true)}
+                          <div style={{ width: 3, height: 60, background: isThisHovered ? "var(--accent)" : "#000", transition: "all 0.3s" }} />
+                          
+                          {/* Load Terminal Symbol */}
+                          <div style={{ 
+                            width: 20, height: 20, 
+                            border: `3px solid ${isThisHovered ? "var(--accent)" : "#000"}`, 
+                            borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+                            transition: "all 0.3s",
+                            boxShadow: isThisHovered ? "0 0 15px var(--accent)" : "none"
+                          }}>
+                             <div style={{ width: 6, height: 6, background: isThisHovered ? "var(--accent)" : "#000", borderRadius: "50%" }} />
                           </div>
-                          <span style={{ fontSize: 9, fontWeight: 800, marginTop: 6, color: "#000", fontFamily: "var(--font-mono)" }}>LOAD_{idx+1}</span>
-                          <span style={{ fontSize: 7, color: "#666", fontWeight: 700 }}>{feeder.comp.category}</span>
+                          <span style={{ fontSize: 10, fontWeight: 900, marginTop: 8, color: isThisHovered ? "var(--accent)" : "#000", fontFamily: "var(--font-mono)" }}>LOAD_{idx+1}</span>
+                          <span style={{ fontSize: 8, color: "#666", fontWeight: 800, textTransform: "uppercase" }}>{feeder.comp.category}</span>
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
                   {/* SLD Footer / Metadata */}
-                  <div style={{ marginTop: 60, width: "100%", display: "flex", justifyContent: "space-between", borderTop: "2px solid #000", paddingTop: 12 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, fontFamily: "var(--font-mono)" }}>DUMMVINCI SLD ENGINE v2.4.0</div>
-                    <div style={{ fontSize: 9, color: "#000", fontWeight: 800 }}>{customerName} · CONFIDENTIAL</div>
+                  <div style={{ marginTop: "auto", width: "100%", display: "flex", justifyContent: "space-between", borderTop: "3px solid #000", paddingTop: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 900, fontFamily: "var(--font-mono)" }}>DUMMVINCI SLD ENGINE PRO v2.5.0</div>
+                    <div style={{ fontSize: 11, color: "#000", fontWeight: 900 }}>BY DUMMVINCI x PTTS · INTERNAL USE ONLY</div>
                   </div>
                 </div>
               );
