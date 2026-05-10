@@ -249,7 +249,9 @@ export default function PanelLayoutPage() {
     const newItem: PlacedItem = {
       id: Math.random().toString(36).substring(2, 9),
       comp, x: startX, y: startY, w: comp.width, h: comp.height,
-      label: generateTag(comp.category, items)
+      label: generateTag(comp.category, items),
+      wx: 100 + (items.length % 8) * 80, // Spread out in SLD view
+      wy: 200 + Math.floor(items.length / 8) * 120
     };
     
     setItems((prev) => [...prev, newItem]);
@@ -279,7 +281,14 @@ export default function PanelLayoutPage() {
         newIds.push(newId);
         // Generate tag for the new item, considering the already duplicated items in the loop
         const currentTempItems = [...items, ...selected.slice(0, idx)];
-        return { ...item, id: newId, x: item.x + 25, y: item.y + 25, label: generateTag(item.comp.category, currentTempItems) }; 
+        return { 
+           ...item, 
+           id: newId, 
+           x: item.x + 25, y: item.y + 25, 
+           label: generateTag(item.comp.category, currentTempItems),
+           wx: (item.wx ?? 100) + 40, // Offset in SLD view
+           wy: (item.wy ?? 200) + 40
+        }; 
      });
      setItems(prev => [...prev, ...newItems]);
      setSelectedIds(newIds);
@@ -403,7 +412,7 @@ export default function PanelLayoutPage() {
               let newX = mouseX - off.ox;
               let newY = mouseY - off.oy;
 
-              if (snapToGrid) {
+              if (snapToGrid && viewMode !== "sld") {
                  newX = Math.round(newX / 25) * 25;
                  newY = Math.round(newY / 25) * 25;
               }
