@@ -4,6 +4,72 @@ import { useEffect, useState } from "react";
 import { getRandomQuote, type Quote } from "@/lib/quotes";
 import { useLang } from "@/lib/i18n";
 
+function TerminalWidget() {
+  const [data, setData] = useState<any>(null);
+  const [time, setTime] = useState<string>("");
+
+  useEffect(() => {
+    // Clock
+    const timer = setInterval(() => {
+      setTime(new Date().toLocaleTimeString("en-US", { hour12: true, hour: "2-digit", minute: "2-digit", second: "2-digit" }));
+    }, 1000);
+    setTime(new Date().toLocaleTimeString("en-US", { hour12: true, hour: "2-digit", minute: "2-digit", second: "2-digit" }));
+
+    // IP Fetch
+    fetch("https://ipapi.co/json/")
+      .then(res => res.json())
+      .then(d => {
+        // Fallback for missing org/city
+        if (!d.error) {
+          setData(d);
+        }
+      })
+      .catch(e => console.error(e));
+
+    return () => clearInterval(timer);
+  }, []);
+
+  if (!data) return null;
+
+  return (
+    <div style={{
+      marginTop: 40,
+      fontFamily: "var(--font-mono), monospace",
+      fontSize: 11,
+      color: "var(--muted)",
+      textAlign: "center",
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      opacity: 0.65,
+    }}>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 10 }}>
+        <span style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>Your IP</span>
+        <span style={{ color: "var(--accent)", fontWeight: 700, fontSize: 15, letterSpacing: "0.05em" }}>{data.ip}</span>
+        <span style={{ fontWeight: 700, color: "var(--fg-soft)" }}>{data.country}</span>
+      </div>
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center", 
+        flexWrap: "wrap",
+        gap: 6,
+        letterSpacing: "0.02em"
+      }}>
+        <span>{data.city ? `${data.city}, ${data.country_name}` : data.country_name}</span>
+        <span>·</span>
+        {data.org && (
+          <>
+            <span>{data.org}</span>
+            <span>·</span>
+          </>
+        )}
+        <span>⏱ {time}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function Footer() {
   const { t } = useLang();
   const [quote, setQuote] = useState<Quote | null>(null);
@@ -86,6 +152,8 @@ export default function Footer() {
           Supported by PT Prima Tekindo Tirta Sejahtera
         </span>
       </div>
+
+      <TerminalWidget />
     </footer>
   );
 }
