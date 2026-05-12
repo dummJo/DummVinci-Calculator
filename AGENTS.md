@@ -33,13 +33,15 @@ Route tasks to the right model by specialty:
 ## Project Structure Quick Reference
 
 ```text
-app/                        ← Next.js App Router pages (all "use client")
-  cable/page.tsx            ← Cable sizing: IEC 60364-5-52 / PUIL
-  vsd/page.tsx              ← ABB ACQ580 & ACS880 + panel airflow
-  breaker/page.tsx          ← Siemens 3VA / 5SL / 5SY MCCB/MCB
-  busbar/page.tsx           ← Cu/Al flat bar sizing
-  braking-resistor/         ← STAHL crane BR sizing for ACS880
-  panel/page.tsx            ← XLTC / Rittal + fan/filter/AC BTU
+app/                              ← App Router; route groups keep GitHub tidy (URLs unchanged)
+  layout.tsx, globals.css
+  (home)/page.tsx                 ← Landing `/`
+  (tools)/                        ← All feature routes live here
+    cable/page.tsx                ← IEC 60364-5-52 / PUIL
+    vsd/page.tsx                  ← ABB ACQ580 & ACS880 + airflow
+    breaker/page.tsx              ← Siemens 3VA / 5SL / 5SY
+    busbar/page.tsx, unified/, starter/, plc/, pid/, etc.
+    braking-resistor/, panel/, panel-layout/, convert/, tutorials/, abb-support/
 
 components/
   calc/                     ← FieldNumber, FieldSelect, FieldToggle, ResultCard, CalcShell
@@ -75,7 +77,7 @@ When adding a new calculator, launch 3 agents simultaneously:
 
 ```text
 Agent A (Opus)   → Engineering logic in lib/calc/new-feature.ts
-Agent B (Sonnet) → UI page in app/new-feature/page.tsx
+Agent B (Sonnet) → UI page in app/(tools)/new-feature/page.tsx
 Agent C (Haiku)  → Seed JSON in data/new-feature.json
 ```
 

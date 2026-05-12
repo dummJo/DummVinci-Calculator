@@ -32,22 +32,19 @@ We extend our deepest gratitude to PTTS for their continued support, domain expe
 ```text
 📦 DummVinci-Calculator
 │
-├── 🗂️  app/                    # Next.js App Router (Calculators)
-│   ├── 📄  cable/              # Cable Ampacity (IEC 60364-5-52)
-│   ├── 📄  vsd/                # VSD/Drive Sizing (ABB ACQ580/ACS880)
-│   ├── 📄  breaker/            # MCCB/MCB Protection
-│   ├── 📄  panel-layout/       # Professional SLD & Layout Estimator
-│   └── 📄  page.tsx            # Unified Calculator Dashboard
+├── 🗂️  app/                         # Next.js App Router
+│   ├── layout.tsx, globals.css      # Root shell + theme
+│   ├── (home)/page.tsx              # Landing `/` (route group — URL unchanged)
+│   └── (tools)/                     # All calculator & utility routes (URLs unchanged)
+│       ├── cable/, vsd/, breaker/, busbar/, unified/, starter/
+│       ├── panel/, panel-layout/, plc/, pid/, braking-resistor/
+│       ├── convert/, tutorials/, abb-support/
 │
-├── 🧩  components/             # UI Components
-│   ├── 📁  calc/               # Engineering inputs & cards
-│   └── 📁  nav/                # Telegram-style fluid navigation
-│
-├── 📚  lib/                    # Core Libraries
-│   ├── 📁  calc/               # Pure TS Engineering Logic
-│   └── 📄  i18n.ts             # Localization
-│
-└── 📋  CHANGELOG.md            # Release notes
+├── 🧩  components/                  # UI (calc fields, nav, chrome)
+├── 📚  lib/calc/                    # Pure TS engineering logic
+├── 📦  data/                        # JSON catalogs (ABB, Siemens, STAHL, enclosures)
+├── 📐  standards/                   # Internal engineering notes for AI/agents
+└── 📋  CHANGELOG.md
 ```
 
 ---
