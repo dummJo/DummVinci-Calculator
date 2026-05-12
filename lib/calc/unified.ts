@@ -26,8 +26,8 @@ export interface UnifiedResult {
 }
 
 /**
- * Estimates FLA based on kW and Voltage if not provided.
- * Rough formula: I = P / (V * sqrt(3) * pf * eff)
+ * Estimates FLA from kW when nameplate A is absent: I = P / (√3 V cosφ η).
+ * cosφ and η are order-of-magnitude defaults (not IEC 60034 nameplate data) — conservative for pre-select; use motor plate when available.
  */
 export function estimateAmps(kw: number, v: number, pf = 0.85, eff = 0.9): number {
   return (kw * 1000) / (v * Math.sqrt(3) * pf * eff);

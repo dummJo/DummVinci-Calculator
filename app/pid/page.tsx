@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
@@ -77,21 +77,18 @@ export default function PidPage() {
   const [ki, setKi] = useState("0.5");
   const [kd, setKd] = useState("0.0");
 
-  const [result, setResult] = useState<PidResult | null>(null);
-
-  // Auto-run simulation when parameters change
-  useEffect(() => {
-    const res = simulatePid({
-      equipment,
-      motorKw: parseFloat(motorKw) || 1,
-      setpoint: parseFloat(setpoint) || 50,
-      kp: parseFloat(kp) || 0,
-      ki: parseFloat(ki) || 0,
-      kd: parseFloat(kd) || 0,
-    });
-    const tid = setTimeout(() => setResult(res), 0);
-    return () => clearTimeout(tid);
-  }, [equipment, motorKw, setpoint, kp, ki, kd]);
+  const result: PidResult = useMemo(
+    () =>
+      simulatePid({
+        equipment,
+        motorKw: parseFloat(motorKw) || 1,
+        setpoint: parseFloat(setpoint) || 50,
+        kp: parseFloat(kp) || 0,
+        ki: parseFloat(ki) || 0,
+        kd: parseFloat(kd) || 0,
+      }),
+    [equipment, motorKw, setpoint, kp, ki, kd],
+  );
 
   return (
     <CalcShell
@@ -145,8 +142,7 @@ export default function PidPage() {
         </div>
 
         {/* Real-time simulation feedback */}
-        {result && (
-          <div style={{
+        <div style={{
             marginTop: 24,
             padding: 24,
             background: "rgba(255,255,255,0.02)",
@@ -175,7 +171,6 @@ export default function PidPage() {
               {tp.metrics}: {result.metricsText}
             </div>
           </div>
-        )}
 
       </div>
       <Footnote />

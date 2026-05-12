@@ -1,7 +1,7 @@
 // app/cable/page.tsx — Cable Sizing Calculator
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
@@ -30,15 +30,18 @@ export default function CablePage() {
 
   const [result, setResult] = useState<CableResult | null>(null);
 
+  const voltageNum = useMemo(() => parseFloat(voltage) || 400, [voltage]);
+  const pfNum = useMemo(() => parseFloat(pf) || 0.85, [pf]);
+
   function handleCalc() {
     const r = sizeCable({
       current:      parseFloat(current)  || 0,
       lengthM:      parseFloat(length)   || 0,
-      voltage:      parseFloat(voltage)  || 400,
+      voltage:      voltageNum,
       phase, insulation, install,
       ambientC:     parseFloat(ambient)  || 35,
       maxVdropPct:  parseFloat(vdrop)    || 3,
-      powerFactor:  parseFloat(pf)       || 0.85,
+      powerFactor:  pfNum,
     });
     setResult(r);
   }
@@ -56,9 +59,9 @@ export default function CablePage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           <FieldKwAmp
             label={tc.current}
-            voltage={parseFloat(voltage) || 400}
+            voltage={voltageNum}
             phase={phase}
-            pf={parseFloat(pf) || 0.85}
+            pf={pfNum}
             defaultMode="a"
             defaultAmps={parseFloat(current)}
             onChange={(amps) => setCurrent(amps.toFixed(2))}

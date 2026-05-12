@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
@@ -18,12 +18,36 @@ interface PlacedItem {
   wy?: number; // wiring diagram Y
 }
 
+/** Stable category list for library sidebar (componentLibrary is static). */
+const PANEL_COMPONENT_CATEGORIES = ["All", ...Array.from(new Set(componentLibrary.map((c) => c.category)))];
+
+function designationPrefix(cat: string): string {
+  if (cat === "MCCB" || cat === "MCB") return "Q";
+  if (cat === "VSD") return "U";
+  if (cat === "Contactor") return "KM";
+  if (cat === "Transformer") return "T";
+  if (cat === "PLC") return "K";
+  if (cat === "Terminal Block") return "X";
+  if (cat === "Cooling") return "M";
+  if (cat === "Meter") return "P";
+  return "K";
+}
+
+function generatePanelItemTag(category: string, currentItems: PlacedItem[]): string {
+  const prefix = designationPrefix(category);
+  const count = currentItems.filter((i) => designationPrefix(i.comp.category) === prefix).length;
+  return `${prefix}${count + 1}`;
+}
+
 export default function PanelLayoutPage() {
   const { t } = useLang();
   const tl = t.panelLayout || { title: "Panel Layout", subtitle: "Estimator" };
 
   const [encId, setEncId] = useState(ENCLOSURES[0].id);
-  const activeEnc = ENCLOSURES.find((e) => e.id === encId) || ENCLOSURES[0];
+  const activeEnc = useMemo(
+    () => ENCLOSURES.find((e) => e.id === encId) || ENCLOSURES[0],
+    [encId],
+  );
 
   const [items, setItems] = useState<PlacedItem[]>([]);
   const [activeCategory, setActiveCategory] = useState("All");
@@ -56,6 +80,12 @@ export default function PanelLayoutPage() {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showFocusLibrary, setShowFocusLibrary] = useState(false);
   const sldRef = useRef<HTMLDivElement>(null);
+  /** Monotonic IDs for placed components (avoids impure Math.random in handlers flagged by react-hooks/purity). */
+  const placedItemIdSeq = useRef(0);
+  const allocPlacedId = () => {
+    placedItemIdSeq.current += 1;
+    return `pl-${placedItemIdSeq.current}`;
+  };
 
   const toggleFullScreen = () => {
     if (!sldRef.current) return;
@@ -159,7 +189,7 @@ export default function PanelLayoutPage() {
             e.preventDefault();
             const newIds: string[] = [];
             const newItems = clipboard.map(item => {
-               const newId = Math.random().toString(36).substring(2, 9);
+               const newId = allocPlacedId();
                newIds.push(newId);
                return { ...item, id: newId, x: item.x + 25, y: item.y + 25 }; // Offset paste 25mm
             });
@@ -214,34 +244,19 @@ export default function PanelLayoutPage() {
   }, [items, selectedIds, clipboard, viewMode, activeEnc]);
 
 
-  const generateTag = (category: string, currentItems: PlacedItem[]) => {
-    const getDesignation = (cat: string) => {
-      if (cat === "MCCB" || cat === "MCB") return "Q";
-      if (cat === "VSD") return "U";
-      if (cat === "Contactor") return "KM";
-      if (cat === "Transformer") return "T";
-      if (cat === "PLC") return "K";
-      if (cat === "Terminal Block") return "X";
-      if (cat === "Cooling") return "M";
-      if (cat === "Meter") return "P";
-      return "K";
-    };
-    const prefix = getDesignation(category);
-    const count = currentItems.filter(i => {
-      const itPrefix = getDesignation(i.comp.category);
-      return itPrefix === prefix;
-    }).length;
-    return `${prefix}${count + 1}`;
-  };
-
-  const categories = ["All", ...Array.from(new Set(componentLibrary.map((c) => c.category)))];
-  const filteredLibrary = componentLibrary.filter((c) => {
-    const matchesCat = activeCategory === "All" || c.category === activeCategory;
-    if (!searchQuery.trim()) return matchesCat;
-    const q = searchQuery.toLowerCase();
-    const matchesSearch = c.partCode.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q) || c.category.toLowerCase().includes(q);
-    return matchesCat && matchesSearch;
-  });
+  const categories = PANEL_COMPONENT_CATEGORIES;
+  const filteredLibrary = useMemo(() => {
+    return componentLibrary.filter((c) => {
+      const matchesCat = activeCategory === "All" || c.category === activeCategory;
+      if (!searchQuery.trim()) return matchesCat;
+      const q = searchQuery.toLowerCase();
+      const matchesSearch =
+        c.partCode.toLowerCase().includes(q) ||
+        c.brand.toLowerCase().includes(q) ||
+        c.category.toLowerCase().includes(q);
+      return matchesCat && matchesSearch;
+    });
+  }, [activeCategory, searchQuery]);
 
   const handleAddComponent = (comp: PanelComponent) => {
     let startX = 20;
@@ -275,9 +290,9 @@ export default function PanelLayoutPage() {
     }
 
     const newItem: PlacedItem = {
-      id: Math.random().toString(36).substring(2, 9),
+      id: allocPlacedId(),
       comp, x: startX, y: startY, w: comp.width, h: comp.height,
-      label: generateTag(comp.category, items),
+      label: generatePanelItemTag(comp.category, items),
       wx: 100 + (items.length % 8) * 80, // Spread out in SLD view
       wy: 200 + Math.floor(items.length / 8) * 120
     };
@@ -305,7 +320,7 @@ export default function PanelLayoutPage() {
      
      const newIds: string[] = [];
      const newItems = selected.map((item, idx) => {
-        const newId = Math.random().toString(36).substring(2, 9);
+        const newId = allocPlacedId();
         newIds.push(newId);
         // Generate tag for the new item, considering the already duplicated items in the loop
         const currentTempItems = [...items, ...selected.slice(0, idx)];
@@ -313,7 +328,7 @@ export default function PanelLayoutPage() {
            ...item, 
            id: newId, 
            x: item.x + 25, y: item.y + 25, 
-           label: generateTag(item.comp.category, currentTempItems),
+           label: generatePanelItemTag(item.comp.category, currentTempItems),
            wx: (item.wx ?? 100) + 40, // Offset in SLD view
            wy: (item.wy ?? 200) + 40
         }; 
@@ -1819,7 +1834,7 @@ export default function PanelLayoutPage() {
                              </label>
                              <label style={{ fontSize: 9, flex: 1 }}>
                                ORIENT:
-                               <select value={exportSettings.orientation} onChange={e => setExportSettings(p => ({...p, orientation: e.target.value as any}))} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }}>
+                               <select value={exportSettings.orientation} onChange={e => setExportSettings(p => ({...p, orientation: e.target.value as "landscape" | "portrait"}))} style={{ width: "100%", background: "#222", border: "1px solid #444", color: "#fff", padding: "4px 8px", fontSize: 11, marginTop: 4 }}>
                                  <option value="landscape">Landscape</option>
                                  <option value="portrait">Portrait</option>
                                </select>

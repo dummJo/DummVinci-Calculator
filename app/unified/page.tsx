@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 
 import CalcShell from "@/components/calc/CalcShell";
@@ -119,6 +119,11 @@ export default function UnifiedPage() {
   const [result, setResult] = useState<UnifiedResult | null>(null);
   const [step, setStep] = useState(1);
 
+  const estimatedFla = useMemo(
+    () => estimateAmps(parseFloat(motorKw) || 0, voltage),
+    [motorKw, voltage],
+  );
+
   const calculate = () => {
     const res = sizeMotorStarter({
       motorKw: parseFloat(motorKw) || 0,
@@ -138,8 +143,6 @@ export default function UnifiedPage() {
     setResult(res);
     setStep(3);
   };
-
-  const estA = estimateAmps(parseFloat(motorKw) || 0, voltage);
 
   return (
     <CalcShell 
@@ -305,7 +308,7 @@ export default function UnifiedPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 24 }}>
               <FieldNumber
                 label={tu.motorKw} value={motorKw} onChange={setMotorKw}
-                hint={`${t.vsd.motorPowerHint} (FLA: ${estA.toFixed(1)} A)`}
+                hint={`${t.vsd.motorPowerHint} (FLA: ${estimatedFla.toFixed(1)} A)`}
                 required
               />
               <FieldSelect

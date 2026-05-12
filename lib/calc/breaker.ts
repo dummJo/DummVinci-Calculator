@@ -12,7 +12,7 @@
  *   MCCB 3VJ9 (IN/SEA) M630   — IEC 60947-2, 500–630A, Icu 50 kA
  *
  * Selection rules:
- *   In  ≥ 1.25 × Iload  (NEC/IEC minimum sizing factor)
+ *   In  ≥ 1.25 × Iload  (common design margin; verify Ib ≤ In per IEC 60364-4-43 / local installation rules)
  *   Icu ≥ prospective fault current at point of installation
  *   Preference: EU family over IN family when both qualify
  *   VSD upstream: forced trip curve D (magnetic trip 10–20×In prevents nuisance trip on harmonic inrush)

@@ -44,9 +44,10 @@ const BARS: Array<[number, number, number]> = [
 ];
 
 export function sizeBusbar(input: BusbarInput): BusbarResult {
+  // Current-density baselines: heuristic for enclosed LV assemblies; verify temperature rise / short-circuit per IEC 61439 verification.
   const base = input.material === "Cu" ? 1.6 : 1.0; // A/mm²
   let k = 1;
-  if (!input.enclosed) k *= 1.1;
+  if (!input.enclosed) k *= 1.1; // conservative vs open-run tables
   if (input.forcedCooling) k *= 1.2;
   if (input.ambientC > 35) k *= 1 - (input.ambientC - 35) * 0.01;
   if (input.ambientC < 25) k *= 1.05;

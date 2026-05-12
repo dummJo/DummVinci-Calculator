@@ -1,8 +1,6 @@
 /**
- * PID Loop Simulation Logic
- * Simulates a step response for a First Order Plus Dead Time (FOPDT) system.
- * Used to demonstrate the effects of P, I, and D parameters on different
- * industrial equipment profiles (motor, pump, compressor).
+ * PID Loop Simulation — illustrative FOPDT step response (tuning education).
+ * Not a normative IEC / ISA model; real plants need step tests, anti-windup, and vendor PID implementation limits.
  */
 
 export type EquipmentType = "motor" | "pump" | "compressor";

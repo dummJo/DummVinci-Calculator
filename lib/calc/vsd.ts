@@ -75,6 +75,7 @@ export function sizeVsd(input: VsdInput): VsdResult {
   const targetKw = input.motorKw * oversize;
   const ambient = input.ambientC ?? 40;
 
+  // Simplified thermal derate above 40 °C — conservative; use ABB HW manual derating curves for formal submissions*.
   const tempDerate = ambient > 40 ? 1 - (ambient - 40) * 0.01 : 1.0;
 
   const candidates = LIST
@@ -108,6 +109,7 @@ export function sizeVsd(input: VsdInput): VsdResult {
     };
   }
 
+  // Same volumetric heat-removal factor as panel.ts (≈3.1 m³·K/(h·W)); aligns with IEC 60890-style panel airflow practice.
   const panelQ = (pick.ploss * 3.1) / Math.max(input.panelDeltaT, 1);
 
   if (input.app === "crane" && family !== "ACS880")
@@ -129,7 +131,7 @@ export function sizeVsd(input: VsdInput): VsdResult {
     panelAirflowRequired: Math.round(panelQ),
     h: pick.h, w: pick.w, d: pick.d,
     fuseA: pick.fuseA,
-    recommendation: recommendation(pick, input.app),
+    recommendation: recommendation(pick),
     warnings,
     keyFeatures,
   };

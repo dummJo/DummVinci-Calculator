@@ -1,7 +1,7 @@
 // app/vsd/page.tsx — VSD + Airflow Sizing Calculator
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
@@ -28,6 +28,8 @@ export default function VsdPage() {
   const [ipPref,  setIpPref]  = useState<IpRating>("IP21");
 
   const [result, setResult] = useState<VsdResult | null>(null);
+
+  const voltageNum = useMemo(() => parseFloat(voltage) || 400, [voltage]);
 
   function handleCalc() {
     const r = sizeVsd({
@@ -57,7 +59,7 @@ export default function VsdPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 20 }}>
           <FieldKwAmp
             label={tv.motorPower}
-            voltage={parseFloat(voltage) || 400}
+            voltage={voltageNum}
             defaultMode="kw"
             defaultKw={parseFloat(motorKw)}
             onChange={(_, kw) => setMotorKw(kw.toFixed(2))}

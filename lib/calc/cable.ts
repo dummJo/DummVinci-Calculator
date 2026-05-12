@@ -22,19 +22,30 @@ const AMPACITY_XLPE_CU: Record<number, number> = {
   185: 456, 240: 538, 300: 621, 400: 745,
 };
 
+/** Pre-sorted conductor sizes (mm²) — avoids re-sorting on every sizing call. */
+const SORTED_MM2_PVC = Object.keys(AMPACITY_PVC_CU).map(Number).sort((a, b) => a - b);
+const SORTED_MM2_XLPE = Object.keys(AMPACITY_XLPE_CU).map(Number).sort((a, b) => a - b);
+
 // Install method derating (approx, IEC 60364 Table B.52.17)
 const INSTALL_DERATE: Record<Install, number> = {
   air: 1.0, tray: 0.95, conduit: 0.85, buried: 0.8,
 };
 
-// Ambient temp derating for PVC cable (IEC Table B.52.14).
+// Ambient temp derating (IEC 60364-5-52 Table B.52.14) — nearest tabulated °C column.
+const AMBIENT_DERATE_PVC: Record<number, number> = {
+  25: 1.03, 30: 1.0, 35: 0.94, 40: 0.87, 45: 0.79, 50: 0.71, 55: 0.61, 60: 0.5,
+};
+const AMBIENT_DERATE_XLPE: Record<number, number> = {
+  25: 1.02, 30: 1.0, 35: 0.96, 40: 0.91, 45: 0.87, 50: 0.82, 55: 0.76, 60: 0.71,
+};
+const AMBIENT_KEYS_PVC = Object.keys(AMBIENT_DERATE_PVC).map(Number).sort((a, b) => a - b);
+const AMBIENT_KEYS_XLPE = Object.keys(AMBIENT_DERATE_XLPE).map(Number).sort((a, b) => a - b);
+
 function ambientDerate(tempC: number, insulation: Insulation): number {
-  const table = insulation === "PVC"
-    ? { 25: 1.03, 30: 1.0, 35: 0.94, 40: 0.87, 45: 0.79, 50: 0.71, 55: 0.61, 60: 0.5 }
-    : { 25: 1.02, 30: 1.0, 35: 0.96, 40: 0.91, 45: 0.87, 50: 0.82, 55: 0.76, 60: 0.71 };
-  const keys = Object.keys(table).map(Number).sort((a, b) => a - b);
-  const nearest = keys.reduce((p, c) => Math.abs(c - tempC) < Math.abs(p - tempC) ? c : p, keys[0]);
-  return (table as Record<number, number>)[nearest];
+  const table = insulation === "PVC" ? AMBIENT_DERATE_PVC : AMBIENT_DERATE_XLPE;
+  const keys = insulation === "PVC" ? AMBIENT_KEYS_PVC : AMBIENT_KEYS_XLPE;
+  const nearest = keys.reduce((p, c) => (Math.abs(c - tempC) < Math.abs(p - tempC) ? c : p), keys[0]);
+  return table[nearest]!;
 }
 
 export interface CableInput {
@@ -67,7 +78,8 @@ function groundFromPhase(phaseMm2: number): number {
   return Math.ceil(phaseMm2 / 2);
 }
 
-// Cu resistivity 0.0175 Ω·mm²/m @ 20°C; ~0.0225 @ 70°C conductor op temp.
+// Cu DC resistance basis: IEC 60228 / practice tables often use ~0.0189 Ω·mm²/m @ 20°C;
+// 0.0225 Ω·mm²/m is a conservative AC/operating-temperature allowance for v-drop check.
 const RHO = 0.0225;
 
 export function sizeCable(input: CableInput): CableResult {
@@ -76,12 +88,13 @@ export function sizeCable(input: CableInput): CableResult {
   const table = input.insulation === "PVC" ? AMPACITY_PVC_CU : AMPACITY_XLPE_CU;
   const k = INSTALL_DERATE[input.install] * ambientDerate(input.ambientC, input.insulation);
 
-  const sizes = Object.keys(table).map(Number).sort((a, b) => a - b);
+  const sizes = input.insulation === "PVC" ? SORTED_MM2_PVC : SORTED_MM2_XLPE;
   const warnings: string[] = [];
 
   for (const s of sizes) {
     const derated = table[s] * k;
-    if (derated < input.current * 1.25) continue; // 25% safety margin
+    // 25% margin on table Iz vs Ib — conservative vs minimum compliance; verify with PUIL / project QA.
+    if (derated < input.current * 1.25) continue;
 
     // Voltage drop: single-phase 2·I·L·ρ/S·cosφ ; three-phase √3·I·L·ρ/S·cosφ
     const factor = input.phase === "1ph" ? 2 : Math.sqrt(3);
