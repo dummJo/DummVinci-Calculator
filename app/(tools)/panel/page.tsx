@@ -284,7 +284,7 @@ export default function PanelPage() {
               { label: t.panelLayout.resW, value: `${layoutResult.enclosureWmm} mm`, sub: "W — std column" },
               { label: t.panelLayout.resD, value: `${layoutResult.enclosureDmm} mm`, sub: "D — door clearance" },
             ].map(d => (
-              <div key={d.label} style={{ padding: "18px 12px", background: "rgba(201,168,76,0.08)", borderRadius: 16, border: "1px solid rgba(201,168,76,0.2)" }}>
+              <div key={d.label} style={{ padding: "18px 12px", background: "rgba(var(--accent-rgb),0.08)", borderRadius: 16, border: "1px solid rgba(var(--accent-rgb),0.2)" }}>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>{d.label}</div>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 22, fontWeight: 700, color: "var(--accent)" }}>{d.value}</div>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted-soft)", marginTop: 4 }}>{d.sub}</div>

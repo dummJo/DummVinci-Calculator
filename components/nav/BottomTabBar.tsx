@@ -121,13 +121,13 @@ export default function BottomTabBar() {
             transform: scale(0.95) translateY(2px); 
             filter: drop-shadow(0 0 0 transparent);
           }
-          50% { 
+          5% { 
             transform: scale(1.3) translateY(-8px); 
-            filter: drop-shadow(0 16px 24px rgba(201,168,76,0.9));
+            filter: drop-shadow(0 16px 24px rgba(var(--accent-rgb), 0.9));
           }
           100% { 
             transform: scale(1.15) translateY(-4px); 
-            filter: drop-shadow(0 8px 12px rgba(201,168,76,0.6));
+            filter: drop-shadow(0 8px 12px rgba(var(--accent-rgb), 0.6));
           }
         }
         
@@ -152,7 +152,7 @@ export default function BottomTabBar() {
           color: var(--accent);
           font-weight: 700;
           letter-spacing: 0.02em;
-          filter: drop-shadow(0 2px 4px rgba(201,168,76,0.3));
+          filter: drop-shadow(0 2px 4px rgba(var(--accent-rgb), 0.3));
           transform: translateY(-2px);
         }
         .more-overlay {
@@ -186,7 +186,7 @@ export default function BottomTabBar() {
         .hover-lift:hover {
           transform: translateY(-3px) scale(1.01);
           box-shadow: 0 12px 24px rgba(0,0,0,0.2);
-          border-color: rgba(201,168,76,0.5) !important;
+          border-color: rgba(var(--accent-rgb), 0.5) !important;
         }
         .modal-overlay {
           position: fixed;
@@ -214,7 +214,7 @@ export default function BottomTabBar() {
         .version-tag {
           display: inline-block;
           padding: 4px 12px;
-          background: rgba(201,168,76,0.15);
+          background: rgba(var(--accent-rgb), 0.15);
           color: var(--accent);
           border-radius: 12px;
           font-family: var(--font-mono);
@@ -257,7 +257,7 @@ export default function BottomTabBar() {
                 <li><b><span style={{color:"var(--fg)"}}>PTTS Identity & UI</span></b>: DummVinci x PTTS branding, auto-sliding spec marquee, and live IP terminal widget.</li>
               </ul>
 
-              <hr style={{ border: "none", borderTop: "1px dashed rgba(201,168,76,0.2)", margin: "24px 0" }} />
+              <hr style={{ border: "none", borderTop: "1px dashed rgba(var(--accent-rgb), 0.2)", margin: "24px 0" }} />
               
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--muted)", marginBottom: 12 }}>
                 <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>PREVIOUS TOOLS (V2.2 / V2.3)</span>
@@ -270,10 +270,10 @@ export default function BottomTabBar() {
 
             <button onClick={closeChangelog} style={{
               width: "100%", marginTop: 32, padding: "16px", borderRadius: 8,
-              background: "linear-gradient(45deg, var(--accent), #e2c676)",
+              background: "linear-gradient(45deg, var(--accent), var(--accent-hi))",
               color: "#000", fontFamily: "var(--font-display)", fontWeight: 800,
               fontSize: 16, border: "none", cursor: "pointer",
-              boxShadow: "0 4px 15px rgba(201,168,76,0.3)",
+              boxShadow: "0 4px 15px rgba(var(--accent-rgb), 0.3)",
               transition: "transform 0.1s"
             }} onMouseDown={e => e.currentTarget.style.transform="scale(0.98)"} onMouseUp={e => e.currentTarget.style.transform="scale(1)"}>
               LET&apos;S GO! 🚀

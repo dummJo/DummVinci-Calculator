@@ -27,7 +27,7 @@ export default function AbbSupportHub() {
         
         {/* FAULT SEARCH */}
         <div className="vinci-card" style={{ 
-          background: "linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(13,16,22,0) 100%)",
+          background: "linear-gradient(135deg, rgba(var(--accent-rgb), 0.08) 0%, rgba(13,16,22,0) 100%)",
           border: "1px solid var(--accent)" 
         }}>
           <div className="sec-label"><span>{ts.title.toUpperCase()}</span></div>
@@ -124,7 +124,7 @@ export default function AbbSupportHub() {
                   fontFamily: "var(--font-mono)",
                   border: "1px solid",
                   borderColor: selectedFamily === f ? "var(--accent)" : "var(--glass-border)",
-                  background: selectedFamily === f ? "rgba(201,168,76,0.1)" : "transparent",
+                  background: selectedFamily === f ? "rgba(var(--accent-rgb), 0.1)" : "transparent",
                   color: selectedFamily === f ? "var(--accent)" : "var(--muted)",
                   cursor: "pointer"
                 }}

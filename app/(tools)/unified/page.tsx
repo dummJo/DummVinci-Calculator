@@ -49,9 +49,9 @@ function SummaryStrip({ result, t }: { result: UnifiedResult, t: ReturnType<type
               letterSpacing: "-0.02em",
               lineHeight: 1
             }}>
-              <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.6 }}>Unified</span>
+              <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.6 }}>{t.unified.summaryUnified}</span>
               {" "}
-              <span style={{ fontWeight: 800 }}>Engineering Summary</span>
+              <span style={{ fontWeight: 800 }}>{t.unified.summaryEngineering}</span>
             </span>
           </div>
         </div>
@@ -179,14 +179,14 @@ export default function UnifiedPage() {
           align-items: center;
           gap: 6px;
           padding: 6px 14px;
-          background: rgba(201,168,76,0.15);
+          background: rgba(var(--accent-rgb),0.15);
           color: var(--accent);
           border-radius: 20px;
           font-family: var(--font-mono);
           font-size: 9px;
           letter-spacing: 0.1em;
           font-weight: 700;
-          border: 1px solid rgba(201,168,76,0.3);
+          border: 1px solid rgba(var(--accent-rgb),0.3);
         }
         .apple-inner-wrapper > div.apple-glass-card {
           margin-bottom: 24px;
@@ -254,10 +254,10 @@ export default function UnifiedPage() {
         }
         .step-active {
           background: var(--accent); color: #000;
-          box-shadow: 0 0 16px rgba(201,168,76,0.4);
+          box-shadow: 0 0 16px rgba(var(--accent-rgb),0.4);
         }
         .step-done {
-          background: rgba(201,168,76,0.2); color: var(--accent);
+          background: rgba(var(--accent-rgb),0.2); color: var(--accent);
           border: 1px solid var(--accent);
         }
         .step-pending {
@@ -281,21 +281,21 @@ export default function UnifiedPage() {
       <div className="wizard-stepper">
         <div className="wizard-step">
           <div className={`step-circle ${step === 1 ? 'step-active' : 'step-done'}`}>1</div>
-          <span style={{ fontSize: 10, color: step >= 1 ? 'var(--fg)' : 'var(--muted)', fontFamily: 'var(--font-mono)' }}>MOTOR SPEC</span>
+          <span style={{ fontSize: 10, color: step >= 1 ? 'var(--fg)' : 'var(--muted)', fontFamily: 'var(--font-mono)' }}>{tu.stepMotorSpec}</span>
           <div className="wizard-connector">
             <div className="wizard-connector-filled" style={{ width: step > 1 ? '100%' : '0%' }} />
           </div>
         </div>
         <div className="wizard-step">
           <div className={`step-circle ${step === 2 ? 'step-active' : (step > 2 ? 'step-done' : 'step-pending')}`}>2</div>
-          <span style={{ fontSize: 10, color: step >= 2 ? 'var(--fg)' : 'var(--muted)', fontFamily: 'var(--font-mono)' }}>ENV & ROUTING</span>
+          <span style={{ fontSize: 10, color: step >= 2 ? 'var(--fg)' : 'var(--muted)', fontFamily: 'var(--font-mono)' }}>{tu.stepEnvRouting}</span>
           <div className="wizard-connector">
             <div className="wizard-connector-filled" style={{ width: step > 2 ? '100%' : '0%' }} />
           </div>
         </div>
         <div className="wizard-step">
           <div className={`step-circle ${step === 3 ? 'step-active' : 'step-pending'}`}>3</div>
-          <span style={{ fontSize: 10, color: step >= 3 ? 'var(--fg)' : 'var(--muted)', fontFamily: 'var(--font-mono)' }}>FINAL BOQ</span>
+          <span style={{ fontSize: 10, color: step >= 3 ? 'var(--fg)' : 'var(--muted)', fontFamily: 'var(--font-mono)' }}>{tu.stepFinalBoq}</span>
         </div>
       </div>
 
@@ -328,7 +328,7 @@ export default function UnifiedPage() {
 
             <div style={{ height: 1, background: "var(--glass-border)", marginBottom: 24 }} />
 
-            <div className="sec-label"><span>APPLICATION & DUTY</span></div>
+            <div className="sec-label"><span>{tu.secAppDuty || "APPLICATION & DUTY"}</span></div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 24 }}>
               <FieldSelect
                 label={tu.app} value={app} onChange={v => setApp(v as DriveApp)}
@@ -347,7 +347,7 @@ export default function UnifiedPage() {
 
             <div style={{ height: 1, background: "var(--glass-border)", marginBottom: 24 }} />
 
-            <div className="sec-label"><span>DRIVE SPECIFICATION</span></div>
+            <div className="sec-label"><span>{tu.secDriveSpec || "DRIVE SPECIFICATION"}</span></div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 24 }}>
               <FieldSelect
                 label={tu.driveVariant} value={variant} onChange={v => setVariant(v as "01" | "02" | "04" | "07" | "31" | "34" | "37" | "040C" | "040S")}
@@ -373,19 +373,31 @@ export default function UnifiedPage() {
               />
             </div>
 
-            <div style={{ marginTop: 16, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24 }}>
+            <div style={{ marginTop: 16, padding: 16, background: "rgba(var(--accent-rgb),0.08)", border: "1px solid rgba(var(--accent-rgb),0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24 }}>
               <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>APPLICATION: {tu.appLegend[app as keyof typeof tu.appLegend].title}</span>
-                <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
-                  <RichText text={tu.appLegend[app as keyof typeof tu.appLegend].desc} />
-                </span>
+                {(() => {
+                  const appData = (() => {
+                    if (app === "fan") return tu.appLegend.fan;
+                    if (app === "crane") return tu.appLegend.crane;
+                    if (app === "conveyor") return tu.appLegend.conveyor;
+                    return tu.appLegend.pump;
+                  })();
+                  return (
+                    <>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{tu.labelApplication || "APPLICATION"}: {appData.title}</span>
+                      <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
+                        <RichText text={appData.desc} />
+                      </span>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 
             <div className="wizard-nav-bar" style={{ justifyContent: "flex-end" }}>
               <button className="btn-primary" style={{ padding: "14px 32px" }} onClick={() => setStep(2)}>
-                Next: Routing &amp; Environment →
+                {tu.btnNextRouting || "Next: Routing & Environment →"}
               </button>
             </div>
           </div>
@@ -416,13 +428,25 @@ export default function UnifiedPage() {
               <FieldNumber label={tu.ambient} value={ambient} onChange={setAmbient} unit="°C" />
             </div>
 
-            <div style={{ marginTop: 0, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24 }}>
+            <div style={{ marginTop: 0, padding: 16, background: "rgba(var(--accent-rgb),0.08)", border: "1px solid rgba(var(--accent-rgb),0.2)", borderRadius: 16, display: "flex", gap: 12, marginBottom: 24 }}>
               <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>METHOD: {t.cable.methodLegend[install as keyof typeof t.cable.methodLegend].title}</span>
-                <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
-                  <RichText text={t.cable.methodLegend[install as keyof typeof t.cable.methodLegend].desc} />
-                </span>
+                {(() => {
+                  const installData = (() => {
+                    if (install === "tray") return t.cable.methodLegend.tray;
+                    if (install === "conduit") return t.cable.methodLegend.conduit;
+                    if (install === "buried") return t.cable.methodLegend.buried;
+                    return t.cable.methodLegend.air;
+                  })();
+                  return (
+                    <>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{tu.labelMethod || "METHOD"}: {installData.title}</span>
+                      <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>
+                        <RichText text={installData.desc} />
+                      </span>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 
@@ -438,7 +462,7 @@ export default function UnifiedPage() {
                 ← Back
               </button>
               <button className="btn-primary" style={{ padding: "14px 48px" }} onClick={calculate}>
-                Generate System BOQ Draft
+                {tu.btnGenBoq || "Generate System BOQ Draft"}
               </button>
             </div>
           </div>
@@ -492,7 +516,7 @@ export default function UnifiedPage() {
                   ← Modify Parameters
                 </button>
                 <button className="btn-primary" style={{ padding: "12px 32px" }} onClick={() => window.print()}>
-                  Export BOQ to PDF
+                  {tu.btnExportPdf || "Export BOQ to PDF"}
                 </button>
               </div>
             </div>

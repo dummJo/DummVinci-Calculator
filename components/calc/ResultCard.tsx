@@ -138,7 +138,7 @@ export default function ResultCard({ title, rows, recommendation, warnings, feat
         <div style={{
           marginTop: 16,
           padding: "10px 14px",
-          background: "rgba(201,168,76,0.07)",
+          background: "rgba(var(--accent-rgb), 0.07)",
           border: "1px solid var(--gold-deep)",
           borderRadius: "var(--r-md)",
           fontFamily: "var(--font-mono)",

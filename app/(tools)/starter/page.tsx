@@ -14,7 +14,7 @@ import type { StarterInput, StarterResult, StarterType, Voltage } from "@/lib/ca
 import { Zap, ShieldCheck, CircuitBoard, AlertTriangle, CheckCircle, Copy } from "lucide-react";
 
 const CATEGORY_STYLES: Record<string, { bg: string; border: string; color: string; label: string }> = {
-  MPCB:      { bg: "rgba(201,168,76,0.1)",  border: "rgba(201,168,76,0.3)",  color: "var(--accent)", label: "MPCB" },
+  MPCB:      { bg: "rgba(var(--accent-rgb), 0.1)",  border: "rgba(var(--accent-rgb), 0.3)",  color: "var(--accent)", label: "MPCB" },
   CONTACTOR: { bg: "rgba(59,130,246,0.1)",  border: "rgba(59,130,246,0.3)",  color: "#60a5fa",       label: "Contactor" },
   KIT:       { bg: "rgba(168,85,247,0.1)",  border: "rgba(168,85,247,0.3)",  color: "#c084fc",       label: "Compact Kit" },
   TIMER:     { bg: "rgba(34,197,94,0.1)",   border: "rgba(34,197,94,0.3)",   color: "#4ade80",       label: "Timer" },
@@ -91,8 +91,8 @@ export default function StarterPage() {
         }
         .mpcb-cell {
           padding: 16px 12px; border-radius: 14px;
-          background: rgba(201,168,76,0.06);
-          border: 1px solid rgba(201,168,76,0.2);
+          background: rgba(var(--accent-rgb), 0.06);
+          border: 1px solid rgba(var(--accent-rgb), 0.2);
           display: flex; flex-direction: column; gap: 4px;
         }
         .startype-pill {
@@ -138,10 +138,10 @@ export default function StarterPage() {
               onClick={() => setStarterType(type)}
               className="startype-pill"
               style={{
-                background: starterType === type ? "rgba(201,168,76,0.2)" : "rgba(255,255,255,0.04)",
+                background: starterType === type ? "rgba(var(--accent-rgb), 0.2)" : "rgba(255,255,255,0.04)",
                 border: starterType === type ? "1px solid var(--accent)" : "1px solid rgba(255,255,255,0.1)",
                 color: starterType === type ? "var(--accent)" : "var(--fg)",
-                boxShadow: starterType === type ? "0 0 12px rgba(201,168,76,0.15)" : "none",
+                boxShadow: starterType === type ? "0 0 12px rgba(var(--accent-rgb), 0.15)" : "none",
               }}
             >
               {type === "DOL" ? <Zap size={14} /> : <CircuitBoard size={14} />}

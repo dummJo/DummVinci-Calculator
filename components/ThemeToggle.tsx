@@ -46,8 +46,8 @@ export default function ThemeToggle() {
     Object.assign(ring.style, {
       position:     "fixed",
       borderRadius: "50%",
-      border:       "1.5px solid rgba(201,168,76,0.75)",
-      boxShadow:    "0 0 10px rgba(201,168,76,0.45), inset 0 0 6px rgba(201,168,76,0.2)",
+      border:       "1.5px solid var(--accent)",
+      boxShadow:    "0 0 10px rgba(var(--accent-rgb), 0.45), inset 0 0 6px rgba(var(--accent-rgb), 0.2)",
       zIndex:       "9999",
       pointerEvents:"none",
       width:        `${width}px`,
@@ -106,8 +106,8 @@ export default function ThemeToggle() {
           animation: none;
         }
         @keyframes btnBurst {
-          0%   { transform: scale(1);    box-shadow: 0 0 0 0    rgba(201,168,76,0.5); }
-          40%  { transform: scale(1.38); box-shadow: 0 0 0 14px rgba(201,168,76,0);   }
+          0%   { transform: scale(1);    box-shadow: 0 0 0 0    rgba(var(--accent-rgb), 0.5); }
+          40%  { transform: scale(1.38); box-shadow: 0 0 0 14px rgba(var(--accent-rgb), 0);   }
           100% { transform: scale(1);    box-shadow: none; }
         }
         .theme-btn-burst {
@@ -135,7 +135,7 @@ export default function ThemeToggle() {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = "var(--accent)";
-          e.currentTarget.style.boxShadow   = "0 0 10px rgba(201,168,76,0.35)";
+          e.currentTarget.style.boxShadow   = "0 0 10px rgba(var(--accent-rgb), 0.35)";
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.borderColor = "var(--border)";

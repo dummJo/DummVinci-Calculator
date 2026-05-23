@@ -129,7 +129,7 @@ export default function CablePage() {
           />
         </div>
 
-        <div style={{ marginTop: 4, padding: 16, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 16, display: "flex", gap: 12 }}>
+        <div style={{ marginTop: 4, padding: 16, background: "rgba(var(--accent-rgb), 0.08)", border: "1px solid rgba(var(--accent-rgb), 0.2)", borderRadius: 16, display: "flex", gap: 12 }}>
           <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>CODE: {tc.methodLegend[install as keyof typeof tc.methodLegend].title}</span>

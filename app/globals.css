@@ -9,12 +9,12 @@
   --ink-600: #121720;
   --ink-500: #1c2331;
 
-  /* Gold (Brightened for legibility) */
-  --gold:      #e4c759;
-  --gold-hi:   #fce072;
-  --gold-dim:  #baaa79;
-  --gold-deep: #85774e;
-  --gold-glow: rgba(228, 199, 89, 0.55);
+  /* Crimson (ABB Red brand partner palette) */
+  --gold:      #ff3355;
+  --gold-hi:   #ff5e7e;
+  --gold-dim:  #ff8da1;
+  --gold-deep: #cc0022;
+  --gold-glow: rgba(255, 51, 85, 0.55);
 
   /* Parchment (Brightened to Pure White for maximum text visibility) */
   --parchment:     #ffffff;
@@ -72,7 +72,7 @@
   /* Shadows */
   --shadow-lift:  0 1px 0 rgba(0, 0, 0, 0.4);
   --shadow-inset: inset 0 1px 0 rgba(0, 0, 0, 0.3);
-  --shadow-glow:  0 0 18px rgba(201, 168, 76, 0.45);
+  --shadow-glow:  0 0 18px rgba(var(--accent-rgb), 0.45);
   --shadow-card:  0 1px 0 rgba(0, 0, 0, 0.5), 0 12px 48px rgba(0, 0, 0, 0.3);
 
   /* Motion */
@@ -110,14 +110,15 @@
   --fg-soft:   #a1a1aa;   /* Zinc 400 */
   --muted:     #71717a;   /* Zinc 500 */
   --muted-soft: #52525b;  /* Zinc 600 */
-  --accent:    #fbbf24;   /* Amber 400 */
-  --accent-hi: #fcd34d;   /* Amber 300 */
-  --accent-2:  #d97706;   /* Amber 600 */
+  --accent:    #ff3355;   /* Crimson Red 500 */
+  --accent-hi: #ff5e7e;   /* Brighter Crimson/Coral */
+  --accent-2:  #cc0022;   /* Deep Red/Crimson */
+  --accent-rgb: 255, 51, 85; /* RGB for dynamic opacity */
   --border:    rgba(255, 255, 255, 0.12);
   --card:      rgba(24, 24, 27, 0.6);
   --nav-bg:    rgba(9, 9, 11, 0.85);
-  --canvas-accent: #fbbf24;
-  --selection-bg:  rgba(251, 191, 36, 0.25);
+  --canvas-accent: #ff3355;
+  --selection-bg:  rgba(255, 51, 85, 0.25);
   --selection-fg:  #fafafa;
   /* Glass surfaces */
   --glass-bg:       rgba(24, 24, 27, 0.65);
@@ -126,12 +127,12 @@
   --glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
   --glass-blur:     blur(20px) saturate(180%);
   --nav-blur:       blur(24px) saturate(180%);
-  --shadow-hover:       rgba(251, 191, 36, 0.12);
-  --cursor-glow:        rgba(251, 191, 36, 0.08);
-  --cursor-card-glow:   rgba(251, 191, 36, 0.12);
-  --cursor-card-border: rgba(251, 191, 36, 0.4);
+  --shadow-hover:       rgba(255, 51, 85, 0.12);
+  --cursor-glow:        rgba(255, 51, 85, 0.08);
+  --cursor-card-glow:   rgba(255, 51, 85, 0.12);
+  --cursor-card-border: rgba(255, 51, 85, 0.4);
   --tabbar-bg:          rgba(9, 9, 11, 0.8);
-  --accent-pill-bg:     rgba(251, 191, 36, 0.15);
+  --accent-pill-bg:     rgba(255, 51, 85, 0.15);
 }
 
 /* ─── Light theme — crisp, modern, high legibility ─── */
@@ -144,15 +145,16 @@
   --fg-soft:   #334155;   /* Slate 700 - very readable secondary text */
   --muted:     #64748b;   /* Slate 500 */
   --muted-soft: #94a3b8;  /* Slate 400 */
-  --accent:    #b45309;   /* Amber 700 - high contrast brand color */
-  --accent-hi: #d97706;   /* Amber 600 */
-  --accent-2:  #78350f;   /* Amber 900 */
-  --canvas-accent: #92400e;
+  --accent:    #cc0022;   /* Deep Crimson for high contrast */
+  --accent-hi: #ef4444;   /* Coral Red */
+  --accent-2:  #880011;   /* Darker Crimson */
+  --accent-rgb: 204, 0, 34; /* RGB for dynamic opacity */
+  --canvas-accent: #b91c1c;
   --border:    rgba(15, 23, 42, 0.12);
   --card:      rgba(255, 255, 255, 0.95);
   --nav-bg:    rgba(250, 249, 246, 0.9);
   --shadow-hover:       rgba(15, 23, 42, 0.08);
-  --selection-bg:       rgba(180, 83, 9, 0.2);
+  --selection-bg:       rgba(204, 0, 34, 0.18);
   --selection-fg:       #0f172a;
   /* Glass surfaces */
   --glass-bg:       rgba(255, 255, 255, 0.75);
@@ -161,11 +163,11 @@
   --glass-shadow:   0 4px 24px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
   --glass-blur:     blur(20px) saturate(180%);
   --nav-blur:       blur(24px) saturate(180%);
-  --cursor-glow:        rgba(180, 83, 9, 0.08);
-  --cursor-card-glow:   rgba(180, 83, 9, 0.08);
-  --cursor-card-border: rgba(180, 83, 9, 0.4);
+  --cursor-glow:        rgba(204, 0, 34, 0.08);
+  --cursor-card-glow:   rgba(204, 0, 34, 0.08);
+  --cursor-card-border: rgba(204, 0, 34, 0.4);
   --tabbar-bg:          rgba(255, 255, 255, 0.85);
-  --accent-pill-bg:     rgba(180, 83, 9, 0.1);
+  --accent-pill-bg:     rgba(204, 0, 34, 0.1);
 }
 
 * { box-sizing: border-box; }
@@ -320,8 +322,8 @@ a:hover {
 }
 .card-hover:hover .card-icon {
   color: var(--accent) !important;
-  background: rgba(201, 168, 76, 0.10) !important;
-  border-color: rgba(201, 168, 76, 0.30) !important;
+  background: rgba(var(--accent-rgb), 0.10) !important;
+  border-color: rgba(var(--accent-rgb), 0.30) !important;
 }
 
 @keyframes ringPop {
@@ -450,8 +452,8 @@ a:hover {
 }
 .home-card:hover .card-icon {
   color: var(--accent) !important;
-  background: rgba(201, 168, 76, 0.10) !important;
-  border-color: rgba(201, 168, 76, 0.30) !important;
+  background: rgba(var(--accent-rgb), 0.10) !important;
+  border-color: rgba(var(--accent-rgb), 0.30) !important;
 }
 .home-card:hover .home-card-arrow {
   opacity: 0.7 !important;
@@ -538,7 +540,7 @@ a:hover {
   background-color: var(--accent);
   color: var(--bg);
   background-size: 0%;
-  box-shadow: 0 0 24px rgba(201,168,76,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+  box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
 }
 
 .btn-ghost {
@@ -646,7 +648,7 @@ a:hover {
 /* ─── Button press tactile feedback ─── */
 .btn-primary:active {
   transform: scale(0.97);
-  box-shadow: 0 0 12px rgba(201,168,76,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.25), inset 0 1px 0 rgba(255,255,255,0.2);
   transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 

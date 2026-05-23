@@ -50,7 +50,7 @@ export default function FieldSelect({ label, value, onChange, options, hint, req
             outline: "none",
             cursor: "pointer",
             transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            boxShadow: focused ? "0 0 0 4px rgba(201,168,76,0.12)" : "none",
+            boxShadow: focused ? "0 0 0 4px rgba(var(--accent-rgb), 0.12)" : "none",
           } as React.CSSProperties}
         >
           {options.map(o => (

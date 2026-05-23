@@ -28,7 +28,7 @@ export default function CalcShell({ label, title, subtitle, concept, children }:
           fontSize: 13,
           color: "var(--accent)",
           flexShrink: 0,
-          background: "rgba(201,168,76,0.06)",
+          background: "rgba(var(--accent-rgb), 0.06)",
         }}>
           ◈
         </div>
@@ -76,8 +76,8 @@ export default function CalcShell({ label, title, subtitle, concept, children }:
       {concept && (
         <div style={{
           marginBottom: 48, padding: "20px 24px",
-          background: "linear-gradient(135deg, rgba(201,168,76,0.12) 0%, rgba(13,16,22,0.1) 100%)",
-          border: "1px solid rgba(201,168,76,0.3)",
+          background: "linear-gradient(135deg, rgba(var(--accent-rgb), 0.12) 0%, rgba(13,16,22,0.1) 100%)",
+          border: "1px solid rgba(var(--accent-rgb), 0.3)",
           borderRadius: 24, display: "flex", gap: 16,
           boxShadow: "var(--glass-shadow)"
         }}>

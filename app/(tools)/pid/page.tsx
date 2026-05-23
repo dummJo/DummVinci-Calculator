@@ -52,13 +52,13 @@ function PidChart({ data }: { data: SimPoint[] }) {
 
         {/* Paths */}
         <path d={pathSp} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeDasharray="4 4" />
-        <path d={pathCv} fill="none" stroke="rgba(201,168,76,0.3)" strokeWidth={1.5} />
+        <path d={pathCv} fill="none" stroke="rgba(var(--accent-rgb), 0.3)" strokeWidth={1.5} />
         <path d={pathPv} fill="none" stroke="var(--accent)" strokeWidth={3} />
         
         {/* Legends */}
         <text x={w - padX + 5} y={ptY(data[data.length-1].sp)} fill="rgba(255,255,255,0.6)" fontSize={11} fontWeight={600} alignmentBaseline="middle">SP</text>
         <text x={w - padX + 5} y={ptY(data[data.length-1].pv)} fill="var(--accent)" fontSize={11} fontWeight={800} alignmentBaseline="middle">PV</text>
-        <text x={w - padX + 5} y={ptCvY(data[data.length-1].cv)} fill="rgba(201,168,76,0.8)" fontSize={11} fontWeight={600} alignmentBaseline="middle">CV</text>
+        <text x={w - padX + 5} y={ptCvY(data[data.length-1].cv)} fill="rgba(var(--accent-rgb), 0.8)" fontSize={11} fontWeight={600} alignmentBaseline="middle">CV</text>
       </svg>
     </div>
   );
@@ -159,8 +159,8 @@ export default function PidPage() {
             <div style={{
               marginTop: 16,
               padding: 12,
-              background: "rgba(201,168,76,0.1)",
-              border: "1px solid rgba(201,168,76,0.3)",
+              background: "rgba(var(--accent-rgb), 0.1)",
+              border: "1px solid rgba(var(--accent-rgb), 0.3)",
               borderRadius: "var(--r-sm)",
               fontFamily: "var(--font-mono)",
               fontSize: 12,

@@ -163,7 +163,7 @@ export default function FieldKwAmp({
           MozAppearance: "textfield",
           transition: "box-shadow 0.14s ease",
           boxShadow: focused
-            ? "0 0 0 3px rgba(201,168,76,0.18), inset 0 1px 0 rgba(255,255,255,0.04)"
+            ? "0 0 0 3px rgba(var(--accent-rgb), 0.18), inset 0 1px 0 rgba(255,255,255,0.04)"
             : "none",
         } as React.CSSProperties}
       />

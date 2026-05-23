@@ -78,7 +78,7 @@ function ModuleCard({ mod, onClick, isActive, lang }: { mod: ModuleData; onClick
         textAlign: "left",
         transition: "all 0.3s ease",
         borderColor: isActive ? "var(--accent)" : "var(--glass-border)",
-        background: isActive ? "rgba(201,168,76,0.08)" : "var(--glass-bg)",
+        background: isActive ? "rgba(var(--accent-rgb),0.08)" : "var(--glass-bg)",
         transform: isActive ? "scale(1.01)" : "scale(1)",
       }}
     >
@@ -322,7 +322,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       {/* Header */}
-      <div style={{ ...GLASS, background: "rgba(201,168,76,0.06)", borderColor: "rgba(201,168,76,0.2)" }}>
+      <div style={{ ...GLASS, background: "rgba(var(--accent-rgb),0.06)", borderColor: "rgba(var(--accent-rgb),0.2)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
           <span style={{ fontSize: 36 }}>{mod.icon}</span>
           <div>
@@ -383,7 +383,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
               onClick={() => { setQuizMode(false); setRevealedQ(new Set()); }}
               style={{
                 padding: "4px 10px", borderRadius: 8, fontSize: 10, fontWeight: 700,
-                background: !quizMode ? "rgba(201,168,76,0.2)" : "rgba(255,255,255,0.04)",
+                background: !quizMode ? "rgba(var(--accent-rgb),0.2)" : "rgba(255,255,255,0.04)",
                 color: !quizMode ? "var(--accent)" : "var(--muted)",
                 border: "none", cursor: "pointer", fontFamily: "var(--font-mono)",
               }}
@@ -394,7 +394,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
               onClick={() => { setQuizMode(true); setCurrentQuestionIndex(0); setSelectedOption(null); }}
               style={{
                 padding: "4px 10px", borderRadius: 8, fontSize: 10, fontWeight: 700,
-                background: quizMode ? "rgba(201,168,76,0.2)" : "rgba(255,255,255,0.04)",
+                background: quizMode ? "rgba(var(--accent-rgb),0.2)" : "rgba(255,255,255,0.04)",
                 color: quizMode ? "var(--accent)" : "var(--muted)",
                 border: "none", cursor: "pointer", fontFamily: "var(--font-mono)",
               }}
@@ -448,7 +448,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
                     color = "#ef4444";
                   }
                 } else if (isSelected) {
-                  bgColor = "rgba(201,168,76,0.1)";
+                  bgColor = "rgba(var(--accent-rgb),0.1)";
                   borderColor = "var(--accent)";
                 }
 
@@ -543,7 +543,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
                   </div>
                 </div>
                 {revealedQ.has(i) && q.hint && (
-                  <div style={{ marginTop: 12, marginLeft: 24, padding: "6px 10px", background: "rgba(201,168,76,0.08)", borderRadius: 6, fontSize: 11, color: "var(--accent)", fontFamily: "var(--font-mono)", opacity: 0.9 }}>
+                  <div style={{ marginTop: 12, marginLeft: 24, padding: "6px 10px", background: "rgba(var(--accent-rgb),0.08)", borderRadius: 6, fontSize: 11, color: "var(--accent)", fontFamily: "var(--font-mono)", opacity: 0.9 }}>
                     💡 {q.hint}
                   </div>
                 )}
@@ -617,7 +617,7 @@ function TabModules({ lang, selectedId, setSelectedId }: { lang: "en" | "id"; se
       ) : (
         <div>
           {/* Interactive Mindmap / Connection Graph */}
-          <div style={{ ...GLASS, marginBottom: 24, background: "rgba(0, 0, 0, 0.2)", border: "1px dashed rgba(201,168,76,0.3)" }}>
+          <div style={{ ...GLASS, marginBottom: 24, background: "rgba(0, 0, 0, 0.2)", border: "1px dashed rgba(var(--accent-rgb),0.3)" }}>
             <h4 style={{ fontFamily: "var(--font-mono)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--accent)", marginBottom: 16, textAlign: "center" }}>
               🗺️ {lang === "id" ? "Peta Hubungan Modul SKF (Interaktif)" : "SKF Module Connections Graph (Interactive)"}
             </h4>
@@ -764,9 +764,9 @@ function TabModules({ lang, selectedId, setSelectedId }: { lang: "en" | "id"; se
                 style={{
                   padding: "5px 12px", borderRadius: 8, fontSize: 10, fontWeight: 700,
                   fontFamily: "var(--font-mono)", cursor: "pointer",
-                  background: filterTag === tag ? "rgba(201,168,76,0.2)" : "rgba(255,255,255,0.04)",
+                  background: filterTag === tag ? "rgba(var(--accent-rgb),0.2)" : "rgba(255,255,255,0.04)",
                   color: filterTag === tag ? "var(--accent)" : "var(--muted)",
-                  border: `1px solid ${filterTag === tag ? "rgba(201,168,76,0.3)" : "transparent"}`,
+                  border: `1px solid ${filterTag === tag ? "rgba(var(--accent-rgb),0.3)" : "transparent"}`,
                   transition: "all 0.2s ease",
                 }}
               >{tag}</button>
@@ -948,7 +948,7 @@ function TabDiagnostic({ lang }: { lang: "en" | "id" }) {
   return (
     <div style={{ display: "grid", gap: 20 }}>
       {/* Quick Diagnosis */}
-      <div style={{ ...GLASS, background: "rgba(201,168,76,0.04)", borderColor: "rgba(201,168,76,0.15)" }}>
+      <div style={{ ...GLASS, background: "rgba(var(--accent-rgb),0.04)", borderColor: "rgba(var(--accent-rgb),0.15)" }}>
         <h4 style={{ fontFamily: "var(--font-mono)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--accent)", marginBottom: 12 }}>
           ⚡ {lang === "id" ? "Pencarian Cepat Diagnosis" : "Quick Diagnosis Lookup"}
         </h4>
@@ -984,9 +984,9 @@ function TabDiagnostic({ lang }: { lang: "en" | "id" }) {
               style={{
                 padding: "5px 12px", borderRadius: 8, fontSize: 10, fontWeight: 700,
                 fontFamily: "var(--font-mono)", cursor: "pointer",
-                background: filterCat === cat ? "rgba(201,168,76,0.2)" : "rgba(255,255,255,0.04)",
+                background: filterCat === cat ? "rgba(var(--accent-rgb),0.2)" : "rgba(255,255,255,0.04)",
                 color: filterCat === cat ? "var(--accent)" : "var(--muted)",
-                border: `1px solid ${filterCat === cat ? "rgba(201,168,76,0.3)" : "transparent"}`,
+                border: `1px solid ${filterCat === cat ? "rgba(var(--accent-rgb),0.3)" : "transparent"}`,
               }}
             >{catLabel}</button>
           );
@@ -1094,7 +1094,7 @@ function DependencyTreeVisual({ lang, onSelectModule }: { lang: "en" | "id"; onS
         .node-btn:hover {
           transform: translate(-50%, -50%) scale(1.05);
           border-color: var(--accent);
-          box-shadow: 0 0 15px rgba(201,168,76,0.3);
+          box-shadow: 0 0 15px rgba(var(--accent-rgb),0.3);
         }
       `}</style>
 
@@ -1201,7 +1201,7 @@ function TabPaths({ lang, onSelectModule }: { lang: "en" | "id"; onSelectModule:
                 style={{
                   ...GLASS, padding: 14, textAlign: "left", cursor: "pointer",
                   borderColor: selectedGoal === g.id ? "var(--accent)" : "var(--glass-border)",
-                  background: selectedGoal === g.id ? "rgba(201,168,76,0.08)" : "var(--glass-bg)",
+                  background: selectedGoal === g.id ? "rgba(var(--accent-rgb),0.08)" : "var(--glass-bg)",
                   transition: "all 0.2s ease",
                 }}
               >
@@ -1216,7 +1216,7 @@ function TabPaths({ lang, onSelectModule }: { lang: "en" | "id"; onSelectModule:
 
       {/* Selected Goal Detail */}
       {localizedGoal && goal && (
-        <div style={{ ...GLASS, background: "rgba(201,168,76,0.04)", borderColor: "rgba(201,168,76,0.15)" }}>
+        <div style={{ ...GLASS, background: "rgba(var(--accent-rgb),0.04)", borderColor: "rgba(var(--accent-rgb),0.15)" }}>
           <h4 style={{ fontFamily: "var(--font-display)", fontSize: 20, color: "var(--accent)", marginBottom: 6 }}>Goal {goal.id}: {localizedGoal.title}</h4>
           <p style={{ fontSize: 13, color: "var(--fg-soft)", marginBottom: 16 }}>{localizedGoal.description}</p>
           <h5 style={{ fontFamily: "var(--font-mono)", fontSize: 10, textTransform: "uppercase", color: "var(--muted)", marginBottom: 10, letterSpacing: "0.1em" }}>
@@ -1454,7 +1454,7 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
 
   const cellStyle = (active: boolean) => ({
     padding: "16px", borderRadius: 10, cursor: "pointer",
-    background: active ? "rgba(201,168,76,0.15)" : "rgba(255,255,255,0.02)",
+    background: active ? "rgba(var(--accent-rgb),0.15)" : "rgba(255,255,255,0.02)",
     border: `1px solid ${active ? "var(--accent)" : "rgba(255,255,255,0.05)"}`,
     textAlign: "center" as const, transition: "all 0.2s ease",
   });
@@ -1473,7 +1473,7 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
           <input type="number" min="1" placeholder="e.g. 1800" value={rpmInput} onChange={e => setRpmInput(e.target.value)} style={inputStyle} />
         </div>
         {filterRec && (
-          <div style={{ marginTop: 14, padding: 14, borderRadius: 12, background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)" }}>
+          <div style={{ marginTop: 14, padding: 14, borderRadius: 12, background: "rgba(var(--accent-rgb),0.08)", border: "1px solid rgba(var(--accent-rgb),0.2)" }}>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 700, color: "var(--accent)" }}>
               {filterRec.lowHz} Hz — {filterRec.highHz.toLocaleString()} Hz
             </div>
@@ -1812,7 +1812,7 @@ export default function SkfMicrologPage() {
         {/* Header */}
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "rgba(201,168,76,0.15)", color: "var(--accent)", letterSpacing: "0.1em" }}>
+            <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "rgba(var(--accent-rgb),0.15)", color: "var(--accent)", letterSpacing: "0.1em" }}>
               LEARN
             </span>
             <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)" }}>PTTS Knowledge Base</span>
@@ -1848,7 +1848,7 @@ export default function SkfMicrologPage() {
                 fontWeight: activeTab === tab.key ? 700 : 500,
                 fontFamily: "var(--font-mono)",
                 cursor: "pointer",
-                background: activeTab === tab.key ? "rgba(201,168,76,0.1)" : "transparent",
+                background: activeTab === tab.key ? "rgba(var(--accent-rgb),0.1)" : "transparent",
                 color: activeTab === tab.key ? "var(--accent)" : "var(--muted)",
                 border: "none",
                 whiteSpace: "nowrap",

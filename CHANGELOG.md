@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2026-05-23
+
+### Added
+
+- **SKF Microlog Cheat Learn**: Deployed a dedicated vibration analysis learning suite for the PTTS engineering team. Includes 7 comprehensive learning modules, a vibration severity calculator (ISO 10816), diagnostic charts, and guided learning paths.
+- **Crimson & Coral Palette**: Rebranded the primary theme from legacy gold/amber to a high-visibility, high-contrast Crimson Red & Coral Orange system aligning with industrial ABB partner aesthetics.
+- **Consultant-Grade Translations**: Upgraded the Indonesian translation dictionary to professional engineering terms matching PUIL 2011 & IEC/IEEE standards (KHA, Arus Asut, Jatuh Tegangan, Galat Kondisi Tunak).
+
+### Fixed
+
+- **Internationalization Syntax Integrity**: Fixed malformed and truncated properties in `en.tutorials` in `lib/i18n.ts`, restoring complete types and pages.
+- **Theme Color Decoupling**: Replaced all remaining occurrences of hardcoded gold colors (`rgb(201,168,76)`) across all layout calculators with flexible, themeable CSS variables.
+- **Prototype Pollution Safety**: Patched bracket object notations in VSD, PLC, and i18n hooks to enforce own-property checks.
+
 ## [2.6.0] - 2026-05-10
 
 ### Added

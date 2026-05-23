@@ -27,7 +27,19 @@ export default function PlcPage() {
   const [spare, setSpare] = useState("20");
   const [result, setResult] = useState<PlcResult | null>(null);
 
-  const cpu = CPU_CATALOG[cpuModel];
+  const cpu = (() => {
+    switch (cpuModel) {
+      case "CPU 1212C": return CPU_CATALOG["CPU 1212C"];
+      case "CPU 1214C": return CPU_CATALOG["CPU 1214C"];
+      case "CPU 1215C": return CPU_CATALOG["CPU 1215C"];
+      case "CPU 1217C": return CPU_CATALOG["CPU 1217C"];
+      case "CPU 1511-1 PN": return CPU_CATALOG["CPU 1511-1 PN"];
+      case "CPU 1513-1 PN": return CPU_CATALOG["CPU 1513-1 PN"];
+      case "CPU 1516-3 PN/DP": return CPU_CATALOG["CPU 1516-3 PN/DP"];
+      case "CPU 1518-4 PN/DP": return CPU_CATALOG["CPU 1518-4 PN/DP"];
+      default: return CPU_CATALOG["CPU 1214C"];
+    }
+  })();
 
   function handleCalc() {
     const r = sizePlcModules({
@@ -114,7 +126,7 @@ export default function PlcPage() {
             { label: "Max SM Slots",  value: String(cpu.maxSmSlots) },
             { label: "Bus Power",     value: `${cpu.busPowerMa} mA` },
           ].map(item => (
-            <div key={item.label} style={{ padding: "10px 14px", background: "rgba(201,168,76,0.06)", borderRadius: 12, border: "1px solid rgba(201,168,76,0.15)" }}>
+            <div key={item.label} style={{ padding: "10px 14px", background: "rgba(var(--accent-rgb),0.06)", borderRadius: 12, border: "1px solid rgba(var(--accent-rgb),0.15)" }}>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>{item.label}</div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{item.value}</div>
             </div>
@@ -125,10 +137,10 @@ export default function PlcPage() {
 
         {/* IO TYPE COLOR GUIDE */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
-          <span className="io-badge io-badge-di">DI — Digital Input</span>
-          <span className="io-badge io-badge-do">DO — Digital Output</span>
-          <span className="io-badge io-badge-ai">AI — Analog Input</span>
-          <span className="io-badge io-badge-ao">AO — Analog Output</span>
+          <span className="io-badge io-badge-di">{tp.guideDi}</span>
+          <span className="io-badge io-badge-do">{tp.guideDo}</span>
+          <span className="io-badge io-badge-ai">{tp.guideAi}</span>
+          <span className="io-badge io-badge-ao">{tp.guideAo}</span>
         </div>
 
         <div className="plc-io-grid">
@@ -175,8 +187,8 @@ export default function PlcPage() {
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: 12, color: "var(--accent)" }}>QTY: 1</div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted)" }}>CPU MAIN UNIT</div>
+                <div style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize: 12, color: "var(--accent)" }}>{tp.qty1}</div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted)" }}>{tp.cpuMainUnit}</div>
               </div>
             </div>
 
@@ -219,7 +231,7 @@ export default function PlcPage() {
             {/* Power bar */}
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", marginBottom: 4 }}>
-                <span>Bus Power Consumption</span>
+                <span>{tp.busPowerCons}</span>
                 <span>{Math.round((result.totalPowerMa / result.busPowerMa) * 100)}% of budget</span>
               </div>
               <div className="power-bar-track">
@@ -243,12 +255,10 @@ export default function PlcPage() {
                     {tp.resEt200Title}
                   </div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--fg-soft)", lineHeight: 1.6 }}>
-                    Add <strong style={{ color: "#60a5fa" }}>{result.et200Heads} × ET 200SP station</strong> on PROFINET to the rack.
-                    Each head interface: <strong>6ES7 151-8AB01-0AB0</strong> (IM 151-8 PN).
-                    Max 32 I/O modules per head. Connect via PROFINET coupler to CPU.
+                    {tp.et200spDesc(result.et200Heads)}
                   </div>
                   <div style={{ marginTop: 10, fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)" }}>
-                    TIP: Place ET 200SP at field junction box to minimize field wiring runs — reduces cable cost vs. star-wiring all I/O to central panel.
+                    {tp.et200spTip}
                   </div>
                 </div>
               </div>

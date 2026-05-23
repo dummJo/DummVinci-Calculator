@@ -171,7 +171,7 @@ export default function HomePage() {
               fontSize: 15,
               color: "var(--accent)",
               flexShrink: 0,
-              background: "rgba(201,168,76,0.06)",
+              background: "rgba(var(--accent-rgb), 0.06)",
               marginTop: 2,
             }}
           >
@@ -458,7 +458,7 @@ export default function HomePage() {
                           alignItems: "center",
                           justifyContent: "center",
                           color: calc.accent ? "var(--accent)" : "var(--muted)",
-                          background: calc.accent ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
+                          background: calc.accent ? "rgba(var(--accent-rgb), 0.08)" : "rgba(255,255,255,0.03)",
                           flexShrink: 0,
                         }}
                       >
@@ -472,7 +472,7 @@ export default function HomePage() {
                           padding: "1px 6px",
                           textTransform: "uppercase",
                           opacity: 0.8,
-                          ...(calc.accent ? { color: "var(--accent)", borderColor: "rgba(201,168,76,0.5)", background: "rgba(201,168,76,0.1)" } : {}),
+                          ...(calc.accent ? { color: "var(--accent)", borderColor: "rgba(var(--accent-rgb), 0.5)", background: "rgba(var(--accent-rgb), 0.1)" } : {}),
                         }}
                       >
                         {calc.tag}
