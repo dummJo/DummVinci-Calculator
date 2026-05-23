@@ -7,7 +7,7 @@ import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import FieldToggle from "@/components/calc/FieldToggle";
 import ResultCard from "@/components/calc/ResultCard";
-import { useLang, type Translations } from "@/lib/i18n";
+import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import { sizeMotorStarter, UnifiedResult, estimateAmps } from "@/lib/calc/unified";
 import type { Voltage, DriveApp, IpRating } from "@/lib/calc/vsd";
@@ -15,7 +15,7 @@ import type { Insulation, Install } from "@/lib/calc/cable";
 import { Download, CheckCircle, Info } from "lucide-react";
 import RichText from "@/components/calc/RichText";
 
-function SummaryStrip({ result, t }: { result: UnifiedResult, t: Translations }) {
+function SummaryStrip({ result, t }: { result: UnifiedResult, t: ReturnType<typeof useLang>["t"] }) {
   const specs = [
     { label: t.support.colCode + "*", value: result.vsd.partCode },
     { label: t.support.colKw, value: result.vsd.ratedKw },
