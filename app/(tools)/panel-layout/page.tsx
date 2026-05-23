@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo, useSyncExternalStore } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import Footer from "@/components/nav/Footer";
 import { useLang } from "@/lib/i18n";
 import { componentLibrary, ENCLOSURES, PanelComponent } from "@/lib/calc/panelLayoutData";
-import { Plus, Trash2, Search, Box, Minimize2, Maximize2, Printer, FileText, Settings2, Grid, Layers, MousePointer2, Copy, Activity, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Trash2, Search, Box, Minimize2, Maximize2, Printer, FileText, Settings2, Grid, Layers, MousePointer2, Copy, Activity, ChevronLeft } from "lucide-react";
 
 interface PlacedItem {
   id: string; // unique instance ID
@@ -39,17 +39,64 @@ function generatePanelItemTag(category: string, currentItems: PlacedItem[]): str
   return `${prefix}${count + 1}`;
 }
 
+// ─── Print Header (extracted outside component body per react-hooks/static-components) ────
+function PrintHeader({ projectName, customerName }: { projectName: string; customerName: string }) {
+  return (
+    <div className="print-header" style={{ display: "none" }}>
+      <div className="print-header-left">
+        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 900, color: "#1d4ed8", letterSpacing: "-0.02em" }}>DUMMVINCI INDUSTRIAL ESTIMATOR</h1>
+        <p style={{ margin: 0, fontSize: 14, color: "#444", fontWeight: 700 }}>IEC 61439 | Technical Layout Proposal</p>
+        <div style={{ display: "flex", gap: 16, marginTop: 12 }}>
+           <div style={{ display: "flex", flexDirection: "column" }}>
+             <span style={{ fontSize: 9, color: "#888", textTransform: "uppercase" }}>Date</span>
+             <span style={{ fontSize: 11, fontWeight: 700, color: "#111" }}>{new Date().toLocaleDateString('en-GB')}</span>
+           </div>
+           <div style={{ display: "flex", flexDirection: "column" }}>
+             <span style={{ fontSize: 9, color: "#888", textTransform: "uppercase" }}>Project Reference</span>
+             <span style={{ fontSize: 11, fontWeight: 700, color: "#111" }}>{projectName}</span>
+           </div>
+           <div style={{ display: "flex", flexDirection: "column" }}>
+             <span style={{ fontSize: 9, color: "#888", textTransform: "uppercase" }}>Customer</span>
+             <span style={{ fontSize: 11, fontWeight: 700, color: "#111" }}>{customerName}</span>
+           </div>
+        </div>
+      </div>
+      <div className="print-header-right">
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+           {/* eslint-disable-next-line @next/next/no-img-element */}
+           <img src="https://www.ptts.co.id/uploads/1/3/3/7/133745061/logo-web_orig.png" alt="PTTS" style={{ height: 48 }} />
+           <div style={{ width: 1, height: 40, background: "#ddd" }} />
+           <div style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ fontSize: 20, fontWeight: 900, color: "#000", lineHeight: 1 }}>By DummVinci</span>
+              <span style={{ fontSize: 8, color: "#888", textAlign: "right" }}>ABB Value Partner</span>
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PanelLayoutPage() {
   const { t } = useLang();
   const tl = t.panelLayout || { title: "Panel Layout", subtitle: "Estimator" };
 
-  const [encId, setEncId] = useState(ENCLOSURES[0].id);
+  const [encId, setEncId] = useState(() => {
+    if (typeof window === "undefined") return ENCLOSURES[0].id;
+    const saved = localStorage.getItem("dummvinci_estimator_enc");
+    return saved && ENCLOSURES.some(e => e.id === saved) ? saved : ENCLOSURES[0].id;
+  });
   const activeEnc = useMemo(
     () => ENCLOSURES.find((e) => e.id === encId) || ENCLOSURES[0],
     [encId],
   );
 
-  const [items, setItems] = useState<PlacedItem[]>([]);
+  const [items, setItems] = useState<PlacedItem[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const saved = localStorage.getItem("dummvinci_estimator_items");
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -60,12 +107,15 @@ export default function PanelLayoutPage() {
   const [projectName, setProjectName] = useState("DummVinci Industrial Case");
   const [customerName, setCustomerName] = useState("PT Prima Tekindo Tirta Sejahtera");
 
-  // Drawing Metadata (IEC standard)
-  const [drawnBy, setDrawnBy] = useState("");
-  const [checkedBy, setCheckedBy] = useState("");
-  const [approvedBy, setApprovedBy] = useState("");
-  const [revNo, setRevNo] = useState("01");
-  const [revDate, setRevDate] = useState(new Date().toLocaleDateString());
+  // Drawing Metadata (IEC standard) — hydrated from localStorage
+  const savedMeta = typeof window !== "undefined" ? (() => {
+    try { const raw = localStorage.getItem("dummvinci_estimator_meta"); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  })() : null;
+  const [drawnBy, setDrawnBy] = useState(savedMeta?.drawnBy ?? "");
+  const [checkedBy, setCheckedBy] = useState(savedMeta?.checkedBy ?? "");
+  const [approvedBy, setApprovedBy] = useState(savedMeta?.approvedBy ?? "");
+  const [revNo] = useState(savedMeta?.revNo ?? "01");
+  const [revDate] = useState(savedMeta?.revDate ?? new Date().toLocaleDateString());
   const [showMetadataForm, setShowMetadataForm] = useState(false);
   
   // Selection & Grouping
@@ -114,31 +164,14 @@ export default function PanelLayoutPage() {
 
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  // Load from local storage on mount
-  const [isLoaded, setIsLoaded] = useState(false);
-  useEffect(() => {
-    const savedItems = localStorage.getItem("dummvinci_estimator_items");
-    const savedEnc = localStorage.getItem("dummvinci_estimator_enc");
-    const savedMeta = localStorage.getItem("dummvinci_estimator_meta");
-    
-    if (savedItems) {
-      try { setItems(JSON.parse(savedItems)); } catch (e) {}
-    }
-    if (savedEnc && ENCLOSURES.some(e => e.id === savedEnc)) {
-      setEncId(savedEnc);
-    }
-    if (savedMeta) {
-      try {
-        const meta = JSON.parse(savedMeta);
-        if (meta.drawnBy) setDrawnBy(meta.drawnBy);
-        if (meta.checkedBy) setCheckedBy(meta.checkedBy);
-        if (meta.approvedBy) setApprovedBy(meta.approvedBy);
-        if (meta.revNo) setRevNo(meta.revNo);
-        if (meta.revDate) setRevDate(meta.revDate);
-      } catch (e) {}
-    }
-    setIsLoaded(true);
-  }, []);
+  // Hydration flag — localStorage already read via lazy initializers above
+  // Hydration flag — localStorage already read via lazy initializers above
+  const isLoaded = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
 
   // Save to local storage on change
   useEffect(() => {
@@ -337,25 +370,8 @@ export default function PanelLayoutPage() {
      setSelectedIds(newIds);
   };
 
-  const moveFeeder = (id: string, direction: "left" | "right") => {
-     const isOuter = (item: PlacedItem) => ["Door Accessory", "Meter", "Label", "Logo", "Cooling"].includes(item.comp.category);
-     const feeders = items.filter(i => !isOuter(i) && i.comp.category !== "MCCB" && i.comp.category !== "MCB");
-     const index = feeders.findIndex(f => f.id === id);
-     if (index === -1) return;
 
-     const targetIndex = direction === "left" ? index - 1 : index + 1;
-     if (targetIndex < 0 || targetIndex >= feeders.length) return;
 
-     const newItems = [...items];
-     const itemA = feeders[index];
-     const itemB = feeders[targetIndex];
-
-     const idxA = items.findIndex(i => i.id === itemA.id);
-     const idxB = items.findIndex(i => i.id === itemB.id);
-
-     [newItems[idxA], newItems[idxB]] = [newItems[idxB], newItems[idxA]];
-     setItems(newItems);
-  };
 
   const onCanvasPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
@@ -487,39 +503,7 @@ export default function PanelLayoutPage() {
 
 
 
-  const PrintHeader = () => (
-    <div className="print-header" style={{ display: "none" }}>
-      <div className="print-header-left">
-        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 900, color: "#1d4ed8", letterSpacing: "-0.02em" }}>DUMMVINCI INDUSTRIAL ESTIMATOR</h1>
-        <p style={{ margin: 0, fontSize: 14, color: "#444", fontWeight: 700 }}>IEC 61439 | Technical Layout Proposal</p>
-        <div style={{ display: "flex", gap: 16, marginTop: 12 }}>
-           <div style={{ display: "flex", flexDirection: "column" }}>
-             <span style={{ fontSize: 9, color: "#888", textTransform: "uppercase" }}>Date</span>
-             <span style={{ fontSize: 11, fontWeight: 700, color: "#111" }}>{new Date().toLocaleDateString('en-GB')}</span>
-           </div>
-           <div style={{ display: "flex", flexDirection: "column" }}>
-             <span style={{ fontSize: 9, color: "#888", textTransform: "uppercase" }}>Project Reference</span>
-             <span style={{ fontSize: 11, fontWeight: 700, color: "#111" }}>{projectName}</span>
-           </div>
-           <div style={{ display: "flex", flexDirection: "column" }}>
-             <span style={{ fontSize: 9, color: "#888", textTransform: "uppercase" }}>Customer</span>
-             <span style={{ fontSize: 11, fontWeight: 700, color: "#111" }}>{customerName}</span>
-           </div>
-        </div>
-      </div>
-      <div className="print-header-right">
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-           {/* eslint-disable-next-line @next/next/no-img-element */}
-           <img src="https://www.ptts.co.id/uploads/1/3/3/7/133745061/logo-web_orig.png" alt="PTTS" style={{ height: 48 }} />
-           <div style={{ width: 1, height: 40, background: "#ddd" }} />
-           <div style={{ display: "flex", flexDirection: "column" }}>
-              <span style={{ fontSize: 20, fontWeight: 900, color: "#000", lineHeight: 1 }}>By DummVinci</span>
-              <span style={{ fontSize: 8, color: "#888", textAlign: "right" }}>ABB Value Partner</span>
-           </div>
-        </div>
-      </div>
-    </div>
-  );
+
 
   const renderFanFilter = () => (
     <div style={{
@@ -1274,7 +1258,7 @@ export default function PanelLayoutPage() {
 
           {/* Canvas Area */}
           <div className="print-area" style={{ flex: "2 1 450px", display: "flex", flexDirection: "column", justifyContent: "center", background: "rgba(0,0,0,0.3)", borderRadius: 12, padding: 32, border: "1px dashed var(--border)" }}>
-                 <PrintHeader />
+                 <PrintHeader projectName={projectName} customerName={customerName} />
                  
                  {/* INNER VIEW (Mounting Plate) */}
             {viewMode === "inner" && (
@@ -1575,7 +1559,6 @@ export default function PanelLayoutPage() {
 
             {/* PROFESSIONAL WIRING DIAGRAM VIEW (SLD PRO) */}
             {viewMode === "sld" && (() => {
-              const incomer = items.find(i => i.comp.category === "MCCB" || i.comp.category === "MCB") || items[0];
               
               const renderWiringSymbol = (item: PlacedItem) => {
                 const isSelected = selectedIds.includes(item.id);

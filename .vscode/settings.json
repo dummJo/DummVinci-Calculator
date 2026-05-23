@@ -1,11 +1,16 @@
 {
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.tsserver.maxTsServerMemory": 2048,
+
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
     "**/node_modules/*/**": true,
     "**/.next/**": true,
     "**/.vercel/**": true,
-    "**/.code-review-graph/**": true
+    "**/.code-review-graph/**": true,
+    "**/out/**": true,
+    "**/build/**": true
   },
   "files.exclude": {
     "**/.git": true,
@@ -22,6 +27,17 @@
     "**/bower_components": true,
     "**/.next": true,
     "**/.vercel": true,
-    "**/.code-review-graph": true
-  }
+    "**/.code-review-graph": true,
+    "**/tsconfig.tsbuildinfo": true,
+    "**/package-lock.json": true
+  },
+
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.tabSize": 2,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true
 }

@@ -2,7 +2,7 @@
 // app/(tools)/skf-microlog/page.tsx — SKF Microlog Learn
 // Educational learning platform for PTTS vibration analysis team
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 
@@ -11,7 +11,7 @@ import { MODULES, MODULE_TAGS } from "@/data/skf-microlog/modules";
 import type { ModuleData } from "@/data/skf-microlog/modules";
 import { SEVERITY_TABLE, SEVERITY_CATEGORIES } from "@/data/skf-microlog/severity";
 import { DIAGNOSTIC_PATTERNS, DIAGNOSTIC_CATEGORIES, QUICK_DIAGNOSIS } from "@/data/skf-microlog/diagnostic-patterns";
-import { LEARNING_GOALS, LEARNING_ITERATIONS, DEPENDENCY_TREE, CROSS_CUTTING_PITFALLS } from "@/data/skf-microlog/learning-paths";
+import { LEARNING_GOALS, LEARNING_ITERATIONS, CROSS_CUTTING_PITFALLS } from "@/data/skf-microlog/learning-paths";
 
 // Localized Database Imports
 import { MODULES_ID } from "@/data/skf-microlog/modules-id";
@@ -610,19 +610,20 @@ function TabSeverity({ lang }: { lang: "en" | "id" }) {
     SEVERITY_TABLE.filter(e => e.category === selectedCat),
   [selectedCat]);
 
-  useEffect(() => {
+  const effectiveSub = useMemo(() => {
     if (filteredEntries.length > 0 && !filteredEntries.find(e => e.subType === selectedSub)) {
-      setSelectedSub(filteredEntries[0].subType);
+      return filteredEntries[0].subType;
     }
+    return selectedSub;
   }, [filteredEntries, selectedSub]);
 
   const velocity = parseFloat(velocityInput);
   const ge = parseFloat(geInput);
 
   const machineResult = useMemo(() => {
-    if (isNaN(velocity) || !selectedSub) return null;
-    return getMachineSeverityZone(velocity, selectedSub, { isolator: hasIsolator, externalGearbox: hasGearbox, newMachine: isNewMachine }, lang);
-  }, [velocity, selectedSub, hasIsolator, hasGearbox, isNewMachine, lang]);
+    if (isNaN(velocity) || !effectiveSub) return null;
+    return getMachineSeverityZone(velocity, effectiveSub, { isolator: hasIsolator, externalGearbox: hasGearbox, newMachine: isNewMachine }, lang);
+  }, [velocity, effectiveSub, hasIsolator, hasGearbox, isNewMachine, lang]);
 
   const generalResult = useMemo(() => {
     if (isNaN(velocity)) return null;
@@ -665,7 +666,7 @@ function TabSeverity({ lang }: { lang: "en" | "id" }) {
             <label style={{ fontSize: 10, color: "var(--muted)", fontFamily: "var(--font-mono)", display: "block", marginBottom: 4 }}>
               {lang === "id" ? "SUB-TIPE MESIN" : "SUB-TYPE"}
             </label>
-            <select value={selectedSub} onChange={e => setSelectedSub(e.target.value)} style={selectStyle}>
+            <select value={effectiveSub} onChange={e => setSelectedSub(e.target.value)} style={selectStyle}>
               {filteredEntries.map(e => <option key={e.subType} value={e.subType}>{e.subType}</option>)}
             </select>
           </div>
@@ -1153,7 +1154,7 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
     if (phase < 0) phase += 360;
 
     return { amp, phase };
-  }, [simV0, twMassNum, twAngleNum]);
+  }, [simV0, twMassNum, twAngleNum, lagAngle]);
 
   // Check 30/30 Rule
   const rule3030Check = useMemo(() => {

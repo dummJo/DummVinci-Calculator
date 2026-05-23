@@ -4,16 +4,27 @@ import { useEffect, useState } from "react";
 import { getRandomQuote, type Quote } from "@/lib/quotes";
 import { useLang } from "@/lib/i18n";
 
+interface IpApiData {
+  ip: string;
+  city?: string;
+  country: string;
+  country_name: string;
+  org?: string;
+  error?: boolean;
+}
+
+const formatTime = () =>
+  new Date().toLocaleTimeString("en-US", { hour12: true, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
 function TerminalWidget() {
-  const [data, setData] = useState<any>(null);
-  const [time, setTime] = useState<string>("");
+  const [data, setData] = useState<IpApiData | null>(null);
+  const [time, setTime] = useState<string>(formatTime);
 
   useEffect(() => {
     // Clock
     const timer = setInterval(() => {
-      setTime(new Date().toLocaleTimeString("en-US", { hour12: true, hour: "2-digit", minute: "2-digit", second: "2-digit" }));
+      setTime(formatTime());
     }, 1000);
-    setTime(new Date().toLocaleTimeString("en-US", { hour12: true, hour: "2-digit", minute: "2-digit", second: "2-digit" }));
 
     // IP Fetch (Force IPv4)
     fetch("https://api.ipify.org?format=json")

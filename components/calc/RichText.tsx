@@ -1,4 +1,4 @@
-import React from "react";
+
 
 export default function RichText({ text }: { text: string }) {
   if (!text) return null;

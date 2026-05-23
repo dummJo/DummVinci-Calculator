@@ -3,9 +3,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import {
-  LayoutGrid, Activity, Cpu, MoreHorizontal, 
-  Cable, Zap, AlignJustify, Server, Disc, X, History, Sparkles, AlertCircle, Microchip, Play, BookOpen,
-  Settings2, ShieldPlus, Repeat, MonitorPlay, ZapOff, Columns, BoxSelect, Waves, Power, LineChart, Home, HelpCircle, HardDrive
+  MoreHorizontal,
+  Cable, Zap, X, History, Sparkles, AlertCircle, BookOpen,
+  Settings2, ShieldPlus, Repeat, MonitorPlay, ZapOff, Columns, BoxSelect, Waves, Power, LineChart, Home, HardDrive
 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { clsx } from "clsx";

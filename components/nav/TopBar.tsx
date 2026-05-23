@@ -2,7 +2,6 @@
 import ThemeToggle from "@/components/ThemeToggle";
 import { useLang, type Lang } from "@/lib/i18n";
 
-import Logo from "@/components/Logo";
 import Link from "next/link";
 
 // ─── Lang pill toggle ─────────────────────────────────────────────────────────
