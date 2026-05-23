@@ -136,36 +136,36 @@
 }
 
 [data-theme="light"] {
-  --bg:        #faf9f5;   /* Anthropic Light */
-  --bg-raised: #f2f1ec;   /* Warm cream card */
-  --bg-deep:   #e8e6dc;   /* Light gray */
-  --bg-accent: #dad8ce;   /* Raised light elements */
-  --fg:        #141413;   /* Anthropic Dark text */
-  --fg-soft:   #4c4c4b;   /* Soft dark text */
-  --muted:     #7a7975;   /* Muted gray */
-  --muted-soft: #b0aea5;  /* Mid Gray border */
+  --bg:        #F4F1EA;   /* Creamy Claude Background */
+  --bg-raised: #EBE8DF;   /* Warm cream card */
+  --bg-deep:   #E0DDD4;   /* Deep warm beige */
+  --bg-accent: #D5D1C7;   /* Raised light elements */
+  --fg:        #1B1917;   /* Rich dark warm charcoal text */
+  --fg-soft:   #4D4944;   /* Soft dark text */
+  --muted:     #7A7570;   /* Muted gray */
+  --muted-soft: #ADAAA3;  /* Mid Gray border */
   --accent:    #d97757;   /* Anthropic Orange */
   --accent-hi: #c76445;   /* Darker orange for hover/contrast in light */
   --accent-2:  #788c5d;   /* Anthropic Green */
   --accent-rgb: 217, 119, 87;
   --canvas-accent: #d97757;
-  --border:    rgba(20, 20, 19, 0.08);
-  --card:      rgba(250, 249, 245, 0.98);
-  --nav-bg:    rgba(250, 249, 245, 0.92);
+  --border:    rgba(27, 25, 23, 0.08);
+  --card:      rgba(244, 241, 234, 0.98);
+  --nav-bg:    rgba(244, 241, 234, 0.92);
   --shadow-hover:       rgba(217, 119, 87, 0.08);
   --selection-bg:       rgba(217, 119, 87, 0.15);
-  --selection-fg:       #141413;
+  --selection-fg:       #1B1917;
   /* Glass surfaces */
-  --glass-bg:       rgba(255, 255, 255, 0.85);
-  --glass-border:   rgba(20, 20, 19, 0.06);
+  --glass-bg:       rgba(244, 241, 234, 0.85);
+  --glass-border:   rgba(27, 25, 23, 0.06);
   --glass-hi:       rgba(255, 255, 255, 0.95);
-  --glass-shadow:   0 4px 24px rgba(20, 20, 19, 0.03), 0 1px 2px rgba(20, 20, 19, 0.01);
+  --glass-shadow:   0 4px 24px rgba(27, 25, 23, 0.03), 0 1px 2px rgba(27, 25, 23, 0.01);
   --glass-blur:     blur(20px) saturate(180%);
   --nav-blur:       blur(24px) saturate(180%);
   --cursor-glow:        rgba(217, 119, 87, 0.04);
   --cursor-card-glow:   rgba(217, 119, 87, 0.06);
   --cursor-card-border: rgba(217, 119, 87, 0.25);
-  --tabbar-bg:          rgba(250, 249, 245, 0.9);
+  --tabbar-bg:          rgba(244, 241, 234, 0.9);
   --accent-pill-bg:     rgba(217, 119, 87, 0.1);
 }
 
