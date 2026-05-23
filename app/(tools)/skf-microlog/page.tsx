@@ -2,7 +2,7 @@
 // app/(tools)/skf-microlog/page.tsx — SKF Microlog Learn
 // Educational learning platform for PTTS vibration analysis team
 
-import { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 
@@ -209,6 +209,50 @@ function SkfMicrologVisualizer({ activeModuleId, lang }: { activeModuleId: strin
 
 // ─── Module Detail ────────────────────────────────────────────────────────────
 function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
+  // Helper to render interactive section content when "→" is detected
+  const renderSectionContent = (text: string) => {
+    if (!text.includes("→")) return <p style={{ fontSize: 13, color: "var(--fg-soft)", lineHeight: 1.5, margin: 0 }}>{text}</p>;
+    
+    // Split by period followed by space
+    const sentences = text.split(/(?<=\.)\s+/);
+    return (
+      <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: "var(--fg-soft)", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: 6 }}>
+        {sentences.map((sentence, i) => {
+          if (!sentence) return null;
+          if (!sentence.includes("→")) return <li key={i}>{sentence}</li>;
+          
+          const parts = sentence.split("→");
+          return (
+            <li key={i}>
+              {parts.map((p, j) => (
+                <React.Fragment key={j}>
+                  {j > 0 && <span style={{ background: "var(--accent-pill-bg)", color: "var(--accent)", padding: "2px 6px", borderRadius: 4, fontWeight: "bold", margin: "0 4px", fontSize: 10 }}>→</span>}
+                  <span style={{ color: j > 0 ? "var(--fg)" : "inherit" }}>{p.trim()}</span>
+                </React.Fragment>
+              ))}
+            </li>
+          );
+        })}
+      </ul>
+    );
+  };
+
+  // Helper to render cheat sheet lines with interactive "→" pills
+  const renderCheatSheetLine = (line: string, i: number) => {
+    if (!line.includes("→")) return <div key={i}>{line || " "}</div>;
+    const parts = line.split("→");
+    return (
+      <div key={i} style={{ display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: 6, rowGap: 2 }}>
+        {parts.map((p, j) => (
+          <React.Fragment key={j}>
+            {j > 0 && <span style={{ background: "rgba(59,130,246,0.2)", color: "#60a5fa", padding: "0 6px", borderRadius: 4, fontWeight: "bold", fontSize: 10 }}>→</span>}
+            <span style={{ color: j > 0 ? "var(--fg)" : "inherit" }}>{p.trim()}</span>
+          </React.Fragment>
+        ))}
+      </div>
+    );
+  };
+
   // Localization logic
   const content = useMemo(() => {
     if (lang === "id" && MODULES_ID[mod.id]) {
@@ -318,11 +362,11 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
               background: i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
               border: "1px solid rgba(255,255,255,0.04)",
             }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--accent)", opacity: 0.6 }}>§{i + 1}</span>
                 <h5 style={{ fontSize: 14, fontWeight: 700, color: "var(--fg)", margin: 0 }}>{s.title}</h5>
               </div>
-              <p style={{ fontSize: 13, color: "var(--fg-soft)", lineHeight: 1.5, margin: 0 }}>{s.content}</p>
+              {renderSectionContent(s.content)}
             </div>
           ))}
         </div>
@@ -535,7 +579,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
           color: "var(--fg-soft)", whiteSpace: "pre-wrap", wordBreak: "break-word",
           margin: 0, padding: 16, borderRadius: 10, background: "rgba(0,0,0,0.3)",
         }}>
-          {content.cheatSheet}
+          {content.cheatSheet.split("\n").map((line, i) => renderCheatSheetLine(line, i))}
         </pre>
       </div>
     </div>
