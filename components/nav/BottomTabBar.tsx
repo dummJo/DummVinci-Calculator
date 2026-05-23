@@ -237,7 +237,7 @@ export default function BottomTabBar() {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
-                <span className="version-tag" style={{ background: "var(--accent)", color: "#000", fontWeight: 800, letterSpacing: "0.1em" }}>VERSION 2.4 UPDATE</span>
+                <span className="version-tag" style={{ background: "var(--accent)", color: "#000", fontWeight: 800, letterSpacing: "0.1em" }}>VERSION 2.7 UPDATE</span>
                 <h2 style={{ fontSize: 28, fontFamily: "var(--font-display)", color: "var(--fg)", margin: "8px 0 0 0" }}>
                   What&apos;s New!
                 </h2>
@@ -249,22 +249,22 @@ export default function BottomTabBar() {
             
             <div style={{ marginTop: 24, fontSize: 14, lineHeight: 1.6, color: "var(--fg-soft)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--accent)", marginBottom: 16 }}>
-                <Sparkles size={18} /> <span style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: 13, letterSpacing: "0.1em" }}>INDUSTRIAL ESTIMATOR (V2.4)</span>
+                <Sparkles size={18} /> <span style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: 13, letterSpacing: "0.1em" }}>VIBRATION & THEMES (V2.7)</span>
               </div>
               <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
-                <li><b><span style={{color:"var(--fg)"}}>Panel Layout</span></b>: 40+ professional components (Siemens PLCs, ABB contactors) with high-fidelity CAD visuals.</li>
-                <li><b><span style={{color:"var(--fg)"}}>Fuzzy Search & Pills</span></b>: Real-time searchable component browser for rapid layout building.</li>
-                <li><b><span style={{color:"var(--fg)"}}>PTTS Identity & UI</span></b>: DummVinci x PTTS branding, auto-sliding spec marquee, and live IP terminal widget.</li>
+                <li><b><span style={{color:"var(--fg)"}}>SKF Microlog Learn</span></b>: Vibration analysis learning platform (ISO 10816 severity, diagnostics) for PTTS engineers.</li>
+                <li><b><span style={{color:"var(--fg)"}}>Crimson &amp; Coral Palette</span></b>: Industrial high-contrast rebrand matching ABB Value Partner style.</li>
+                <li><b><span style={{color:"var(--fg)"}}>Consultant-Grade i18n</span></b>: Upgraded Indonesian vocabulary conforming to PUIL 2011 &amp; IEC regulations (KHA, Arus Asut, Jatuh Tegangan).</li>
               </ul>
 
               <hr style={{ border: "none", borderTop: "1px dashed rgba(var(--accent-rgb), 0.2)", margin: "24px 0" }} />
               
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--muted)", marginBottom: 12 }}>
-                <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>PREVIOUS TOOLS (V2.2 / V2.3)</span>
+                <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>PREVIOUS RELEASES (V2.3 / V2.4)</span>
               </div>
               <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 8, opacity: 0.6, fontSize: 13 }}>
-                <li>PID Loop Simulator & Multimeter Tutorials.</li>
-                <li>Electrical Converter Hub & Wisdom Engine.</li>
+                <li>V2.4 — Panel layout estimator with Siemens/ABB component library &amp; CAD visuals.</li>
+                <li>V2.3 — PID loop simulator &amp; electrical measurement guides/tutorials.</li>
               </ul>
             </div>
 
@@ -352,7 +352,7 @@ export default function BottomTabBar() {
           <History size={18} style={{ color: "var(--accent)" }} />
           <div style={{ flex: 1, textAlign: "left" }}>
             <div style={{ fontSize: 11, fontWeight: 800, fontFamily: "var(--font-heading)", color: "var(--accent)" }}>{t.nav.changelog}</div>
-            <div style={{ fontSize: 9, opacity: 0.6, color: "var(--fg)" }}>Stable Production v2.4.0</div>
+            <div style={{ fontSize: 9, opacity: 0.6, color: "var(--fg)" }}>Stable Production v2.7.0</div>
           </div>
         </button>
       </div>

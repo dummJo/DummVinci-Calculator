@@ -31,7 +31,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Script
           id="theme-init"
           strategy="beforeInteractive"
-        >{`(function(){try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}})();`}</Script>
+        >{`(function(){try{var t=localStorage.getItem("theme")||"light";document.documentElement.setAttribute("data-theme",t)}catch(e){}})();`}</Script>
 
         <CursorGlow />
         <DaVinciAscii />

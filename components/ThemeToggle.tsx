@@ -7,14 +7,14 @@ type VT = { ready: Promise<void> };
 type DocWithVT = Document & { startViewTransition?: (cb: () => void) => VT };
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">("light");
   const [mounted, setMounted] = useState(false);
   const [burst, setBurst] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("theme") as "dark" | "light" | null;
-    const initial = saved || "dark";
+    const initial = saved || "light";
     document.documentElement.setAttribute("data-theme", initial);
     const timeoutId = setTimeout(() => {
       setTheme(initial);
