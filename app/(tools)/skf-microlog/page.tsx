@@ -62,10 +62,66 @@ const inputStyleBase = {
   transition: "border-color 0.2s ease",
 } as const;
 
+const getModuleIdData = (id: string) => {
+  switch(id) {
+    case "01": return MODULES_ID["01"];
+    case "02": return MODULES_ID["02"];
+    case "03": return MODULES_ID["03"];
+    case "04": return MODULES_ID["04"];
+    case "05": return MODULES_ID["05"];
+    case "06": return MODULES_ID["06"];
+    case "07": return MODULES_ID["07"];
+    default: return undefined;
+  }
+};
+
+const getTagColor = (tag: string) => {
+  switch(tag) {
+    case "THEORY": return TAG_COLORS["THEORY"];
+    case "REFERENCE": return TAG_COLORS["REFERENCE"];
+    case "TOOL": return TAG_COLORS["TOOL"];
+    case "SOP": return TAG_COLORS["SOP"];
+    case "CHEAT SHEET": return TAG_COLORS["CHEAT SHEET"];
+    default: return "#666";
+  }
+};
+
+const getDiagnosticPatternIdData = (id: string) => {
+  switch(id) {
+    case "M1": return DIAGNOSTIC_PATTERNS_ID["M1"];
+    case "M2": return DIAGNOSTIC_PATTERNS_ID["M2"];
+    case "M3": return DIAGNOSTIC_PATTERNS_ID["M3"];
+    case "U1": return DIAGNOSTIC_PATTERNS_ID["U1"];
+    case "U2": return DIAGNOSTIC_PATTERNS_ID["U2"];
+    case "U3": return DIAGNOSTIC_PATTERNS_ID["U3"];
+    case "B1": return DIAGNOSTIC_PATTERNS_ID["B1"];
+    case "B2": return DIAGNOSTIC_PATTERNS_ID["B2"];
+    case "B3": return DIAGNOSTIC_PATTERNS_ID["B3"];
+    case "B4": return DIAGNOSTIC_PATTERNS_ID["B4"];
+    case "E1": return DIAGNOSTIC_PATTERNS_ID["E1"];
+    case "L1": return DIAGNOSTIC_PATTERNS_ID["L1"];
+    case "G1": return DIAGNOSTIC_PATTERNS_ID["G1"];
+    case "P1": return DIAGNOSTIC_PATTERNS_ID["P1"];
+    default: return undefined;
+  }
+};
+
+const getLearningGoalIdData = (id: string) => {
+  switch(id) {
+    case "A": return LEARNING_GOALS_ID["A"];
+    case "B": return LEARNING_GOALS_ID["B"];
+    case "C": return LEARNING_GOALS_ID["C"];
+    case "D": return LEARNING_GOALS_ID["D"];
+    default: return undefined;
+  }
+};
+
 // ─── Module Card ──────────────────────────────────────────────────────────────
 function ModuleCard({ mod, onClick, isActive, lang }: { mod: ModuleData; onClick: () => void; isActive: boolean; lang: "en" | "id" }) {
+  const { t } = useLang();
   const title = lang === "id" ? mod.titleId : mod.titleEn;
-  const tldr = lang === "id" && MODULES_ID[mod.id] ? MODULES_ID[mod.id].tldr : mod.tldr;
+  const modDataId = getModuleIdData(mod.id);
+  const tldr = lang === "id" && modDataId ? modDataId.tldr : mod.tldr;
 
   return (
     <button
@@ -89,13 +145,13 @@ function ModuleCard({ mod, onClick, isActive, lang }: { mod: ModuleData; onClick
             <span style={{
               fontFamily: "var(--font-mono)", fontSize: 10, fontWeight: 700,
               padding: "2px 8px", borderRadius: 6,
-              background: `${TAG_COLORS[mod.tag] || "#666"}22`,
-              color: TAG_COLORS[mod.tag] || "#666",
+              background: `${getTagColor(mod.tag)}22`,
+              color: getTagColor(mod.tag),
             }}>
               {mod.tag}
             </span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", opacity: 0.7 }}>
-              FILE {mod.id}
+              {t.home.calcs.skfMicrolog.fileTag} {mod.id}
             </span>
           </div>
           <h3 style={{ fontFamily: "var(--font-display)", fontSize: 18, color: "var(--fg)", margin: "4px 0 0" }}>
@@ -111,7 +167,8 @@ function ModuleCard({ mod, onClick, isActive, lang }: { mod: ModuleData; onClick
 }
 
 // ─── SKF Microlog Visualizer ──────────────────────────────────────────────────
-function SkfMicrologVisualizer({ activeModuleId, lang }: { activeModuleId: string; lang: "en" | "id" }) {
+function SkfMicrologVisualizer({ activeModuleId }: { activeModuleId: string; lang: "en" | "id" }) {
+  const { t } = useLang();
   // Generate visual content based on module
   const renderScreenContent = () => {
     switch (activeModuleId) {
@@ -163,7 +220,7 @@ function SkfMicrologVisualizer({ activeModuleId, lang }: { activeModuleId: strin
                 : "M 10 110 L 20 110 L 30 30 L 40 105 L 50 108 L 60 70 L 70 105 L 80 108 L 90 90 L 100 108 L 110 105 L 120 100"}
               fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" 
             />
-            {isGE && <text x="45" y="30" fill={color} fontSize="8" fontFamily="var(--font-mono)">BPFO</text>}
+            {isGE && <text x="45" y="30" fill={color} fontSize="8" fontFamily="var(--font-mono)">{t.home.calcs.skfMicrolog.bpfo}</text>}
             {!isGE && <text x="25" y="20" fill={color} fontSize="8" fontFamily="var(--font-mono)">1x RPM</text>}
           </svg>
         );
@@ -184,7 +241,7 @@ function SkfMicrologVisualizer({ activeModuleId, lang }: { activeModuleId: strin
     }}>
       {/* Hardware Bezel */}
       <div style={{ background: "var(--accent)", color: "var(--bg)", padding: "6px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, letterSpacing: 1 }}>SKF Microlog</span>
+        <span style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, letterSpacing: 1 }}>{t.home.calcs.skfMicrolog.headerTitle}</span>
         <div style={{ display: "flex", gap: 4 }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 4px #22c55e" }} />
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(0,0,0,0.3)" }} />
@@ -193,7 +250,7 @@ function SkfMicrologVisualizer({ activeModuleId, lang }: { activeModuleId: strin
       {/* Screen Area */}
       <div style={{ background: "var(--bg-raised)", height: 140, position: "relative", borderBottom: "1px solid var(--glass-border)" }}>
         <div style={{ position: "absolute", top: 4, left: 6, fontSize: 8, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-          {lang === "id" ? "Mode: " : "Mode: "} {activeModuleId === "01" ? "Balancing" : activeModuleId === "05" ? "Analyzer" : activeModuleId === "06" ? "gE Envelope" : "Route"}
+          {t.home.calcs.skfMicrolog.modeLabel} {activeModuleId === "01" ? t.home.calcs.skfMicrolog.balancingMode : activeModuleId === "05" ? t.home.calcs.skfMicrolog.analyzerMode : activeModuleId === "06" ? t.home.calcs.skfMicrolog.envelopeMode : t.home.calcs.skfMicrolog.routeMode}
         </div>
         {renderScreenContent()}
       </div>
@@ -255,8 +312,9 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
 
   // Localization logic
   const content = useMemo(() => {
-    if (lang === "id" && MODULES_ID[mod.id]) {
-      const translated = MODULES_ID[mod.id];
+    const modDataId = getModuleIdData(mod.id);
+    if (lang === "id" && modDataId) {
+      const translated = modDataId;
       return {
         title: mod.titleId,
         tldr: translated.tldr,
@@ -298,8 +356,15 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
   const handleOptionSelect = (optIndex: number) => {
     if (selectedOption !== null) return; // Prevent re-answering
     setSelectedOption(optIndex);
-    const isCorrect = optIndex === content.activeRecall[currentQuestionIndex].correctAnswer;
-    setQuizScores(prev => ({ ...prev, [currentQuestionIndex]: isCorrect ? "mastered" : "review" }));
+    const question = content.activeRecall.at(currentQuestionIndex);
+    const isCorrect = question ? optIndex === question.correctAnswer : false;
+    setQuizScores(prev => {
+      const nextScores: Record<number, "mastered" | "review"> = { ...prev };
+      Object.defineProperty(nextScores, currentQuestionIndex, { 
+        value: isCorrect ? "mastered" : "review", enumerable: true, writable: true 
+      });
+      return nextScores;
+    });
   };
 
   const handleNext = () => {
@@ -329,7 +394,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
             <span style={{
               fontFamily: "var(--font-mono)", fontSize: 10, fontWeight: 700,
               padding: "2px 8px", borderRadius: 6,
-              background: `${TAG_COLORS[mod.tag]}22`, color: TAG_COLORS[mod.tag],
+              background: `${getTagColor(mod.tag)}22`, color: getTagColor(mod.tag),
             }}>{mod.tag}</span>
             <h2 style={{ fontFamily: "var(--font-display)", fontSize: 24, color: "var(--accent)", margin: "4px 0 0" }}>
               {content.title}
@@ -424,13 +489,14 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
             </div>
 
             <div style={{ minHeight: 60, fontSize: 15, color: "var(--fg)", fontWeight: 500, lineHeight: 1.5, marginBottom: 16 }}>
-              {content.activeRecall[currentQuestionIndex]?.q}
+              {content.activeRecall.at(currentQuestionIndex)?.q}
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
-              {content.activeRecall[currentQuestionIndex]?.options?.map((opt, idx) => {
+              {content.activeRecall.at(currentQuestionIndex)?.options?.map((opt, idx) => {
                 const isSelected = selectedOption === idx;
-                const isCorrect = idx === content.activeRecall[currentQuestionIndex].correctAnswer;
+                const activeQ = content.activeRecall.at(currentQuestionIndex);
+                const isCorrect = activeQ ? idx === activeQ.correctAnswer : false;
                 const showFeedback = selectedOption !== null;
                 
                 let bgColor = "rgba(255,255,255,0.03)";
@@ -477,17 +543,21 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
 
             {selectedOption !== null && (
               <div style={{ marginBottom: 20, animation: "fadeIn 0.3s ease" }}>
-                {selectedOption === content.activeRecall[currentQuestionIndex].correctAnswer ? (
-                  <div style={{ padding: 12, background: "rgba(34,197,94,0.1)", borderLeft: "3px solid #22c55e", borderRadius: 4, fontSize: 13, color: "#22c55e" }}>
-                    <strong>{lang === "id" ? "Benar!" : "Correct!"}</strong> 
-                    {content.activeRecall[currentQuestionIndex].hint && ` — ${content.activeRecall[currentQuestionIndex].hint}`}
-                  </div>
-                ) : (
-                  <div style={{ padding: 12, background: "rgba(239,68,68,0.1)", borderLeft: "3px solid #ef4444", borderRadius: 4, fontSize: 13, color: "#ef4444" }}>
-                    <strong>{lang === "id" ? "Kurang tepat." : "Incorrect."}</strong> 
-                    {content.activeRecall[currentQuestionIndex].hint && ` — Hint: ${content.activeRecall[currentQuestionIndex].hint}`}
-                  </div>
-                )}
+                {(() => {
+                  const activeQ = content.activeRecall.at(currentQuestionIndex);
+                  if (!activeQ) return null;
+                  return selectedOption === activeQ.correctAnswer ? (
+                    <div style={{ padding: 12, background: "rgba(34,197,94,0.1)", borderLeft: "3px solid #22c55e", borderRadius: 4, fontSize: 13, color: "#22c55e" }}>
+                      <strong>{lang === "id" ? "Benar!" : "Correct!"}</strong> 
+                      {activeQ.hint && ` — ${activeQ.hint}`}
+                    </div>
+                  ) : (
+                    <div style={{ padding: 12, background: "rgba(239,68,68,0.1)", borderLeft: "3px solid #ef4444", borderRadius: 4, fontSize: 13, color: "#ef4444" }}>
+                      <strong>{lang === "id" ? "Kurang tepat." : "Incorrect."}</strong> 
+                      {activeQ.hint && ` — Hint: ${activeQ.hint}`}
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
@@ -537,7 +607,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
                     <span style={{ fontSize: 13, color: "var(--fg)", lineHeight: 1.5, fontWeight: 500 }}>{q.q}</span>
                     {revealedQ.has(i) && (
                       <div style={{ marginTop: 8, fontSize: 12, color: "#22c55e", fontFamily: "var(--font-mono)" }}>
-                        ✓ {q.options[q.correctAnswer]}
+                        ✓ {q.options.at(q.correctAnswer)}
                       </div>
                     )}
                   </div>
@@ -588,6 +658,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
 
 // ─── Tab: Modules with Interactive Graph ──────────────────────────────────────
 function TabModules({ lang, selectedId, setSelectedId }: { lang: "en" | "id"; selectedId: string | null; setSelectedId: (id: string | null) => void }) {
+  const { t } = useLang();
   const [filterTag, setFilterTag] = useState<string>("ALL");
 
   const filtered = useMemo(() =>
@@ -637,7 +708,7 @@ function TabModules({ lang, selectedId, setSelectedId }: { lang: "en" | "id"; se
                   onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
                 >
                   <span style={{ fontSize: 16, marginRight: 6 }}>📐</span>
-                  <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", fontWeight: 700 }}>MODULE 01 (THEORY)</div>
+                  <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", fontWeight: 700 }}>{t.home.calcs.skfMicrolog.modTheory}</div>
                   <div style={{ fontSize: 12, fontWeight: 700 }}>{lang === "id" ? "Dasar Vibrasi" : "Basic Vibration"}</div>
                 </button>
               </div>
@@ -659,7 +730,7 @@ function TabModules({ lang, selectedId, setSelectedId }: { lang: "en" | "id"; se
                   onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
                 >
                   <span style={{ fontSize: 14 }}>📊</span>
-                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>MODULE 02 (REF)</div>
+                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>{t.home.calcs.skfMicrolog.modRef}</div>
                   <div style={{ fontSize: 11, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{lang === "id" ? "Tabel Severity" : "Severity & Charts"}</div>
                 </button>
 
@@ -675,7 +746,7 @@ function TabModules({ lang, selectedId, setSelectedId }: { lang: "en" | "id"; se
                   onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
                 >
                   <span style={{ fontSize: 14 }}>🔬</span>
-                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>MODULE 03 (TOOL)</div>
+                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>{t.home.calcs.skfMicrolog.modTool3}</div>
                   <div style={{ fontSize: 11, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{lang === "id" ? "Analyzer dBX" : "dBX Analyzer"}</div>
                 </button>
 
@@ -691,7 +762,7 @@ function TabModules({ lang, selectedId, setSelectedId }: { lang: "en" | "id"; se
                   onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
                 >
                   <span style={{ fontSize: 14 }}>⚖️</span>
-                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>MODULE 04 (TOOL)</div>
+                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>{t.home.calcs.skfMicrolog.modTool4}</div>
                   <div style={{ fontSize: 11, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{lang === "id" ? "Balancing dBX" : "dBX Balancing"}</div>
                 </button>
               </div>
@@ -715,7 +786,7 @@ function TabModules({ lang, selectedId, setSelectedId }: { lang: "en" | "id"; se
                   onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
                 >
                   <span style={{ fontSize: 14 }}>📋</span>
-                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>MODULE 05 (SOP)</div>
+                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>{t.home.calcs.skfMicrolog.modSop5}</div>
                   <div style={{ fontSize: 11, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{lang === "id" ? "Template Velo" : "Velocity Temp."}</div>
                 </button>
 
@@ -731,7 +802,7 @@ function TabModules({ lang, selectedId, setSelectedId }: { lang: "en" | "id"; se
                   onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
                 >
                   <span style={{ fontSize: 14 }}>🎯</span>
-                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>MODULE 06 (SOP)</div>
+                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>{t.home.calcs.skfMicrolog.modSop6}</div>
                   <div style={{ fontSize: 11, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{lang === "id" ? "Template gE" : "gE Template"}</div>
                 </button>
 
@@ -747,7 +818,7 @@ function TabModules({ lang, selectedId, setSelectedId }: { lang: "en" | "id"; se
                   onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
                 >
                   <span style={{ fontSize: 14 }}>⚡</span>
-                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>MODULE 07 (CHEAT)</div>
+                  <div style={{ fontSize: 8, fontFamily: "var(--font-mono)" }}>{t.home.calcs.skfMicrolog.modCheat}</div>
                   <div style={{ fontSize: 11, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{lang === "id" ? "Pocket Guide" : "Balancing Pocket"}</div>
                 </button>
               </div>
@@ -786,6 +857,7 @@ function TabModules({ lang, selectedId, setSelectedId }: { lang: "en" | "id"; se
 
 // ─── Tab: Severity ────────────────────────────────────────────────────────────
 function TabSeverity({ lang }: { lang: "en" | "id" }) {
+  const { t } = useLang();
   const [velocityInput, setVelocityInput] = useState("");
   const [selectedCat, setSelectedCat] = useState(SEVERITY_CATEGORIES[0]);
   const [selectedSub, setSelectedSub] = useState("");
@@ -890,8 +962,8 @@ function TabSeverity({ lang }: { lang: "en" | "id" }) {
             </div>
             <p style={{ fontSize: 13, color: "var(--fg-soft)", margin: "8px 0 0", lineHeight: 1.5 }}>{machineResult.label}</p>
             <div style={{ display: "flex", gap: 16, marginTop: 10, fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)" }}>
-              <span>Alarm 1: {machineResult.alarm1Adj.toFixed(1)} mm/s</span>
-              <span>Alarm 2: {machineResult.alarm2Adj.toFixed(1)} mm/s</span>
+              <span>{t.home.calcs.skfMicrolog.alarm1}{machineResult.alarm1Adj.toFixed(1)} mm/s</span>
+              <span>{t.home.calcs.skfMicrolog.alarm2}{machineResult.alarm2Adj.toFixed(1)} mm/s</span>
             </div>
           </div>
         )}
@@ -901,7 +973,7 @@ function TabSeverity({ lang }: { lang: "en" | "id" }) {
       {generalResult && (
         <div style={{ ...GLASS, background: `${generalResult.color}08`, borderColor: `${generalResult.color}22` }}>
           <h4 style={{ fontFamily: "var(--font-mono)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--muted)", marginBottom: 8 }}>
-            ISO 20816 GENERAL ZONE
+            {t.home.calcs.skfMicrolog.generalZone}
           </h4>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, color: generalResult.color }}>{generalResult.zone}</span>
@@ -917,7 +989,7 @@ function TabSeverity({ lang }: { lang: "en" | "id" }) {
           🎯 {lang === "id" ? "Kesehatan Bearing (gE Enveloping)" : "Bearing Health (gE Enveloping)"}
         </h4>
         <div>
-          <label style={{ fontSize: 10, color: "var(--muted)", fontFamily: "var(--font-mono)", display: "block", marginBottom: 4 }}>gE LEVEL</label>
+          <label style={{ fontSize: 10, color: "var(--muted)", fontFamily: "var(--font-mono)", display: "block", marginBottom: 4 }}>{t.home.calcs.skfMicrolog.geLevel}</label>
           <input type="number" step="0.1" min="0" placeholder="e.g. 0.8" value={geInput} onChange={e => setGeInput(e.target.value)} style={{ ...inputStyle, maxWidth: 200 }} />
         </div>
         {bearingResult && (
@@ -1023,7 +1095,8 @@ function TabDiagnostic({ lang }: { lang: "en" | "id" }) {
       <div style={{ display: "grid", gap: 10 }}>
         {filtered.map(p => {
           const isOpen = expandedId === p.id;
-          const details = lang === "id" && DIAGNOSTIC_PATTERNS_ID[p.id] ? DIAGNOSTIC_PATTERNS_ID[p.id] : {
+          const diagPatternIdData = getDiagnosticPatternIdData(p.id);
+          const details = lang === "id" && diagPatternIdData ? diagPatternIdData : {
             name: p.name, spectrum: p.spectrum, phase: p.phase, correction: p.correction, standard: p.standard
           };
 
@@ -1164,7 +1237,7 @@ function DependencyTreeVisual({ lang, onSelectModule }: { lang: "en" | "id"; onS
         {/* Nodes */}
         {nodes.map(n => {
           const label = lang === "id" ? n.labelId : n.labelEn;
-          const tagColor = TAG_COLORS[n.tag] || "#666";
+          const tagColor = getTagColor(n.tag);
           return (
             <button
               key={n.id}
@@ -1198,6 +1271,7 @@ function DependencyTreeVisual({ lang, onSelectModule }: { lang: "en" | "id"; onS
 
 // ─── Tab: Paths ───────────────────────────────────────────────────────────────
 function TabPaths({ lang, onSelectModule }: { lang: "en" | "id"; onSelectModule: (id: string) => void }) {
+  const { t } = useLang();
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   
   const goals = LEARNING_GOALS;
@@ -1205,8 +1279,9 @@ function TabPaths({ lang, onSelectModule }: { lang: "en" | "id"; onSelectModule:
 
   const localizedGoal = useMemo(() => {
     if (!goal) return null;
-    if (lang === "id" && LEARNING_GOALS_ID[goal.id]) {
-      return LEARNING_GOALS_ID[goal.id];
+    const goalIdData = getLearningGoalIdData(goal.id);
+    if (lang === "id" && goalIdData) {
+      return goalIdData;
     }
     return {
       title: goal.title,
@@ -1228,7 +1303,8 @@ function TabPaths({ lang, onSelectModule }: { lang: "en" | "id"; onSelectModule:
         </h4>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {goals.map(g => {
-            const currentGoal = lang === "id" && LEARNING_GOALS_ID[g.id] ? LEARNING_GOALS_ID[g.id] : g;
+            const currentGoalIdData = getLearningGoalIdData(g.id);
+            const currentGoal = lang === "id" && currentGoalIdData ? currentGoalIdData : g;
             return (
               <button
                 key={g.id}
@@ -1240,7 +1316,7 @@ function TabPaths({ lang, onSelectModule }: { lang: "en" | "id"; onSelectModule:
                   transition: "all 0.2s ease",
                 }}
               >
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: 20, fontWeight: 800, color: "var(--accent)" }}>Goal {g.id}</span>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 20, fontWeight: 800, color: "var(--accent)" }}>{t.home.calcs.skfMicrolog.goal} {g.id}</span>
                 <h5 style={{ fontSize: 13, fontWeight: 700, color: "var(--fg)", margin: "6px 0 4px" }}>{currentGoal.title}</h5>
                 <p style={{ fontSize: 11, color: "var(--muted)", margin: 0 }}>⏱ {currentGoal.timeEstimate}</p>
               </button>
@@ -1252,7 +1328,7 @@ function TabPaths({ lang, onSelectModule }: { lang: "en" | "id"; onSelectModule:
       {/* Selected Goal Detail */}
       {localizedGoal && goal && (
         <div style={{ ...GLASS, background: "rgba(var(--accent-rgb),0.04)", borderColor: "rgba(var(--accent-rgb),0.15)" }}>
-          <h4 style={{ fontFamily: "var(--font-display)", fontSize: 20, color: "var(--accent)", marginBottom: 6 }}>Goal {goal.id}: {localizedGoal.title}</h4>
+          <h4 style={{ fontFamily: "var(--font-display)", fontSize: 20, color: "var(--accent)", marginBottom: 6 }}>{t.home.calcs.skfMicrolog.goal} {goal.id}: {localizedGoal.title}</h4>
           <p style={{ fontSize: 13, color: "var(--fg-soft)", marginBottom: 16 }}>{localizedGoal.description}</p>
           <h5 style={{ fontFamily: "var(--font-mono)", fontSize: 10, textTransform: "uppercase", color: "var(--muted)", marginBottom: 10, letterSpacing: "0.1em" }}>
             {lang === "id" ? "ALUR MEMBACA" : "READING PATH"}
@@ -1313,11 +1389,11 @@ function TabPaths({ lang, onSelectModule }: { lang: "en" | "id"; onSelectModule:
         </h4>
         <div style={{ display: "grid", gap: 6 }}>
           {pitfalls.map((p, i) => {
-            const originalPitfall = CROSS_CUTTING_PITFALLS[i];
+            const originalPitfall = CROSS_CUTTING_PITFALLS.at(i);
             return (
               <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 8, padding: 10, borderRadius: 8, background: "rgba(239,68,68,0.04)", alignItems: "center" }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: "var(--fg)" }}>{p.pitfall}</span>
-                <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--muted)", whiteSpace: "nowrap" }}>File {originalPitfall?.files}</span>
+                <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--muted)", whiteSpace: "nowrap" }}>{t.home.calcs.skfMicrolog.fileLabel} {originalPitfall?.files}</span>
                 <span style={{ fontSize: 11, color: "var(--fg-soft)" }}>{p.note}</span>
               </div>
             );
@@ -1330,6 +1406,7 @@ function TabPaths({ lang, onSelectModule }: { lang: "en" | "id"; onSelectModule:
 
 // ─── Tab: Tools with Interactive Simulator ────────────────────────────────────
 function TabTools({ lang }: { lang: "en" | "id" }) {
+  const { t } = useLang();
   const [rpmInput, setRpmInput] = useState("");
   const [velTrend, setVelTrend] = useState<"ok" | "rising">("ok");
   const [geTrend, setGeTrend] = useState<"ok" | "rising">("ok");
@@ -1530,7 +1607,7 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
             style={cellStyle(velTrend === "ok" && geTrend === "ok")}
           >
             <div style={{ fontSize: 18 }}>🟢</div>
-            <div style={{ fontSize: 11, color: "var(--fg)", fontWeight: 700 }}>Vel OK | gE OK</div>
+            <div style={{ fontSize: 11, color: "var(--fg)", fontWeight: 700 }}>{t.home.calcs.skfMicrolog.statusOkOk}</div>
             <div style={{ fontSize: 9, color: "var(--muted)" }}>{lang === "id" ? "Kondisi Sehat" : "Healthy State"}</div>
           </button>
 
@@ -1540,7 +1617,7 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
             style={cellStyle(velTrend === "ok" && geTrend === "rising")}
           >
             <div style={{ fontSize: 18 }}>🟡</div>
-            <div style={{ fontSize: 11, color: "var(--fg)", fontWeight: 700 }}>Vel OK | gE Rising</div>
+            <div style={{ fontSize: 11, color: "var(--fg)", fontWeight: 700 }}>{t.home.calcs.skfMicrolog.statusOkRising}</div>
             <div style={{ fontSize: 9, color: "var(--muted)" }}>{lang === "id" ? "Bearing Dini" : "Early Bearing"}</div>
           </button>
 
@@ -1550,7 +1627,7 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
             style={cellStyle(velTrend === "rising" && geTrend === "ok")}
           >
             <div style={{ fontSize: 18 }}>🔵</div>
-            <div style={{ fontSize: 11, color: "var(--fg)", fontWeight: 700 }}>Vel Rising | gE OK</div>
+            <div style={{ fontSize: 11, color: "var(--fg)", fontWeight: 700 }}>{t.home.calcs.skfMicrolog.statusRisingOk}</div>
             <div style={{ fontSize: 9, color: "var(--muted)" }}>{lang === "id" ? "Struktural / Unbalance" : "Structural/Unbalance"}</div>
           </button>
 
@@ -1560,7 +1637,7 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
             style={cellStyle(velTrend === "rising" && geTrend === "rising")}
           >
             <div style={{ fontSize: 18 }}>🔴</div>
-            <div style={{ fontSize: 11, color: "var(--fg)", fontWeight: 700 }}>Vel Rising | gE Rising</div>
+            <div style={{ fontSize: 11, color: "var(--fg)", fontWeight: 700 }}>{t.home.calcs.skfMicrolog.statusRisingRising}</div>
             <div style={{ fontSize: 9, color: "var(--muted)" }}>{lang === "id" ? "Kerusakan Bearing Aktif" : "Active Bearing Defect"}</div>
           </button>
         </div>
@@ -1657,15 +1734,15 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
                 <div>
-                  <label style={{ fontSize: 9, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>ROTOR MASS (kg)</label>
+                  <label style={{ fontSize: 9, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{t.home.calcs.skfMicrolog.rotorMass}</label>
                   <input type="number" value={simRotorMass} onChange={e => setSimRotorMass(parseInt(e.target.value) || 0)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 9, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>SPEED (RPM)</label>
+                  <label style={{ fontSize: 9, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{t.home.calcs.skfMicrolog.speed}</label>
                   <input type="number" value={simRpm} onChange={e => setSimRpm(parseInt(e.target.value) || 0)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 9, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>RADIUS (mm)</label>
+                  <label style={{ fontSize: 9, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{t.home.calcs.skfMicrolog.radius}</label>
                   <input type="number" value={simRadius} onChange={e => setSimRadius(parseInt(e.target.value) || 0)} style={inputStyle} />
                 </div>
               </div>
@@ -1689,11 +1766,11 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
               
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
                 <div>
-                  <label style={{ fontSize: 9, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>TW MASS (grams)</label>
+                  <label style={{ fontSize: 9, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{t.home.calcs.skfMicrolog.twMass}</label>
                   <input type="text" value={simTwMass} onChange={e => setSimTwMass(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 9, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>TW ANGLE (°)</label>
+                  <label style={{ fontSize: 9, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{t.home.calcs.skfMicrolog.twAngle}</label>
                   <input type="text" value={simTwAngle} onChange={e => setSimTwAngle(e.target.value)} style={inputStyle} />
                 </div>
               </div>
@@ -1785,7 +1862,7 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
               </div>
 
               <button onClick={handleResetSim} style={{ width: "100%", padding: "10px", borderRadius: 8, background: "rgba(255,255,255,0.08)", color: "var(--fg)", border: "none", fontWeight: 700, cursor: "pointer" }}>
-                {lang === "id" ? "RESET SIMULATOR" : "RESET SIMULATOR"}
+                {t.home.calcs.skfMicrolog.resetSim}
               </button>
             </div>
           )}
@@ -1793,7 +1870,7 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
           {/* Real-time Logger Console */}
           {simResultLogs.length > 0 && (
             <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", marginBottom: 6 }}>Console Log</div>
+              <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", marginBottom: 6 }}>{t.home.calcs.skfMicrolog.consoleLog}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4, fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--fg-soft)" }}>
                 {simResultLogs.map((log, index) => (
                   <div key={index} style={{ whiteSpace: "pre-wrap" }}>◈ {log}</div>
@@ -1811,6 +1888,7 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function SkfMicrologPage() {
+  const { t } = useLang();
   const { lang } = useLang();
   const [activeTab, setActiveTab] = useState<TabKey>("modules");
   const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
@@ -1848,12 +1926,12 @@ export default function SkfMicrologPage() {
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
             <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "rgba(var(--accent-rgb),0.15)", color: "var(--accent)", letterSpacing: "0.1em" }}>
-              LEARN
+              {t.home.calcs.skfMicrolog.learnTab}
             </span>
-            <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)" }}>PTTS Knowledge Base</span>
+            <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)" }}>{t.home.calcs.skfMicrolog.knowledgeBase}</span>
           </div>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px, 5vw, 36px)", color: "var(--fg)", margin: "0 0 6px" }}>
-            SKF Microlog
+            {t.home.calcs.skfMicrolog.skfMicrologLabel}
           </h1>
           <p style={{ fontSize: 14, color: "var(--fg-soft)", lineHeight: 1.5, margin: 0, maxWidth: 600 }}>
             {lang === "id"
@@ -1909,7 +1987,7 @@ export default function SkfMicrologPage() {
 
       <Footer />
       <div style={{ textAlign: "center", padding: "0 0 120px", fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", opacity: 0.4 }}>
-        By DummVinci · DummVinci Calculator
+        {t.home.calcs.skfMicrolog.byDummVinci}
       </div>
     </div>
   );
