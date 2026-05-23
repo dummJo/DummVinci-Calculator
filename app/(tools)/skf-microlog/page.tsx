@@ -110,6 +110,103 @@ function ModuleCard({ mod, onClick, isActive, lang }: { mod: ModuleData; onClick
   );
 }
 
+// ─── SKF Microlog Visualizer ──────────────────────────────────────────────────
+function SkfMicrologVisualizer({ activeModuleId, lang }: { activeModuleId: string; lang: "en" | "id" }) {
+  // Generate visual content based on module
+  const renderScreenContent = () => {
+    switch (activeModuleId) {
+      case "01": // Balancing Theory (Vector Diagram)
+        return (
+          <svg width="100%" height="100%" viewBox="0 0 200 120" style={{ strokeLinecap: "round" }}>
+            <circle cx="100" cy="60" r="40" fill="none" stroke="var(--muted)" strokeWidth="1" strokeDasharray="4 4" />
+            <line x1="100" y1="60" x2="100" y2="20" stroke="var(--fg-soft)" strokeWidth="1" />
+            <line x1="100" y1="60" x2="140" y2="60" stroke="var(--fg-soft)" strokeWidth="1" />
+            {/* V0 Vector */}
+            <line x1="100" y1="60" x2="130" y2="30" stroke="#ef4444" strokeWidth="2" markerEnd="url(#arrow-red)" />
+            <text x="135" y="25" fill="#ef4444" fontSize="8" fontFamily="var(--font-mono)">V0 (Ref)</text>
+            {/* VT1 Vector */}
+            <line x1="100" y1="60" x2="60" y2="40" stroke="#3b82f6" strokeWidth="2" markerEnd="url(#arrow-blue)" />
+            <text x="45" y="35" fill="#3b82f6" fontSize="8" fontFamily="var(--font-mono)">VT1</text>
+            <defs>
+              <marker id="arrow-red" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0 0, 6 3, 0 6" fill="#ef4444"/></marker>
+              <marker id="arrow-blue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0 0, 6 3, 0 6" fill="#3b82f6"/></marker>
+            </defs>
+          </svg>
+        );
+      case "02": // Severity (Overall Bars)
+        return (
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-around", height: "100%", padding: "10px 20px" }}>
+            {[2.1, 4.2, 7.8, 1.5, 3.0].map((val, i) => {
+              const color = val > 7 ? "#ef4444" : val > 4.5 ? "#f59e0b" : val > 2.8 ? "#eab308" : "#22c55e";
+              return (
+                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                  <div style={{ fontSize: 8, color, fontFamily: "var(--font-mono)" }}>{val}</div>
+                  <div style={{ width: 14, height: Math.min(val * 10, 80), background: color, borderRadius: "2px 2px 0 0", transition: "height 0.5s ease" }} />
+                  <div style={{ fontSize: 8, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>CH{i+1}</div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      case "05": // Analyzer Mode (FFT Spectrum)
+      case "06": // gE Enveloping
+        const isGE = activeModuleId === "06";
+        const color = isGE ? "#a855f7" : "#3b82f6";
+        return (
+          <svg width="100%" height="100%" viewBox="0 0 200 120" preserveAspectRatio="none">
+            {/* Grid */}
+            <path d="M 0 30 L 200 30 M 0 60 L 200 60 M 0 90 L 200 90" stroke="var(--muted)" strokeWidth="0.5" strokeDasharray="2 4" opacity="0.3"/>
+            {/* Spectrum Path */}
+            <path 
+              d={isGE 
+                ? "M 10 110 L 20 105 L 30 110 L 40 108 L 50 40 L 60 105 L 70 108 L 80 106 L 90 108 L 100 60 L 110 105 L 120 107 L 130 106 L 140 108 L 150 75 L 160 105 L 170 108 L 180 107 L 190 109" 
+                : "M 10 110 L 20 110 L 30 30 L 40 105 L 50 108 L 60 70 L 70 105 L 80 108 L 90 90 L 100 108 L 110 105 L 120 100"}
+              fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" 
+            />
+            {isGE && <text x="45" y="30" fill={color} fontSize="8" fontFamily="var(--font-mono)">BPFO</text>}
+            {!isGE && <text x="25" y="20" fill={color} fontSize="8" fontFamily="var(--font-mono)">1x RPM</text>}
+          </svg>
+        );
+      default:
+        return (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--accent)" }}>
+            <span style={{ fontSize: 24, animation: "spin 4s linear infinite" }}>⚙️</span>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div style={{ 
+      background: "var(--bg)", borderRadius: 16, border: "2px solid var(--accent)", 
+      overflow: "hidden", marginBottom: 20, boxShadow: "var(--glass-shadow)",
+      display: "flex", flexDirection: "column"
+    }}>
+      {/* Hardware Bezel */}
+      <div style={{ background: "var(--accent)", color: "var(--bg)", padding: "6px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, letterSpacing: 1 }}>SKF Microlog</span>
+        <div style={{ display: "flex", gap: 4 }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 4px #22c55e" }} />
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(0,0,0,0.3)" }} />
+        </div>
+      </div>
+      {/* Screen Area */}
+      <div style={{ background: "var(--bg-raised)", height: 140, position: "relative", borderBottom: "1px solid var(--glass-border)" }}>
+        <div style={{ position: "absolute", top: 4, left: 6, fontSize: 8, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+          {lang === "id" ? "Mode: " : "Mode: "} {activeModuleId === "01" ? "Balancing" : activeModuleId === "05" ? "Analyzer" : activeModuleId === "06" ? "gE Envelope" : "Route"}
+        </div>
+        {renderScreenContent()}
+      </div>
+      {/* Hardware Buttons */}
+      <div style={{ display: "flex", justifyContent: "space-around", padding: "8px 0", background: "var(--bg-deep)" }}>
+        {[1, 2, 3, 4, 5].map(i => (
+          <div key={i} style={{ width: 24, height: 12, borderRadius: 4, background: "var(--muted)", opacity: 0.3 }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Module Detail ────────────────────────────────────────────────────────────
 function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
   // Localization logic
@@ -121,7 +218,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
         tldr: translated.tldr,
         mentalModel: translated.mentalModel,
         sections: translated.sections,
-        activeRecall: translated.activeRecall,
+        activeRecall: mod.activeRecall,
         pitfalls: translated.pitfalls,
         cheatSheet: translated.cheatSheet,
       };
@@ -140,7 +237,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
   // Quiz States
   const [quizMode, setQuizMode] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [quizScores, setQuizScores] = useState<Record<number, "mastered" | "review">>([]);
 
   // View All Recall States
@@ -154,11 +251,24 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
     });
   }, []);
 
-  const handleScore = (type: "mastered" | "review") => {
-    setQuizScores(prev => ({ ...prev, [currentQuestionIndex]: type }));
-    setShowAnswer(false);
+  const handleOptionSelect = (optIndex: number) => {
+    if (selectedOption !== null) return; // Prevent re-answering
+    setSelectedOption(optIndex);
+    const isCorrect = optIndex === content.activeRecall[currentQuestionIndex].correctAnswer;
+    setQuizScores(prev => ({ ...prev, [currentQuestionIndex]: isCorrect ? "mastered" : "review" }));
+  };
+
+  const handleNext = () => {
     if (currentQuestionIndex < content.activeRecall.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedOption(null);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
+      setSelectedOption(null);
     }
   };
 
@@ -185,6 +295,8 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
         </div>
         <p style={{ fontSize: 14, color: "var(--fg-soft)", lineHeight: 1.6, margin: 0 }}>{content.tldr}</p>
       </div>
+
+      <SkfMicrologVisualizer activeModuleId={mod.id} lang={lang} />
 
       {/* Mental Model */}
       <div style={GLASS}>
@@ -235,7 +347,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
               {lang === "id" ? "LIHAT SEMUA" : "VIEW ALL"}
             </button>
             <button
-              onClick={() => { setQuizMode(true); setCurrentQuestionIndex(0); setShowAnswer(false); }}
+              onClick={() => { setQuizMode(true); setCurrentQuestionIndex(0); setSelectedOption(null); }}
               style={{
                 padding: "4px 10px", borderRadius: 8, fontSize: 10, fontWeight: 700,
                 background: quizMode ? "rgba(201,168,76,0.2)" : "rgba(255,255,255,0.04)",
@@ -267,72 +379,97 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
               </span>
             </div>
 
-            <div style={{ minHeight: 70, fontSize: 15, color: "var(--fg)", fontWeight: 500, lineHeight: 1.5, marginBottom: 16 }}>
+            <div style={{ minHeight: 60, fontSize: 15, color: "var(--fg)", fontWeight: 500, lineHeight: 1.5, marginBottom: 16 }}>
               {content.activeRecall[currentQuestionIndex]?.q}
             </div>
 
-            {showAnswer ? (
-              <div style={{ marginBottom: 20 }}>
-                {content.activeRecall[currentQuestionIndex]?.hint ? (
-                  <div style={{ padding: 12, background: "rgba(201,168,76,0.06)", borderLeft: "3px solid var(--accent)", borderRadius: 4, fontSize: 13, color: "var(--accent)", lineHeight: 1.5 }}>
-                    💡 {content.activeRecall[currentQuestionIndex].hint}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+              {content.activeRecall[currentQuestionIndex]?.options?.map((opt, idx) => {
+                const isSelected = selectedOption === idx;
+                const isCorrect = idx === content.activeRecall[currentQuestionIndex].correctAnswer;
+                const showFeedback = selectedOption !== null;
+                
+                let bgColor = "rgba(255,255,255,0.03)";
+                let borderColor = "rgba(255,255,255,0.06)";
+                let color = "var(--fg-soft)";
+
+                if (showFeedback) {
+                  if (isCorrect) {
+                    bgColor = "rgba(34,197,94,0.15)";
+                    borderColor = "rgba(34,197,94,0.5)";
+                    color = "#22c55e";
+                  } else if (isSelected) {
+                    bgColor = "rgba(239,68,68,0.15)";
+                    borderColor = "rgba(239,68,68,0.5)";
+                    color = "#ef4444";
+                  }
+                } else if (isSelected) {
+                  bgColor = "rgba(201,168,76,0.1)";
+                  borderColor = "var(--accent)";
+                }
+
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => handleOptionSelect(idx)}
+                    disabled={selectedOption !== null}
+                    style={{
+                      textAlign: "left", padding: "12px 16px", borderRadius: 10,
+                      background: bgColor, border: `1px solid ${borderColor}`,
+                      color: color, cursor: selectedOption !== null ? "default" : "pointer",
+                      transition: "all 0.2s ease", fontSize: 13, lineHeight: 1.5
+                    }}
+                  >
+                    <div style={{ display: "flex", gap: 12 }}>
+                      <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700 }}>
+                        {String.fromCharCode(65 + idx)}.
+                      </span>
+                      <span>{opt}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {selectedOption !== null && (
+              <div style={{ marginBottom: 20, animation: "fadeIn 0.3s ease" }}>
+                {selectedOption === content.activeRecall[currentQuestionIndex].correctAnswer ? (
+                  <div style={{ padding: 12, background: "rgba(34,197,94,0.1)", borderLeft: "3px solid #22c55e", borderRadius: 4, fontSize: 13, color: "#22c55e" }}>
+                    <strong>{lang === "id" ? "Benar!" : "Correct!"}</strong> 
+                    {content.activeRecall[currentQuestionIndex].hint && ` — ${content.activeRecall[currentQuestionIndex].hint}`}
                   </div>
                 ) : (
-                  <div style={{ fontStyle: "italic", fontSize: 12, color: "var(--muted)" }}>
-                    {lang === "id" ? "Tidak ada petunjuk tambahan untuk pertanyaan ini." : "No additional hint for this question."}
+                  <div style={{ padding: 12, background: "rgba(239,68,68,0.1)", borderLeft: "3px solid #ef4444", borderRadius: 4, fontSize: 13, color: "#ef4444" }}>
+                    <strong>{lang === "id" ? "Kurang tepat." : "Incorrect."}</strong> 
+                    {content.activeRecall[currentQuestionIndex].hint && ` — Hint: ${content.activeRecall[currentQuestionIndex].hint}`}
                   </div>
                 )}
-                <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-                  <button
-                    onClick={() => handleScore("mastered")}
-                    style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: "none", background: "#22c55e", color: "#fff", cursor: "pointer", fontWeight: 700, fontSize: 12 }}
-                  >
-                    {lang === "id" ? "✓ Saya Paham" : "✓ Mastered"}
-                  </button>
-                  <button
-                    onClick={() => handleScore("review")}
-                    style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: "none", background: "#ef4444", color: "#fff", cursor: "pointer", fontWeight: 700, fontSize: 12 }}
-                  >
-                    {lang === "id" ? "✗ Butuh Ulang" : "✗ Review Needed"}
-                  </button>
-                </div>
               </div>
-            ) : (
-              <button
-                onClick={() => setShowAnswer(true)}
-                style={{
-                  width: "100%", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--accent)",
-                  background: "rgba(201,168,76,0.08)", color: "var(--accent)",
-                  cursor: "pointer", fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12,
-                  marginBottom: 16
-                }}
-              >
-                {lang === "id" ? "TAMPILKAN JAWABAN / PETUNJUK" : "REVEAL ANSWER / HINT"}
-              </button>
             )}
 
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8 }}>
               <button
                 disabled={currentQuestionIndex === 0}
-                onClick={() => { setCurrentQuestionIndex(prev => prev - 1); setShowAnswer(false); }}
+                onClick={handlePrev}
                 style={{
-                  padding: "5px 12px", borderRadius: 8, background: "rgba(255,255,255,0.04)",
+                  padding: "6px 14px", borderRadius: 8, background: "rgba(255,255,255,0.04)",
                   border: "none", color: currentQuestionIndex === 0 ? "var(--muted)" : "var(--fg-soft)",
-                  cursor: currentQuestionIndex === 0 ? "default" : "pointer", fontSize: 11
+                  cursor: currentQuestionIndex === 0 ? "default" : "pointer", fontSize: 11, fontWeight: 600
                 }}
               >
-                ← {lang === "id" ? "Sebelumnya" : "Prev"}
+                ← {lang === "id" ? "Sblm" : "Prev"}
               </button>
               <button
-                disabled={currentQuestionIndex === content.activeRecall.length - 1}
-                onClick={() => { setCurrentQuestionIndex(prev => prev + 1); setShowAnswer(false); }}
+                disabled={currentQuestionIndex === content.activeRecall.length - 1 || selectedOption === null}
+                onClick={handleNext}
                 style={{
-                  padding: "5px 12px", borderRadius: 8, background: "rgba(255,255,255,0.04)",
-                  border: "none", color: currentQuestionIndex === content.activeRecall.length - 1 ? "var(--muted)" : "var(--fg-soft)",
-                  cursor: currentQuestionIndex === content.activeRecall.length - 1 ? "default" : "pointer", fontSize: 11
+                  padding: "6px 14px", borderRadius: 8, 
+                  background: (currentQuestionIndex === content.activeRecall.length - 1 || selectedOption === null) ? "rgba(255,255,255,0.04)" : "var(--accent)",
+                  border: "none", color: (currentQuestionIndex === content.activeRecall.length - 1 || selectedOption === null) ? "var(--muted)" : "#fff",
+                  cursor: (currentQuestionIndex === content.activeRecall.length - 1 || selectedOption === null) ? "default" : "pointer", fontSize: 11, fontWeight: 700
                 }}
               >
-                {lang === "id" ? "Selanjutnya" : "Next"} →
+                {lang === "id" ? "Lanjut" : "Next"} →
               </button>
             </div>
           </div>
@@ -352,10 +489,17 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
               >
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--accent)", marginTop: 2, flexShrink: 0 }}>Q{i + 1}</span>
-                  <span style={{ fontSize: 13, color: "var(--fg)", lineHeight: 1.5 }}>{q.q}</span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <span style={{ fontSize: 13, color: "var(--fg)", lineHeight: 1.5, fontWeight: 500 }}>{q.q}</span>
+                    {revealedQ.has(i) && (
+                      <div style={{ marginTop: 8, fontSize: 12, color: "#22c55e", fontFamily: "var(--font-mono)" }}>
+                        ✓ {q.options[q.correctAnswer]}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {revealedQ.has(i) && q.hint && (
-                  <div style={{ marginTop: 8, marginLeft: 24, fontSize: 12, color: "var(--accent)", fontFamily: "var(--font-mono)", opacity: 0.8 }}>
+                  <div style={{ marginTop: 12, marginLeft: 24, padding: "6px 10px", background: "rgba(201,168,76,0.08)", borderRadius: 6, fontSize: 11, color: "var(--accent)", fontFamily: "var(--font-mono)", opacity: 0.9 }}>
                     💡 {q.hint}
                   </div>
                 )}

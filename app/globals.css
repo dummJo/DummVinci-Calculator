@@ -136,36 +136,36 @@
 
 /* ─── Light theme — warm parchment + high contrast ink ─── */
 [data-theme="light"] {
-  --bg:        #e2d4b0;   /* aged parchment — deeper than cream, clear Vincinian warmth */
-  --bg-raised: #e9dfc0;
-  --bg-deep:   #d8c99a;
+  --bg:        #f4ead5;   /* Lighter, cleaner parchment */
+  --bg-raised: #fdf5e6;   /* Near white for surfaces */
+  --bg-deep:   #e6d6b8;   /* Deep parchment for contrast */
   --bg-accent: #cfc08e;
-  --fg:        #100d07;   /* near-black warm ink — sharp contrast on parchment */
-  --fg-soft:   #261e10;
-  --muted:     #5a5040;
-  --muted-soft: #7a6e58;
-  --accent:    #8c6510;   /* richer amber-gold — higher contrast vs v1 #5a4710 */
-  --accent-hi: #b07c14;
-  --accent-2:  #7a6848;
-  --canvas-accent: #5a3e08;
-  --border:    rgba(110, 84, 32, 0.38);
-  --card:      rgba(255, 248, 220, 0.65);
-  --nav-bg:    rgba(226, 212, 176, 0.92);
-  --shadow-hover:       rgba(110, 84, 32, 0.14);
-  --selection-bg:       #8c6510;
-  --selection-fg:       #f5ead0;
-  /* Glass surfaces — warm cream tint (not cold white) */
-  --glass-bg:       rgba(255, 250, 235, 0.82);
-  --glass-border:   rgba(160, 120, 50, 0.35);
-  --glass-hi:       rgba(255, 252, 235, 0.94);
-  --glass-shadow:   0 8px 32px rgba(80, 55, 10, 0.14), 0 1px 2px rgba(80, 55, 10, 0.08);
-  --glass-blur:     blur(22px) saturate(180%);
+  --fg:        #000000;   /* Pure black ink for maximum contrast */
+  --fg-soft:   #1a1a1a;   /* Dark grey for secondary text */
+  --muted:     #4a4a4a;
+  --muted-soft: #666666;
+  --accent:    #704e03;   /* Deep gold/amber for high contrast */
+  --accent-hi: #966907;
+  --accent-2:  #5c4a2e;
+  --canvas-accent: #4a3406;
+  --border:    rgba(110, 84, 32, 0.45);
+  --card:      rgba(255, 255, 255, 0.85); /* Whiter, cleaner cards */
+  --nav-bg:    rgba(244, 234, 213, 0.95);
+  --shadow-hover:       rgba(110, 84, 32, 0.18);
+  --selection-bg:       #704e03;
+  --selection-fg:       #fdf5e6;
+  /* Glass surfaces */
+  --glass-bg:       rgba(255, 255, 255, 0.9);
+  --glass-border:   rgba(110, 84, 32, 0.4);
+  --glass-hi:       rgba(255, 255, 255, 0.98);
+  --glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.05);
+  --glass-blur:     blur(24px) saturate(160%);
   --nav-blur:       blur(32px) saturate(160%);
-  --cursor-glow:        rgba(110, 84, 32, 0.10);
-  --cursor-card-glow:   rgba(110, 84, 32, 0.10);
-  --cursor-card-border: rgba(110, 84, 32, 0.55);
-  --tabbar-bg:          rgba(220, 208, 180, 0.72);
-  --accent-pill-bg:     rgba(140, 101, 16, 0.12);
+  --cursor-glow:        rgba(110, 84, 32, 0.08);
+  --cursor-card-glow:   rgba(110, 84, 32, 0.08);
+  --cursor-card-border: rgba(110, 84, 32, 0.6);
+  --tabbar-bg:          rgba(244, 234, 213, 0.85);
+  --accent-pill-bg:     rgba(112, 78, 3, 0.15);
 }
 
 * { box-sizing: border-box; }
@@ -667,4 +667,14 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 }
 .spec-marquee:hover {
   animation-play-state: paused;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
