@@ -102,70 +102,70 @@
 
 /* ─── Dark theme (default) ─── */
 :root, [data-theme="dark"] {
-  --bg:        var(--ink-800);
-  --bg-raised: var(--ink-700);
-  --bg-deep:   var(--ink-900);
-  --bg-accent: var(--ink-600);
-  --fg:        var(--parchment);
-  --fg-soft:   var(--parchment-dim);
-  --muted:     #b8ab96;
-  --muted-soft: #857a66;
-  --accent:    var(--gold);
-  --accent-hi: var(--gold-hi);
-  --accent-2:  var(--gold-dim);
-  --border:    var(--hairline);
-  --card:      rgba(255, 255, 255, 0.05);
-  --nav-bg:    rgba(13, 17, 23, 0.88);
-  --canvas-accent: var(--gold);
-  --selection-bg:  var(--gold);
-  --selection-fg:  var(--ink-900);
+  --bg:        #09090b;   /* Zinc 950 */
+  --bg-raised: #18181b;   /* Zinc 900 */
+  --bg-deep:   #000000;   /* Pure black */
+  --bg-accent: #27272a;   /* Zinc 800 */
+  --fg:        #fafafa;   /* Zinc 50 */
+  --fg-soft:   #a1a1aa;   /* Zinc 400 */
+  --muted:     #71717a;   /* Zinc 500 */
+  --muted-soft: #52525b;  /* Zinc 600 */
+  --accent:    #fbbf24;   /* Amber 400 */
+  --accent-hi: #fcd34d;   /* Amber 300 */
+  --accent-2:  #d97706;   /* Amber 600 */
+  --border:    rgba(255, 255, 255, 0.12);
+  --card:      rgba(24, 24, 27, 0.6);
+  --nav-bg:    rgba(9, 9, 11, 0.85);
+  --canvas-accent: #fbbf24;
+  --selection-bg:  rgba(251, 191, 36, 0.25);
+  --selection-fg:  #fafafa;
   /* Glass surfaces */
-  --glass-bg:       rgba(255, 255, 255, 0.095);
-  --glass-border:   rgba(255, 255, 255, 0.14);
-  --glass-hi:       rgba(255, 255, 255, 0.18);
-  --glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.2);
-  --glass-blur:     blur(22px) saturate(180%);
-  --nav-blur:       blur(32px) saturate(160%);
-  --shadow-hover:       rgba(201, 168, 76, 0.10);
-  --cursor-glow:        rgba(201, 168, 76, 0.07);
-  --cursor-card-glow:   rgba(201, 168, 76, 0.12);
-  --cursor-card-border: rgba(201, 168, 76, 0.55);
-  --tabbar-bg:          rgba(10, 13, 18, 0.62);
-  --accent-pill-bg:     rgba(201, 168, 76, 0.16);
+  --glass-bg:       rgba(24, 24, 27, 0.65);
+  --glass-border:   rgba(255, 255, 255, 0.08);
+  --glass-hi:       rgba(255, 255, 255, 0.12);
+  --glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --glass-blur:     blur(20px) saturate(180%);
+  --nav-blur:       blur(24px) saturate(180%);
+  --shadow-hover:       rgba(251, 191, 36, 0.12);
+  --cursor-glow:        rgba(251, 191, 36, 0.08);
+  --cursor-card-glow:   rgba(251, 191, 36, 0.12);
+  --cursor-card-border: rgba(251, 191, 36, 0.4);
+  --tabbar-bg:          rgba(9, 9, 11, 0.8);
+  --accent-pill-bg:     rgba(251, 191, 36, 0.15);
 }
 
-/* ─── Light theme — warm parchment + high contrast ink ─── */
+/* ─── Light theme — crisp, modern, high legibility ─── */
 [data-theme="light"] {
-  --bg:        #f4ead5;   /* Lighter, cleaner parchment */
-  --bg-raised: #fdf5e6;   /* Near white for surfaces */
-  --bg-deep:   #e6d6b8;   /* Deep parchment for contrast */
-  --bg-accent: #cfc08e;
-  --fg:        #000000;   /* Pure black ink for maximum contrast */
-  --fg-soft:   #1a1a1a;   /* Dark grey for secondary text */
-  --muted:     #4a4a4a;
-  --muted-soft: #666666;
-  --accent:    #704e03;   /* Deep gold/amber for high contrast */
-  --accent-hi: #966907;
-  --accent-2:  #5c4a2e;
-  --canvas-accent: #4a3406;
-  --border:    rgba(110, 84, 32, 0.45);
-  --card:      rgba(255, 255, 255, 0.85); /* Whiter, cleaner cards */
-  --nav-bg:    rgba(244, 234, 213, 0.95);
-  --shadow-hover:       rgba(110, 84, 32, 0.18);
-  --selection-bg:       #704e03;
-  --selection-fg:       #fdf5e6;
+  --bg:        #faf9f6;   /* Off-white, extremely clean */
+  --bg-raised: #ffffff;   /* Pure white for cards */
+  --bg-deep:   #f0ede6;   /* Subtle grey-warm for contrast */
+  --bg-accent: #e2dfd8;
+  --fg:        #0f172a;   /* Slate 900 - rich dark blue/black for text */
+  --fg-soft:   #334155;   /* Slate 700 - very readable secondary text */
+  --muted:     #64748b;   /* Slate 500 */
+  --muted-soft: #94a3b8;  /* Slate 400 */
+  --accent:    #b45309;   /* Amber 700 - high contrast brand color */
+  --accent-hi: #d97706;   /* Amber 600 */
+  --accent-2:  #78350f;   /* Amber 900 */
+  --canvas-accent: #92400e;
+  --border:    rgba(15, 23, 42, 0.12);
+  --card:      rgba(255, 255, 255, 0.95);
+  --nav-bg:    rgba(250, 249, 246, 0.9);
+  --shadow-hover:       rgba(15, 23, 42, 0.08);
+  --selection-bg:       rgba(180, 83, 9, 0.2);
+  --selection-fg:       #0f172a;
   /* Glass surfaces */
-  --glass-bg:       rgba(255, 255, 255, 0.9);
-  --glass-border:   rgba(110, 84, 32, 0.4);
-  --glass-hi:       rgba(255, 255, 255, 0.98);
-  --glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.05);
-  --glass-blur:     blur(24px) saturate(160%);
-  --nav-blur:       blur(32px) saturate(160%);
-  --cursor-glow:        rgba(110, 84, 32, 0.08);
-  --cursor-card-glow:   rgba(110, 84, 32, 0.08);
-  --cursor-card-border: rgba(110, 84, 32, 0.6);
-  --tabbar-bg:          rgba(244, 234, 213, 0.85);
-  --accent-pill-bg:     rgba(112, 78, 3, 0.15);
+  --glass-bg:       rgba(255, 255, 255, 0.75);
+  --glass-border:   rgba(15, 23, 42, 0.08);
+  --glass-hi:       rgba(255, 255, 255, 0.9);
+  --glass-shadow:   0 4px 24px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --glass-blur:     blur(20px) saturate(180%);
+  --nav-blur:       blur(24px) saturate(180%);
+  --cursor-glow:        rgba(180, 83, 9, 0.08);
+  --cursor-card-glow:   rgba(180, 83, 9, 0.08);
+  --cursor-card-border: rgba(180, 83, 9, 0.4);
+  --tabbar-bg:          rgba(255, 255, 255, 0.85);
+  --accent-pill-bg:     rgba(180, 83, 9, 0.1);
 }
 
 * { box-sizing: border-box; }
