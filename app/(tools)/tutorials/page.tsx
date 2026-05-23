@@ -212,8 +212,10 @@ const tutData: Record<TutCategory, TutorialData> = {
 
 // ─── Animated SVG Probe Diagram ───────────────────────────────────────────────
 function AnimatedProbes({ type, step }: { type: TutCategory, step: number }) {
+  const { t } = useLang();
+  const tt = t.tutorials;
   const reading = useMemo(() => {
-    const readings: Record<string, string[]> = {
+    const readings: Record<TutCategory, string[]> = {
       voltage: ["0.0", "0.0", "0.0", "398.5", "398.5"],
       megger: ["0.0", "0.0", "0.0", "0.0", ">999", "0.0"],
       resistance: ["OL", "0.0", "0.45", "0.45"],
@@ -225,7 +227,8 @@ function AnimatedProbes({ type, step }: { type: TutCategory, step: number }) {
       contact: ["0.0", "0.0", "0.0", "24.2"],
       pi: ["0.0", "0.0", "240", "2.45"]
     };
-    return readings[type][step] || readings[type][readings[type].length - 1];
+    const values = readings[type];
+    return values[step] || values[values.length - 1];
   }, [type, step]);
 
   return (
@@ -237,7 +240,7 @@ function AnimatedProbes({ type, step }: { type: TutCategory, step: number }) {
     }}>
       <div style={{ position: "absolute", top: 12, left: 16, display: "flex", alignItems: "center", gap: 8 }}>
          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#f44", boxShadow: "0 0 10px #f44", animation: "pulseRed 1.5s infinite" }} />
-         <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--accent)", fontWeight: 700, letterSpacing: "0.1em" }}>LIVE SIMULATION</span>
+         <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--accent)", fontWeight: 700, letterSpacing: "0.1em" }}>{tt.liveSimulation}</span>
       </div>
 
       <svg width="100%" height="100%" viewBox="0 0 320 200" fill="none">
@@ -308,11 +311,12 @@ export default function TutorialsPage() {
   const { t, lang } = useLang();
   const tt = t.tutorials;
 
+  const VALID_CATEGORIES = Object.keys(tutData) as TutCategory[];
   const [activeTab, setActiveTab] = useState<TutCategory>("voltage");
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const data = tutData[activeTab];
+  const data = VALID_CATEGORIES.includes(activeTab) ? tutData[activeTab] : tutData.voltage;
   const steps = lang === "id" ? data.stepsId : data.steps;
 
   // Auto-play logic
@@ -344,7 +348,7 @@ export default function TutorialsPage() {
         
         {/* LEFT SIDEBAR MENU */}
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-           <h4 style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--muted)", marginBottom: 12, marginLeft: 12 }}>Categories</h4>
+           <h4 style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--muted)", marginBottom: 12, marginLeft: 12 }}>{tt.categories}</h4>
            {(Object.keys(tutData) as TutCategory[]).map(key => (
              <button
                key={key}
@@ -367,7 +371,7 @@ export default function TutorialsPage() {
                }}
              >
                <div style={{ width: 4, height: 4, borderRadius: "50%", background: activeTab === key ? "var(--accent)" : "rgba(255,255,255,0.1)" }} />
-               {(tt as Record<string, string>)[key] || key}
+               {key in tt ? tt[key as keyof typeof tt] : key}
              </button>
            ))}
         </div>
@@ -401,10 +405,10 @@ export default function TutorialsPage() {
            <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 24 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                  <h3 style={{ fontFamily: "var(--font-display)", fontSize: 24, margin: 0, color: "var(--accent)" }}>
-                    {lang === "id" ? (tt as Record<string, string>)[activeTab] || activeTab : data.titleEn}
+                    {lang === "id" ? (activeTab in tt ? tt[activeTab as keyof typeof tt] : activeTab) : data.titleEn}
                  </h3>
                  <div>
-                    <h5 style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--muted)", marginBottom: 12, fontFamily: "var(--font-mono)" }}>Guide Steps</h5>
+                    <h5 style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--muted)", marginBottom: 12, fontFamily: "var(--font-mono)" }}>{tt.guideSteps}</h5>
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                        {steps.map((s, i) => (
                          <div 
@@ -432,11 +436,11 @@ export default function TutorialsPage() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                  <div style={{ padding: 20, background: "rgba(228,199,89,0.08)", borderRadius: 12, border: "1px solid rgba(228,199,89,0.2)" }}>
-                    <h5 style={{ fontSize: 10, textTransform: "uppercase", color: "var(--accent)", marginBottom: 8, fontFamily: "var(--font-mono)" }}>Nominal Target</h5>
+                    <h5 style={{ fontSize: 10, textTransform: "uppercase", color: "var(--accent)", marginBottom: 8, fontFamily: "var(--font-mono)" }}>{tt.nominalTarget}</h5>
                     <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "var(--fg)" }}>{lang === "id" ? data.nominalId : data.nominal}</p>
                  </div>
                  <div style={{ padding: 20, background: "rgba(255,255,255,0.02)", borderRadius: 12, border: "1px solid var(--glass-border)" }}>
-                    <h5 style={{ fontSize: 10, textTransform: "uppercase", color: "var(--muted)", marginBottom: 8, fontFamily: "var(--font-mono)" }}>Reference Standard</h5>
+                    <h5 style={{ fontSize: 10, textTransform: "uppercase", color: "var(--muted)", marginBottom: 8, fontFamily: "var(--font-mono)" }}>{tt.standard}</h5>
                     <p style={{ margin: 0, fontSize: 13, color: "var(--fg-soft)", lineHeight: 1.5 }}>{data.standard}</p>
                  </div>
                  <div style={{ marginTop: "auto", padding: 16, border: "1px dashed var(--glass-border)", borderRadius: 12, textAlign: "center" }}>

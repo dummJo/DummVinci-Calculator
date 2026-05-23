@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 
 import {
   LayoutGrid, ChevronRight,
-  ShieldPlus, Repeat, MonitorPlay, LineChart
+  ShieldPlus, Repeat, MonitorPlay, LineChart, Activity
 } from "lucide-react";
 
 const SPEC_STRIP = [
@@ -99,13 +99,14 @@ function IconStarter() {
 }
 
 // ── Category config ────────────────────────────────────────────────────────
-const CATEGORY_ORDER = ["Main", "Starter", "Power", "Panel", "Control", "Info"] as const;
+const CATEGORY_ORDER = ["Main", "Starter", "Power", "Panel", "Control", "Learn", "Info"] as const;
 const CATEGORY_LABELS: Record<string, { en: string; id: string }> = {
   Main:    { en: "Quick Start",       id: "Mulai Cepat" },
   Starter: { en: "Motor & Drive",     id: "Motor & Drive" },
   Power:   { en: "Power Distribution", id: "Distribusi Daya" },
   Panel:   { en: "Panel & Enclosure", id: "Panel & Enclosure" },
   Control: { en: "Control & Tuning",  id: "Kontrol & Tuning" },
+  Learn:   { en: "Learn & Reference", id: "Belajar & Referensi" },
   Info:    { en: "Reference & Tools", id: "Referensi & Alat" },
 };
 
@@ -134,6 +135,7 @@ export default function HomePage() {
     { href: "/pid",         key: "pid",     tag: "Tuning",      cat: "Control",  Icon: LineChart },
     { href: "/convert",     key: "convert", tag: "Utility",     cat: "Info",     Icon: Repeat },
     { href: "/tutorials",   key: "tutorials", tag: "Guide",     cat: "Info",     Icon: MonitorPlay },
+    { href: "/skf-microlog", key: "skfMicrolog", tag: "Vibration", cat: "Learn",   Icon: Activity },
   ];
 
   // Group calcs by category in defined order

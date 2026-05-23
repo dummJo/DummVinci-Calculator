@@ -53,6 +53,7 @@ export default function BottomTabBar() {
     { href: "/pid",              key: "pid",     Icon: LineChart    },
     { href: "/convert",          key: "convert", Icon: Repeat       },
     { href: "/tutorials",        key: "tutorials", Icon: MonitorPlay   },
+    { href: "/skf-microlog",     key: "skfMicrolog", Icon: BookOpen      },
   ];
 
   const allTabs = [...MAIN_TABS, ...UTILITY_TABS];

@@ -9,7 +9,7 @@ export const T = {
     nav: {
       home: "Home", unified: "Fast", cable: "Cable", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Brake", panel: "Panel", support: "ABB Support",
-      plc: "PLC", starter: "Starter", pid: "PID Sim", convert: "Convert", tutorials: "Tutorials", more: "More", close: "Close", changelog: "What's New",
+      plc: "PLC", starter: "Starter", pid: "PID Sim", convert: "Convert", tutorials: "Tutorials", skfMicrolog: "SKF Learn", more: "More", close: "Close", changelog: "What's New",
     },
     common: {
       resultLabel: "◈ Result",
@@ -78,6 +78,10 @@ export const T = {
         tutorials: {
           title: "Testing Tutorials",
           desc: "Interactive visual guides for using multimeters, meggers, and ground testers.",
+        },
+        skfMicrolog: {
+          title: "SKF Microlog Learn",
+          desc: "Vibration analysis learning platform — 7 modules, severity calculator, diagnostic chart, and guided learning paths for PTTS team.",
         },
       },
     },
@@ -401,7 +405,8 @@ export const T = {
       concept: "Learn standard procedures for taking electrical field measurements.",
       voltage: "Voltage", megger: "Megger", resistance: "Resistance", ground: "Grounding",
       current: "Current Clamp", rotation: "Phase Rotation", diode: "Diode/IGBT", capacitor: "Capacitor", contact: "Contact Res.", pi: "PI Test",
-      steps: "Measurement Steps", nominal: "Nominal Values", standard: "Reference Standard"
+      steps: "Measurement Steps", nominal: "Nominal Values", standard: "Reference Standard",
+      liveSimulation: "LIVE SIMULATION", categories: "Categories", guideSteps: "Guide Steps", nominalTarget: "Nominal Target",
     },
   },
 
@@ -409,7 +414,7 @@ export const T = {
     nav: {
       home: "Beranda", unified: "Fast", cable: "Kabel", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Resistor", panel: "Panel", support: "ABB Support",
-      plc: "PLC", starter: "Starter", pid: "Sim PID", convert: "Konversi", tutorials: "Tutorial", more: "Lainnya", close: "Tutup", changelog: "Info Update",
+      plc: "PLC", starter: "Starter", pid: "Sim PID", convert: "Konversi", tutorials: "Tutorial", skfMicrolog: "SKF Learn", more: "Lainnya", close: "Tutup", changelog: "Info Update",
     },
     common: {
       resultLabel: "◈ Hasil Seleksi",
@@ -478,6 +483,10 @@ export const T = {
         tutorials: {
           title: "Tutorial Pengujian",
           desc: "Panduan visual interaktif untuk penggunaan multitester, megger, dan earth tester.",
+        },
+        skfMicrolog: {
+          title: "SKF Microlog Learn",
+          desc: "Platform pembelajaran vibrasi analysis — 7 modul, severity calculator, diagram diagnostik, dan jalur belajar terstruktur untuk tim PTTS.",
         },
       },
     },
@@ -802,7 +811,8 @@ export const T = {
       concept: "Pelajari prosedur standar untuk mengambil pengukuran kelistrikan di lapangan.",
       voltage: "Tegangan", megger: "Megger", resistance: "Hambatan", ground: "Grounding",
       current: "Tang Ampere", rotation: "Rotasi Fasa", diode: "Dioda/IGBT", capacitor: "Kapasitor", contact: "Res. Kontak", pi: "Uji PI",
-      steps: "Langkah Pengukuran", nominal: "Nilai Nominal Standar", standard: "Standar Referensi"
+      steps: "Langkah Pengukuran", nominal: "Nilai Nominal Standar", standard: "Standar Referensi",
+      liveSimulation: "SIMULASI LANGSUNG", categories: "Kategori", guideSteps: "Langkah Panduan", nominalTarget: "Target Nominal",
     },
   },
 } as const;
