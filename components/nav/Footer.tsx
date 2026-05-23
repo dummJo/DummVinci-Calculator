@@ -17,6 +17,7 @@ const formatTime = () =>
   new Date().toLocaleTimeString("en-US", { hour12: true, hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
 function TerminalWidget() {
+  const { t } = useLang();
   const [data, setData] = useState<IpApiData | null>(null);
   const [time, setTime] = useState<string>(formatTime);
 
@@ -60,7 +61,7 @@ function TerminalWidget() {
       opacity: 0.65,
     }}>
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 10 }}>
-        <span style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>Your IP</span>
+        <span style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>{t.common.yourIp}</span>
         <span style={{ color: "var(--accent)", fontWeight: 700, fontSize: 15, letterSpacing: "0.05em" }}>{data.ip}</span>
         <span style={{ fontWeight: 700, color: "var(--fg-soft)" }}>{data.country}</span>
       </div>
@@ -165,7 +166,7 @@ export default function Footer() {
           color: "var(--muted-soft)", letterSpacing: "0.06em",
           textTransform: "uppercase"
         }}>
-          Supported by PT Prima Tekindo Tirta Sejahtera
+          {t.common.supportedBy}
         </span>
       </div>
 

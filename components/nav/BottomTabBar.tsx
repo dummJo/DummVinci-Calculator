@@ -10,6 +10,27 @@ import {
 import { useLang } from "@/lib/i18n";
 import { clsx } from "clsx";
 
+function getNavLabel(key: string, t: { nav: Record<string, string> }): string {
+  switch (key) {
+    case "home": return t.nav.home;
+    case "unified": return t.nav.unified;
+    case "drive": return t.nav.drive;
+    case "support": return t.nav.support;
+    case "cable": return t.nav.cable;
+    case "breaker": return t.nav.breaker;
+    case "busbar": return t.nav.busbar;
+    case "panel": return t.nav.panel;
+    case "brake": return t.nav.brake;
+    case "plc": return t.nav.plc;
+    case "starter": return t.nav.starter;
+    case "pid": return t.nav.pid;
+    case "convert": return t.nav.convert;
+    case "tutorials": return t.nav.tutorials;
+    case "skfMicrolog": return t.nav.skfMicrolog;
+    default: return "";
+  }
+}
+
 export default function BottomTabBar() {
   const path = usePathname();
   const { t } = useLang();
@@ -18,7 +39,7 @@ export default function BottomTabBar() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const seen = localStorage.getItem("dummvinci_v2_4_seen");
+      const seen = localStorage.getItem("dummvinci_v2_7_seen");
       if (!seen) {
         // slight delay for dramatic effect
         const tid = setTimeout(() => setShowChangelog(true), 800);
@@ -30,7 +51,7 @@ export default function BottomTabBar() {
   const closeChangelog = () => {
     setShowChangelog(false);
     if (typeof window !== "undefined") {
-      localStorage.setItem("dummvinci_v2_4_seen", "true");
+      localStorage.setItem("dummvinci_v2_7_seen", "true");
     }
   };
   const navRef = useRef<HTMLDivElement>(null);
@@ -237,9 +258,9 @@ export default function BottomTabBar() {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
-                <span className="version-tag" style={{ background: "var(--accent)", color: "#000", fontWeight: 800, letterSpacing: "0.1em" }}>VERSION 2.7 UPDATE</span>
+                <span className="version-tag" style={{ background: "var(--accent)", color: "#000", fontWeight: 800, letterSpacing: "0.1em" }}>{t.changelog.updateTitle}</span>
                 <h2 style={{ fontSize: 28, fontFamily: "var(--font-display)", color: "var(--fg)", margin: "8px 0 0 0" }}>
-                  What&apos;s New!
+                  {t.changelog.whatsNew}
                 </h2>
               </div>
               <button onClick={closeChangelog} style={{ background: "none", border: "none", color: "var(--muted-soft)", cursor: "pointer" }}>
@@ -249,22 +270,22 @@ export default function BottomTabBar() {
             
             <div style={{ marginTop: 24, fontSize: 14, lineHeight: 1.6, color: "var(--fg-soft)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--accent)", marginBottom: 16 }}>
-                <Sparkles size={18} /> <span style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: 13, letterSpacing: "0.1em" }}>VIBRATION & THEMES (V2.7)</span>
+                <Sparkles size={18} /> <span style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: 13, letterSpacing: "0.1em" }}>{t.changelog.vibrationThemesTitle}</span>
               </div>
               <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
-                <li><b><span style={{color:"var(--fg)"}}>SKF Microlog Learn</span></b>: Vibration analysis learning platform (ISO 10816 severity, diagnostics) for PTTS engineers.</li>
-                <li><b><span style={{color:"var(--fg)"}}>Crimson &amp; Coral Palette</span></b>: Industrial high-contrast rebrand matching ABB Value Partner style.</li>
-                <li><b><span style={{color:"var(--fg)"}}>Consultant-Grade i18n</span></b>: Upgraded Indonesian vocabulary conforming to PUIL 2011 &amp; IEC regulations (KHA, Arus Asut, Jatuh Tegangan).</li>
+                <li><b><span style={{color:"var(--fg)"}}>{t.changelog.skfMicrologTitle}</span></b>{t.changelog.skfMicrologDesc}</li>
+                <li><b><span style={{color:"var(--fg)"}}>{t.changelog.crimsonPaletteTitle}</span></b>{t.changelog.crimsonPaletteDesc}</li>
+                <li><b><span style={{color:"var(--fg)"}}>{t.changelog.consultantI18nTitle}</span></b>{t.changelog.consultantI18nDesc}</li>
               </ul>
 
               <hr style={{ border: "none", borderTop: "1px dashed rgba(var(--accent-rgb), 0.2)", margin: "24px 0" }} />
               
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--muted)", marginBottom: 12 }}>
-                <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>PREVIOUS RELEASES (V2.3 / V2.4)</span>
+                <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>{t.changelog.previousReleases}</span>
               </div>
               <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 8, opacity: 0.6, fontSize: 13 }}>
-                <li>V2.4 — Panel layout estimator with Siemens/ABB component library &amp; CAD visuals.</li>
-                <li>V2.3 — PID loop simulator &amp; electrical measurement guides/tutorials.</li>
+                <li>{t.changelog.v24Desc}</li>
+                <li>{t.changelog.v23Desc}</li>
               </ul>
             </div>
 
@@ -276,11 +297,11 @@ export default function BottomTabBar() {
               boxShadow: "0 4px 15px rgba(var(--accent-rgb), 0.3)",
               transition: "transform 0.1s"
             }} onMouseDown={e => e.currentTarget.style.transform="scale(0.98)"} onMouseUp={e => e.currentTarget.style.transform="scale(1)"}>
-              LET&apos;S GO! 🚀
+              {t.changelog.letsGo}
             </button>
 
             <div style={{ marginTop: 24, textAlign: "center", opacity: 0.3, fontSize: 10, fontFamily: "var(--font-mono)" }}>
-              By DummVinci · DummVinci Calculator
+              {t.changelog.byDummVinci}
             </div>
           </div>
         </div>
@@ -330,7 +351,7 @@ export default function BottomTabBar() {
               >
                 <tab.Icon size={22} strokeWidth={1.5} className={active ? "active-icon" : "inactive-icon"} />
                 <span style={{ fontSize: 9, fontFamily: "var(--font-body), sans-serif", opacity: active ? 1 : 0.8, textAlign: "center", color: active ? "var(--accent)" : "var(--fg)", fontWeight: active ? 600 : 500 }}>
-                  {t.nav[tab.key as keyof typeof t.nav]}
+                  {getNavLabel(tab.key, t)}
                 </span>
               </Link>
             );
@@ -352,7 +373,7 @@ export default function BottomTabBar() {
           <History size={18} style={{ color: "var(--accent)" }} />
           <div style={{ flex: 1, textAlign: "left" }}>
             <div style={{ fontSize: 11, fontWeight: 800, fontFamily: "var(--font-heading)", color: "var(--accent)" }}>{t.nav.changelog}</div>
-            <div style={{ fontSize: 9, opacity: 0.6, color: "var(--fg)" }}>Stable Production v2.7.0</div>
+            <div style={{ fontSize: 9, opacity: 0.6, color: "var(--fg)" }}>{t.changelog.stableVersion}</div>
           </div>
         </button>
       </div>
@@ -380,7 +401,7 @@ export default function BottomTabBar() {
             return (
               <Link key={tab.href} href={tab.href} className={clsx("tab-item", active && "tab-active")} onClick={() => setShowMore(false)}>
                 <tab.Icon size={24} strokeWidth={2.4} className={active ? "active-icon" : "inactive-icon"} />
-                <span className="tab-label">{t.nav[tab.key as keyof typeof t.nav]}</span>
+                <span className="tab-label">{getNavLabel(tab.key, t)}</span>
               </Link>
             );
           })}
