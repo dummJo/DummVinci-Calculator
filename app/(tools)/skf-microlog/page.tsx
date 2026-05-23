@@ -945,19 +945,44 @@ function TabDiagnostic({ lang }: { lang: "en" | "id" }) {
 
   const quickDiag = lang === "id" ? QUICK_DIAGNOSIS_ID : QUICK_DIAGNOSIS;
 
+  const handleQuickDiagClick = (targetId: string) => {
+    const pattern = DIAGNOSTIC_PATTERNS.find(p => p.id === targetId);
+    if (pattern) {
+      setFilterCat(pattern.category);
+      setExpandedId(targetId);
+      setTimeout(() => {
+        const el = document.getElementById(`pattern-card-${targetId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 150);
+    }
+  };
+
   return (
     <div style={{ display: "grid", gap: 20 }}>
       {/* Quick Diagnosis */}
       <div style={{ ...GLASS, background: "rgba(var(--accent-rgb),0.04)", borderColor: "rgba(var(--accent-rgb),0.15)" }}>
         <h4 style={{ fontFamily: "var(--font-mono)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--accent)", marginBottom: 12 }}>
-          ⚡ {lang === "id" ? "Pencarian Cepat Diagnosis" : "Quick Diagnosis Lookup"}
+          ⚡ {lang === "id" ? "Pencarian Cepat Diagnosis (Shortcut)" : "Quick Diagnosis Lookup (Shortcuts)"}
         </h4>
         <div style={{ display: "grid", gap: 6 }}>
           {quickDiag.map((d, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderRadius: 8, background: "rgba(0,0,0,0.2)" }}>
+            <button 
+              key={i} 
+              onClick={() => handleQuickDiagClick(d.targetPatternId)}
+              style={{
+                display: "flex", alignItems: "center", gap: 8, padding: "8px 12px",
+                borderRadius: 8, background: "rgba(0,0,0,0.2)", border: "1px solid transparent",
+                cursor: "pointer", textAlign: "left", width: "100%", transition: "all 0.2s ease"
+              }}
+              className="hover-lift"
+            >
               <span style={{ flex: 1, fontSize: 12, color: "var(--fg-soft)", fontFamily: "var(--font-mono)" }}>{d.signature}</span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--accent)", fontFamily: "var(--font-mono)", whiteSpace: "nowrap" }}>→ {d.suspect}</span>
-            </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--accent)", fontFamily: "var(--font-mono)", whiteSpace: "nowrap" }}>
+                {lang === "id" ? "Buka " : "Open "} {d.targetPatternId} →
+              </span>
+            </button>
           ))}
         </div>
       </div>
@@ -976,6 +1001,7 @@ function TabDiagnostic({ lang }: { lang: "en" | "id" }) {
             else if (cat === "Gear") catLabel = "Roda Gigi";
             else if (cat === "Electrical") catLabel = "Elektrikal Motor";
             else if (cat === "Belt") catLabel = "Sabuk/Puli";
+            else if (cat === "Misalignment") catLabel = "Ketidaklurusan";
           }
           return (
             <button
@@ -998,12 +1024,13 @@ function TabDiagnostic({ lang }: { lang: "en" | "id" }) {
         {filtered.map(p => {
           const isOpen = expandedId === p.id;
           const details = lang === "id" && DIAGNOSTIC_PATTERNS_ID[p.id] ? DIAGNOSTIC_PATTERNS_ID[p.id] : {
-            name: p.name, spectrum: p.spectrum, phase: p.phase, correction: p.correction
+            name: p.name, spectrum: p.spectrum, phase: p.phase, correction: p.correction, standard: p.standard
           };
 
           return (
             <button
               key={p.id}
+              id={`pattern-card-${p.id}`}
               onClick={() => setExpandedId(isOpen ? null : p.id)}
               style={{
                 ...GLASS, padding: 14, width: "100%", textAlign: "left",
@@ -1037,6 +1064,14 @@ function TabDiagnostic({ lang }: { lang: "en" | "id" }) {
                     </span>
                     <p style={{ fontSize: 13, color: "var(--fg-soft)", margin: "4px 0 0", lineHeight: 1.5 }}>{details.correction}</p>
                   </div>
+                  {(details.standard || p.standard) && (
+                    <div>
+                      <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "#eab308" }}>
+                        {lang === "id" ? "STANDAR / REFERENSI" : "STANDARD / REFERENCE"}
+                      </span>
+                      <p style={{ fontSize: 13, color: "var(--fg-soft)", margin: "4px 0 0", lineHeight: 1.5 }}>{details.standard || p.standard}</p>
+                    </div>
+                  )}
                 </div>
               )}
             </button>
