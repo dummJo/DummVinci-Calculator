@@ -136,37 +136,37 @@
 }
 
 [data-theme="light"] {
-  --bg:        #F4F1EA;   /* Creamy Claude Background */
-  --bg-raised: #EBE8DF;   /* Warm cream card */
-  --bg-deep:   #E0DDD4;   /* Deep warm beige */
-  --bg-accent: #D5D1C7;   /* Raised light elements */
-  --fg:        #1B1917;   /* Rich dark warm charcoal text */
-  --fg-soft:   #4D4944;   /* Soft dark text */
-  --muted:     #7A7570;   /* Muted gray */
-  --muted-soft: #ADAAA3;  /* Mid Gray border */
-  --accent:    #d97757;   /* Anthropic Orange */
-  --accent-hi: #c76445;   /* Darker orange for hover/contrast in light */
-  --accent-2:  #788c5d;   /* Anthropic Green */
-  --accent-rgb: 217, 119, 87;
-  --canvas-accent: #d97757;
-  --border:    rgba(27, 25, 23, 0.08);
-  --card:      rgba(244, 241, 234, 0.98);
-  --nav-bg:    rgba(244, 241, 234, 0.92);
-  --shadow-hover:       rgba(217, 119, 87, 0.08);
-  --selection-bg:       rgba(217, 119, 87, 0.15);
-  --selection-fg:       #1B1917;
+  --bg:        #FFFFFF;   /* Twitter White */
+  --bg-raised: #F7F9F9;   /* Twitter Light Gray Card */
+  --bg-deep:   #EFF3F4;   /* Twitter Border/Hover Gray */
+  --bg-accent: #E7E7E8;   /* Deeper hover */
+  --fg:        #0F1419;   /* Twitter Dark Text */
+  --fg-soft:   #536471;   /* Twitter Muted Text */
+  --muted:     #8B98A5;   /* Lighter Muted */
+  --muted-soft: #CFD9DE;  /* Border Gray */
+  --accent:    #1D9BF0;   /* Twitter Blue */
+  --accent-hi: #1A8CD8;   /* Twitter Blue Hover */
+  --accent-2:  #00BA7C;   /* Twitter Green */
+  --accent-rgb: 29, 155, 240;
+  --canvas-accent: #1D9BF0;
+  --border:    rgba(15, 20, 25, 0.08);
+  --card:      rgba(255, 255, 255, 0.98);
+  --nav-bg:    rgba(255, 255, 255, 0.92);
+  --shadow-hover:       rgba(29, 155, 240, 0.08);
+  --selection-bg:       rgba(29, 155, 240, 0.15);
+  --selection-fg:       #FFFFFF;
   /* Glass surfaces */
-  --glass-bg:       rgba(244, 241, 234, 0.85);
-  --glass-border:   rgba(27, 25, 23, 0.06);
+  --glass-bg:       rgba(255, 255, 255, 0.85);
+  --glass-border:   rgba(15, 20, 25, 0.08);
   --glass-hi:       rgba(255, 255, 255, 0.95);
-  --glass-shadow:   0 4px 24px rgba(27, 25, 23, 0.03), 0 1px 2px rgba(27, 25, 23, 0.01);
+  --glass-shadow:   0 4px 24px rgba(15, 20, 25, 0.04), 0 1px 2px rgba(15, 20, 25, 0.02);
   --glass-blur:     blur(20px) saturate(180%);
   --nav-blur:       blur(24px) saturate(180%);
-  --cursor-glow:        rgba(217, 119, 87, 0.04);
-  --cursor-card-glow:   rgba(217, 119, 87, 0.06);
-  --cursor-card-border: rgba(217, 119, 87, 0.25);
-  --tabbar-bg:          rgba(244, 241, 234, 0.9);
-  --accent-pill-bg:     rgba(217, 119, 87, 0.1);
+  --cursor-glow:        rgba(29, 155, 240, 0.04);
+  --cursor-card-glow:   rgba(29, 155, 240, 0.06);
+  --cursor-card-border: rgba(29, 155, 240, 0.25);
+  --tabbar-bg:          rgba(255, 255, 255, 0.9);
+  --accent-pill-bg:     rgba(29, 155, 240, 0.1);
 }
 
 * { box-sizing: border-box; }
