@@ -10,6 +10,7 @@ export const T = {
       home: "Home", unified: "Fast", cable: "Cable", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Brake", panel: "Panel", support: "ABB Support",
       plc: "PLC", starter: "Starter", pid: "PID Sim", convert: "Convert", tutorials: "Tutorials", skfMicrolog: "SKF Learn", more: "More", close: "Close", changelog: "What's New",
+      brandDumm: "Dumm", brandVinci: "Vinci", brandCalculator: "Calculator",
     },
     common: {
       resultLabel: "◈ Result",
@@ -493,6 +494,7 @@ export const T = {
       home: "Beranda", unified: "Fast Sizing", cable: "Sizing Kabel", drive: "Sizing VSD", breaker: "Proteksi Breaker",
       busbar: "Sizing Busbar", brake: "Braking Resistor", panel: "Pendinginan Panel", support: "ABB Support",
       plc: "Sizing PLC", starter: "Starter Motor", pid: "Simulator PID", convert: "Konverter Unit", tutorials: "Panduan Pengujian", skfMicrolog: "SKF Microlog Learn", more: "Lainnya", close: "Tutup", changelog: "Informasi Pembaruan",
+      brandDumm: "Dumm", brandVinci: "Vinci", brandCalculator: "Calculator",
     },
     common: {
       resultLabel: "◈ Hasil Perhitungan",

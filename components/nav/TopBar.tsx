@@ -46,6 +46,7 @@ function LangToggle() {
 }
 
 export default function TopBar() {
+  const { t } = useLang();
 
   return (
     <header
@@ -94,8 +95,8 @@ export default function TopBar() {
           alignItems: "baseline",
           gap: "0.15em"
         }}>
-          <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.7 }}>Dumm</span>
-          <span style={{ fontWeight: 700, color: "var(--accent)" }}>Vinci</span>
+          <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.7 }}>{t.nav.brandDumm}</span>
+          <span style={{ fontWeight: 700, color: "var(--accent)" }}>{t.nav.brandVinci}</span>
           <span style={{ 
             fontFamily: "var(--font-mono)", 
             fontSize: 8, 
@@ -106,7 +107,7 @@ export default function TopBar() {
             opacity: 0.5,
             color: "var(--accent)"
           }}>
-            Calculator
+            {t.nav.brandCalculator}
           </span>
         </div>
       </Link>
