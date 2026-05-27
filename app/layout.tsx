@@ -6,6 +6,7 @@ import CursorGlow from "@/components/CursorGlow";
 import DaVinciAscii from "@/components/DaVinciAscii";
 import BottomTabBar from "@/components/nav/BottomTabBar";
 import TopBar from "@/components/nav/TopBar";
+import SplashScreen from "@/components/SplashScreen";
 
 import "./globals.css";
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="id" className={`${inter.variable} ${monoFont.variable}`}>
       <body style={{ position: "relative" }}>
+        <SplashScreen />
         <Script
           id="theme-init"
           strategy="beforeInteractive"
