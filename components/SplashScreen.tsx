@@ -5,8 +5,20 @@ import { useEffect, useState } from "react";
 export default function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
   const [isFading, setIsFading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    // Fake loading progress
+    let currentProgress = 0;
+    const progressInterval = setInterval(() => {
+      currentProgress += Math.floor(Math.random() * 18) + 4; // jump between 4 and 22
+      if (currentProgress >= 100) {
+        currentProgress = 100;
+        clearInterval(progressInterval);
+      }
+      setProgress(currentProgress);
+    }, 120);
+
     // Ensure the initial layout is painted, then hold the splash screen
     // for a short duration before fading it out.
     const timer = setTimeout(() => {
@@ -15,9 +27,12 @@ export default function SplashScreen() {
       setTimeout(() => {
         setIsVisible(false);
       }, 500); // matches the CSS transition duration
-    }, 1500);
+    }, 1800); // slightly longer to let progress reach 100
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(progressInterval);
+    };
   }, []);
 
   if (!isVisible) return null;
@@ -67,17 +82,18 @@ export default function SplashScreen() {
           
           {/* Main Body (Anthropic Star / Chibi Head) */}
           <svg
-            width="64"
-            height="64"
+            width="72"
+            height="72"
             viewBox="0 0 100 100"
             fill="var(--accent)"
             style={{
               zIndex: 1,
               animation: "claudeSpin 12s linear infinite",
+              filter: "drop-shadow(0 8px 16px rgba(var(--accent-rgb), 0.3))"
             }}
           >
-            {/* Minimalist 4-pointed star (Anthropic style) */}
-            <path d="M50 0 C50 40 60 50 100 50 C60 50 50 60 50 100 C50 60 40 50 0 50 C40 50 50 40 50 0 Z" />
+            {/* Plump, cute 4-pointed star (Anthropic style) */}
+            <path d="M50 5 C50 40 60 50 95 50 C60 50 50 60 50 95 C50 60 40 50 5 50 C40 50 50 40 50 5 Z" />
           </svg>
           
           {/* Cute Face (Chibi) - stays upright, doesn't spin */}
@@ -88,15 +104,18 @@ export default function SplashScreen() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            gap: 4,
+            gap: 6,
           }}>
-            <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--bg)", animation: "claudeBlink 4s infinite" }} />
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--bg)", animation: "claudeBlink 4s infinite" }} />
+            {/* Blushing cheeks and eyes */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+              <div style={{ width: 8, height: 4, borderRadius: "50%", background: "rgba(255,100,100,0.6)" }} />
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--bg)", animation: "claudeBlink 4s infinite" }} />
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--bg)", animation: "claudeBlink 4s infinite" }} />
+              <div style={{ width: 8, height: 4, borderRadius: "50%", background: "rgba(255,100,100,0.6)" }} />
             </div>
-            {/* Tiny smile */}
-            <svg width="12" height="6" viewBox="0 0 12 6" fill="none" stroke="var(--bg)" strokeWidth="1.5" strokeLinecap="round">
-              <path d="M2 2 Q6 6 10 2" />
+            {/* Happy cat smile */}
+            <svg width="16" height="8" viewBox="0 0 16 8" fill="none" stroke="var(--bg)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 2 Q4 6 8 4 Q12 6 14 2" />
             </svg>
           </div>
         </div>
@@ -116,18 +135,34 @@ export default function SplashScreen() {
           <span style={{ fontWeight: 800, color: "var(--accent)" }}>Vinci</span>
         </div>
 
-        {/* Loading Text */}
-        <div style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: 12,
-          fontWeight: 600,
-          color: "var(--accent)",
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-          opacity: 0.5,
-          animation: "claudePulse 1.5s ease-in-out infinite alternate",
-        }}>
-          INITIALIZING...
+        {/* Loading Text & 8-bit Progress */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+          <div style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 12,
+            fontWeight: 800,
+            color: "var(--accent)",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            opacity: 0.8,
+          }}>
+            INITIALIZING
+            <span style={{ animation: "claudeBlink 1.5s infinite" }}>_</span>
+          </div>
+          
+          <div style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 10,
+            color: "var(--accent)",
+            opacity: 0.5,
+            display: "flex",
+            gap: 4,
+            alignItems: "center"
+          }}>
+            <span>[</span>
+            <span style={{ width: "24px", textAlign: "right" }}>{progress}</span>
+            <span>%]</span>
+          </div>
         </div>
       </div>
     </div>
