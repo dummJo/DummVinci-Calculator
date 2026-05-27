@@ -29,7 +29,7 @@ function TerminalWidget() {
     }, 1000);
 
     // Same-origin geolocated IP Fetch (bypasses adblockers)
-    fetch("/api/ip")
+    fetch("/api/ip", { cache: "no-store" })
       .then(res => res.json())
       .then(d => {
         setData(d);

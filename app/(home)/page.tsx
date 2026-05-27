@@ -103,9 +103,9 @@ const CATEGORY_ORDER = ["Main", "Starter", "Power", "Panel", "Control", "Learn",
 function getCategoryLabel(cat: string, lang: string) {
   switch (cat) {
     case "Main": return lang === "id" ? "Mulai Cepat" : "Quick Start";
-    case "Starter": return lang === "id" ? "Motor & Drive" : "Motor & Drive";
+    case "Starter": return "Motor & Drive";
     case "Power": return lang === "id" ? "Distribusi Daya" : "Power Distribution";
-    case "Panel": return lang === "id" ? "Panel & Enclosure" : "Panel & Enclosure";
+    case "Panel": return "Panel & Enclosure";
     case "Control": return lang === "id" ? "Kontrol & Tuning" : "Control & Tuning";
     case "Learn": return lang === "id" ? "Belajar & Referensi" : "Learn & Reference";
     case "Info": return lang === "id" ? "Referensi & Alat" : "Reference & Tools";
