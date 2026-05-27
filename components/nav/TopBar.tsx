@@ -70,12 +70,18 @@ export default function TopBar() {
       <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, textDecoration: "none" }}>
         <div style={{
           height: 32,
+          width: 32,
           flexShrink: 0,
           display: "flex",
-          alignItems: "center"
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: 8,
+          overflow: "hidden",
+          border: "1.5px solid var(--border)",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
         }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-dv-ptts.png" alt="DummVinci x PTTS" style={{ height: "100%", width: "auto", objectFit: "contain" }} />
+          <img src="/logo-dv-ptts.png" alt="DummVinci x PTTS" style={{ height: "100%", width: "100%", objectFit: "cover" }} />
         </div>
         <div style={{
           fontFamily: "var(--font-display)",
