@@ -429,7 +429,7 @@ export default function HomePage() {
                   color: "var(--accent)",
                   letterSpacing: "0.14em",
                   textTransform: "uppercase",
-                  opacity: 0.8,
+                  opacity: 1,
                 }}
               >
                 {group.label}
@@ -439,7 +439,7 @@ export default function HomePage() {
                   flex: 1,
                   height: 1,
                   background: "var(--hairline-soft)",
-                  opacity: 0.6,
+                  opacity: 0.7,
                 }}
               />
               <span
@@ -530,7 +530,7 @@ export default function HomePage() {
                         color: "var(--fg-soft)",
                         lineHeight: 1.4,
                         margin: 0,
-                        opacity: 0.6,
+                        opacity: 0.85,
                         fontWeight: 400,
                         display: "-webkit-box",
                         WebkitLineClamp: 2,

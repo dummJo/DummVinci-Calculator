@@ -53,7 +53,7 @@ function TerminalWidget() {
       display: "flex",
       flexDirection: "column",
       gap: 8,
-      opacity: 0.65,
+      opacity: 0.9,
     }}>
       {data ? (
         <>
@@ -139,7 +139,7 @@ export default function Footer() {
         fontFamily: "var(--font-mono)",
         fontSize: 9,
         color: "var(--accent)", 
-        opacity: 0.5,
+        opacity: 0.8,
         letterSpacing: "0.15em",
         textTransform: "uppercase",
         marginBottom: 12
@@ -177,7 +177,7 @@ export default function Footer() {
       {/* PTTS Credit */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "center",
-        gap: 8, marginTop: 16, opacity: 0.45
+        gap: 8, marginTop: 16, opacity: 0.8
       }}>
         <div style={{
           width: 28, height: 28, borderRadius: "50%", overflow: "hidden",
@@ -208,7 +208,7 @@ export default function Footer() {
         fontFamily: "var(--font-mono), monospace",
         fontSize: 10,
         color: "var(--muted-soft)",
-        opacity: 0.4,
+        opacity: 0.75,
         letterSpacing: "0.08em",
         textTransform: "uppercase"
       }}>

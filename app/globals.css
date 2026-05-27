@@ -108,8 +108,8 @@
   --bg-accent: #B34700;   /* Hover Accent KTM Orange */
   --fg:        #000000;   /* Ultra-contrast Perfect Black Text */
   --fg-soft:   #000000;   /* Pure Black for max contrast on orange */
-  --muted:     #0F0F0F;   /* Extremely dark tone to prevent washed-out look */
-  --muted-soft: rgba(0, 0, 0, 0.35); /* Stronger overlay */
+  --muted:     #0F0F0F;   /* Extremely dark — prevents washed-out look */
+  --muted-soft: #1A1A1A;  /* Solid near-black instead of transparent overlay */
   --accent:    #000000;   /* Perfect Black Accent */
   --accent-hi: #111111;   /* Deep black hover */
   --accent-2:  #FAF9F5;   /* Off-white Secondary Accent */
@@ -133,6 +133,18 @@
   --cursor-card-border: rgba(0, 0, 0, 0.35);
   --tabbar-bg:          rgba(255, 102, 0, 0.65);
   --accent-pill-bg:     rgba(0, 0, 0, 0.15);
+}
+
+/* ─── Light mode opacity overrides ─── */
+/* On bright orange backgrounds, faded text becomes illegible.
+   Boost all key text containers to near-full opacity in light mode. */
+:root .dv-ascii,
+[data-theme="light"] .dv-ascii {
+  opacity: 0.08;           /* reduce ASCII art so it doesn't compete with text */
+}
+[data-theme="light"] footer,
+:root footer {
+  opacity: 1 !important;   /* footer always fully visible */
 }
 
 [data-theme="dark"] {
