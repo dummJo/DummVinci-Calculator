@@ -183,10 +183,10 @@ export default function BottomTabBar() {
           right: 12px;
           max-width: 434px;
           margin: 0 auto;
-          background: #FAF9F5;              /* warm cream — same as changelog card */
+          background: var(--popout-bg);
           backdrop-filter: blur(40px) saturate(180%);
           -webkit-backdrop-filter: blur(40px) saturate(180%);
-          border: 1px solid rgba(139, 80, 50, 0.20);
+          border: 1px solid var(--popout-border);
           border-radius: 28px;
           padding: 20px;
           z-index: 180;
@@ -198,10 +198,10 @@ export default function BottomTabBar() {
           transform-origin: bottom center;
         }
         .more-item {
-          color: #1A0F0A !important;
+          color: var(--popout-fg) !important;
         }
         .more-item:hover {
-          background: rgba(139, 80, 50, 0.08) !important;
+          background: var(--accent-pill-bg) !important;
           transform: translateY(-2px);
         }
         .hover-lift {
@@ -228,9 +228,9 @@ export default function BottomTabBar() {
           max-width: 500px;
           max-height: 80vh;
           overflow-y: auto;
-          background: #FAF9F5;              /* warm cream — high contrast over modal overlay */
-          color: #1A1A1A;                   /* near-black text inside the card */
-          border: 1px solid rgba(0,0,0,0.10);
+          background: var(--popout-bg);
+          color: var(--popout-fg);
+          border: 1px solid var(--popout-border);
           border-radius: 28px;
           padding: 32px;
           position: relative;
@@ -242,8 +242,8 @@ export default function BottomTabBar() {
         .version-tag {
           display: inline-block;
           padding: 4px 12px;
-          background: rgba(26, 15, 10, 0.10);
-          color: #8B3A1A;                   /* warm dark rust inside the cream card */
+          background: var(--accent-pill-bg);
+          color: var(--popout-muted);
           border-radius: 12px;
           font-family: var(--font-mono);
           font-size: 10px;
@@ -261,28 +261,28 @@ export default function BottomTabBar() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
                 <span className="version-tag">{t.changelog.updateTitle}</span>
-                <h2 style={{ fontSize: 28, fontFamily: "var(--font-display)", color: "#1A0F0A", margin: "8px 0 0 0" }}>
+                <h2 style={{ fontSize: 28, fontFamily: "var(--font-display)", color: "var(--popout-fg)", margin: "8px 0 0 0" }}>
                   {t.changelog.whatsNew}
                 </h2>
               </div>
-              <button onClick={closeChangelog} style={{ background: "none", border: "none", color: "#6B4030", cursor: "pointer" }}>
+              <button onClick={closeChangelog} style={{ background: "none", border: "none", color: "var(--popout-muted)", cursor: "pointer" }}>
                 <X size={24} />
               </button>
             </div>
             
-            <div style={{ marginTop: 24, fontSize: 14, lineHeight: 1.6, color: "#1A1A1A" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#8B3A1A", marginBottom: 16 }}>
+            <div style={{ marginTop: 24, fontSize: 14, lineHeight: 1.6, color: "var(--popout-fg)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--popout-muted)", marginBottom: 16 }}>
                 <Sparkles size={18} /> <span style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: 13, letterSpacing: "0.1em" }}>{t.changelog.vibrationThemesTitle}</span>
               </div>
               <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
-                <li><b><span style={{color:"#1A0F0A"}}>{t.changelog.skfMicrologTitle}</span></b>{t.changelog.skfMicrologDesc}</li>
-                <li><b><span style={{color:"#1A0F0A"}}>{t.changelog.crimsonPaletteTitle}</span></b>{t.changelog.crimsonPaletteDesc}</li>
-                <li><b><span style={{color:"#1A0F0A"}}>{t.changelog.consultantI18nTitle}</span></b>{t.changelog.consultantI18nDesc}</li>
+                <li><b><span style={{color:"var(--popout-fg)"}}>{t.changelog.skfMicrologTitle}</span></b>{t.changelog.skfMicrologDesc}</li>
+                <li><b><span style={{color:"var(--popout-fg)"}}>{t.changelog.crimsonPaletteTitle}</span></b>{t.changelog.crimsonPaletteDesc}</li>
+                <li><b><span style={{color:"var(--popout-fg)"}}>{t.changelog.consultantI18nTitle}</span></b>{t.changelog.consultantI18nDesc}</li>
               </ul>
 
-              <hr style={{ border: "none", borderTop: "1px dashed rgba(139, 58, 26, 0.25)", margin: "24px 0" }} />
+              <hr style={{ border: "none", borderTop: "1px dashed var(--popout-border)", margin: "24px 0" }} />
               
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#6B4030", marginBottom: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--popout-muted)", opacity: 0.8, marginBottom: 12 }}>
                 <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>{t.changelog.previousReleases}</span>
               </div>
               <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 8, opacity: 0.85, fontSize: 13 }}>
@@ -293,8 +293,8 @@ export default function BottomTabBar() {
 
             <button onClick={closeChangelog} style={{
               width: "100%", marginTop: 32, padding: "16px", borderRadius: 8,
-              background: "linear-gradient(45deg, #1A0F0A, #3A2010)",
-              color: "#FAF9F5", fontFamily: "var(--font-display)", fontWeight: 800,
+              background: "linear-gradient(45deg, var(--popout-fg), var(--popout-muted))",
+              color: "var(--popout-bg)", fontFamily: "var(--font-display)", fontWeight: 800,
               fontSize: 16, border: "none", cursor: "pointer",
               boxShadow: "0 4px 15px rgba(0,0,0,0.25)",
               transition: "transform 0.1s"
@@ -302,7 +302,7 @@ export default function BottomTabBar() {
               {t.changelog.letsGo}
             </button>
 
-            <div style={{ marginTop: 24, textAlign: "center", opacity: 0.65, fontSize: 10, fontFamily: "var(--font-mono)", color: "#6B4030" }}>
+            <div style={{ marginTop: 24, textAlign: "center", opacity: 0.65, fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--popout-muted)" }}>
               {t.changelog.byDummVinci}
             </div>
           </div>
@@ -351,8 +351,8 @@ export default function BottomTabBar() {
                   minWidth: "90px"
                 }}
               >
-                <tab.Icon size={22} strokeWidth={1.5} className={active ? "active-icon" : "inactive-icon"} style={{ color: active ? "#8B3A1A" : "#1A0F0A" }} />
-                <span style={{ fontSize: 9, fontFamily: "var(--font-body), sans-serif", opacity: active ? 1 : 0.8, textAlign: "center", color: active ? "#8B3A1A" : "#1A0F0A", fontWeight: active ? 600 : 500 }}>
+                <tab.Icon size={22} strokeWidth={1.5} className={active ? "active-icon" : "inactive-icon"} style={{ color: active ? "var(--popout-muted)" : "var(--popout-fg)" }} />
+                <span style={{ fontSize: 9, fontFamily: "var(--font-body), sans-serif", opacity: active ? 1 : 0.8, textAlign: "center", color: active ? "var(--popout-muted)" : "var(--popout-fg)", fontWeight: active ? 600 : 500 }}>
                   {getNavLabel(tab.key, t)}
                 </span>
               </Link>
@@ -366,16 +366,16 @@ export default function BottomTabBar() {
           style={{ 
             gridColumn: "span 3",
             display: "flex", alignItems: "center", gap: 12, padding: "14px 20px",
-            background: "rgba(217, 119, 87, 0.15)",
-            border: "1px solid rgba(139, 80, 50, 0.20)",
-            borderRadius: 20, cursor: "pointer", color: "#1A0F0A", transition: "all 0.2s ease"
+            background: "var(--accent-pill-bg)",
+            border: "1px solid var(--popout-border)",
+            borderRadius: 20, cursor: "pointer", color: "var(--popout-fg)", transition: "all 0.2s ease"
           }}
           className="hover-lift"
         >
-          <History size={18} style={{ color: "#8B3A1A" }} />
+          <History size={18} style={{ color: "var(--popout-muted)" }} />
           <div style={{ flex: 1, textAlign: "left" }}>
-            <div style={{ fontSize: 11, fontWeight: 800, fontFamily: "var(--font-heading)", color: "#8B3A1A" }}>{t.nav.changelog}</div>
-            <div style={{ fontSize: 9, opacity: 0.85, color: "#1A0F0A" }}>{t.changelog.stableVersion}</div>
+            <div style={{ fontSize: 11, fontWeight: 800, fontFamily: "var(--font-heading)", color: "var(--popout-muted)" }}>{t.nav.changelog}</div>
+            <div style={{ fontSize: 9, opacity: 0.85, color: "var(--popout-fg)" }}>{t.changelog.stableVersion}</div>
           </div>
         </button>
       </div>

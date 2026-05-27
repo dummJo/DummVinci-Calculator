@@ -58,17 +58,58 @@ export default function SplashScreen() {
         pointerEvents: "none", // ensure it doesn't block interactions while fading
       }}
     >
+      <style>{`
+        @keyframes claudeFloat {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-8px);
+          }
+        }
+        @keyframes claudePulse {
+          0% {
+            transform: scale(0.9);
+            opacity: 0.35;
+          }
+          100% {
+            transform: scale(1.1);
+            opacity: 0.75;
+          }
+        }
+        @keyframes claudeBlink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+        @keyframes eyeBlink {
+          0%, 90%, 100% {
+            transform: scaleY(1);
+          }
+          93%, 97% {
+            transform: scaleY(0.15);
+          }
+        }
+        .mascot-eye-left {
+          transform-origin: 3.5px 2.5px;
+          animation: eyeBlink 3s infinite;
+        }
+        .mascot-eye-right {
+          transform-origin: 6.5px 2.5px;
+          animation: eyeBlink 3s infinite;
+        }
+      `}</style>
+
       <div style={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         gap: 32,
       }}>
-        {/* Claude Code CLI Style ASCII Face */}
+        {/* Animated 8-bit Mascot */}
         <div style={{
           position: "relative",
-          width: 80,
-          height: 80,
+          width: 96,
+          height: 96,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -77,29 +118,111 @@ export default function SplashScreen() {
           {/* Sparkles / Aura */}
           <div style={{
             position: "absolute",
-            inset: -20,
+            inset: -24,
             background: "radial-gradient(circle, rgba(var(--accent-rgb), 0.15) 0%, transparent 70%)",
             animation: "claudePulse 2s ease-in-out infinite alternate",
             borderRadius: "50%",
+            pointerEvents: "none",
           }} />
           
-          <div style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 32,
-            fontWeight: 800,
-            color: "var(--accent)",
-            zIndex: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            textAlign: "center",
-          }}>
-            {progress < 25 ? "(・_・)" :
-             progress < 50 ? "(>_<)" :
-             progress < 75 ? "(^.^)" :
-             "(✧_✧)"}
-          </div>
+          <svg
+            viewBox="-1 -1 12 10"
+            style={{
+              width: "100%",
+              height: "100%",
+              shapeRendering: "crispEdges",
+              overflow: "visible",
+              filter: "drop-shadow(0px 6px 12px rgba(0, 0, 0, 0.25))",
+              zIndex: 2,
+            }}
+          >
+            <defs>
+              {/* Outline filter to create the white sticker outline */}
+              <filter id="sticker-outline" x="-30%" y="-30%" width="160%" height="160%">
+                <feMorphology operator="dilate" radius="0.45" in="SourceAlpha" result="dilated" />
+                <feFlood floodColor="#faf9f5" floodOpacity="1" result="flood" />
+                <feComposite in="flood" in2="dilated" operator="in" result="outline" />
+                <feMerge>
+                  <feMergeNode in="outline" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <g filter="url(#sticker-outline)">
+              {/* Main Body */}
+              {/* Row 1-2 (y=0, 1): Top of head */}
+              <rect x="1" y="0" width="8" height="2" fill="var(--accent)" />
+              
+              {/* Row 3 (y=2): Eye row */}
+              <rect x="0" y="2" width="3" height="1" fill="var(--accent)" />
+              <rect x="4" y="2" width="2" height="1" fill="var(--accent)" />
+              <rect x="7" y="2" width="3" height="1" fill="var(--accent)" />
+              
+              {/* Row 4 (y=3): Arm row */}
+              <rect x="0" y="3" width="10" height="1" fill="var(--accent)" />
+              
+              {/* Row 5 (y=4): Mid body */}
+              <rect x="1" y="4" width="8" height="1" fill="var(--accent)" />
+              
+              {/* Legs & Gaps */}
+              {/* Leg A (Col 1) */}
+              <rect x="1" y="5" width="1" height="3" fill="var(--accent)" />
+              {/* Leg B (Col 3) */}
+              <rect x="3" y="5" width="1" height="3" fill="var(--accent)" />
+              {/* Leg C (Col 6) */}
+              <rect x="6" y="5" width="1" height="3" fill="var(--accent)" />
+              {/* Leg D (Col 8) */}
+              <rect x="8" y="5" width="1" height="3" fill="var(--accent)" />
+              {/* Mid connector above center gap */}
+              <rect x="4" y="5" width="2" height="1" fill="var(--accent)" />
+
+              {/* Dynamic 8-bit eyes based on progress */}
+              {progress < 35 ? (
+                <>
+                  {/* Normal Blinking Eyes */}
+                  <rect x="3" y="2" width="1" height="1" fill="black" className="mascot-eye-left" />
+                  <rect x="6" y="2" width="1" height="1" fill="black" className="mascot-eye-right" />
+                </>
+              ) : progress < 70 ? (
+                <>
+                  {/* Happy/Squinting Eyes ^ ^ */}
+                  <path
+                    d="M 3.0,2.8 L 3.5,2.2 L 4.0,2.8"
+                    stroke="black"
+                    strokeWidth="0.85"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M 6.0,2.8 L 6.5,2.2 L 7.0,2.8"
+                    stroke="black"
+                    strokeWidth="0.85"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </>
+              ) : (
+                <>
+                  {/* Sparkle/Star Eyes ✧ ✧ */}
+                  {/* Left Star */}
+                  <rect x="3" y="2" width="1" height="1" fill="black" />
+                  <rect x="3" y="1" width="1" height="1" fill="black" />
+                  <rect x="3" y="3" width="1" height="1" fill="black" />
+                  <rect x="2" y="2" width="1" height="1" fill="black" />
+                  <rect x="4" y="2" width="1" height="1" fill="black" />
+                  {/* Right Star */}
+                  <rect x="6" y="2" width="1" height="1" fill="black" />
+                  <rect x="6" y="1" width="1" height="1" fill="black" />
+                  <rect x="6" y="3" width="1" height="1" fill="black" />
+                  <rect x="5" y="2" width="1" height="1" fill="black" />
+                  <rect x="7" y="2" width="1" height="1" fill="black" />
+                </>
+              )}
+            </g>
+          </svg>
         </div>
 
         {/* DummVinci Logo */}
