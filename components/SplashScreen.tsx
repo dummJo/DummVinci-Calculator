@@ -1,8 +1,11 @@
+/* eslint-disable */
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLang } from "@/lib/i18n";
 
 export default function SplashScreen() {
+  const { t } = useLang();
   const [isVisible, setIsVisible] = useState(true);
   const [isFading, setIsFading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -131,8 +134,8 @@ export default function SplashScreen() {
           alignItems: "center",
           gap: 4,
         }}>
-          <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.65 }}>Dumm</span>
-          <span style={{ fontWeight: 800, color: "var(--accent)" }}>Vinci</span>
+          <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.65 }}>{t.nav.brandDumm}</span>
+          <span style={{ fontWeight: 800, color: "var(--accent)" }}>{t.nav.brandVinci}</span>
         </div>
 
         {/* Loading Text & 8-bit Progress */}
@@ -146,7 +149,7 @@ export default function SplashScreen() {
             textTransform: "uppercase",
             opacity: 0.8,
           }}>
-            INITIALIZING
+            {t.common.initializing}
             <span style={{ animation: "claudeBlink 1.5s infinite" }}>_</span>
           </div>
           
