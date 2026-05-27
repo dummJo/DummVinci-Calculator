@@ -136,37 +136,37 @@
 }
 
 [data-theme="light"] {
-  --bg:        #FAF9F6;   /* Soft Warm Parchment */
-  --bg-raised: #F1EFEA;   /* Softer Raised Background */
-  --bg-deep:   #E6E3DB;   /* Soft Deep Gray/Parchment */
-  --bg-accent: #D8D4C9;   /* Softer Accent Background */
-  --fg:        #1E1E1E;   /* Soft Dark Gray Text */
-  --fg-soft:   #4A4A4A;   /* Soft Muted Text */
-  --muted:     #737373;   /* Comfortable Gray Muted */
-  --muted-soft: #D4D4D4;  /* Soft Border Gray */
-  --accent:    #EAB308;   /* Soft Warm Golden Yellow */
-  --accent-hi: #CA8A04;   /* Softer Golden Hover */
-  --accent-2:  #27272A;   /* Soft Charcoal Accent */
-  --accent-rgb: 234, 179, 8;
-  --canvas-accent: #EAB308;
-  --border:    rgba(0, 0, 0, 0.06);
-  --card:      rgba(250, 249, 246, 0.85);
-  --nav-bg:    rgba(250, 249, 246, 0.9);
-  --shadow-hover:       rgba(234, 179, 8, 0.1);
-  --selection-bg:       rgba(234, 179, 8, 0.2);
-  --selection-fg:       #1E1E1E;
+  --bg:        #F4F4F0;   /* Appart Warm Stone */
+  --bg-raised: #EBEBE6;   /* Softer Raised Panel */
+  --bg-deep:   #E2E2DC;   /* Soft Deep Gray/Stone */
+  --bg-accent: #D5D5CE;   /* Softer Hover Accent */
+  --fg:        #151515;   /* Appart Dark Charcoal Text */
+  --fg-soft:   #404040;   /* Muted Dark Gray */
+  --muted:     #737373;   /* Comfortable Neutral Gray */
+  --muted-soft: #CCCCCC;  /* Light Neutral Border */
+  --accent:    #E2754D;   /* Appart Terracotta Orange / Clay */
+  --accent-hi: #C85B33;   /* Deeper Terracotta Hover */
+  --accent-2:  #151515;   /* Dark Accent */
+  --accent-rgb: 226, 117, 77;
+  --canvas-accent: #E2754D;
+  --border:    rgba(21, 21, 21, 0.08);
+  --card:      rgba(244, 244, 240, 0.85);
+  --nav-bg:    rgba(244, 244, 240, 0.9);
+  --shadow-hover:       rgba(226, 117, 77, 0.12);
+  --selection-bg:       #151515;
+  --selection-fg:       #E2754D;
   /* Glass surfaces */
-  --glass-bg:       rgba(250, 249, 246, 0.75);
-  --glass-border:   rgba(0, 0, 0, 0.06);
-  --glass-hi:       rgba(250, 249, 246, 0.9);
-  --glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.03);
+  --glass-bg:       rgba(244, 244, 240, 0.75);
+  --glass-border:   rgba(21, 21, 21, 0.08);
+  --glass-hi:       rgba(244, 244, 240, 0.9);
+  --glass-shadow:   0 8px 32px rgba(21, 21, 21, 0.04);
   --glass-blur:     blur(20px) saturate(180%);
   --nav-blur:       blur(24px) saturate(180%);
-  --cursor-glow:        rgba(234, 179, 8, 0.04);
-  --cursor-card-glow:   rgba(234, 179, 8, 0.06);
-  --cursor-card-border: rgba(234, 179, 8, 0.2);
-  --tabbar-bg:          rgba(250, 249, 246, 0.5);
-  --accent-pill-bg:     rgba(234, 179, 8, 0.12);
+  --cursor-glow:        rgba(226, 117, 77, 0.05);
+  --cursor-card-glow:   rgba(226, 117, 77, 0.08);
+  --cursor-card-border: rgba(226, 117, 77, 0.25);
+  --tabbar-bg:          rgba(244, 244, 240, 0.5);
+  --accent-pill-bg:     rgba(226, 117, 77, 0.12);
 }
 
 * { box-sizing: border-box; }

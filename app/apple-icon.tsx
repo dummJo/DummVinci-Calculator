@@ -6,7 +6,8 @@ export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
 export default async function Icon() {
-  const imagePath = path.join(process.cwd(), "public", "logo-dv-ptts.png");
+  const rawPath = path.join(process.cwd(), "public", "logo-dv-ptts.png");
+  const imagePath = path.normalize(rawPath);
   const imageBuffer = fs.readFileSync(imagePath);
   const base64Image = `data:image/png;base64,${imageBuffer.toString("base64")}`;
 
