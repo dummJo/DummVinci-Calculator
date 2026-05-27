@@ -281,7 +281,7 @@ export default function HomePage() {
                 textTransform: "uppercase",
               }}
             >
-              CALCULATOR
+              TOOLS
             </span>
           </div>
         </div>

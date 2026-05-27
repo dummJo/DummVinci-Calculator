@@ -24,8 +24,8 @@ export const T = {
       heroTitle: "DummVinci",
       heroSub: "Tools",
       heroSubtitle: "Precision Sizing. By DummVinci.",
-      secCalculators: "Calculators",
-      ctaOpen: "Open Calculator",
+      secCalculators: "Engineering Tools",
+      ctaOpen: "Open Tool",
       calcs: {
         cable: {
           title: "Cable Sizing",
@@ -509,8 +509,8 @@ export const T = {
       heroTitle: "DummVinci",
       heroSub: "Tools",
       heroSubtitle: "Sizing Presisi. Oleh DummVinci.",
-      secCalculators: "Katalog Kalkulator",
-      ctaOpen: "Buka Kalkulator",
+      secCalculators: "Katalog Tools",
+      ctaOpen: "Buka Tools",
       calcs: {
         cable: {
           title: "Sizing Kabel",
