@@ -64,7 +64,7 @@ export default function SplashScreen() {
         alignItems: "center",
         gap: 32,
       }}>
-        {/* Chibi Claude / Anthropic Star Animation */}
+        {/* Claude Code CLI Style ASCII Face */}
         <div style={{
           position: "relative",
           width: 80,
@@ -78,48 +78,27 @@ export default function SplashScreen() {
           <div style={{
             position: "absolute",
             inset: -20,
-            background: "radial-gradient(circle, rgba(var(--accent-rgb), 0.2) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(var(--accent-rgb), 0.15) 0%, transparent 70%)",
             animation: "claudePulse 2s ease-in-out infinite alternate",
             borderRadius: "50%",
           }} />
           
-          {/* Main Body (Anthropic Star / Chibi Head) */}
-          <svg
-            width="72"
-            height="72"
-            viewBox="0 0 100 100"
-            fill="var(--accent)"
-            style={{
-              zIndex: 1,
-              animation: "claudeSpin 12s linear infinite",
-              filter: "drop-shadow(0 8px 16px rgba(var(--accent-rgb), 0.3))"
-            }}
-          >
-            {/* Plump, cute 4-pointed star (Anthropic style) */}
-            <path d="M50 5 C50 40 60 50 95 50 C60 50 50 60 50 95 C50 60 40 50 5 50 C40 50 50 40 50 5 Z" />
-          </svg>
-          
-          {/* Cute Face (Chibi) - stays upright, doesn't spin */}
           <div style={{
-            position: "absolute",
+            fontFamily: "var(--font-mono)",
+            fontSize: 32,
+            fontWeight: 800,
+            color: "var(--accent)",
             zIndex: 2,
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            gap: 6,
+            width: "100%",
+            textAlign: "center",
           }}>
-            {/* Blushing cheeks and eyes */}
-            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-              <div style={{ width: 8, height: 4, borderRadius: "50%", background: "rgba(255,100,100,0.6)" }} />
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--bg)", animation: "claudeBlink 4s infinite" }} />
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--bg)", animation: "claudeBlink 4s infinite" }} />
-              <div style={{ width: 8, height: 4, borderRadius: "50%", background: "rgba(255,100,100,0.6)" }} />
-            </div>
-            {/* Happy cat smile */}
-            <svg width="16" height="8" viewBox="0 0 16 8" fill="none" stroke="var(--bg)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2 2 Q4 6 8 4 Q12 6 14 2" />
-            </svg>
+            {progress < 25 ? "(・_・)" :
+             progress < 50 ? "(>_<)" :
+             progress < 75 ? "(^.^)" :
+             "(✧_✧)"}
           </div>
         </div>
 
