@@ -6,7 +6,12 @@ export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
 export default async function Icon() {
-  const imageBuffer = fs.readFileSync(path.normalize(path.join(process.cwd(), "public/logo-dv-ptts.png")));
+  const basePath = path.normalize(path.join(process.cwd(), "public"));
+  const imagePath = path.normalize(path.join(basePath, "logo-dv-ptts.png"));
+  if (!imagePath.startsWith(basePath)) {
+    throw new Error("Invalid path specified!");
+  }
+  const imageBuffer = fs.readFileSync(imagePath);
   const base64Image = `data:image/png;base64,${imageBuffer.toString("base64")}`;
 
   return new ImageResponse(

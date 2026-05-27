@@ -110,6 +110,31 @@ const CATEGORY_LABELS: Record<string, { en: string; id: string }> = {
   Info:    { en: "Reference & Tools", id: "Referensi & Alat" },
 };
 
+interface HomeLocale {
+  calcs: Record<string, { title: string; desc: string } | undefined>;
+}
+
+function getCalcMeta(key: string, localeHome: HomeLocale) {
+  switch (key) {
+    case "unified": return localeHome.calcs.unified;
+    case "vsd": return localeHome.calcs.vsd;
+    case "cable": return localeHome.calcs.cable;
+    case "breaker": return localeHome.calcs.breaker;
+    case "busbar": return localeHome.calcs.busbar;
+    case "starter": return localeHome.calcs.starter;
+    case "plc": return localeHome.calcs.plc;
+    case "support": return localeHome.calcs.support;
+    case "layout": return localeHome.calcs.layout;
+    case "brake": return localeHome.calcs.brake;
+    case "panel": return localeHome.calcs.panel;
+    case "pid": return localeHome.calcs.pid;
+    case "convert": return localeHome.calcs.convert;
+    case "tutorials": return localeHome.calcs.tutorials;
+    case "skfMicrolog": return localeHome.calcs.skfMicrolog;
+    default: return undefined;
+  }
+}
+
 export default function HomePage() {
   const { t, lang } = useLang();
   const th = t.home;
@@ -139,11 +164,15 @@ export default function HomePage() {
   ];
 
   // Group calcs by category in defined order
-  const grouped = CATEGORY_ORDER.map(cat => ({
-    cat,
-    label: CATEGORY_LABELS[cat][lang] || CATEGORY_LABELS[cat].en,
-    items: CALCS.filter(c => c.cat === cat),
-  })).filter(g => g.items.length > 0);
+  const grouped = CATEGORY_ORDER.map(cat => {
+    const catObj = CATEGORY_LABELS[cat];
+    const label = lang === "id" ? catObj.id : catObj.en;
+    return {
+      cat,
+      label,
+      items: CALCS.filter(c => c.cat === cat),
+    };
+  }).filter(g => g.items.length > 0);
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -240,7 +269,7 @@ export default function HomePage() {
                 opacity: 0.65,
               }}
             >
-              Dumm
+              {t.nav.brandDumm}
             </span>
             {/* "Vinci" — extrabold, upright, accent */}
             <span
@@ -250,7 +279,7 @@ export default function HomePage() {
                 color: "var(--accent)",
               }}
             >
-              Vinci
+              {t.nav.brandVinci}
             </span>
           </h1>
 
@@ -281,7 +310,7 @@ export default function HomePage() {
                 textTransform: "uppercase",
               }}
             >
-              TOOLS
+              {t.nav.brandCalculator}
             </span>
           </div>
         </div>
@@ -429,7 +458,7 @@ export default function HomePage() {
             {/* Cards grid */}
             <div className="home-card-grid">
               {group.items.map((calc) => {
-                const meta = th.calcs[calc.key as keyof typeof th.calcs];
+                const meta = getCalcMeta(calc.key, th);
                 // Trim description to ~60 chars for card brevity
                 const shortDesc = meta?.desc
                   ? meta.desc.length > 80
