@@ -183,22 +183,25 @@ export default function BottomTabBar() {
           right: 12px;
           max-width: 434px;
           margin: 0 auto;
-          background: var(--ink-700);         /* deep dark — pops out of terracotta */
+          background: #FAF9F5;              /* warm cream — same as changelog card */
           backdrop-filter: blur(40px) saturate(180%);
           -webkit-backdrop-filter: blur(40px) saturate(180%);
-          border: 1px solid rgba(255, 220, 190, 0.18);
+          border: 1px solid rgba(139, 80, 50, 0.20);
           border-radius: 28px;
           padding: 20px;
           z-index: 180;
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 16px;
-          box-shadow: 0 40px 80px rgba(0,0,0,0.55);
+          box-shadow: 0 24px 64px rgba(0,0,0,0.30);
           transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
           transform-origin: bottom center;
         }
+        .more-item {
+          color: #1A0F0A !important;
+        }
         .more-item:hover {
-          background: rgba(255,255,255,0.08) !important;
+          background: rgba(139, 80, 50, 0.08) !important;
           transform: translateY(-2px);
         }
         .hover-lift {
@@ -254,12 +257,7 @@ export default function BottomTabBar() {
       {/* CHANGELOG MODAL */}
       {showChangelog && (
         <div className="modal-overlay" onClick={closeChangelog}>
-          <div className="changelog-card" onClick={e => e.stopPropagation()} style={{
-            background: "var(--bg-raised)",
-            border: "1px solid var(--glass-border)",
-            boxShadow: "var(--glass-shadow)",
-            padding: "32px",
-          }}>
+          <div className="changelog-card" onClick={e => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
                 <span className="version-tag">{t.changelog.updateTitle}</span>
@@ -353,8 +351,8 @@ export default function BottomTabBar() {
                   minWidth: "90px"
                 }}
               >
-                <tab.Icon size={22} strokeWidth={1.5} className={active ? "active-icon" : "inactive-icon"} />
-                <span style={{ fontSize: 9, fontFamily: "var(--font-body), sans-serif", opacity: active ? 1 : 0.8, textAlign: "center", color: active ? "var(--accent)" : "var(--fg)", fontWeight: active ? 600 : 500 }}>
+                <tab.Icon size={22} strokeWidth={1.5} className={active ? "active-icon" : "inactive-icon"} style={{ color: active ? "#8B3A1A" : "#1A0F0A" }} />
+                <span style={{ fontSize: 9, fontFamily: "var(--font-body), sans-serif", opacity: active ? 1 : 0.8, textAlign: "center", color: active ? "#8B3A1A" : "#1A0F0A", fontWeight: active ? 600 : 500 }}>
                   {getNavLabel(tab.key, t)}
                 </span>
               </Link>
@@ -368,16 +366,16 @@ export default function BottomTabBar() {
           style={{ 
             gridColumn: "span 3",
             display: "flex", alignItems: "center", gap: 12, padding: "14px 20px",
-            background: "var(--glass-bg)",
-            border: "1px solid var(--glass-border)",
-            borderRadius: 20, cursor: "pointer", color: "var(--fg)", transition: "all 0.2s ease"
+            background: "rgba(217, 119, 87, 0.15)",
+            border: "1px solid rgba(139, 80, 50, 0.20)",
+            borderRadius: 20, cursor: "pointer", color: "#1A0F0A", transition: "all 0.2s ease"
           }}
           className="hover-lift"
         >
-          <History size={18} style={{ color: "var(--accent)" }} />
+          <History size={18} style={{ color: "#8B3A1A" }} />
           <div style={{ flex: 1, textAlign: "left" }}>
-            <div style={{ fontSize: 11, fontWeight: 800, fontFamily: "var(--font-heading)", color: "var(--accent)" }}>{t.nav.changelog}</div>
-            <div style={{ fontSize: 9, opacity: 0.85, color: "var(--fg)" }}>{t.changelog.stableVersion}</div>
+            <div style={{ fontSize: 11, fontWeight: 800, fontFamily: "var(--font-heading)", color: "#8B3A1A" }}>{t.nav.changelog}</div>
+            <div style={{ fontSize: 9, opacity: 0.85, color: "#1A0F0A" }}>{t.changelog.stableVersion}</div>
           </div>
         </button>
       </div>
