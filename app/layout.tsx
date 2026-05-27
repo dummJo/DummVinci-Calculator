@@ -13,7 +13,7 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"], weight: ["30
 const monoFont = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DummVinci Calculator - Engineering Tools",
+  title: "DummVinci Tools - Engineering Suite",
   description:
     "Dashboard kalkulasi presales engineer: cable sizing, VSD + airflow (ACQ580 / ACS880), MCCB/MCB Siemens, busbar, braking resistor STAHL, panel XLTC / Rittal.",
   keywords: [
