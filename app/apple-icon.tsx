@@ -18,7 +18,7 @@ export default async function Icon() {
           alignItems: "center",
           justifyContent: "center",
           borderRadius: "36px",
-          border: "6px solid rgba(255, 102, 0, 0.55)",
+          border: "6px solid rgba(217, 119, 87, 0.55)",
           overflow: "hidden",
           background: "#0c0c0c",
         }}

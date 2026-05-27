@@ -183,17 +183,17 @@ export default function BottomTabBar() {
           right: 12px;
           max-width: 434px;
           margin: 0 auto;
-          background: var(--tabbar-bg);
+          background: var(--ink-700);         /* deep dark — pops out of terracotta */
           backdrop-filter: blur(40px) saturate(180%);
           -webkit-backdrop-filter: blur(40px) saturate(180%);
-          border: 1px solid var(--accent);
+          border: 1px solid rgba(255, 220, 190, 0.18);
           border-radius: 28px;
           padding: 20px;
           z-index: 180;
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 16px;
-          box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+          box-shadow: 0 40px 80px rgba(0,0,0,0.55);
           transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
           transform-origin: bottom center;
         }
@@ -225,18 +225,22 @@ export default function BottomTabBar() {
           max-width: 500px;
           max-height: 80vh;
           overflow-y: auto;
-          background: var(--bg-raised);
-          border: 1px solid var(--accent);
+          background: #FAF9F5;              /* warm cream — high contrast over modal overlay */
+          color: #1A1A1A;                   /* near-black text inside the card */
+          border: 1px solid rgba(0,0,0,0.10);
           border-radius: 28px;
           padding: 32px;
           position: relative;
-          box-shadow: var(--glass-shadow);
+          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+        }
+        .changelog-card * {
+          color: inherit;                   /* let all children inherit the dark text */
         }
         .version-tag {
           display: inline-block;
           padding: 4px 12px;
-          background: rgba(var(--accent-rgb), 0.15);
-          color: var(--accent);
+          background: rgba(26, 15, 10, 0.10);
+          color: #8B3A1A;                   /* warm dark rust inside the cream card */
           border-radius: 12px;
           font-family: var(--font-mono);
           font-size: 10px;
@@ -258,29 +262,29 @@ export default function BottomTabBar() {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div>
-                <span className="version-tag" style={{ background: "var(--accent)", color: "#000", fontWeight: 800, letterSpacing: "0.1em" }}>{t.changelog.updateTitle}</span>
-                <h2 style={{ fontSize: 28, fontFamily: "var(--font-display)", color: "var(--fg)", margin: "8px 0 0 0" }}>
+                <span className="version-tag">{t.changelog.updateTitle}</span>
+                <h2 style={{ fontSize: 28, fontFamily: "var(--font-display)", color: "#1A0F0A", margin: "8px 0 0 0" }}>
                   {t.changelog.whatsNew}
                 </h2>
               </div>
-              <button onClick={closeChangelog} style={{ background: "none", border: "none", color: "var(--muted-soft)", cursor: "pointer" }}>
+              <button onClick={closeChangelog} style={{ background: "none", border: "none", color: "#6B4030", cursor: "pointer" }}>
                 <X size={24} />
               </button>
             </div>
             
-            <div style={{ marginTop: 24, fontSize: 14, lineHeight: 1.6, color: "var(--fg-soft)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--accent)", marginBottom: 16 }}>
+            <div style={{ marginTop: 24, fontSize: 14, lineHeight: 1.6, color: "#1A1A1A" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#8B3A1A", marginBottom: 16 }}>
                 <Sparkles size={18} /> <span style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: 13, letterSpacing: "0.1em" }}>{t.changelog.vibrationThemesTitle}</span>
               </div>
               <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
-                <li><b><span style={{color:"var(--fg)"}}>{t.changelog.skfMicrologTitle}</span></b>{t.changelog.skfMicrologDesc}</li>
-                <li><b><span style={{color:"var(--fg)"}}>{t.changelog.crimsonPaletteTitle}</span></b>{t.changelog.crimsonPaletteDesc}</li>
-                <li><b><span style={{color:"var(--fg)"}}>{t.changelog.consultantI18nTitle}</span></b>{t.changelog.consultantI18nDesc}</li>
+                <li><b><span style={{color:"#1A0F0A"}}>{t.changelog.skfMicrologTitle}</span></b>{t.changelog.skfMicrologDesc}</li>
+                <li><b><span style={{color:"#1A0F0A"}}>{t.changelog.crimsonPaletteTitle}</span></b>{t.changelog.crimsonPaletteDesc}</li>
+                <li><b><span style={{color:"#1A0F0A"}}>{t.changelog.consultantI18nTitle}</span></b>{t.changelog.consultantI18nDesc}</li>
               </ul>
 
-              <hr style={{ border: "none", borderTop: "1px dashed rgba(var(--accent-rgb), 0.2)", margin: "24px 0" }} />
+              <hr style={{ border: "none", borderTop: "1px dashed rgba(139, 58, 26, 0.25)", margin: "24px 0" }} />
               
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--muted)", marginBottom: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#6B4030", marginBottom: 12 }}>
                 <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>{t.changelog.previousReleases}</span>
               </div>
               <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 8, opacity: 0.85, fontSize: 13 }}>
@@ -291,16 +295,16 @@ export default function BottomTabBar() {
 
             <button onClick={closeChangelog} style={{
               width: "100%", marginTop: 32, padding: "16px", borderRadius: 8,
-              background: "linear-gradient(45deg, var(--accent), var(--accent-hi))",
-              color: "var(--bg)", fontFamily: "var(--font-display)", fontWeight: 800,
+              background: "linear-gradient(45deg, #1A0F0A, #3A2010)",
+              color: "#FAF9F5", fontFamily: "var(--font-display)", fontWeight: 800,
               fontSize: 16, border: "none", cursor: "pointer",
-              boxShadow: "0 4px 15px rgba(var(--accent-rgb), 0.3)",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.25)",
               transition: "transform 0.1s"
             }} onMouseDown={e => e.currentTarget.style.transform="scale(0.98)"} onMouseUp={e => e.currentTarget.style.transform="scale(1)"}>
               {t.changelog.letsGo}
             </button>
 
-            <div style={{ marginTop: 24, textAlign: "center", opacity: 0.65, fontSize: 10, fontFamily: "var(--font-mono)" }}>
+            <div style={{ marginTop: 24, textAlign: "center", opacity: 0.65, fontSize: 10, fontFamily: "var(--font-mono)", color: "#6B4030" }}>
               {t.changelog.byDummVinci}
             </div>
           </div>
