@@ -28,23 +28,15 @@ function TerminalWidget() {
       setTime(formatTime());
     }, 1000);
 
-    // IP Fetch (Force IPv4)
-    fetch("https://api.ipify.org?format=json")
-      .then(res => res.json())
-      .then(ipData => {
-         const ipv4 = ipData.ip;
-         // Now fetch details using the forced IPv4
-         return fetch(`https://ipapi.co/${ipv4}/json/`);
-      })
+    // Same-origin geolocated IP Fetch (bypasses adblockers)
+    fetch("/api/ip")
       .then(res => res.json())
       .then(d => {
-        if (!d.error) {
-          setData(d);
-        }
+        setData(d);
         setLoading(false);
       })
       .catch(e => {
-        console.error(e);
+        console.error("IP geolocator error:", e);
         setLoading(false);
       });
 
@@ -112,13 +104,24 @@ export default function Footer() {
     const q = getRandomQuote();
     const timeoutId = setTimeout(() => setQuote(q), 0);
 
-    // Page views tracking
+    // Universal page views tracking via CounterAPI
     if (typeof window !== "undefined") {
-      const key = "dummvinci_page_views";
-      const current = Number(localStorage.getItem(key) || "0");
-      const nextViews = current + 1;
-      localStorage.setItem(key, String(nextViews));
-      setTimeout(() => setViews(nextViews), 0);
+      const sessionKey = "dummvinci_session_seen";
+      const hasSeen = sessionStorage.getItem(sessionKey);
+      
+      const endpoint = hasSeen ? "/api/views" : "/api/views?inc=true";
+      sessionStorage.setItem(sessionKey, "true");
+      
+      fetch(endpoint)
+        .then(res => res.json())
+        .then(data => {
+          if (data && typeof data.count === "number") {
+            setViews(data.count);
+          }
+        })
+        .catch(err => {
+          console.error("Failed to fetch views:", err);
+        });
     }
 
     return () => clearTimeout(timeoutId);
