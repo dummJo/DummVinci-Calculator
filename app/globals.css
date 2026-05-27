@@ -102,37 +102,37 @@
 
 /* ─── Light theme (default) ─── */
 :root, [data-theme="light"] {
-  --bg:        #E2754D;   /* Brand Appart Terracotta Orange (Dominant) */
-  --bg-raised: #D0643B;   /* Softer Darker Orange for Raised Elements */
-  --bg-deep:   #C7572E;   /* Deep Terracotta Orange */
-  --bg-accent: #B34720;   /* Hover Accent Orange */
-  --fg:        #151515;   /* Dark Charcoal Text */
-  --fg-soft:   #2C2C2C;   /* Soft Charcoal Text */
-  --muted:     #4A4A4A;   /* Neutral Dark Gray */
-  --muted-soft: rgba(21, 21, 21, 0.2); /* Soft Border Overlay */
-  --accent:    #151515;   /* Dark Charcoal Accent (Contrasts with Orange background) */
-  --accent-hi: #2C2C2C;   /* Softer Dark Hover */
+  --bg:        #FF6600;   /* KTM Orange (Dominant) */
+  --bg-raised: #E05A00;   /* Softer Darker KTM Orange for Raised Elements */
+  --bg-deep:   #CC5200;   /* Deep KTM Orange */
+  --bg-accent: #B34700;   /* Hover Accent KTM Orange */
+  --fg:        #000000;   /* Ultra-contrast Perfect Black Text */
+  --fg-soft:   #111111;   /* Soft Dark Black Text */
+  --muted:     #2A2A2A;   /* Neutral Dark Gray/Black */
+  --muted-soft: rgba(0, 0, 0, 0.20); /* Soft Border Overlay */
+  --accent:    #000000;   /* Perfect Black Accent (Contrasts with Orange background) */
+  --accent-hi: #1C1C1C;   /* Softer Dark Hover */
   --accent-2:  #FAF9F5;   /* Off-white Secondary Accent */
-  --accent-rgb: 21, 21, 21;
-  --canvas-accent: #151515;
-  --border:    rgba(21, 21, 21, 0.15);
-  --card:      rgba(226, 117, 77, 0.95);
-  --nav-bg:    rgba(226, 117, 77, 0.9);
-  --shadow-hover:       rgba(21, 21, 21, 0.08);
-  --selection-bg:       #151515;
-  --selection-fg:       #E2754D;
+  --accent-rgb: 0, 0, 0;
+  --canvas-accent: #000000;
+  --border:    rgba(0, 0, 0, 0.16);
+  --card:      rgba(255, 102, 0, 0.95);
+  --nav-bg:    rgba(255, 102, 0, 0.9);
+  --shadow-hover:       rgba(0, 0, 0, 0.08);
+  --selection-bg:       #000000;
+  --selection-fg:       #FF6600;
   /* Glass surfaces */
-  --glass-bg:       rgba(226, 117, 77, 0.8);
-  --glass-border:   rgba(21, 21, 21, 0.15);
-  --glass-hi:       rgba(226, 117, 77, 0.9);
-  --glass-shadow:   0 8px 32px rgba(21, 21, 21, 0.1);
+  --glass-bg:       rgba(255, 102, 0, 0.8);
+  --glass-border:   rgba(0, 0, 0, 0.16);
+  --glass-hi:       rgba(255, 102, 0, 0.9);
+  --glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.12);
   --glass-blur:     blur(20px) saturate(180%);
   --nav-blur:       blur(24px) saturate(180%);
-  --cursor-glow:        rgba(21, 21, 21, 0.06);
-  --cursor-card-glow:   rgba(21, 21, 21, 0.08);
-  --cursor-card-border: rgba(21, 21, 21, 0.3);
-  --tabbar-bg:          rgba(226, 117, 77, 0.65);
-  --accent-pill-bg:     rgba(21, 21, 21, 0.15);
+  --cursor-glow:        rgba(0, 0, 0, 0.06);
+  --cursor-card-glow:   rgba(0, 0, 0, 0.08);
+  --cursor-card-border: rgba(0, 0, 0, 0.35);
+  --tabbar-bg:          rgba(255, 102, 0, 0.65);
+  --accent-pill-bg:     rgba(0, 0, 0, 0.15);
 }
 
 [data-theme="dark"] {

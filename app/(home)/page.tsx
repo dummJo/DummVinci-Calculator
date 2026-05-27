@@ -100,15 +100,18 @@ function IconStarter() {
 
 // ── Category config ────────────────────────────────────────────────────────
 const CATEGORY_ORDER = ["Main", "Starter", "Power", "Panel", "Control", "Learn", "Info"] as const;
-const CATEGORY_LABELS: Record<string, { en: string; id: string }> = {
-  Main:    { en: "Quick Start",       id: "Mulai Cepat" },
-  Starter: { en: "Motor & Drive",     id: "Motor & Drive" },
-  Power:   { en: "Power Distribution", id: "Distribusi Daya" },
-  Panel:   { en: "Panel & Enclosure", id: "Panel & Enclosure" },
-  Control: { en: "Control & Tuning",  id: "Kontrol & Tuning" },
-  Learn:   { en: "Learn & Reference", id: "Belajar & Referensi" },
-  Info:    { en: "Reference & Tools", id: "Referensi & Alat" },
-};
+function getCategoryLabel(cat: string, lang: string) {
+  switch (cat) {
+    case "Main": return lang === "id" ? "Mulai Cepat" : "Quick Start";
+    case "Starter": return lang === "id" ? "Motor & Drive" : "Motor & Drive";
+    case "Power": return lang === "id" ? "Distribusi Daya" : "Power Distribution";
+    case "Panel": return lang === "id" ? "Panel & Enclosure" : "Panel & Enclosure";
+    case "Control": return lang === "id" ? "Kontrol & Tuning" : "Control & Tuning";
+    case "Learn": return lang === "id" ? "Belajar & Referensi" : "Learn & Reference";
+    case "Info": return lang === "id" ? "Referensi & Alat" : "Reference & Tools";
+    default: return "";
+  }
+}
 
 interface HomeLocale {
   calcs: Record<string, { title: string; desc: string } | undefined>;
@@ -164,15 +167,11 @@ export default function HomePage() {
   ];
 
   // Group calcs by category in defined order
-  const grouped = CATEGORY_ORDER.map(cat => {
-    const catObj = CATEGORY_LABELS[cat];
-    const label = lang === "id" ? catObj.id : catObj.en;
-    return {
-      cat,
-      label,
-      items: CALCS.filter(c => c.cat === cat),
-    };
-  }).filter(g => g.items.length > 0);
+  const grouped = CATEGORY_ORDER.map(cat => ({
+    cat,
+    label: getCategoryLabel(cat, lang),
+    items: CALCS.filter(c => c.cat === cat),
+  })).filter(g => g.items.length > 0);
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
