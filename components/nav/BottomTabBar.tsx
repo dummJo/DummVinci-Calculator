@@ -292,7 +292,7 @@ export default function BottomTabBar() {
             <button onClick={closeChangelog} style={{
               width: "100%", marginTop: 32, padding: "16px", borderRadius: 8,
               background: "linear-gradient(45deg, var(--accent), var(--accent-hi))",
-              color: "#000", fontFamily: "var(--font-display)", fontWeight: 800,
+              color: "var(--bg)", fontFamily: "var(--font-display)", fontWeight: 800,
               fontSize: 16, border: "none", cursor: "pointer",
               boxShadow: "0 4px 15px rgba(var(--accent-rgb), 0.3)",
               transition: "transform 0.1s"

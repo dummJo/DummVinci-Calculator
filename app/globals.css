@@ -107,11 +107,11 @@
   --bg-deep:   #CC5200;   /* Deep KTM Orange */
   --bg-accent: #B34700;   /* Hover Accent KTM Orange */
   --fg:        #000000;   /* Ultra-contrast Perfect Black Text */
-  --fg-soft:   #111111;   /* Soft Dark Black Text */
-  --muted:     #2A2A2A;   /* Neutral Dark Gray/Black */
-  --muted-soft: rgba(0, 0, 0, 0.20); /* Soft Border Overlay */
-  --accent:    #000000;   /* Perfect Black Accent (Contrasts with Orange background) */
-  --accent-hi: #1C1C1C;   /* Softer Dark Hover */
+  --fg-soft:   #000000;   /* Pure Black for max contrast on orange */
+  --muted:     #0F0F0F;   /* Extremely dark tone to prevent washed-out look */
+  --muted-soft: rgba(0, 0, 0, 0.35); /* Stronger overlay */
+  --accent:    #000000;   /* Perfect Black Accent */
+  --accent-hi: #111111;   /* Deep black hover */
   --accent-2:  #FAF9F5;   /* Off-white Secondary Accent */
   --accent-rgb: 0, 0, 0;
   --canvas-accent: #000000;
