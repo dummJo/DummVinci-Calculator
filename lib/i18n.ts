@@ -18,6 +18,7 @@ export const T = {
       guidanceTheory: "Guidance & Theory",
       yourIp: "Your IP",
       supportedBy: "Supported by PT Prima Tekindo Tirta Sejahtera",
+      views: "Views",
     },
     home: {
       heroTitle: "DummVinci",
@@ -502,6 +503,7 @@ export const T = {
       guidanceTheory: "Panduan Teknis & Teori",
       yourIp: "IP Anda",
       supportedBy: "Didukung oleh PT Prima Tekindo Tirta Sejahtera",
+      views: "Kunjungan",
     },
     home: {
       heroTitle: "DummVinci",

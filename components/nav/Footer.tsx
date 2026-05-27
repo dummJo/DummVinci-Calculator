@@ -20,6 +20,7 @@ function TerminalWidget() {
   const { t } = useLang();
   const [data, setData] = useState<IpApiData | null>(null);
   const [time, setTime] = useState<string>(formatTime);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Clock
@@ -40,13 +41,15 @@ function TerminalWidget() {
         if (!d.error) {
           setData(d);
         }
+        setLoading(false);
       })
-      .catch(e => console.error(e));
+      .catch(e => {
+        console.error(e);
+        setLoading(false);
+      });
 
     return () => clearInterval(timer);
   }, []);
-
-  if (!data) return null;
 
   return (
     <div style={{
@@ -60,29 +63,42 @@ function TerminalWidget() {
       gap: 8,
       opacity: 0.65,
     }}>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 10 }}>
-        <span style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>{t.common.yourIp}</span>
-        <span style={{ color: "var(--accent)", fontWeight: 700, fontSize: 15, letterSpacing: "0.05em" }}>{data.ip}</span>
-        <span style={{ fontWeight: 700, color: "var(--fg-soft)" }}>{data.country}</span>
-      </div>
-      <div style={{ 
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center", 
-        flexWrap: "wrap",
-        gap: 6,
-        letterSpacing: "0.02em"
-      }}>
-        <span>{data.city ? `${data.city}, ${data.country_name}` : data.country_name}</span>
-        <span>·</span>
-        {data.org && (
-          <>
-            <span>{data.org}</span>
+      {data ? (
+        <>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 10 }}>
+            <span style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>{t.common.yourIp}</span>
+            <span style={{ color: "var(--accent)", fontWeight: 700, fontSize: 15, letterSpacing: "0.05em" }}>{data.ip}</span>
+            <span style={{ fontWeight: 700, color: "var(--fg-soft)" }}>{data.country}</span>
+          </div>
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "center", 
+            alignItems: "center", 
+            flexWrap: "wrap",
+            gap: 6,
+            letterSpacing: "0.02em"
+          }}>
+            <span>{data.city ? `${data.city}, ${data.country_name}` : data.country_name}</span>
             <span>·</span>
-          </>
-        )}
-        <span>⏱ {time}</span>
-      </div>
+            {data.org && (
+              <>
+                <span>{data.org}</span>
+                <span>·</span>
+              </>
+            )}
+            <span>⏱ {time}</span>
+          </div>
+        </>
+      ) : (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 10 }}>
+          <span style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>{t.common.yourIp}</span>
+          <span style={{ color: "var(--accent)", fontWeight: 700, fontSize: 13, letterSpacing: "0.05em" }}>
+            {loading ? "LOAD..." : "OFFLINE / BLOCKED"}
+          </span>
+          <span>·</span>
+          <span>⏱ {time}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -90,10 +106,21 @@ function TerminalWidget() {
 export default function Footer() {
   const { t } = useLang();
   const [quote, setQuote] = useState<Quote | null>(null);
+  const [views, setViews] = useState<number>(0);
 
   useEffect(() => {
     const q = getRandomQuote();
     const timeoutId = setTimeout(() => setQuote(q), 0);
+
+    // Page views tracking
+    if (typeof window !== "undefined") {
+      const key = "dummvinci_page_views";
+      const current = Number(localStorage.getItem(key) || "0");
+      const nextViews = current + 1;
+      localStorage.setItem(key, String(nextViews));
+      setTimeout(() => setViews(nextViews), 0);
+    }
+
     return () => clearTimeout(timeoutId);
   }, []);
 
@@ -171,6 +198,19 @@ export default function Footer() {
       </div>
 
       <TerminalWidget />
+
+      {/* Page view counter */}
+      <div style={{
+        marginTop: 24,
+        fontFamily: "var(--font-mono), monospace",
+        fontSize: 10,
+        color: "var(--muted-soft)",
+        opacity: 0.4,
+        letterSpacing: "0.08em",
+        textTransform: "uppercase"
+      }}>
+        {t.common.views}: {views}
+      </div>
     </footer>
   );
 }

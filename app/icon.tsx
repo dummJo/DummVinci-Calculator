@@ -6,15 +6,7 @@ export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
 export default async function Icon() {
-  const basePath = path.normalize(path.join(process.cwd(), "public"));
-  const joinedPath = path.join(basePath, "logo-dv-ptts.png");
-  const imagePath = path.normalize(joinedPath);
-
-  if (!imagePath.startsWith(basePath)) {
-    throw new Error("Security check: Invalid path");
-  }
-
-  const imageBuffer = fs.readFileSync(imagePath);
+  const imageBuffer = fs.readFileSync(path.normalize(path.join(process.cwd(), "public/logo-dv-ptts.png")));
   const base64Image = `data:image/png;base64,${imageBuffer.toString("base64")}`;
 
   return new ImageResponse(
