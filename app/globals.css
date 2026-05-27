@@ -112,18 +112,18 @@
 /* ─── Light theme (default) ─── */
 :root,
 [data-theme="light"] {
-  --bg: #FF6600;
-  /* KTM Orange (Dominant) */
-  --bg-raised: #E05A00;
-  /* Softer Darker KTM Orange for Raised Elements */
-  --bg-deep: #CC5200;
-  /* Deep KTM Orange */
-  --bg-accent: #B34700;
-  /* Hover Accent KTM Orange */
+  --bg: #F5E6DF;
+  /* Softer Anthropic Orange / Peach Cream */
+  --bg-raised: #ECDCD3;
+  /* Slightly lighter raised container color */
+  --bg-deep: #E2CECE;
+  /* Deep base color */
+  --bg-accent: #D97757;
+  /* Hover accent matching Anthropic Orange */
   --fg: #000000;
   /* Ultra-contrast Perfect Black Text */
   --fg-soft: #000000;
-  /* Pure Black for max contrast on orange */
+  /* Pure Black for max contrast on soft orange */
   --muted: #0F0F0F;
   /* Extremely dark tone to prevent washed-out look */
   --muted-soft: rgba(0, 0, 0, 0.35);
@@ -137,23 +137,29 @@
   --accent-rgb: 0, 0, 0;
   --canvas-accent: #000000;
   --border: rgba(0, 0, 0, 0.16);
-  --card: rgba(255, 102, 0, 0.95);
-  --nav-bg: rgba(255, 102, 0, 0.9);
+  --card: rgba(245, 230, 223, 0.95);
+  --nav-bg: rgba(245, 230, 223, 0.9);
   --shadow-hover: rgba(0, 0, 0, 0.08);
-  --selection-bg: #000000;
-  --selection-fg: #FF6600;
+  --selection-bg: #D97757;
+  --selection-fg: #FAF9F5;
   /* Glass surfaces */
-  --glass-bg: rgba(255, 102, 0, 0.8);
+  --glass-bg: rgba(245, 230, 223, 0.8);
   --glass-border: rgba(0, 0, 0, 0.16);
-  --glass-hi: rgba(255, 102, 0, 0.9);
+  --glass-hi: rgba(245, 230, 223, 0.9);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   --glass-blur: blur(20px) saturate(180%);
   --nav-blur: blur(24px) saturate(180%);
   --cursor-glow: rgba(0, 0, 0, 0.06);
   --cursor-card-glow: rgba(0, 0, 0, 0.08);
   --cursor-card-border: rgba(0, 0, 0, 0.35);
-  --tabbar-bg: rgba(255, 102, 0, 0.65);
+  --tabbar-bg: rgba(245, 230, 223, 0.65);
   --accent-pill-bg: rgba(0, 0, 0, 0.15);
+
+  /* Popout card overrides for BottomTabBar modals */
+  --popout-bg: #FAF9F5;
+  --popout-fg: #1C1512;
+  --popout-border: rgba(0, 0, 0, 0.1);
+  --popout-muted: #8B3A1A;
 }
 
 [data-theme="dark"] {
@@ -199,6 +205,12 @@
   --cursor-card-border: rgba(217, 119, 87, 0.4);
   --tabbar-bg: rgba(20, 20, 19, 0.4);
   --accent-pill-bg: rgba(217, 119, 87, 0.15);
+
+  /* Popout card overrides for BottomTabBar modals */
+  --popout-bg: #1F1F1E;
+  --popout-fg: #faf9f5;
+  --popout-border: rgba(250, 249, 245, 0.08);
+  --popout-muted: #d97757;
 }
 
 * {
