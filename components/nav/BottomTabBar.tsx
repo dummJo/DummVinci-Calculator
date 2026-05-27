@@ -283,7 +283,7 @@ export default function BottomTabBar() {
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--muted)", marginBottom: 12 }}>
                 <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>{t.changelog.previousReleases}</span>
               </div>
-              <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 8, opacity: 0.6, fontSize: 13 }}>
+              <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 8, opacity: 0.85, fontSize: 13 }}>
                 <li>{t.changelog.v24Desc}</li>
                 <li>{t.changelog.v23Desc}</li>
               </ul>
@@ -300,7 +300,7 @@ export default function BottomTabBar() {
               {t.changelog.letsGo}
             </button>
 
-            <div style={{ marginTop: 24, textAlign: "center", opacity: 0.3, fontSize: 10, fontFamily: "var(--font-mono)" }}>
+            <div style={{ marginTop: 24, textAlign: "center", opacity: 0.65, fontSize: 10, fontFamily: "var(--font-mono)" }}>
               {t.changelog.byDummVinci}
             </div>
           </div>
@@ -373,7 +373,7 @@ export default function BottomTabBar() {
           <History size={18} style={{ color: "var(--accent)" }} />
           <div style={{ flex: 1, textAlign: "left" }}>
             <div style={{ fontSize: 11, fontWeight: 800, fontFamily: "var(--font-heading)", color: "var(--accent)" }}>{t.nav.changelog}</div>
-            <div style={{ fontSize: 9, opacity: 0.6, color: "var(--fg)" }}>{t.changelog.stableVersion}</div>
+            <div style={{ fontSize: 9, opacity: 0.85, color: "var(--fg)" }}>{t.changelog.stableVersion}</div>
           </div>
         </button>
       </div>
