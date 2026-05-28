@@ -217,6 +217,11 @@
   box-sizing: border-box;
 }
 
+.no-theme-transition,
+.no-theme-transition * {
+  transition: none !important;
+}
+
 html {
   scroll-behavior: smooth;
   height: -webkit-fill-available;
