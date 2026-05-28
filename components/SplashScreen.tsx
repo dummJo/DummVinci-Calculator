@@ -1,8 +1,36 @@
 /* eslint-disable */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLang } from "@/lib/i18n";
+
+// Claude Code-style flavor verbs + emoji prop. Picked at random on each mount.
+type Scene = { verb: string; emoji: string };
+const SCENES: Scene[] = [
+  { verb: "Riding clouds",     emoji: "☁️" },
+  { verb: "Drawing",           emoji: "✏️" },
+  { verb: "Watching anime",    emoji: "🎌" },
+  { verb: "Riding horse",      emoji: "🐴" },
+  { verb: "Coding",            emoji: "💻" },
+  { verb: "Reading scrolls",   emoji: "📜" },
+  { verb: "Slurping ramen",    emoji: "🍜" },
+  { verb: "Strumming guitar",  emoji: "🎸" },
+  { verb: "Skateboarding",     emoji: "🛹" },
+  { verb: "Painting",          emoji: "🎨" },
+  { verb: "Stargazing",        emoji: "🔭" },
+  { verb: "Napping",           emoji: "💤" },
+  { verb: "Calculating",       emoji: "🧮" },
+  { verb: "Adventuring",       emoji: "⚔️" },
+  { verb: "Tinkering",         emoji: "🔧" },
+  { verb: "Brewing coffee",    emoji: "☕" },
+  { verb: "Inventing",         emoji: "💡" },
+  { verb: "Drafting blueprint",emoji: "📐" },
+  { verb: "Charging up",       emoji: "⚡" },
+  { verb: "Casting spells",    emoji: "🪄" },
+];
+
+const SPLASH_DURATION_MS = 2000;
+const FADE_DURATION_MS = 500;
 
 export default function SplashScreen() {
   const { t } = useLang();
@@ -10,27 +38,25 @@ export default function SplashScreen() {
   const [isFading, setIsFading] = useState(false);
   const [progress, setProgress] = useState(0);
 
+  // Pick a single random scene per mount.
+  const scene = useMemo(() => SCENES[Math.floor(Math.random() * SCENES.length)], []);
+
   useEffect(() => {
-    // Fake loading progress
+    // Progress ticker — aims to reach 100 by ~1800ms (before fade starts at 2000ms).
     let currentProgress = 0;
     const progressInterval = setInterval(() => {
-      currentProgress += Math.floor(Math.random() * 18) + 4; // jump between 4 and 22
+      currentProgress += Math.floor(Math.random() * 6) + 3; // 3-8 per tick
       if (currentProgress >= 100) {
         currentProgress = 100;
         clearInterval(progressInterval);
       }
       setProgress(currentProgress);
-    }, 120);
+    }, 80);
 
-    // Ensure the initial layout is painted, then hold the splash screen
-    // for a short duration before fading it out.
     const timer = setTimeout(() => {
       setIsFading(true);
-      // Wait for the fade-out animation to complete before removing from DOM
-      setTimeout(() => {
-        setIsVisible(false);
-      }, 500); // matches the CSS transition duration
-    }, 1800); // slightly longer to let progress reach 100
+      setTimeout(() => setIsVisible(false), FADE_DURATION_MS);
+    }, SPLASH_DURATION_MS);
 
     return () => {
       clearTimeout(timer);
@@ -55,57 +81,36 @@ export default function SplashScreen() {
         transition: "opacity 0.5s ease-out, filter 0.5s ease-out, transform 0.5s ease-out",
         filter: isFading ? "blur(10px)" : "blur(0px)",
         transform: isFading ? "scale(1.05)" : "scale(1)",
-        pointerEvents: "none", // ensure it doesn't block interactions while fading
+        pointerEvents: "none",
       }}
     >
       <style>{`
         @keyframes claudeFloat {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-8px);
-          }
+          0%, 100% { transform: translateY(0); }
+          50%      { transform: translateY(-8px); }
         }
         @keyframes claudePulse {
-          0% {
-            transform: scale(0.9);
-            opacity: 0.35;
-          }
-          100% {
-            transform: scale(1.1);
-            opacity: 0.75;
-          }
+          0%   { transform: scale(0.9); opacity: 0.35; }
+          100% { transform: scale(1.1); opacity: 0.75; }
         }
         @keyframes claudeBlink {
           0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
+          50%      { opacity: 0; }
         }
         @keyframes eyeBlink {
-          0%, 90%, 100% {
-            transform: scaleY(1);
-          }
-          93%, 97% {
-            transform: scaleY(0.15);
-          }
+          0%, 90%, 100% { transform: scaleY(1); }
+          93%, 97%      { transform: scaleY(0.15); }
         }
-        .mascot-eye-left {
-          transform-origin: 3.5px 2.5px;
-          animation: eyeBlink 3s infinite;
+        @keyframes propWobble {
+          0%, 100% { transform: translate(0, 0) rotate(-8deg); }
+          50%      { transform: translate(4px, -6px) rotate(8deg); }
         }
-        .mascot-eye-right {
-          transform-origin: 6.5px 2.5px;
-          animation: eyeBlink 3s infinite;
-        }
+        .mascot-eye-left  { transform-origin: 3.5px 2.5px; animation: eyeBlink 3s infinite; }
+        .mascot-eye-right { transform-origin: 6.5px 2.5px; animation: eyeBlink 3s infinite; }
       `}</style>
 
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 32,
-      }}>
-        {/* Animated 8-bit Mascot */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28 }}>
+        {/* Mascot + scene prop */}
         <div style={{
           position: "relative",
           width: 96,
@@ -115,7 +120,7 @@ export default function SplashScreen() {
           justifyContent: "center",
           animation: "claudeFloat 3s ease-in-out infinite",
         }}>
-          {/* Sparkles / Aura */}
+          {/* Aura */}
           <div style={{
             position: "absolute",
             inset: -24,
@@ -124,7 +129,24 @@ export default function SplashScreen() {
             borderRadius: "50%",
             pointerEvents: "none",
           }} />
-          
+
+          {/* Themed prop emoji — floats top-right of mascot */}
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              top: -8,
+              right: -18,
+              fontSize: 28,
+              animation: "propWobble 1.6s ease-in-out infinite",
+              filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))",
+              zIndex: 3,
+              lineHeight: 1,
+            }}
+          >
+            {scene.emoji}
+          </div>
+
           <svg
             viewBox="-1 -1 12 10"
             style={{
@@ -137,7 +159,6 @@ export default function SplashScreen() {
             }}
           >
             <defs>
-              {/* Outline filter to create the white sticker outline */}
               <filter id="sticker-outline" x="-30%" y="-30%" width="160%" height="160%">
                 <feMorphology operator="dilate" radius="0.45" in="SourceAlpha" result="dilated" />
                 <feFlood floodColor="#faf9f5" floodOpacity="1" result="flood" />
@@ -150,70 +171,38 @@ export default function SplashScreen() {
             </defs>
 
             <g filter="url(#sticker-outline)">
-              {/* Main Body */}
-              {/* Row 1-2 (y=0, 1): Top of head */}
+              {/* Head + body */}
               <rect x="1" y="0" width="8" height="2" fill="var(--accent)" />
-              
-              {/* Row 3 (y=2): Eye row */}
               <rect x="0" y="2" width="3" height="1" fill="var(--accent)" />
               <rect x="4" y="2" width="2" height="1" fill="var(--accent)" />
               <rect x="7" y="2" width="3" height="1" fill="var(--accent)" />
-              
-              {/* Row 4 (y=3): Arm row */}
               <rect x="0" y="3" width="10" height="1" fill="var(--accent)" />
-              
-              {/* Row 5 (y=4): Mid body */}
               <rect x="1" y="4" width="8" height="1" fill="var(--accent)" />
-              
-              {/* Legs & Gaps */}
-              {/* Leg A (Col 1) */}
+              {/* Legs */}
               <rect x="1" y="5" width="1" height="3" fill="var(--accent)" />
-              {/* Leg B (Col 3) */}
               <rect x="3" y="5" width="1" height="3" fill="var(--accent)" />
-              {/* Leg C (Col 6) */}
               <rect x="6" y="5" width="1" height="3" fill="var(--accent)" />
-              {/* Leg D (Col 8) */}
               <rect x="8" y="5" width="1" height="3" fill="var(--accent)" />
-              {/* Mid connector above center gap */}
               <rect x="4" y="5" width="2" height="1" fill="var(--accent)" />
 
-              {/* Dynamic 8-bit eyes based on progress */}
+              {/* Eyes evolve with progress */}
               {progress < 35 ? (
                 <>
-                  {/* Normal Blinking Eyes */}
                   <rect x="3" y="2" width="1" height="1" fill="black" className="mascot-eye-left" />
                   <rect x="6" y="2" width="1" height="1" fill="black" className="mascot-eye-right" />
                 </>
               ) : progress < 70 ? (
                 <>
-                  {/* Happy/Squinting Eyes ^ ^ */}
-                  <path
-                    d="M 3.0,2.8 L 3.5,2.2 L 4.0,2.8"
-                    stroke="black"
-                    strokeWidth="0.85"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M 6.0,2.8 L 6.5,2.2 L 7.0,2.8"
-                    stroke="black"
-                    strokeWidth="0.85"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                  <path d="M 3.0,2.8 L 3.5,2.2 L 4.0,2.8" stroke="black" strokeWidth="0.85" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M 6.0,2.8 L 6.5,2.2 L 7.0,2.8" stroke="black" strokeWidth="0.85" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </>
               ) : (
                 <>
-                  {/* Sparkle/Star Eyes ✧ ✧ */}
-                  {/* Left Star */}
                   <rect x="3" y="2" width="1" height="1" fill="black" />
                   <rect x="3" y="1" width="1" height="1" fill="black" />
                   <rect x="3" y="3" width="1" height="1" fill="black" />
                   <rect x="2" y="2" width="1" height="1" fill="black" />
                   <rect x="4" y="2" width="1" height="1" fill="black" />
-                  {/* Right Star */}
                   <rect x="6" y="2" width="1" height="1" fill="black" />
                   <rect x="6" y="1" width="1" height="1" fill="black" />
                   <rect x="6" y="3" width="1" height="1" fill="black" />
@@ -225,7 +214,7 @@ export default function SplashScreen() {
           </svg>
         </div>
 
-        {/* DummVinci Logo */}
+        {/* Brand */}
         <div style={{
           fontFamily: "var(--font-display)",
           fontSize: 32,
@@ -240,8 +229,8 @@ export default function SplashScreen() {
           <span style={{ fontWeight: 800, color: "var(--accent)" }}>{t.nav.brandVinci}</span>
         </div>
 
-        {/* Loading Text & 8-bit Progress */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+        {/* Verb + percent + loading bar */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
           <div style={{
             fontFamily: "var(--font-mono)",
             fontSize: 12,
@@ -249,20 +238,38 @@ export default function SplashScreen() {
             color: "var(--accent)",
             letterSpacing: "0.2em",
             textTransform: "uppercase",
-            opacity: 0.8,
+            opacity: 0.85,
           }}>
-            {t.common.initializing}
+            {scene.verb}
             <span style={{ animation: "claudeBlink 1.5s infinite" }}>_</span>
           </div>
-          
+
+          {/* Loading bar */}
+          <div style={{
+            width: 200,
+            height: 4,
+            background: "rgba(var(--accent-rgb), 0.15)",
+            borderRadius: 2,
+            overflow: "hidden",
+            position: "relative",
+          }}>
+            <div style={{
+              width: `${progress}%`,
+              height: "100%",
+              background: "var(--accent)",
+              boxShadow: "0 0 8px rgba(var(--accent-rgb), 0.6)",
+              transition: "width 0.12s linear",
+            }} />
+          </div>
+
           <div style={{
             fontFamily: "var(--font-mono)",
             fontSize: 10,
             color: "var(--accent)",
-            opacity: 0.5,
+            opacity: 0.55,
             display: "flex",
             gap: 4,
-            alignItems: "center"
+            alignItems: "center",
           }}>
             <span>[</span>
             <span style={{ width: "24px", textAlign: "right" }}>{progress}</span>
