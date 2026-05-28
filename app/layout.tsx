@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -25,33 +25,59 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F5E6DF" },
+    { media: "(prefers-color-scheme: dark)", color: "#141413" },
+  ],
+};
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id" suppressHydrationWarning className={`${inter.variable} ${monoFont.variable}`}>
+      <head>
+        {/* Pre-paint background so the first frame on iOS Safari already matches the theme,
+           avoiding the flash before JS resolves localStorage. */}
+        <style>{`
+          html { background-color: #F5E6DF; }
+          @media (prefers-color-scheme: dark) {
+            html { background-color: #141413; }
+          }
+          html[data-theme="light"] { background-color: #F5E6DF; }
+          html[data-theme="dark"] { background-color: #141413; }
+        `}</style>
+      </head>
       <body style={{ position: "relative" }}>
-        <SplashScreen />
         <Script
           id="theme-init"
           strategy="beforeInteractive"
         >{`(function(){try{
-  var t=localStorage.getItem("theme")||(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  var saved=localStorage.getItem("theme");
+  var t=saved||(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
   document.documentElement.setAttribute("data-theme",t);
-  var m=document.createElement("meta");
-  m.name="theme-color";
-  m.content=t==="dark"?"#141413":"#F5E6DF";
-  document.head.appendChild(m);
+  // Only override the static prefers-color-scheme meta tags when user explicitly chose a theme
+  // that differs from the OS preference (otherwise the static tags already match)
+  if(saved){
+    var metas=document.querySelectorAll('meta[name="theme-color"]');
+    metas.forEach(function(m){m.parentNode.removeChild(m);});
+    var m=document.createElement("meta");
+    m.name="theme-color";
+    m.content=t==="dark"?"#141413":"#F5E6DF";
+    document.head.appendChild(m);
+  }
   document.documentElement.classList.add("no-theme-transition");
   requestAnimationFrame(function(){requestAnimationFrame(function(){
     document.documentElement.classList.remove("no-theme-transition");
   });});
 }catch(e){}})();`}</Script>
+        <SplashScreen />
 
         <CursorGlow />
         <DaVinciAscii />
         <TopBar />
-        <div id="app-root" style={{ 
-          paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))", 
-          minHeight: "100vh" 
+        <div id="app-root" style={{
+          paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))",
+          minHeight: "100vh"
         }}>
           {children}
         </div>
