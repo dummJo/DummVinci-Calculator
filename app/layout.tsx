@@ -27,13 +27,24 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id" className={`${inter.variable} ${monoFont.variable}`}>
+    <html lang="id" suppressHydrationWarning className={`${inter.variable} ${monoFont.variable}`}>
       <body style={{ position: "relative" }}>
         <SplashScreen />
         <Script
           id="theme-init"
           strategy="beforeInteractive"
-        >{`(function(){try{var t=localStorage.getItem("theme")||"light";document.documentElement.setAttribute("data-theme",t)}catch(e){}})();`}</Script>
+        >{`(function(){try{
+  var t=localStorage.getItem("theme")||(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  document.documentElement.setAttribute("data-theme",t);
+  var m=document.createElement("meta");
+  m.name="theme-color";
+  m.content=t==="dark"?"#141413":"#F5E6DF";
+  document.head.appendChild(m);
+  document.documentElement.classList.add("no-theme-transition");
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    document.documentElement.classList.remove("no-theme-transition");
+  });});
+}catch(e){}})();`}</Script>
 
         <CursorGlow />
         <DaVinciAscii />
