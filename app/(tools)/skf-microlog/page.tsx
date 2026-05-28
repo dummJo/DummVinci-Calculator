@@ -62,18 +62,9 @@ const inputStyleBase = {
   transition: "border-color 0.2s ease",
 } as const;
 
-const getModuleIdData = (id: string) => {
-  switch(id) {
-    case "01": return MODULES_ID["01"];
-    case "02": return MODULES_ID["02"];
-    case "03": return MODULES_ID["03"];
-    case "04": return MODULES_ID["04"];
-    case "05": return MODULES_ID["05"];
-    case "06": return MODULES_ID["06"];
-    case "07": return MODULES_ID["07"];
-    default: return undefined;
-  }
-};
+// Direct map lookup — the data objects are Record<string, T>, so a switch over a
+// hand-maintained key list only risks silently dropping entries when the catalog grows.
+const getModuleIdData = (id: string) => MODULES_ID[id];
 
 const getTagColor = (tag: string) => {
   switch(tag) {
@@ -86,35 +77,11 @@ const getTagColor = (tag: string) => {
   }
 };
 
-const getDiagnosticPatternIdData = (id: string) => {
-  switch(id) {
-    case "M1": return DIAGNOSTIC_PATTERNS_ID["M1"];
-    case "M2": return DIAGNOSTIC_PATTERNS_ID["M2"];
-    case "M3": return DIAGNOSTIC_PATTERNS_ID["M3"];
-    case "U1": return DIAGNOSTIC_PATTERNS_ID["U1"];
-    case "U2": return DIAGNOSTIC_PATTERNS_ID["U2"];
-    case "U3": return DIAGNOSTIC_PATTERNS_ID["U3"];
-    case "B1": return DIAGNOSTIC_PATTERNS_ID["B1"];
-    case "B2": return DIAGNOSTIC_PATTERNS_ID["B2"];
-    case "B3": return DIAGNOSTIC_PATTERNS_ID["B3"];
-    case "B4": return DIAGNOSTIC_PATTERNS_ID["B4"];
-    case "E1": return DIAGNOSTIC_PATTERNS_ID["E1"];
-    case "L1": return DIAGNOSTIC_PATTERNS_ID["L1"];
-    case "G1": return DIAGNOSTIC_PATTERNS_ID["G1"];
-    case "P1": return DIAGNOSTIC_PATTERNS_ID["P1"];
-    default: return undefined;
-  }
-};
+// Previously a switch over keys M1/M2/U1… that do not exist in the data (real keys are
+// A1–L4) — so ~30 of 33 patterns silently fell back to English in Indonesian mode.
+const getDiagnosticPatternIdData = (id: string) => DIAGNOSTIC_PATTERNS_ID[id];
 
-const getLearningGoalIdData = (id: string) => {
-  switch(id) {
-    case "A": return LEARNING_GOALS_ID["A"];
-    case "B": return LEARNING_GOALS_ID["B"];
-    case "C": return LEARNING_GOALS_ID["C"];
-    case "D": return LEARNING_GOALS_ID["D"];
-    default: return undefined;
-  }
-};
+const getLearningGoalIdData = (id: string) => LEARNING_GOALS_ID[id];
 
 // ─── Module Card ──────────────────────────────────────────────────────────────
 function ModuleCard({ mod, onClick, isActive, lang }: { mod: ModuleData; onClick: () => void; isActive: boolean; lang: "en" | "id" }) {
@@ -340,7 +307,7 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
   const [quizMode, setQuizMode] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [quizScores, setQuizScores] = useState<Record<number, "mastered" | "review">>([]);
+  const [quizScores, setQuizScores] = useState<Record<number, "mastered" | "review">>({});
 
   // View All Recall States
   const [revealedQ, setRevealedQ] = useState<Set<number>>(new Set());
@@ -358,13 +325,10 @@ function ModuleDetail({ mod, lang }: { mod: ModuleData; lang: "en" | "id" }) {
     setSelectedOption(optIndex);
     const question = content.activeRecall.at(currentQuestionIndex);
     const isCorrect = question ? optIndex === question.correctAnswer : false;
-    setQuizScores(prev => {
-      const nextScores: Record<number, "mastered" | "review"> = { ...prev };
-      Object.defineProperty(nextScores, currentQuestionIndex, { 
-        value: isCorrect ? "mastered" : "review", enumerable: true, writable: true 
-      });
-      return nextScores;
-    });
+    setQuizScores(prev => ({
+      ...prev,
+      [currentQuestionIndex]: isCorrect ? "mastered" : "review",
+    }));
   };
 
   const handleNext = () => {
@@ -1888,8 +1852,7 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function SkfMicrologPage() {
-  const { t } = useLang();
-  const { lang } = useLang();
+  const { t, lang } = useLang();
   const [activeTab, setActiveTab] = useState<TabKey>("modules");
   const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
 

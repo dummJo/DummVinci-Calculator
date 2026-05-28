@@ -830,7 +830,7 @@ export const T = {
       btnExportPdf: "Ekspor BOQ ke PDF",
     },
     support: {
-      title: "ABB Drive Support Hub",
+      title: "Pusat Dukungan Drive ABB",
       subtitle: "Pencarian kode kesalahan · Manual produk · Dimensi fisik frame VSD",
       concept: "Support Hub memberikan bantuan diagnosis lapangan secara instan. Masukkan **Kode Kesalahan (Fault Code) ABB** untuk mengetahui penyebab utama dan langkah perbaikan standar sesuai panduan IEC. Referensi dimensi frame disediakan untuk membantu perencanaan layout panel.",
       inputFault: "Masukkan Kode Kesalahan (misal: 2310)",
@@ -998,6 +998,11 @@ export function useLang() {
     window.addEventListener("lang-change", handler);
     return () => window.removeEventListener("lang-change", handler);
   }, []);
+
+  // Keep <html lang> in sync so screen readers use the correct pronunciation.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   function setLang(l: Lang) {
     localStorage.setItem("lang", l);

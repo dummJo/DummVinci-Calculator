@@ -1,7 +1,6 @@
-/* eslint-disable */
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
 
 // Claude Code-style flavor verbs + emoji prop. Picked at random on each mount.
@@ -38,8 +37,9 @@ export default function SplashScreen() {
   const [isFading, setIsFading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // Pick a single random scene per mount.
-  const scene = useMemo(() => SCENES[Math.floor(Math.random() * SCENES.length)], []);
+  // Pick a single random scene per mount via a lazy initializer (runs exactly once).
+  const [sceneIndex] = useState(() => Math.floor(Math.random() * SCENES.length));
+  const scene = SCENES[sceneIndex];
 
   useEffect(() => {
     // Progress ticker — aims to reach 100 by ~1800ms (before fade starts at 2000ms).

@@ -28,9 +28,7 @@ export default function ThemeToggle() {
     const btn = btnRef.current;
     if (!btn || !mounted) return;
 
-    // Gold burst pulse on button
-    setBurst(true);
-    setTimeout(() => setBurst(false), 420);
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
     const { top, left, width, height } = btn.getBoundingClientRect();
     const cx = left + width / 2;
@@ -41,29 +39,35 @@ export default function ThemeToggle() {
     );
     const DUR = 580;
 
-    // ── Gold compass ring: traces the circle perimeter as it expands ──
-    const ring = document.createElement("div");
-    Object.assign(ring.style, {
-      position:     "fixed",
-      borderRadius: "50%",
-      border:       "1.5px solid var(--accent)",
-      boxShadow:    "0 0 10px rgba(var(--accent-rgb), 0.45), inset 0 0 6px rgba(var(--accent-rgb), 0.2)",
-      zIndex:       "9999",
-      pointerEvents:"none",
-      width:        `${width}px`,
-      height:       `${width}px`,
-      left:         `${cx - width / 2}px`,
-      top:          `${cy - width / 2}px`,
-      opacity:      "0.85",
-      willChange:   "transform, opacity",
-    });
-    document.body.appendChild(ring);
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      ring.style.transition = `transform ${DUR}ms cubic-bezier(0.22,1,0.36,1), opacity ${DUR * 0.7}ms ease-in ${DUR * 0.2}ms`;
-      ring.style.transform  = `scale(${(endRadius * 2) / width})`;
-      ring.style.opacity    = "0";
-    }));
-    setTimeout(() => ring.remove(), DUR + 50);
+    if (!prefersReducedMotion) {
+      // Gold burst pulse on button
+      setBurst(true);
+      setTimeout(() => setBurst(false), 420);
+
+      // ── Gold compass ring: traces the circle perimeter as it expands ──
+      const ring = document.createElement("div");
+      Object.assign(ring.style, {
+        position:     "fixed",
+        borderRadius: "50%",
+        border:       "1.5px solid var(--accent)",
+        boxShadow:    "0 0 10px rgba(var(--accent-rgb), 0.45), inset 0 0 6px rgba(var(--accent-rgb), 0.2)",
+        zIndex:       "9999",
+        pointerEvents:"none",
+        width:        `${width}px`,
+        height:       `${width}px`,
+        left:         `${cx - width / 2}px`,
+        top:          `${cy - width / 2}px`,
+        opacity:      "0.85",
+        willChange:   "transform, opacity",
+      });
+      document.body.appendChild(ring);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        ring.style.transition = `transform ${DUR}ms cubic-bezier(0.22,1,0.36,1), opacity ${DUR * 0.7}ms ease-in ${DUR * 0.2}ms`;
+        ring.style.transform  = `scale(${(endRadius * 2) / width})`;
+        ring.style.opacity    = "0";
+      }));
+      setTimeout(() => ring.remove(), DUR + 50);
+    }
 
     const applyTheme = () => {
       flushSync(() => {
@@ -76,7 +80,7 @@ export default function ThemeToggle() {
     };
 
     const startVT = (document as DocWithVT).startViewTransition?.bind(document);
-    if (!startVT) { applyTheme(); return; }
+    if (!startVT || prefersReducedMotion) { applyTheme(); return; }
 
     const transition = startVT(applyTheme);
 
@@ -97,7 +101,7 @@ export default function ThemeToggle() {
     });
   }, [theme, mounted]);
 
-  if (!mounted) return <div style={{ width: 32, height: 32 }} />;
+  if (!mounted) return <div style={{ width: 40, height: 40 }} />;
 
   return (
     <>
@@ -125,8 +129,8 @@ export default function ThemeToggle() {
           background:     "none",
           border:         "1px solid var(--border)",
           borderRadius:   "50%",
-          width:          32,
-          height:         32,
+          width:          40,
+          height:         40,
           display:        "flex",
           alignItems:     "center",
           justifyContent: "center",

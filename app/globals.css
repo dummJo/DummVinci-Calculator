@@ -126,8 +126,8 @@
   /* Pure Black for max contrast on soft orange */
   --muted: #0F0F0F;
   /* Extremely dark tone to prevent washed-out look */
-  --muted-soft: rgba(0, 0, 0, 0.35);
-  /* Stronger overlay */
+  --muted-soft: rgba(0, 0, 0, 0.55);
+  /* ≥3.5:1 on the peach bg — 0.35 failed WCAG (~2:1) */
   --accent: #000000;
   /* Perfect Black Accent */
   --accent-hi: #111111;
@@ -866,5 +866,31 @@ input[type="number"] {
 
   to {
     opacity: 1;
+  }
+}
+
+/* ─── Reduced-motion: respect vestibular-sensitivity preference ───
+   Neutralise movement-based animations/transitions globally while keeping
+   opacity/colour feedback. Targeted so essential fades still read. */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .spec-marquee,
+  .dv-ascii pre,
+  .dv-ascii--drift pre {
+    animation: none !important;
+  }
+
+  .card-hover:hover,
+  .home-card:hover {
+    transform: none !important;
   }
 }

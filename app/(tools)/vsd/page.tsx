@@ -34,7 +34,7 @@ export default function VsdPage() {
   function handleCalc() {
     const r = sizeVsd({
       motorKw:      parseFloat(motorKw) || 0,
-      voltage:      (parseInt(voltage) as Voltage) ?? 400,
+      voltage:      ((parseInt(voltage) || 400) as Voltage),
       app,
       dutyHeavy:    heavy,
       panelDeltaT:  parseFloat(deltaT)  || 12,

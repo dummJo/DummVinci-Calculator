@@ -50,6 +50,7 @@ export default function TopBar() {
 
   return (
     <header
+      aria-label="Site header"
       style={{
         position: "sticky",
         top: 0,

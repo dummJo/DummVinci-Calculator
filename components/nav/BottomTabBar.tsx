@@ -265,7 +265,7 @@ export default function BottomTabBar() {
                   {t.changelog.whatsNew}
                 </h2>
               </div>
-              <button onClick={closeChangelog} style={{ background: "none", border: "none", color: "var(--popout-muted)", cursor: "pointer" }}>
+              <button type="button" aria-label={t.nav.close} onClick={closeChangelog} style={{ background: "none", border: "none", color: "var(--popout-muted)", cursor: "pointer" }}>
                 <X size={24} />
               </button>
             </div>
@@ -382,6 +382,7 @@ export default function BottomTabBar() {
 
       <nav
         ref={navRef}
+        aria-label="Main navigation"
         className="telegram-glass"
         style={{
           position: "fixed",
@@ -394,7 +395,6 @@ export default function BottomTabBar() {
           borderRadius: 36,
           zIndex: 100,
           padding: "0 10px",
-          cursor: "pointer",
         }}
       >
         <div className="telegram-container">
@@ -407,7 +407,7 @@ export default function BottomTabBar() {
               </Link>
             );
           })}
-          <button className={clsx("tab-item", (showMore || isUtilityActive) && "tab-active")} style={{ background: "none", border: "none", cursor: "pointer" }} onClick={(e) => { e.stopPropagation(); setShowMore(!showMore); }}>
+          <button type="button" aria-haspopup="true" aria-expanded={showMore} aria-label={showMore ? t.nav.close : t.nav.more} className={clsx("tab-item", (showMore || isUtilityActive) && "tab-active")} style={{ background: "none", border: "none", cursor: "pointer" }} onClick={(e) => { e.stopPropagation(); setShowMore(!showMore); }}>
             {showMore ? <X size={24} strokeWidth={2.4} style={{ color: "var(--accent)" }} /> : <MoreHorizontal size={24} strokeWidth={2.4} className={(showMore || isUtilityActive) ? "active-icon" : "inactive-icon"} />}
             <span className="tab-label">{showMore ? t.nav.close : t.nav.more}</span>
           </button>
