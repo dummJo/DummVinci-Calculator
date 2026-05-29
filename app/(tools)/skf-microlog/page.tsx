@@ -1627,10 +1627,12 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
           <div style={{
             position: "relative", width: 140, height: 140, borderRadius: "50%",
-            border: "2px solid rgba(255,255,255,0.2)", background: "rgba(0,0,0,0.3)"
+            border: "2px solid var(--border)",
+            background: "var(--bg-deep)",
+            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.18)",
           }}>
             {/* Center point */}
-            <div style={{ position: "absolute", left: "50%", top: "50%", width: 6, height: 6, borderRadius: "50%", background: "#fff", transform: "translate(-50%, -50%)" }} />
+            <div style={{ position: "absolute", left: "50%", top: "50%", width: 6, height: 6, borderRadius: "50%", background: "var(--fg)", transform: "translate(-50%, -50%)" }} />
             
             {/* Degree Markers */}
             <div style={{ position: "absolute", top: 4, left: "50%", transform: "translateX(-50%)", fontSize: 8, color: "var(--muted)" }}>0°</div>
@@ -1638,12 +1640,18 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
             <div style={{ position: "absolute", left: 6, top: "50%", transform: "translateY(-50%)", fontSize: 8, color: "var(--muted)" }}>270°</div>
             <div style={{ position: "absolute", right: 6, top: "50%", transform: "translateY(-50%)", fontSize: 8, color: "var(--muted)" }}>90°</div>
 
+            {/* Vector dot positions follow industry phase-angle convention (compass):
+                0° at top, 90° at right, 180° bottom, 270° left, clockwise.
+                Maps compass θ → screen via x = sin(θ), y = -cos(θ).
+                The internal vector math in computeCW is convention-invariant
+                (relative angles only), so it is left untouched. */}
+
             {/* V0 Unbalance Vector (Red Dot) */}
             {simStep >= 2 && (
               <div style={{
                 position: "absolute",
-                left: `calc(50% + ${Math.cos((simV0.phase * Math.PI) / 180) * 45}px)`,
-                top: `calc(50% - ${Math.sin((simV0.phase * Math.PI) / 180) * 45}px)`,
+                left: `calc(50% + ${Math.sin((simV0.phase * Math.PI) / 180) * 45}px)`,
+                top: `calc(50% - ${Math.cos((simV0.phase * Math.PI) / 180) * 45}px)`,
                 width: 10, height: 10, borderRadius: "50%", background: "#ef4444",
                 transform: "translate(-50%, -50%)",
                 boxShadow: "0 0 10px #ef4444"
@@ -1654,8 +1662,8 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
             {simStep >= 3 && (
               <div style={{
                 position: "absolute",
-                left: `calc(50% + ${Math.cos((twAngleNum * Math.PI) / 180) * 45}px)`,
-                top: `calc(50% - ${Math.sin((twAngleNum * Math.PI) / 180) * 45}px)`,
+                left: `calc(50% + ${Math.sin((twAngleNum * Math.PI) / 180) * 45}px)`,
+                top: `calc(50% - ${Math.cos((twAngleNum * Math.PI) / 180) * 45}px)`,
                 width: 8, height: 8, borderRadius: "50%", background: "#f59e0b",
                 transform: "translate(-50%, -50%)",
                 boxShadow: "0 0 8px #f59e0b"
@@ -1666,8 +1674,8 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
             {simStep >= 4 && (
               <div style={{
                 position: "absolute",
-                left: `calc(50% + ${Math.cos((simVt1.phase * Math.PI) / 180) * 35}px)`,
-                top: `calc(50% - ${Math.sin((simVt1.phase * Math.PI) / 180) * 35}px)`,
+                left: `calc(50% + ${Math.sin((simVt1.phase * Math.PI) / 180) * 35}px)`,
+                top: `calc(50% - ${Math.cos((simVt1.phase * Math.PI) / 180) * 35}px)`,
                 width: 6, height: 6, borderRadius: "50%", background: "#fbbf24",
                 transform: "translate(-50%, -50%)",
               }} title="VT1 Vector" />
@@ -1677,8 +1685,8 @@ function TabTools({ lang }: { lang: "en" | "id" }) {
             {simStep >= 5 && (
               <div style={{
                 position: "absolute",
-                left: `calc(50% + ${Math.cos((simCwRecommendation.angle * Math.PI) / 180) * 45}px)`,
-                top: `calc(50% - ${Math.sin((simCwRecommendation.angle * Math.PI) / 180) * 45}px)`,
+                left: `calc(50% + ${Math.sin((simCwRecommendation.angle * Math.PI) / 180) * 45}px)`,
+                top: `calc(50% - ${Math.cos((simCwRecommendation.angle * Math.PI) / 180) * 45}px)`,
                 width: 10, height: 10, borderRadius: "50%", background: "#22c55e",
                 transform: "translate(-50%, -50%)",
                 boxShadow: "0 0 10px #22c55e"
