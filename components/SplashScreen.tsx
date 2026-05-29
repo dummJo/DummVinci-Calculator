@@ -185,29 +185,32 @@ export default function SplashScreen() {
               <rect x="8" y="5" width="1" height="3" fill="var(--accent)" />
               <rect x="4" y="5" width="2" height="1" fill="var(--accent)" />
 
-              {/* Eyes evolve with progress */}
+              {/* Eyes evolve with progress.
+                  Eyes use var(--bg) so they punch through the accent-coloured body:
+                  in light theme the body is black (peach eyes show); in dark theme the
+                  body is orange (dark eyes show). Hardcoded black vanished in light mode. */}
               {progress < 35 ? (
                 <>
-                  <rect x="3" y="2" width="1" height="1" fill="black" className="mascot-eye-left" />
-                  <rect x="6" y="2" width="1" height="1" fill="black" className="mascot-eye-right" />
+                  <rect x="3" y="2" width="1" height="1" fill="var(--bg)" className="mascot-eye-left" />
+                  <rect x="6" y="2" width="1" height="1" fill="var(--bg)" className="mascot-eye-right" />
                 </>
               ) : progress < 70 ? (
                 <>
-                  <path d="M 3.0,2.8 L 3.5,2.2 L 4.0,2.8" stroke="black" strokeWidth="0.85" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M 6.0,2.8 L 6.5,2.2 L 7.0,2.8" stroke="black" strokeWidth="0.85" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M 3.0,2.8 L 3.5,2.2 L 4.0,2.8" stroke="var(--bg)" strokeWidth="0.85" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M 6.0,2.8 L 6.5,2.2 L 7.0,2.8" stroke="var(--bg)" strokeWidth="0.85" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </>
               ) : (
                 <>
-                  <rect x="3" y="2" width="1" height="1" fill="black" />
-                  <rect x="3" y="1" width="1" height="1" fill="black" />
-                  <rect x="3" y="3" width="1" height="1" fill="black" />
-                  <rect x="2" y="2" width="1" height="1" fill="black" />
-                  <rect x="4" y="2" width="1" height="1" fill="black" />
-                  <rect x="6" y="2" width="1" height="1" fill="black" />
-                  <rect x="6" y="1" width="1" height="1" fill="black" />
-                  <rect x="6" y="3" width="1" height="1" fill="black" />
-                  <rect x="5" y="2" width="1" height="1" fill="black" />
-                  <rect x="7" y="2" width="1" height="1" fill="black" />
+                  <rect x="3" y="2" width="1" height="1" fill="var(--bg)" />
+                  <rect x="3" y="1" width="1" height="1" fill="var(--bg)" />
+                  <rect x="3" y="3" width="1" height="1" fill="var(--bg)" />
+                  <rect x="2" y="2" width="1" height="1" fill="var(--bg)" />
+                  <rect x="4" y="2" width="1" height="1" fill="var(--bg)" />
+                  <rect x="6" y="2" width="1" height="1" fill="var(--bg)" />
+                  <rect x="6" y="1" width="1" height="1" fill="var(--bg)" />
+                  <rect x="6" y="3" width="1" height="1" fill="var(--bg)" />
+                  <rect x="5" y="2" width="1" height="1" fill="var(--bg)" />
+                  <rect x="7" y="2" width="1" height="1" fill="var(--bg)" />
                 </>
               )}
             </g>
