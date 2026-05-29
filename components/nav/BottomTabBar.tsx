@@ -91,6 +91,16 @@ export default function BottomTabBar() {
     return () => window.removeEventListener("click", handleClose);
   }, [showMore]);
 
+  // Esc to close changelog modal — keyboard-accessible dismiss.
+  useEffect(() => {
+    if (!showChangelog) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowChangelog(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showChangelog]);
+
   return (
     <>
       <style>{`
@@ -220,35 +230,190 @@ export default function BottomTabBar() {
           align-items: center;
           justify-content: center;
           padding: 20px;
-          background: rgba(0,0,0,0.6);
-          backdrop-filter: blur(8px);
+          background: radial-gradient(circle at 50% 40%, rgba(var(--accent-rgb), 0.10) 0%, rgba(0, 0, 0, 0.55) 60%, rgba(0, 0, 0, 0.7) 100%);
+          backdrop-filter: blur(12px) saturate(140%);
+          -webkit-backdrop-filter: blur(12px) saturate(140%);
+          animation: clOverlayIn 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes clOverlayIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        @keyframes clCardIn {
+          from { opacity: 0; transform: translateY(14px) scale(0.97); }
+          to   { opacity: 1; transform: translateY(0)    scale(1); }
         }
         .changelog-card {
           width: 100%;
-          max-width: 500px;
-          max-height: 80vh;
+          max-width: 520px;
+          max-height: 85vh;
           overflow-y: auto;
           background: var(--popout-bg);
           color: var(--popout-fg);
           border: 1px solid var(--popout-border);
-          border-radius: 28px;
-          padding: 32px;
+          border-radius: 24px;
+          padding: 28px 28px 24px;
           position: relative;
-          box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+          box-shadow: 0 32px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(var(--accent-rgb), 0.08);
+          animation: clCardIn 0.42s cubic-bezier(0.2, 0.8, 0.2, 1);
+          overflow-x: hidden;
+        }
+        .changelog-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, transparent, var(--accent), transparent);
+          opacity: 0.85;
         }
         .changelog-card * {
-          color: inherit;                   /* let all children inherit the dark text */
+          color: inherit;
+        }
+        .changelog-card::-webkit-scrollbar { width: 6px; }
+        .changelog-card::-webkit-scrollbar-thumb {
+          background: rgba(var(--accent-rgb), 0.25);
+          border-radius: 3px;
         }
         .version-tag {
-          display: inline-block;
-          padding: 4px 12px;
-          background: var(--accent-pill-bg);
-          color: var(--popout-muted);
-          border-radius: 12px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 12px 5px 8px;
+          background: rgba(var(--accent-rgb), 0.10);
+          color: var(--accent);
+          border: 1px solid rgba(var(--accent-rgb), 0.22);
+          border-radius: 999px;
           font-family: var(--font-mono);
           font-size: 10px;
           font-weight: 700;
-          margin-bottom: 20px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+        }
+        .version-tag::before {
+          content: '';
+          width: 6px; height: 6px;
+          border-radius: 50%;
+          background: var(--accent);
+          box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.7);
+        }
+        .cl-section-label {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: var(--popout-muted);
+          font-family: var(--font-mono);
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+        }
+        .cl-section-label::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: linear-gradient(90deg, var(--popout-border), transparent);
+        }
+        .cl-feature-row {
+          display: grid;
+          grid-template-columns: auto 1fr;
+          gap: 12px;
+          align-items: start;
+          padding: 14px 14px 14px 12px;
+          border-radius: 14px;
+          background: rgba(var(--accent-rgb), 0.04);
+          border: 1px solid rgba(var(--accent-rgb), 0.10);
+          transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+        }
+        .cl-feature-row:hover {
+          background: rgba(var(--accent-rgb), 0.08);
+          border-color: rgba(var(--accent-rgb), 0.22);
+          transform: translateY(-1px);
+        }
+        .cl-feature-dot {
+          width: 8px; height: 8px;
+          border-radius: 50%;
+          background: var(--accent);
+          margin-top: 7px;
+          box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.18);
+          flex-shrink: 0;
+        }
+        .cl-feature-title {
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-size: 14px;
+          color: var(--popout-fg);
+          line-height: 1.3;
+          margin-bottom: 4px;
+        }
+        .cl-feature-desc {
+          font-size: 13px;
+          line-height: 1.55;
+          color: var(--popout-muted);
+        }
+        .cl-prev-chip {
+          display: inline-flex;
+          align-items: baseline;
+          gap: 6px;
+          padding: 6px 10px;
+          border-radius: 8px;
+          background: rgba(var(--accent-rgb), 0.04);
+          border: 1px solid var(--popout-border);
+          font-size: 12px;
+          color: var(--popout-muted);
+        }
+        .cl-prev-chip b {
+          font-family: var(--font-mono);
+          font-size: 10px;
+          color: var(--accent);
+          letter-spacing: 0.08em;
+        }
+        .cl-cta-pill {
+          width: 100%;
+          margin-top: 24px;
+          padding: 15px 24px;
+          border-radius: 999px;
+          border: none;
+          cursor: pointer;
+          font-family: var(--font-display);
+          font-weight: 800;
+          font-size: 14px;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: var(--popout-bg);
+          background: linear-gradient(135deg, var(--accent), var(--popout-muted));
+          box-shadow: 0 8px 24px rgba(var(--accent-rgb), 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+          transition: transform 0.12s ease, box-shadow 0.18s ease;
+        }
+        .cl-cta-pill:hover {
+          box-shadow: 0 10px 28px rgba(var(--accent-rgb), 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+        }
+        .cl-cta-pill:active {
+          transform: scale(0.98);
+        }
+        .cl-close-btn {
+          background: rgba(var(--accent-rgb), 0.06);
+          border: 1px solid var(--popout-border);
+          color: var(--popout-muted);
+          cursor: pointer;
+          width: 32px; height: 32px;
+          border-radius: 50%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.16s ease, color 0.16s ease, transform 0.12s ease;
+          flex-shrink: 0;
+        }
+        .cl-close-btn:hover {
+          background: rgba(var(--accent-rgb), 0.14);
+          color: var(--accent);
+        }
+        .cl-close-btn:active {
+          transform: scale(0.92);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .modal-overlay,
+          .changelog-card { animation: none !important; }
+          .cl-feature-row:hover { transform: none; }
         }
       `}</style>
 
@@ -256,53 +421,97 @@ export default function BottomTabBar() {
 
       {/* CHANGELOG MODAL */}
       {showChangelog && (
-        <div className="modal-overlay" onClick={closeChangelog}>
+        <div
+          className="modal-overlay"
+          onClick={closeChangelog}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="changelog-title"
+        >
           <div className="changelog-card" onClick={e => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
-              <div>
-                <span className="version-tag">{t.changelog.updateTitle}</span>
-                <h2 style={{ fontSize: 28, fontFamily: "var(--font-display)", color: "var(--popout-fg)", margin: "8px 0 0 0" }}>
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, marginBottom: 22 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
+                <span className="version-tag">
+                  {t.changelog.updateTitle}
+                </span>
+                <h2
+                  id="changelog-title"
+                  style={{
+                    fontSize: 30,
+                    lineHeight: 1.1,
+                    fontFamily: "var(--font-display)",
+                    color: "var(--popout-fg)",
+                    margin: 0,
+                    letterSpacing: "-0.02em",
+                    fontWeight: 700,
+                  }}
+                >
                   {t.changelog.whatsNew}
                 </h2>
               </div>
-              <button type="button" aria-label={t.nav.close} onClick={closeChangelog} style={{ background: "none", border: "none", color: "var(--popout-muted)", cursor: "pointer" }}>
-                <X size={24} />
+              <button type="button" aria-label={t.nav.close} onClick={closeChangelog} className="cl-close-btn">
+                <X size={16} strokeWidth={2.4} />
               </button>
             </div>
-            
-            <div style={{ marginTop: 24, fontSize: 14, lineHeight: 1.6, color: "var(--popout-fg)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--popout-muted)", marginBottom: 16 }}>
-                <Sparkles size={18} /> <span style={{ fontWeight: 800, fontFamily: "var(--font-mono)", fontSize: 13, letterSpacing: "0.1em" }}>{t.changelog.vibrationThemesTitle}</span>
-              </div>
-              <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
-                <li><b><span style={{color:"var(--popout-fg)"}}>{t.changelog.skfMicrologTitle}</span></b>{t.changelog.skfMicrologDesc}</li>
-                <li><b><span style={{color:"var(--popout-fg)"}}>{t.changelog.crimsonPaletteTitle}</span></b>{t.changelog.crimsonPaletteDesc}</li>
-                <li><b><span style={{color:"var(--popout-fg)"}}>{t.changelog.consultantI18nTitle}</span></b>{t.changelog.consultantI18nDesc}</li>
-              </ul>
 
-              <hr style={{ border: "none", borderTop: "1px dashed var(--popout-border)", margin: "24px 0" }} />
-              
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--popout-muted)", opacity: 0.8, marginBottom: 12 }}>
-                <AlertCircle size={14} /> <span style={{ fontWeight: 700, fontFamily: "var(--font-mono)", fontSize: 12 }}>{t.changelog.previousReleases}</span>
-              </div>
-              <ul style={{ paddingLeft: 16, margin: 0, display: "flex", flexDirection: "column", gap: 8, opacity: 0.85, fontSize: 13 }}>
-                <li>{t.changelog.v24Desc}</li>
-                <li>{t.changelog.v23Desc}</li>
-              </ul>
+            {/* Highlights section label */}
+            <div className="cl-section-label" style={{ marginBottom: 14 }}>
+              <Sparkles size={14} strokeWidth={2.4} style={{ color: "var(--accent)" }} />
+              <span>{t.changelog.vibrationThemesTitle}</span>
             </div>
 
-            <button onClick={closeChangelog} style={{
-              width: "100%", marginTop: 32, padding: "16px", borderRadius: 8,
-              background: "linear-gradient(45deg, var(--popout-fg), var(--popout-muted))",
-              color: "var(--popout-bg)", fontFamily: "var(--font-display)", fontWeight: 800,
-              fontSize: 16, border: "none", cursor: "pointer",
-              boxShadow: "0 4px 15px rgba(0,0,0,0.25)",
-              transition: "transform 0.1s"
-            }} onMouseDown={e => e.currentTarget.style.transform="scale(0.98)"} onMouseUp={e => e.currentTarget.style.transform="scale(1)"}>
+            {/* Highlight cards */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="cl-feature-row">
+                <span className="cl-feature-dot" />
+                <div>
+                  <div className="cl-feature-title">{t.changelog.skfMicrologTitle}</div>
+                  <div className="cl-feature-desc">{t.changelog.skfMicrologDesc}</div>
+                </div>
+              </div>
+              <div className="cl-feature-row">
+                <span className="cl-feature-dot" />
+                <div>
+                  <div className="cl-feature-title">{t.changelog.crimsonPaletteTitle}</div>
+                  <div className="cl-feature-desc">{t.changelog.crimsonPaletteDesc}</div>
+                </div>
+              </div>
+              <div className="cl-feature-row">
+                <span className="cl-feature-dot" />
+                <div>
+                  <div className="cl-feature-title">{t.changelog.consultantI18nTitle}</div>
+                  <div className="cl-feature-desc">{t.changelog.consultantI18nDesc}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Previous releases */}
+            <div className="cl-section-label" style={{ marginTop: 26, marginBottom: 12 }}>
+              <AlertCircle size={12} strokeWidth={2.4} />
+              <span>{t.changelog.previousReleases}</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div className="cl-prev-chip"><b>v2.4</b><span>{t.changelog.v24Desc}</span></div>
+              <div className="cl-prev-chip"><b>v2.3</b><span>{t.changelog.v23Desc}</span></div>
+            </div>
+
+            {/* CTA */}
+            <button type="button" onClick={closeChangelog} className="cl-cta-pill">
               {t.changelog.letsGo}
             </button>
 
-            <div style={{ marginTop: 24, textAlign: "center", opacity: 0.65, fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--popout-muted)" }}>
+            {/* Brand footer */}
+            <div style={{
+              marginTop: 18,
+              textAlign: "center",
+              opacity: 0.55,
+              fontSize: 9,
+              fontFamily: "var(--font-mono)",
+              color: "var(--popout-muted)",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+            }}>
               {t.changelog.byDummVinci}
             </div>
           </div>
