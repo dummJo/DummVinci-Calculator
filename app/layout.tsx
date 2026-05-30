@@ -8,6 +8,7 @@ import BottomTabBar from "@/components/nav/BottomTabBar";
 import TopBar from "@/components/nav/TopBar";
 import SplashScreen from "@/components/SplashScreen";
 import SharedWatermark from "@/components/share/SharedWatermark";
+import QuickCalcBar from "@/components/QuickCalcBar";
 
 import "./globals.css";
 
@@ -83,6 +84,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           {children}
         </div>
         <BottomTabBar />
+        <QuickCalcBar />
         <SharedWatermark />
         <SpeedInsights />
       </body>

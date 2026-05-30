@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 
 import CalcShell from "@/components/calc/CalcShell";
@@ -7,6 +7,8 @@ import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import FieldToggle from "@/components/calc/FieldToggle";
 import ResultCard from "@/components/calc/ResultCard";
+import RecentDropdown from "@/components/calc/RecentDropdown";
+import ShareButton from "@/components/share/ShareButton";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import { sizeMotorStarter, UnifiedResult, estimateAmps } from "@/lib/calc/unified";
@@ -14,6 +16,7 @@ import type { Voltage, DriveApp, IpRating } from "@/lib/calc/vsd";
 import type { Insulation, Install } from "@/lib/calc/cable";
 import { Download, CheckCircle, Info } from "lucide-react";
 import RichText from "@/components/calc/RichText";
+import { useToolHistory } from "@/lib/use-tool-history";
 
 function SummaryStrip({ result, t }: { result: UnifiedResult, t: ReturnType<typeof useLang>["t"] }) {
   const specs = [
@@ -124,6 +127,29 @@ export default function UnifiedPage() {
     [motorKw, voltage],
   );
 
+  const formInputs = useMemo(() => ({
+    motorKw, motorAmps, voltage, app, heavy, cableLen, insulation, install,
+    ambient, fault, variant, ipPref,
+  }), [motorKw, motorAmps, voltage, app, heavy, cableLen, insulation, install,
+       ambient, fault, variant, ipPref]);
+
+  const applyInputs = useCallback((i: Record<string, unknown>) => {
+    if (typeof i.motorKw    === "string")  setMotorKw(i.motorKw);
+    if (typeof i.motorAmps  === "string")  setMotorAmps(i.motorAmps);
+    if (typeof i.voltage    === "number")  setVoltage(i.voltage as Voltage);
+    if (typeof i.app        === "string")  setApp(i.app as DriveApp);
+    if (typeof i.heavy      === "boolean") setHeavy(i.heavy);
+    if (typeof i.cableLen   === "string")  setCableLen(i.cableLen);
+    if (i.insulation === "PVC" || i.insulation === "XLPE") setInsulation(i.insulation);
+    if (["air","tray","conduit","buried"].includes(i.install as string)) setInstall(i.install as Install);
+    if (typeof i.ambient    === "string")  setAmbient(i.ambient);
+    if (typeof i.fault      === "string")  setFault(i.fault);
+    if (typeof i.variant    === "string")  setVariant(i.variant as typeof variant);
+    if (typeof i.ipPref     === "string")  setIpPref(i.ipPref as IpRating);
+  }, []);
+
+  const { saveSnapshot, restoreSnapshot } = useToolHistory("unified", formInputs, applyInputs);
+
   const calculate = () => {
     const res = sizeMotorStarter({
       motorKw: parseFloat(motorKw) || 0,
@@ -141,6 +167,7 @@ export default function UnifiedPage() {
       ipPreference: ipPref,
     });
     setResult(res);
+    saveSnapshot(`${motorKw}kW ${app} → ${res.vsd.partCode} + ${res.cable.phaseSize}mm²`);
     setStep(3);
   };
 
@@ -395,7 +422,11 @@ export default function UnifiedPage() {
               </div>
             </div>
 
-            <div className="wizard-nav-bar" style={{ justifyContent: "flex-end" }}>
+            <div className="wizard-nav-bar" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                <RecentDropdown tool="unified" onRestore={(snap) => { restoreSnapshot(snap); }} />
+                <ShareButton tool="unified" inputs={formInputs} enabled={result !== null} />
+              </div>
               <button className="btn-primary" style={{ padding: "14px 32px" }} onClick={() => setStep(2)}>
                 {tu.btnNextRouting || "Next: Routing & Environment →"}
               </button>

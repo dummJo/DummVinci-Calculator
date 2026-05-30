@@ -1,16 +1,19 @@
 // app/braking-resistor/page.tsx — Braking Resistor Sizing Calculator
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
+import RecentDropdown from "@/components/calc/RecentDropdown";
+import ShareButton from "@/components/share/ShareButton";
 import { sizeBrakingResistor, BrResult } from "@/lib/calc/braking-resistor";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import Footnote from "@/components/calc/Footnote";
+import { useToolHistory } from "@/lib/use-tool-history";
 
 type LineVoltage = 400 | 480 | 690;
 type EdPct       = 15 | 25 | 40 | 60;
@@ -28,6 +31,21 @@ export default function BrakingResistorPage() {
 
   const [result, setResult] = useState<BrResult | null>(null);
 
+  const formInputs = useMemo(() => ({
+    motorKw, lineVoltage, edPct, peakFactor, cycleTime, brakeTime,
+  }), [motorKw, lineVoltage, edPct, peakFactor, cycleTime, brakeTime]);
+
+  const applyInputs = useCallback((i: Record<string, unknown>) => {
+    if (typeof i.motorKw     === "string") setMotorKw(i.motorKw);
+    if (typeof i.lineVoltage === "string") setLineVoltage(i.lineVoltage);
+    if (typeof i.edPct       === "string") setEdPct(i.edPct);
+    if (typeof i.peakFactor  === "string") setPeakFactor(i.peakFactor);
+    if (typeof i.cycleTime   === "string") setCycleTime(i.cycleTime);
+    if (typeof i.brakeTime   === "string") setBrakeTime(i.brakeTime);
+  }, []);
+
+  const { saveSnapshot, restoreSnapshot } = useToolHistory("br", formInputs, applyInputs);
+
   function handleCalc() {
     const cycleS = parseFloat(cycleTime);
     const brakeS = parseFloat(brakeTime);
@@ -40,6 +58,7 @@ export default function BrakingResistorPage() {
       brakingTimeS:    brakeS > 0 ? brakeS : undefined,
     });
     setResult(r);
+    saveSnapshot(`${motorKw}kW @ ${edPct}% ED → ${r.pContKw}kW cont, ${r.rTargetOhm}Ω`);
   }
 
   return (
@@ -104,10 +123,14 @@ export default function BrakingResistorPage() {
           />
         </div>
 
-        <button className="btn-primary" onClick={handleCalc}
-          style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
-          {tr.btnCalc}
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
+          <button className="btn-primary" onClick={handleCalc}
+            style={{ flex: "1 1 200px", justifyContent: "center" }}>
+            {tr.btnCalc}
+          </button>
+          <RecentDropdown tool="br" onRestore={restoreSnapshot} />
+          <ShareButton tool="br" inputs={formInputs} enabled={result !== null} />
+        </div>
       </div>
 
       {result && (
