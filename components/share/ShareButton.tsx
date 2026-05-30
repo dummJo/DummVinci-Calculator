@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Share2, Check } from "lucide-react";
 import { buildShareUrl } from "@/lib/share-link";
 import type { ToolId } from "@/lib/state-store";
+import { track } from "@/lib/analytics";
 
 interface Props {
   tool: ToolId;
@@ -34,6 +35,7 @@ export default function ShareButton({ tool, inputs, enabled = true }: Props) {
         await navigator.clipboard.writeText(url);
       }
       setCopied(true);
+      track("share-link-created", { tool });
       setTimeout(() => setCopied(false), 2000);
     } catch {
       setError(true);

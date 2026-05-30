@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Calculator, X } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 /**
  * Persistent floating mini-calculator. Collapsed by default as a small FAB
@@ -37,7 +38,7 @@ export default function QuickCalcBar() {
         type="button"
         aria-label={open ? "Close quick calculator" : "Open quick calculator"}
         aria-expanded={open}
-        onClick={() => setOpen(o => !o)}
+        onClick={() => { setOpen(o => !o); if (!open) track("quick-calc"); }}
         style={{
           position: "fixed",
           right: 16,

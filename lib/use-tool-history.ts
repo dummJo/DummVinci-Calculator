@@ -20,6 +20,7 @@ import {
   type ToolId,
 } from "@/lib/state-store";
 import { readShareFromHash } from "@/lib/share-link";
+import { track } from "@/lib/analytics";
 
 export function useToolHistory<TInputs extends Record<string, unknown>>(
   tool: ToolId,
@@ -44,6 +45,7 @@ export function useToolHistory<TInputs extends Record<string, unknown>>(
   const saveSnapshot = useCallback(
     (label?: string) => {
       pushSnapshot({ tool, inputs, label });
+      track("calc-run", { tool });
     },
     [tool, inputs],
   );
