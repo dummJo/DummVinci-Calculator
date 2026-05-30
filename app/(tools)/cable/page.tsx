@@ -10,6 +10,7 @@ import ResultCard from "@/components/calc/ResultCard";
 import RecentDropdown from "@/components/calc/RecentDropdown";
 import ShareButton from "@/components/share/ShareButton";
 import StandardsRef from "@/components/calc/StandardsRef";
+import AuditFooter from "@/components/calc/AuditFooter";
 import { sizeCable, CableResult } from "@/lib/calc/cable";
 import type { Phase, Insulation, Install } from "@/lib/calc/cable";
 import { useLang } from "@/lib/i18n";
@@ -217,6 +218,10 @@ export default function CablePage() {
           <StandardsRef code="iec60364-vdrop" />
           {Math.max(1, parseInt(groupedCircuits) || 1) > 1 && <StandardsRef code="iec60364-grouping" />}
         </div>
+      )}
+
+      {result && (
+        <AuditFooter inputs={formInputs} standards="IEC 60364-5-52:2020" />
       )}
 
       <Footnote />
