@@ -9,6 +9,8 @@ import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
 import RecentDropdown from "@/components/calc/RecentDropdown";
 import ShareButton from "@/components/share/ShareButton";
+import StandardsRef from "@/components/calc/StandardsRef";
+import AuditFooter from "@/components/calc/AuditFooter";
 import { sizeCable, CableResult } from "@/lib/calc/cable";
 import type { Phase, Insulation, Install } from "@/lib/calc/cable";
 import { useLang } from "@/lib/i18n";
@@ -205,6 +207,21 @@ export default function CablePage() {
           ]}
           warnings={result.warnings}
         />
+      )}
+
+      {result && (
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12, alignItems: "center" }}>
+          <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            Calculated per
+          </span>
+          <StandardsRef code="iec60364-cable-ampacity" />
+          <StandardsRef code="iec60364-vdrop" />
+          {Math.max(1, parseInt(groupedCircuits) || 1) > 1 && <StandardsRef code="iec60364-grouping" />}
+        </div>
+      )}
+
+      {result && (
+        <AuditFooter inputs={formInputs} standards="IEC 60364-5-52:2020" />
       )}
 
       <Footnote />

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { X } from "lucide-react";
 import { isSharedView, clearShareHash } from "@/lib/share-link";
+import { track } from "@/lib/analytics";
 
 // Subscribe to URL hash changes (back/forward, programmatic replaceState fires manually below).
 function subscribeHash(cb: () => void): () => void {
@@ -29,6 +30,15 @@ export default function SharedWatermark() {
   // Local dismiss flag — once dismissed we hide even if hash is still around (the
   // dismiss handler also strips it via history.replaceState).
   const [dismissed, setDismissed] = useState(false);
+
+  // Fire the "shared link opened" goal exactly once per shared landing.
+  const tracked = useRef(false);
+  useEffect(() => {
+    if (present && !tracked.current) {
+      tracked.current = true;
+      track("share-link-opened");
+    }
+  }, [present]);
 
   if (!present || dismissed) return null;
 

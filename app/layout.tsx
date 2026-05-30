@@ -9,6 +9,7 @@ import TopBar from "@/components/nav/TopBar";
 import SplashScreen from "@/components/SplashScreen";
 import SharedWatermark from "@/components/share/SharedWatermark";
 import QuickCalcBar from "@/components/QuickCalcBar";
+import { PLAUSIBLE_DOMAIN, PLAUSIBLE_SRC } from "@/lib/analytics";
 
 import "./globals.css";
 
@@ -87,6 +88,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <QuickCalcBar />
         <SharedWatermark />
         <SpeedInsights />
+        {/* Plausible — privacy-first analytics, only mounts when the domain env is set. */}
+        {PLAUSIBLE_DOMAIN && (
+          <Script
+            defer
+            data-domain={PLAUSIBLE_DOMAIN}
+            src={PLAUSIBLE_SRC}
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );
