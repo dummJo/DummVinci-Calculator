@@ -157,7 +157,10 @@ export function sizePanel(input: PanelInput): PanelResult {
     return ipMatch && (input.location === "indoor" ? e.suitableIndoor : e.suitableOutdoor);
   }).sort((a, b) => volume(a) - volume(b));
 
-  const deltaT = 15 - Math.max(0, input.ambientC - 35);
+  // Permissible internal-vs-ambient rise (IEC 60890): drops as ambient climbs past 35°C.
+  // Clamp at ≥1 K so natural dissipation never goes zero/negative (ambient ≥ 50°C),
+  // which would otherwise report a nonsensical negative wattage.
+  const deltaT = Math.max(1, 15 - Math.max(0, input.ambientC - 35));
   if (input.ambientC >= 45) warnings.push("Ambient ≥ 45°C — AC mandatory; verify AC condenser rating at this temp");
 
   for (const e of list) {

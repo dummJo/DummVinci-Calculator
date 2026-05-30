@@ -1554,6 +1554,61 @@ export default function PanelLayoutPage() {
                   <div>Outer Dimension: {activeEnc.extW}x{activeEnc.extH}mm</div>
                 </div>
 
+                {/* Top-view clearance inset — door swing arc + 1000 mm front walkway per IEC 61439-1.
+                    Renders the panel footprint (top-down), a quarter-circle door swing, and a
+                    dashed band of mandatory walkway depth. Symbolic, not to absolute scale. */}
+                {showDimensions && (() => {
+                  const depth = activeEnc.extD ?? 300;
+                  const width = activeEnc.extW;
+                  const clearance = 1000; // mm, IEC 61439-1 minimum
+                  // SVG viewbox: footprint at top, clearance band below.
+                  const vbW = width;
+                  const vbH = depth + clearance + 40; // padding
+                  return (
+                    <div
+                      title={`Door swing + ${clearance} mm front clearance (IEC 61439-1)`}
+                      style={{
+                        position: "absolute", right: 8, bottom: 8,
+                        width: 120, height: 120,
+                        background: "rgba(255,255,255,0.92)",
+                        border: "1px solid rgba(0,0,0,0.25)",
+                        borderRadius: 6,
+                        padding: 4,
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      <svg viewBox={`-20 -10 ${vbW + 40} ${vbH}`} width="100%" height="100%">
+                        {/* Walkway band */}
+                        <rect
+                          x="0" y={depth + 4} width={vbW} height={clearance}
+                          fill="rgba(0,120,255,0.08)"
+                          stroke="#0078ff" strokeWidth="6" strokeDasharray="24 16"
+                        />
+                        <text x={vbW / 2} y={depth + clearance / 2 + 80} textAnchor="middle"
+                          fontSize="120" fill="#0078ff" fontFamily="var(--font-mono)" fontWeight="700">
+                          {clearance} mm
+                        </text>
+                        {/* Panel footprint */}
+                        <rect x="0" y="0" width={vbW} height={depth}
+                          fill="#222" stroke="#000" strokeWidth="4" />
+                        {/* Door arc — quarter circle from left hinge */}
+                        <path
+                          d={`M 0,${depth} A ${depth},${depth} 0 0 0 ${depth},0`}
+                          fill="none" stroke="#d97757" strokeWidth="5" strokeDasharray="14 10"
+                        />
+                        {/* Hinge marker */}
+                        <circle cx="0" cy={depth} r="14" fill="#d97757" />
+                        {/* "TOP VIEW" label */}
+                        <text x={vbW / 2} y="-30" textAnchor="middle"
+                          fontSize="90" fill="#666" fontFamily="var(--font-mono)" fontWeight="700">
+                          TOP VIEW
+                        </text>
+                      </svg>
+                    </div>
+                  );
+                })()}
+
               </div>
             )}
 

@@ -22,8 +22,9 @@ export default function VsdPage() {
   const [voltage, setVoltage] = useState<string>("400");
   const [app,     setApp]     = useState<DriveApp>("pump");
   const [heavy,   setHeavy]   = useState(false);
-  const [deltaT,  setDeltaT]  = useState("12");
-  const [ambient, setAmbient] = useState("40");
+  const [deltaT,   setDeltaT]   = useState("12");
+  const [ambient,  setAmbient]  = useState("40");
+  const [altitude, setAltitude] = useState("0");
   const [variant, setVariant] = useState<"01" | "02" | "04" | "07" | "31" | "34" | "37" | "040C" | "040S">("01");
   const [ipPref,  setIpPref]  = useState<IpRating>("IP21");
 
@@ -34,11 +35,12 @@ export default function VsdPage() {
   function handleCalc() {
     const r = sizeVsd({
       motorKw:      parseFloat(motorKw) || 0,
-      voltage:      (parseInt(voltage) as Voltage) ?? 400,
+      voltage:      ((parseInt(voltage) || 400) as Voltage),
       app,
       dutyHeavy:    heavy,
       panelDeltaT:  parseFloat(deltaT)  || 12,
       ambientC:     parseFloat(ambient) || 40,
+      altitudeM:    parseFloat(altitude) || 0,
       variant:      variant,
       ipPreference: ipPref,
     });
@@ -105,6 +107,12 @@ export default function VsdPage() {
             label={tv.ambient} unit="°C"
             value={ambient} onChange={setAmbient}
             min={10} max={55} step={1} hint={tv.ambientHint}
+          />
+          <FieldNumber
+            label="Altitude" unit="m"
+            value={altitude} onChange={setAltitude}
+            min={0} max={5000} step={100}
+            hint="ABB derate: 1%/100m above 1000m"
           />
         </div>
 

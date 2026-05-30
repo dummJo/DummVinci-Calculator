@@ -58,6 +58,9 @@ export interface CableInput {
   ambientC: number;
   powerFactor?: number;      // default 0.85
   maxVdropPct?: number;      // default 3
+  /** Number of circuits grouped together (touching, in air/tray/conduit).
+   *  Applies IEC 60364-5-52 Table B.52.20 grouping factor. Default = 1. */
+  groupedCircuits?: number;
 }
 
 export interface CableResult {
@@ -82,23 +85,56 @@ function groundFromPhase(phaseMm2: number): number {
 // 0.0225 Ω·mm²/m is a conservative AC/operating-temperature allowance for v-drop check.
 const RHO = 0.0225;
 
+// Cu cable reactance per IEC 60287 (Ω·mm²/m equivalent — i.e. X/length × cross-section).
+// Reactance is negligible for small cables but becomes ~30–40% of resistance for ≥120 mm²
+// runs. Resistance-only Vdrop under-estimates by that much for large feeders.
+function reactanceOhmPerKm(mm2: number): number {
+  if (mm2 <= 35)  return 0.080;
+  if (mm2 <= 95)  return 0.083;
+  if (mm2 <= 150) return 0.086;
+  if (mm2 <= 240) return 0.090;
+  return 0.093;
+}
+
+// IEC 60364-5-52 Table B.52.20 (touching, multiple circuits in air / on tray / in conduit).
+function groupingFactor(n: number): number {
+  if (n <= 1) return 1.0;
+  if (n === 2) return 0.85;
+  if (n === 3) return 0.79;
+  if (n === 4) return 0.75;
+  if (n <= 6) return 0.72;
+  if (n <= 9) return 0.70;
+  return 0.68;
+}
+
 export function sizeCable(input: CableInput): CableResult {
   const pf = input.powerFactor ?? 0.85;
   const vdropLimit = input.maxVdropPct ?? 3;
+  const grouped = Math.max(1, input.groupedCircuits ?? 1);
+  const groupK = groupingFactor(grouped);
   const table = input.insulation === "PVC" ? AMPACITY_PVC_CU : AMPACITY_XLPE_CU;
-  const k = INSTALL_DERATE[input.install] * ambientDerate(input.ambientC, input.insulation);
+  const k = INSTALL_DERATE[input.install] * ambientDerate(input.ambientC, input.insulation) * groupK;
 
   const sizes = input.insulation === "PVC" ? SORTED_MM2_PVC : SORTED_MM2_XLPE;
   const warnings: string[] = [];
 
   for (const s of sizes) {
-    const derated = table[s] * k;
+    // Defend against stale table sync — `table[s]` typed `number` but is really `number | undefined`
+    // under noUncheckedIndexedAccess. A NaN here silently disables the size and returns the
+    // "no cable" fallback with no error — make it explicit instead.
+    const iz = table[s];
+    if (iz == null) continue;
+    const derated = iz * k;
     // 25% margin on table Iz vs Ib — conservative vs minimum compliance; verify with PUIL / project QA.
     if (derated < input.current * 1.25) continue;
 
-    // Voltage drop: single-phase 2·I·L·ρ/S·cosφ ; three-phase √3·I·L·ρ/S·cosφ
+    // Voltage drop with reactance per IEC: |Vdrop| ≈ k · I · L · (R·cosφ + X·sinφ).
+    // Factor k = 2 single-phase, √3 three-phase.
     const factor = input.phase === "1ph" ? 2 : Math.sqrt(3);
-    const vdropV = (factor * input.current * input.lengthM * RHO / s) * pf;
+    const rPerM = RHO / s;                              // Ω/m, resistance
+    const xPerM = reactanceOhmPerKm(s) / 1000;          // Ω/m, reactance
+    const sinPhi = Math.sqrt(Math.max(0, 1 - pf * pf));
+    const vdropV = factor * input.current * input.lengthM * (rPerM * pf + xPerM * sinPhi);
     const vdropPct = (vdropV / input.voltage) * 100;
 
     if (vdropPct > vdropLimit) continue;

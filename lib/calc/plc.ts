@@ -181,10 +181,19 @@ export function sizePlcModules(input: PlcInput): PlcResult {
   const overflowToEt200 = totalSlots > cpu.maxSmSlots;
   const localSlots = Math.min(totalSlots, cpu.maxSmSlots);
   const overflowSlots = Math.max(0, totalSlots - cpu.maxSmSlots);
-  // ET 200SP: 64 SM per head controller (IM 151-8 PN/DP)
-  const et200Heads = overflowSlots > 0 ? Math.ceil(overflowSlots / 32) : 0;
+  // ET 200SP head controller (IM 155-6 PN/DP) supports up to 64 SM per station.
+  const ET200_MAX_SM = 64;
+  const et200Heads = overflowSlots > 0 ? Math.ceil(overflowSlots / ET200_MAX_SM) : 0;
 
-  const totalPowerMa = allocs.reduce((s, m) => s + m.powerMa, 0);
+  // Bus-power budget only applies to modules sitting on the CPU backplane.
+  // Overflow modules are routed to ET 200SP (which has its own bus supply),
+  // so charging them against the CPU bus produces false "exceeded" warnings.
+  let runningQty = 0;
+  const totalPowerMa = allocs.reduce((s, m) => {
+    const localQty = Math.max(0, Math.min(m.qty, cpu.maxSmSlots - runningQty));
+    runningQty += m.qty;
+    return s + localQty * (m.powerMa / Math.max(1, m.qty));
+  }, 0);
   const powerOk = totalPowerMa <= cpu.busPowerMa;
 
   if (overflowToEt200)

@@ -27,6 +27,7 @@ export default function CablePage() {
   const [ambient, setAmbient] = useState("35");
   const [vdrop,   setVdrop]   = useState("3");
   const [pf,      setPf]      = useState("0.85");
+  const [groupedCircuits, setGroupedCircuits] = useState("1");
 
   const [result, setResult] = useState<CableResult | null>(null);
 
@@ -35,13 +36,14 @@ export default function CablePage() {
 
   function handleCalc() {
     const r = sizeCable({
-      current:      parseFloat(current)  || 0,
-      lengthM:      parseFloat(length)   || 0,
-      voltage:      voltageNum,
+      current:         parseFloat(current)  || 0,
+      lengthM:         parseFloat(length)   || 0,
+      voltage:         voltageNum,
       phase, insulation, install,
-      ambientC:     parseFloat(ambient)  || 35,
-      maxVdropPct:  parseFloat(vdrop)    || 3,
-      powerFactor:  pfNum,
+      ambientC:        parseFloat(ambient)  || 35,
+      maxVdropPct:     parseFloat(vdrop)    || 3,
+      powerFactor:     pfNum,
+      groupedCircuits: Math.max(1, parseInt(groupedCircuits) || 1),
     });
     setResult(r);
   }
@@ -121,6 +123,12 @@ export default function CablePage() {
             label={tc.vdrop} unit="%"
             value={vdrop} onChange={setVdrop}
             min={0.5} max={10} step={0.5} hint={tc.vdropHint}
+          />
+          <FieldNumber
+            label="Grouped circuits"
+            value={groupedCircuits} onChange={setGroupedCircuits}
+            min={1} max={20} step={1}
+            hint="Number of circuits touching together (IEC 60364-5-52 Table B.52.20)"
           />
           <FieldNumber
             label={tc.pf}

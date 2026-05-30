@@ -17,6 +17,8 @@ export interface VsdInput {
   dutyHeavy: boolean;
   panelDeltaT: number;
   ambientC?: number;
+  /** Installation altitude (m above sea level). Default 0. ABB derate kicks in >1000 m. */
+  altitudeM?: number;
   variant: "01" | "02" | "04" | "07" | "31" | "34" | "37" | "040C" | "040S";
   ipPreference?: IpRating;
   familyPreference?: "ACQ580" | "ACS880" | "ACS580" | "ACH580" | "ACS380";
@@ -74,23 +76,39 @@ export function sizeVsd(input: VsdInput): VsdResult {
   const oversize = heavy ? 1.2 : 1.05;
   const targetKw = input.motorKw * oversize;
   const ambient = input.ambientC ?? 40;
+  const altitude = Math.max(0, input.altitudeM ?? 0);
 
-  // Simplified thermal derate above 40 °C — conservative; use ABB HW manual derating curves for formal submissions*.
-  const tempDerate = ambient > 40 ? 1 - (ambient - 40) * 0.01 : 1.0;
+  // ABB ACQ580 / ACS880 HW manual derating (piecewise, conservative):
+  //   ≤ 40 °C: 1.00  · 40–50 °C: 1% / °C  · 50–60 °C: 2% / °C (steeper, fan-limited region)
+  //   floor 0.40 so absurd ambient still returns a candidate frame rather than empty list.
+  let tempDerate = 1.0;
+  if (ambient > 40) tempDerate -= Math.min(10, ambient - 40) * 0.01;
+  if (ambient > 50) tempDerate -= Math.min(10, ambient - 50) * 0.02;
+  tempDerate = Math.max(0.4, tempDerate);
+
+  // ABB altitude derating: full rating up to 1000 m, then 1% per 100 m up to 4000 m.
+  // Above 4000 m: special handling, derate flattens to 0.7 with warning.
+  let altDerate = 1.0;
+  if (altitude > 1000) altDerate -= Math.min(3000, altitude - 1000) / 100 * 0.01;
+  altDerate = Math.max(0.7, altDerate);
+
+  const combinedDerate = tempDerate * altDerate;
 
   const candidates = LIST
     .filter(d => {
-      const deratedKw = d.ratedKw * tempDerate;
+      const deratedKw = d.ratedKw * combinedDerate;
       const matchFamily = d.family === family;
       const matchVariant = d.variant === input.variant;
       const matchVoltage = d.voltage === input.voltage;
       const matchIp = input.ipPreference ? d.ip === input.ipPreference : true;
-      
+
       return matchFamily && matchVariant && matchVoltage && matchIp && deratedKw >= targetKw;
     })
     .sort((a, b) => {
-      // First sort by Kw, then by IP (preferring IP21 if no preference is set)
-      if (a.ratedKw !== b.ratedKw) return a.ratedKw - b.ratedKw;
+      // Pick the smallest frame whose *derated* rating meets target (not raw rating).
+      const da = a.ratedKw * combinedDerate;
+      const db = b.ratedKw * combinedDerate;
+      if (da !== db) return da - db;
       return a.ip.localeCompare(b.ip);
     });
 
@@ -115,6 +133,9 @@ export function sizeVsd(input: VsdInput): VsdResult {
   if (input.app === "crane" && family !== "ACS880")
     warnings.push("Crane duty — ACS880 mandatory for regenerative support");
   if (pick.ip === "IP66") warnings.push("IP66 Rating — verify cable gland plate seals for wash-down");
+  if (ambient > 50) warnings.push(`Ambient ${ambient}°C — derate ${Math.round((1 - tempDerate) * 100)}% applied; verify ABB curve for formal submission`);
+  if (altitude > 1000) warnings.push(`Altitude ${altitude} m — derate ${Math.round((1 - altDerate) * 100)}% applied per ABB HW manual`);
+  if (altitude > 4000) warnings.push("Altitude > 4000 m — ABB special configuration required; contact ABB engineering");
 
   const keyFeatures = getFeatures(pick);
 

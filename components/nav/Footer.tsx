@@ -104,15 +104,16 @@ export default function Footer() {
     const q = getRandomQuote();
     const timeoutId = setTimeout(() => setQuote(q), 0);
 
-    // Universal page views tracking via CounterAPI
+    // Universal page views tracking via CounterAPI.
+    // First visit per session = POST (increment). Later navs = GET (read-only).
+    // Increment is intentionally off GET so link-preview bots and prefetchers
+    // can't inflate the count by hitting the URL.
     if (typeof window !== "undefined") {
       const sessionKey = "dummvinci_session_seen";
       const hasSeen = sessionStorage.getItem(sessionKey);
-      
-      const endpoint = hasSeen ? "/api/views" : "/api/views?inc=true";
       sessionStorage.setItem(sessionKey, "true");
-      
-      fetch(endpoint)
+
+      fetch("/api/views", { method: hasSeen ? "GET" : "POST", cache: "no-store" })
         .then(res => res.json())
         .then(data => {
           if (data && typeof data.count === "number") {

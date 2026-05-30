@@ -20,8 +20,14 @@ import stahl from "@/data/stahl-br.json";
 export interface BrInput {
   motorKw: number;
   lineVoltage: 400 | 480 | 690;
+  /** Quantised duty-cycle class (rated value to match against catalog). */
   edPct: 15 | 25 | 40 | 60;
   cranePeakFactor?: number; // default 1.5
+  /** Optional: actual cycle time in seconds (e.g. 300 s = one hoist cycle).
+   *  When provided together with `brakingTimeS`, the calculator derives the
+   *  actual ED% from the duty profile and warns if it exceeds the chosen class. */
+  cycleTimeS?: number;
+  brakingTimeS?: number;
 }
 
 interface StahlBr {
@@ -40,20 +46,45 @@ export interface BrResult {
   rTargetOhm: number;
   pPeakKw: number;
   pContKw: number;
+  /** Actual computed ED% from cycle/brake time inputs (if provided). */
+  edActualPct?: number;
   part: string;
   wiring: string;
   warnings: string[];
 }
 
 export function sizeBrakingResistor(input: BrInput): BrResult {
+  const warnings: string[] = [];
   const peak = input.cranePeakFactor ?? 1.5;
   const Udc = input.lineVoltage * 1.35;
   const Uchop = Udc * 1.07;
   const pPeak = input.motorKw * peak;
-  const pCont = pPeak * (input.edPct / 100);
+
+  // Derive ED% from actual duty profile when supplied; else use the chosen class.
+  let edActualPct: number | undefined;
+  let edForContPower = input.edPct;
+  if (input.cycleTimeS && input.brakingTimeS && input.cycleTimeS > 0) {
+    edActualPct = Math.min(100, (input.brakingTimeS / input.cycleTimeS) * 100);
+    edForContPower = Math.max(input.edPct, edActualPct) as 15 | 25 | 40 | 60;
+    if (edActualPct > input.edPct) {
+      warnings.push(
+        `Actual duty ${edActualPct.toFixed(0)}% ED exceeds chosen ${input.edPct}% class — sizing continuous power against actual duty to stay safe`
+      );
+    }
+  }
+  const pCont = pPeak * (edForContPower / 100);
 
   const rMax = (Uchop * Uchop) / (pPeak * 1000);
   const rMin = (Uchop * Uchop) / (2 * input.motorKw * 1000);
+
+  // Guard the R-window: a user-set peakFactor > 2 collapses rMax below rMin and
+  // silently empties the candidate list. Warn the engineer explicitly instead.
+  if (rMin >= rMax) {
+    warnings.push(
+      "Peak factor too high — chopper R-window collapsed (R_min ≥ R_max). Reduce cranePeakFactor or split into parallel resistors."
+    );
+  }
+
   const rTarget = Math.sqrt(rMin * rMax); // geometric mean — safe mid-point
 
   const candidates = (stahl as StahlBr[])
@@ -61,7 +92,6 @@ export function sizeBrakingResistor(input: BrInput): BrResult {
     .sort((a, b) => Math.abs(a.ohms - rTarget) - Math.abs(b.ohms - rTarget));
 
   const pick = candidates[0];
-  const warnings: string[] = [];
   if (input.lineVoltage === 690) warnings.push("690V line — BR rated insulation ≥ 1000 V required");
   if (input.edPct >= 40) warnings.push("ED ≥ 40% — use forced-cooled BR enclosure + thermal switch");
 
@@ -73,6 +103,7 @@ export function sizeBrakingResistor(input: BrInput): BrResult {
     rTargetOhm: Math.round(rTarget * 100) / 100,
     pPeakKw: Math.round(pPeak * 10) / 10,
     pContKw: Math.round(pCont * 10) / 10,
+    edActualPct: edActualPct !== undefined ? Math.round(edActualPct * 10) / 10 : undefined,
     part: pick ? `STAHL ${pick.code} — ${pick.ohms} Ω, ${pick.powerKw} kW @ ${pick.edPct}% ED, ${pick.ip}`
       : "No STAHL stock unit matches — request custom / parallel units.",
     wiring: "Connect to ACS880 terminals R+/R- (external BR). Route twisted / shielded, separate from motor cable. Bond thermistor NC loop to DI on FSO or DI6 (external fault).",
