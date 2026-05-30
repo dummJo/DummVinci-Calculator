@@ -51,14 +51,20 @@ export function sizeBusbar(input: BusbarInput): BusbarResult {
   if (input.forcedCooling) k *= 1.2;
   if (input.ambientC > 35) k *= 1 - (input.ambientC - 35) * 0.01;
   if (input.ambientC < 25) k *= 1.05;
+  // Floor the derate so absurd ambient never zeros capacity / picks a meaningless bar.
+  k = Math.max(0.3, k);
 
-  // DC Segmented logic: Factor for 2 bars is ~1.6x due to mutual heating
-  const kParallel = (input.isDC && input.segmented) ? 1.6 : 1.0;
-  
-  const capacity = base * k * kParallel;      // A/mm² total assembly
-  const required = input.current / capacity; // mm² per bar (if parallel, we search for bar size * 1.6)
+  // Two-bar parallel arrangement: assembly capacity ≈ 1.6 × single-bar (mutual heating
+  // costs ~20% vs ideal 2×). Previously this factor was folded into the per-bar
+  // current-density search, which undersized each bar to ~62% of what a stand-alone
+  // bar would have needed. Now we explicitly search per-bar capacity (using only
+  // material + environmental k), then double for the total assembly when segmented.
+  const nBars = input.segmented && input.isDC ? 2 : 1;
+  const mutualFactor = nBars === 2 ? 1.6 / 2 : 1.0;  // per-bar effective factor
+  const perBarCapacity = base * k * mutualFactor;     // A/mm² per individual bar
+  const requiredPerBar = input.current / (perBarCapacity * nBars); // mm² per single bar
 
-  const startIndex = BARS.findIndex(([, , mm2]) => mm2 >= required);
+  const startIndex = BARS.findIndex(([, , mm2]) => mm2 >= requiredPerBar);
   const safeIndex = startIndex === -1 ? BARS.length - 1 : startIndex;
   const pick = BARS[safeIndex];
   const [h, t, mm2] = pick;
@@ -66,22 +72,23 @@ export function sizeBusbar(input: BusbarInput): BusbarResult {
   const options: BusbarOption[] = [];
   for (let i = safeIndex; i < Math.min(safeIndex + 3, BARS.length); i++) {
     const [bh, bt, bmm2] = BARS[i];
-    options.push({ 
-      h: bh, t: bt, mm2: bmm2, 
-      capacityA: Math.round(base * k * kParallel * bmm2),
-      config: input.segmented ? "2 × " : undefined
+    options.push({
+      h: bh, t: bt, mm2: bmm2,
+      capacityA: Math.round(perBarCapacity * bmm2 * nBars),
+      config: nBars === 2 ? "2 × " : undefined,
     });
   }
 
-  const dimPrefix = input.segmented ? "2 × " : "";
-  const totalMm2 = input.segmented ? mm2 * 2 : mm2;
+  const dimPrefix = nBars === 2 ? "2 × " : "";
+  const totalMm2 = mm2 * nBars;
+  const assemblyCapA = Math.round(perBarCapacity * mm2 * nBars);
 
   return {
     sectionMm2: totalMm2,
     dimensionMm: `${dimPrefix}${h} × ${t} mm`,
-    derating: Math.round(k * (input.segmented ? 1.6 : 1.0) * 100) / 100,
+    derating: Math.round(k * (nBars === 2 ? 1.6 : 1.0) * 100) / 100,
     part: `${input.material} ${input.isDC ? "DC " : ""}flat bar ${dimPrefix}${h}×${t}, section ${totalMm2} mm²`,
-    note: `Rated @ ${Math.round(base * k * kParallel * mm2)} A continuous. ${input.isDC ? "DC Common Bus configuration." : ""} Use M8 bolts, torque 22 Nm. ${input.segmented ? "Maintain 10mm gap between segments." : ""}`,
+    note: `Rated @ ${assemblyCapA} A continuous. ${input.isDC ? "DC Common Bus configuration." : ""} Use M8 bolts, torque 22 Nm. ${nBars === 2 ? "Maintain 10 mm gap between segments." : ""}`,
     options,
   };
 }

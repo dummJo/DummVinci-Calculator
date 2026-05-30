@@ -120,14 +120,17 @@ export function simulatePid(params: PidParams): PidResult {
     data.push({ t, pv, cv, sp: setpoint });
   }
 
-  // Calculate metrics
+  // Calculate metrics. Guard setpoint ≈ 0: percentage-based overshoot and the
+  // 2%-of-setpoint settling band both degenerate around zero. Use the absolute
+  // setpoint magnitude (or 1 unit as a floor) so the band stays meaningful.
+  const refMag = Math.max(1e-6, Math.abs(setpoint));
   const steadyStateError = setpoint - pv;
-  const overshoot = maxPv > setpoint ? ((maxPv - setpoint) / setpoint) * 100 : 0;
+  const overshoot = maxPv > setpoint ? ((maxPv - setpoint) / refMag) * 100 : 0;
 
   // Better settling time calc: look backwards from the end
   let lastUnsettledIdx = steps - 1;
   for (let i = steps - 1; i >= 0; i--) {
-    if (Math.abs(data[i].pv - setpoint) > setpoint * 0.02) {
+    if (Math.abs(data[i].pv - setpoint) > refMag * 0.02) {
       lastUnsettledIdx = i;
       break;
     }
