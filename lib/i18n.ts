@@ -980,7 +980,28 @@ export const T = {
   },
 } as const;
 
-export type Translations = typeof T.en;
+// ─── Compile-time key-parity guard ───────────────────────────────────────────
+// `as const` gives each leaf a literal type ("MEMULAI", "INITIALIZING", …), so we
+// can't `T.id satisfies typeof T.en` directly — the literals never line up.
+// `_Widen` strips literal-ness while preserving structure; if T.en and T.id
+// have identical widened shapes, the `_Equal` check resolves to `true` and
+// the assignment compiles. Any key drift collapses it to `false` and TS errors
+// at this line, naming the offending shape.
+type _Widen<T> =
+  T extends string  ? string  :
+  T extends number  ? number  :
+  T extends boolean ? boolean :
+  T extends (...a: infer A) => infer R ? (...a: A) => _Widen<R> :
+  T extends readonly (infer U)[]       ? _Widen<U>[]            :
+  T extends object  ? { [K in keyof T]: _Widen<T[K]> } :
+  T;
+type _Equal<X, Y> =
+  (<T>() => T extends X ? 1 : 2) extends (<T>() => T extends Y ? 1 : 2) ? true : false;
+
+const _i18nKeyParity: _Equal<_Widen<typeof T.en>, _Widen<typeof T.id>> = true;
+void _i18nKeyParity;
+
+export type Translations = _Widen<typeof T.en>;
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
 export function useLang() {

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { checkRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,16 @@ export async function GET() {
           || "";
     if (ip.startsWith("::ffff:")) ip = ip.substring(7);          // IPv4-mapped IPv6
     if (!isValidIp(ip)) ip = "";                                  // reject garbage
+
+    // Rate-limit per IP (or "anon" if not derivable). Outbound HTTP to ip-api is
+    // expensive and has its own quota; cap at 30/min to stay well inside free tier.
+    const rl = checkRateLimit(`ip:${ip || "anon"}`, 30, 60_000);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { ip: ip || "0.0.0.0", city: "Rate limited", country: "ID", country_name: "Indonesia", org: "Try again shortly" },
+        { status: 429, headers: { ...rateLimitHeaders(rl), "Cache-Control": "no-store" } }
+      );
+    }
 
     // Vercel edge geo headers are authoritative when present — use them first.
     let city    = h.get("x-vercel-ip-city") || "";
