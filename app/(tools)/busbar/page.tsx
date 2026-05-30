@@ -1,18 +1,21 @@
 // app/busbar/page.tsx — Busbar Sizing Calculator
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import FieldToggle from "@/components/calc/FieldToggle";
 import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
+import RecentDropdown from "@/components/calc/RecentDropdown";
+import ShareButton from "@/components/share/ShareButton";
 import { sizeBusbar, BusbarResult } from "@/lib/calc/busbar";
 import type { Material } from "@/lib/calc/busbar";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import Footnote from "@/components/calc/Footnote";
+import { useToolHistory } from "@/lib/use-tool-history";
 
 export default function BusbarPage() {
   const { t } = useLang();
@@ -29,6 +32,23 @@ export default function BusbarPage() {
 
   const [result, setResult] = useState<BusbarResult | null>(null);
 
+  const formInputs = useMemo(() => ({
+    current, voltage, material, ambient, enclosed, forcedCooling, isDC, segmented,
+  }), [current, voltage, material, ambient, enclosed, forcedCooling, isDC, segmented]);
+
+  const applyInputs = useCallback((i: Record<string, unknown>) => {
+    if (typeof i.current       === "string")  setCurrent(i.current);
+    if (typeof i.voltage       === "string")  setVoltage(i.voltage);
+    if (i.material === "Cu" || i.material === "Al") setMaterial(i.material);
+    if (typeof i.ambient       === "string")  setAmbient(i.ambient);
+    if (typeof i.enclosed      === "boolean") setEnclosed(i.enclosed);
+    if (typeof i.forcedCooling === "boolean") setForcedCooling(i.forcedCooling);
+    if (typeof i.isDC          === "boolean") setIsDC(i.isDC);
+    if (typeof i.segmented     === "boolean") setSegmented(i.segmented);
+  }, []);
+
+  const { saveSnapshot, restoreSnapshot } = useToolHistory("busbar", formInputs, applyInputs);
+
   function handleCalc() {
     const r = sizeBusbar({
       current:      parseFloat(current)  || 0,
@@ -40,6 +60,11 @@ export default function BusbarPage() {
       segmented:    isDC ? segmented : false,
     });
     setResult(r);
+    saveSnapshot(
+      r.sectionMm2 > 0
+        ? `${current}A ${material}${isDC ? " DC" : ""} → ${r.dimensionMm}`
+        : `${current}A ${material} — no match`,
+    );
   }
 
   return (
@@ -107,10 +132,14 @@ export default function BusbarPage() {
           )}
         </div>
 
-        <button className="btn-primary" onClick={handleCalc}
-          style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
-          {tbu.btnCalc}
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
+          <button className="btn-primary" onClick={handleCalc}
+            style={{ flex: "1 1 200px", justifyContent: "center" }}>
+            {tbu.btnCalc}
+          </button>
+          <RecentDropdown tool="busbar" onRestore={restoreSnapshot} />
+          <ShareButton tool="busbar" inputs={formInputs} enabled={result !== null} />
+        </div>
       </div>
 
       {result && (

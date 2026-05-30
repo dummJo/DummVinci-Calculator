@@ -1,18 +1,21 @@
 // app/breaker/page.tsx — MCCB / MCB Selection Calculator
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import FieldToggle from "@/components/calc/FieldToggle";
 import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
+import RecentDropdown from "@/components/calc/RecentDropdown";
+import ShareButton from "@/components/share/ShareButton";
 import { sizeBreaker, BreakerResult } from "@/lib/calc/breaker";
 import type { Curve, Region } from "@/lib/calc/breaker";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import Footnote from "@/components/calc/Footnote";
+import { useToolHistory } from "@/lib/use-tool-history";
 
 export default function BreakerPage() {
   const { t } = useLang();
@@ -28,6 +31,22 @@ export default function BreakerPage() {
 
   const [result, setResult] = useState<BreakerResult | null>(null);
 
+  const formInputs = useMemo(() => ({
+    loadCurrent, faultCurrent, voltage, curve, poles, driveLoad, preferRegion,
+  }), [loadCurrent, faultCurrent, voltage, curve, poles, driveLoad, preferRegion]);
+
+  const applyInputs = useCallback((i: Record<string, unknown>) => {
+    if (typeof i.loadCurrent  === "string") setLoadCurrent(i.loadCurrent);
+    if (typeof i.faultCurrent === "string") setFaultCurrent(i.faultCurrent);
+    if (typeof i.voltage      === "string") setVoltage(i.voltage);
+    if (typeof i.curve        === "string") setCurve(i.curve as Curve);
+    if (["1","2","3","4"].includes(i.poles as string)) setPoles(i.poles as "1"|"2"|"3"|"4");
+    if (typeof i.driveLoad    === "boolean") setDriveLoad(i.driveLoad);
+    if (typeof i.preferRegion === "string") setPreferRegion(i.preferRegion as Region);
+  }, []);
+
+  const { saveSnapshot, restoreSnapshot } = useToolHistory("breaker", formInputs, applyInputs);
+
   function handleCalc() {
     const r = sizeBreaker({
       loadCurrent:   parseFloat(loadCurrent) || 0,
@@ -38,6 +57,11 @@ export default function BreakerPage() {
       preferRegion,
     });
     setResult(r);
+    saveSnapshot(
+      r.nominalA > 0
+        ? `${loadCurrent}A · ${faultCurrent}kA → ${r.partCode} ${r.nominalA}A`
+        : `${loadCurrent}A · ${faultCurrent}kA — no match`,
+    );
   }
 
   return (
@@ -110,10 +134,14 @@ export default function BreakerPage() {
           />
         </div>
 
-        <button className="btn-primary" onClick={handleCalc}
-          style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
-          {tb.btnCalc}
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
+          <button className="btn-primary" onClick={handleCalc}
+            style={{ flex: "1 1 200px", justifyContent: "center" }}>
+            {tb.btnCalc}
+          </button>
+          <RecentDropdown tool="breaker" onRestore={restoreSnapshot} />
+          <ShareButton tool="breaker" inputs={formInputs} enabled={result !== null} />
+        </div>
       </div>
 
       {result && (

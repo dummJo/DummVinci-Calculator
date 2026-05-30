@@ -1,7 +1,7 @@
 // app/cable/page.tsx — Cable Sizing Calculator
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
@@ -15,8 +15,7 @@ import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import Footnote from "@/components/calc/Footnote";
 import { Info } from "lucide-react";
-import { pushSnapshot, getSmartDefaults, type CalcSnapshot } from "@/lib/state-store";
-import { readShareFromHash } from "@/lib/share-link";
+import { useToolHistory } from "@/lib/use-tool-history";
 
 export default function CablePage() {
   const { t } = useLang();
@@ -65,17 +64,7 @@ export default function CablePage() {
   // the first client render — these setters only override afterwards.
   // Reading client-only storage in a useState initializer would cause a
   // hydration mismatch, so a one-shot effect is the right pattern here.
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    const shared = readShareFromHash();
-    if (shared?.t === "cable") {
-      applyInputs(shared.i);
-      return;
-    }
-    const sd = getSmartDefaults("cable");
-    if (Object.keys(sd).length) applyInputs(sd as Record<string, unknown>);
-  }, [applyInputs]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+  const { saveSnapshot, restoreSnapshot } = useToolHistory("cable", formInputs, applyInputs);
 
   function handleCalc() {
     const r = sizeCable({
@@ -89,19 +78,12 @@ export default function CablePage() {
       groupedCircuits: Math.max(1, parseInt(groupedCircuits) || 1),
     });
     setResult(r);
-    // Snapshot for Recent + bump histogram for Smart defaults.
-    pushSnapshot({
-      tool: "cable",
-      inputs: formInputs,
-      label: r.phaseSize > 0
+    saveSnapshot(
+      r.phaseSize > 0
         ? `${current}A · ${length}m → ${r.phaseSize}mm² (${r.vdropPct}%)`
         : `${current}A · ${length}m — no match`,
-    });
+    );
   }
-
-  const handleRestore = useCallback((snap: CalcSnapshot) => {
-    applyInputs(snap.inputs);
-  }, [applyInputs]);
 
   return (
     <CalcShell 
@@ -205,7 +187,7 @@ export default function CablePage() {
             style={{ flex: "1 1 200px", justifyContent: "center" }}>
             {tc.btnCalc}
           </button>
-          <RecentDropdown tool="cable" onRestore={handleRestore} />
+          <RecentDropdown tool="cable" onRestore={restoreSnapshot} />
           <ShareButton tool="cable" inputs={formInputs} enabled={result !== null} />
         </div>
       </div>

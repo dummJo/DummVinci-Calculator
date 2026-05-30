@@ -1,18 +1,21 @@
 // app/vsd/page.tsx — VSD + Airflow Sizing Calculator
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import FieldToggle from "@/components/calc/FieldToggle";
 import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
+import RecentDropdown from "@/components/calc/RecentDropdown";
+import ShareButton from "@/components/share/ShareButton";
 import { sizeVsd, VsdResult, IpRating } from "@/lib/calc/vsd";
 import type { DriveApp, Voltage } from "@/lib/calc/vsd";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import Footnote from "@/components/calc/Footnote";
+import { useToolHistory } from "@/lib/use-tool-history";
 
 export default function VsdPage() {
   const { t } = useLang();
@@ -32,6 +35,24 @@ export default function VsdPage() {
 
   const voltageNum = useMemo(() => parseFloat(voltage) || 400, [voltage]);
 
+  const formInputs = useMemo(() => ({
+    motorKw, voltage, app, heavy, deltaT, ambient, altitude, variant, ipPref,
+  }), [motorKw, voltage, app, heavy, deltaT, ambient, altitude, variant, ipPref]);
+
+  const applyInputs = useCallback((i: Record<string, unknown>) => {
+    if (typeof i.motorKw  === "string") setMotorKw(i.motorKw);
+    if (typeof i.voltage  === "string") setVoltage(i.voltage);
+    if (typeof i.app      === "string") setApp(i.app as DriveApp);
+    if (typeof i.heavy    === "boolean") setHeavy(i.heavy);
+    if (typeof i.deltaT   === "string") setDeltaT(i.deltaT);
+    if (typeof i.ambient  === "string") setAmbient(i.ambient);
+    if (typeof i.altitude === "string") setAltitude(i.altitude);
+    if (typeof i.variant  === "string") setVariant(i.variant as typeof variant);
+    if (typeof i.ipPref   === "string") setIpPref(i.ipPref as IpRating);
+  }, []);
+
+  const { saveSnapshot, restoreSnapshot } = useToolHistory("vsd", formInputs, applyInputs);
+
   function handleCalc() {
     const r = sizeVsd({
       motorKw:      parseFloat(motorKw) || 0,
@@ -45,6 +66,11 @@ export default function VsdPage() {
       ipPreference: ipPref,
     });
     setResult(r);
+    saveSnapshot(
+      r.ratedKw > 0
+        ? `${motorKw}kW ${app} → ${r.family} ${r.frame}`
+        : `${motorKw}kW ${app} — no match`,
+    );
   }
 
   const isCrane = app === "crane" || heavy;
@@ -165,10 +191,14 @@ export default function VsdPage() {
           </div>
         )}
 
-        <button className="btn-primary" onClick={handleCalc}
-          style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
-          {tv.btnCalc}
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
+          <button className="btn-primary" onClick={handleCalc}
+            style={{ flex: "1 1 200px", justifyContent: "center" }}>
+            {tv.btnCalc}
+          </button>
+          <RecentDropdown tool="vsd" onRestore={restoreSnapshot} />
+          <ShareButton tool="vsd" inputs={formInputs} enabled={result !== null} />
+        </div>
       </div>
 
       {result && (
