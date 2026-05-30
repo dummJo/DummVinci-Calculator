@@ -1,11 +1,13 @@
 // app/panel/page.tsx — Panel / Enclosure Sizing + Cooling Calculator
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import ResultCard from "@/components/calc/ResultCard";
+import RecentDropdown from "@/components/calc/RecentDropdown";
+import ShareButton from "@/components/share/ShareButton";
 import { sizePanel, PanelResult } from "@/lib/calc/panel";
 import type { Location, IpClass, CoolingMode } from "@/lib/calc/panel";
 import { estimatePanelLayout, LayoutResult } from "@/lib/calc/panel-layout";
@@ -13,6 +15,7 @@ import type { VsdFrame, BusbarTier, LayoutInput } from "@/lib/calc/panel-layout"
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import Footnote from "@/components/calc/Footnote";
+import { useToolHistory } from "@/lib/use-tool-history";
 import { Layers, Ruler } from "lucide-react";
 
 function InfoRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
@@ -72,6 +75,21 @@ export default function PanelPage() {
     setLayoutResult(r);
   }
 
+  const formInputs = useMemo(() => ({
+    heatW, ambient, location, ip, coolingMode, space,
+  }), [heatW, ambient, location, ip, coolingMode, space]);
+
+  const applyInputs = useCallback((i: Record<string, unknown>) => {
+    if (typeof i.heatW       === "string") setHeatW(i.heatW);
+    if (typeof i.ambient     === "string") setAmbient(i.ambient);
+    if (i.location === "indoor" || i.location === "outdoor") setLocation(i.location);
+    if (typeof i.ip          === "string") setIp(i.ip as IpClass);
+    if (typeof i.coolingMode === "string") setCoolingMode(i.coolingMode as CoolingMode);
+    if (i.space === "compact" || i.space === "comfortable") setSpace(i.space);
+  }, []);
+
+  const { saveSnapshot, restoreSnapshot } = useToolHistory("panel", formInputs, applyInputs);
+
   function handleCalc() {
     const r = sizePanel({
       totalHeatW:     parseFloat(heatW)   || 0,
@@ -80,6 +98,7 @@ export default function PanelPage() {
       spacePreference: space,
     });
     setResult(r);
+    saveSnapshot(`${heatW}W @ ${ambient}°C → ${r.dimMm}`);
   }
 
   return (
@@ -144,10 +163,14 @@ export default function PanelPage() {
           />
         </div>
 
-        <button className="btn-primary" onClick={handleCalc}
-          style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
-          {tp.btnCalc}
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
+          <button className="btn-primary" onClick={handleCalc}
+            style={{ flex: "1 1 200px", justifyContent: "center" }}>
+            {tp.btnCalc}
+          </button>
+          <RecentDropdown tool="panel" onRestore={restoreSnapshot} />
+          <ShareButton tool="panel" inputs={formInputs} enabled={result !== null} />
+        </div>
       </div>
 
       {result && (

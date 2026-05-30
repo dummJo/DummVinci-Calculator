@@ -1,15 +1,18 @@
 // app/plc/page.tsx — Siemens S7-1200/1500 PLC I/O Module Calculator
 "use client";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import ResultCard from "@/components/calc/ResultCard";
+import RecentDropdown from "@/components/calc/RecentDropdown";
+import ShareButton from "@/components/share/ShareButton";
 import Footer from "@/components/nav/Footer";
 import { sizePlcModules, CPU_CATALOG } from "@/lib/calc/plc";
 import type { PlcInput, PlcResult, CpuModel } from "@/lib/calc/plc";
 import { CheckCircle, AlertTriangle, Cpu, Wifi } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import { useToolHistory } from "@/lib/use-tool-history";
 
 const CPU_OPTIONS = Object.entries(CPU_CATALOG).map(([k, v]) => ({
   value: k,
@@ -41,6 +44,21 @@ export default function PlcPage() {
     }
   })();
 
+  const formInputs = useMemo(() => ({
+    cpuModel, di, doVal, ai, ao, spare,
+  }), [cpuModel, di, doVal, ai, ao, spare]);
+
+  const applyInputs = useCallback((i: Record<string, unknown>) => {
+    if (typeof i.cpuModel === "string") setCpuModel(i.cpuModel as CpuModel);
+    if (typeof i.di       === "string") setDi(i.di);
+    if (typeof i.doVal    === "string") setDoVal(i.doVal);
+    if (typeof i.ai       === "string") setAi(i.ai);
+    if (typeof i.ao       === "string") setAo(i.ao);
+    if (typeof i.spare    === "string") setSpare(i.spare);
+  }, []);
+
+  const { saveSnapshot, restoreSnapshot } = useToolHistory("plc", formInputs, applyInputs);
+
   function handleCalc() {
     const r = sizePlcModules({
       cpuModel,
@@ -51,6 +69,7 @@ export default function PlcPage() {
       sparePct: parseInt(spare) || 20,
     } as PlcInput);
     setResult(r);
+    saveSnapshot(`${cpuModel} · ${di}DI/${doVal}DO/${ai}AI/${ao}AO → ${r.usedSmSlots}/${r.totalSmSlots} slots`);
   }
 
   return (
@@ -158,9 +177,13 @@ export default function PlcPage() {
         <FieldNumber label={tp.spare} value={spare} onChange={setSpare} min={10} max={50}
           hint={tp.spareHint} />
 
-        <button className="btn-primary" onClick={handleCalc} style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
-          {tp.btnCalc}
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
+          <button className="btn-primary" onClick={handleCalc} style={{ flex: "1 1 200px", justifyContent: "center" }}>
+            {tp.btnCalc}
+          </button>
+          <RecentDropdown tool="plc" onRestore={restoreSnapshot} />
+          <ShareButton tool="plc" inputs={formInputs} enabled={result !== null} />
+        </div>
       </div>
 
       {result && (

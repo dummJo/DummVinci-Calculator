@@ -1,18 +1,21 @@
 // app/cable/page.tsx — Cable Sizing Calculator
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
+import RecentDropdown from "@/components/calc/RecentDropdown";
+import ShareButton from "@/components/share/ShareButton";
 import { sizeCable, CableResult } from "@/lib/calc/cable";
 import type { Phase, Insulation, Install } from "@/lib/calc/cable";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import Footnote from "@/components/calc/Footnote";
 import { Info } from "lucide-react";
+import { useToolHistory } from "@/lib/use-tool-history";
 
 export default function CablePage() {
   const { t } = useLang();
@@ -34,6 +37,35 @@ export default function CablePage() {
   const voltageNum = useMemo(() => parseFloat(voltage) || 400, [voltage]);
   const pfNum = useMemo(() => parseFloat(pf) || 0.85, [pf]);
 
+  // Form inputs as a flat record — used for snapshot save + share encoding
+  // and (in reverse) restore from a recent snapshot or shared URL.
+  const formInputs = useMemo(() => ({
+    current, length, voltage, phase, insulation, install,
+    ambient, vdrop, pf, groupedCircuits,
+  }), [current, length, voltage, phase, insulation, install, ambient, vdrop, pf, groupedCircuits]);
+
+  // Restore form state from a snapshot-like inputs record (typed loosely so
+  // both share-link and Recent-dropdown payloads flow through the same path).
+  const applyInputs = useCallback((inputs: Record<string, unknown>) => {
+    if (typeof inputs.current    === "string") setCurrent(inputs.current);
+    if (typeof inputs.length     === "string") setLength(inputs.length);
+    if (typeof inputs.voltage    === "string") setVoltage(inputs.voltage);
+    if (inputs.phase === "1ph" || inputs.phase === "3ph") setPhase(inputs.phase);
+    if (inputs.insulation === "PVC" || inputs.insulation === "XLPE") setInsulation(inputs.insulation);
+    if (["air","tray","conduit","buried"].includes(inputs.install as string)) setInstall(inputs.install as Install);
+    if (typeof inputs.ambient    === "string") setAmbient(inputs.ambient);
+    if (typeof inputs.vdrop      === "string") setVdrop(inputs.vdrop);
+    if (typeof inputs.pf         === "string") setPf(inputs.pf);
+    if (typeof inputs.groupedCircuits === "string") setGroupedCircuits(inputs.groupedCircuits);
+  }, []);
+
+  // On mount: share-link wins, otherwise smart defaults from histogram.
+  // Hardcoded defaults stay as the useState initial values so SSR matches
+  // the first client render — these setters only override afterwards.
+  // Reading client-only storage in a useState initializer would cause a
+  // hydration mismatch, so a one-shot effect is the right pattern here.
+  const { saveSnapshot, restoreSnapshot } = useToolHistory("cable", formInputs, applyInputs);
+
   function handleCalc() {
     const r = sizeCable({
       current:         parseFloat(current)  || 0,
@@ -46,6 +78,11 @@ export default function CablePage() {
       groupedCircuits: Math.max(1, parseInt(groupedCircuits) || 1),
     });
     setResult(r);
+    saveSnapshot(
+      r.phaseSize > 0
+        ? `${current}A · ${length}m → ${r.phaseSize}mm² (${r.vdropPct}%)`
+        : `${current}A · ${length}m — no match`,
+    );
   }
 
   return (
@@ -145,10 +182,14 @@ export default function CablePage() {
           </div>
         </div>
 
-        <button className="btn-primary" onClick={handleCalc}
-          style={{ marginTop: 8, width: "100%", justifyContent: "center" }}>
-          {tc.btnCalc}
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
+          <button className="btn-primary" onClick={handleCalc}
+            style={{ flex: "1 1 200px", justifyContent: "center" }}>
+            {tc.btnCalc}
+          </button>
+          <RecentDropdown tool="cable" onRestore={restoreSnapshot} />
+          <ShareButton tool="cable" inputs={formInputs} enabled={result !== null} />
+        </div>
       </div>
 
       {result && (

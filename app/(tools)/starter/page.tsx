@@ -1,16 +1,19 @@
 // app/starter/page.tsx — DOL & Star-Delta Motor Starter Sizing (Siemens SIRIUS)
 "use client";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 
 import CalcShell from "@/components/calc/CalcShell";
 import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
+import RecentDropdown from "@/components/calc/RecentDropdown";
+import ShareButton from "@/components/share/ShareButton";
 import Footer from "@/components/nav/Footer";
 import Footnote from "@/components/calc/Footnote";
 import { useLang } from "@/lib/i18n";
 import { sizeStarter } from "@/lib/calc/starter";
 import type { StarterInput, StarterResult, StarterType, Voltage } from "@/lib/calc/starter";
+import { useToolHistory } from "@/lib/use-tool-history";
 import { Zap, ShieldCheck, CircuitBoard, AlertTriangle, CheckCircle, Copy } from "lucide-react";
 
 const CATEGORY_STYLES: Record<string, { bg: string; border: string; color: string; label: string }> = {
@@ -43,6 +46,20 @@ export default function StarterPage() {
   const [timerSec, setTimerSec]     = useState("10");
   const [result, setResult]         = useState<StarterResult | null>(null);
 
+  const formInputs = useMemo(() => ({
+    motorKw, voltage, flaOverride, starterType, timerSec,
+  }), [motorKw, voltage, flaOverride, starterType, timerSec]);
+
+  const applyInputs = useCallback((i: Record<string, unknown>) => {
+    if (typeof i.motorKw     === "string") setMotorKw(i.motorKw);
+    if (typeof i.voltage     === "number") setVoltage(i.voltage as Voltage);
+    if (typeof i.flaOverride === "string") setFlaOverride(i.flaOverride);
+    if (typeof i.starterType === "string") setStarterType(i.starterType as StarterType);
+    if (typeof i.timerSec    === "string") setTimerSec(i.timerSec);
+  }, []);
+
+  const { saveSnapshot, restoreSnapshot } = useToolHistory("starter", formInputs, applyInputs);
+
   function handleCalc() {
     const r = sizeStarter({
       motorKw: parseFloat(motorKw) || 0,
@@ -52,6 +69,7 @@ export default function StarterPage() {
       timerSec: parseFloat(timerSec) || 10,
     } as StarterInput);
     setResult(r);
+    saveSnapshot(`${motorKw}kW ${starterType.replace("_", "/")} @ ${voltage}V`);
   }
 
   return (
@@ -160,9 +178,13 @@ export default function StarterPage() {
             hint={ts.timerHint} />
         )}
 
-        <button className="btn-primary" onClick={handleCalc} style={{ marginTop: 4, width: "100%", justifyContent: "center" }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginTop: 4 }}>
+        <button className="btn-primary" onClick={handleCalc} style={{ flex: "1 1 200px", justifyContent: "center" }}>
           {ts.btnCalc}
         </button>
+          <RecentDropdown tool="starter" onRestore={restoreSnapshot} />
+          <ShareButton tool="starter" inputs={formInputs} enabled={result !== null} />
+        </div>
       </div>
 
       {result && (
