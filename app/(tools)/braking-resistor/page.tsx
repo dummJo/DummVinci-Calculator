@@ -23,15 +23,21 @@ export default function BrakingResistorPage() {
   const [lineVoltage, setLineVoltage] = useState<string>("400");
   const [edPct,       setEdPct]       = useState<string>("25");
   const [peakFactor,  setPeakFactor]  = useState("1.5");
+  const [cycleTime,   setCycleTime]   = useState("");
+  const [brakeTime,   setBrakeTime]   = useState("");
 
   const [result, setResult] = useState<BrResult | null>(null);
 
   function handleCalc() {
+    const cycleS = parseFloat(cycleTime);
+    const brakeS = parseFloat(brakeTime);
     const r = sizeBrakingResistor({
       motorKw:         parseFloat(motorKw)     || 0,
-      lineVoltage:     (parseInt(lineVoltage)  as LineVoltage) ?? 400,
-      edPct:           (parseInt(edPct)        as EdPct)       ?? 25,
+      lineVoltage:     ((parseInt(lineVoltage) || 400) as LineVoltage),
+      edPct:           ((parseInt(edPct)       || 25)  as EdPct),
       cranePeakFactor: parseFloat(peakFactor)  || 1.5,
+      cycleTimeS:      cycleS > 0 ? cycleS : undefined,
+      brakingTimeS:    brakeS > 0 ? brakeS : undefined,
     });
     setResult(r);
   }
@@ -84,6 +90,18 @@ export default function BrakingResistorPage() {
             value={peakFactor} onChange={setPeakFactor}
             min={1.0} max={3.0} step={0.1} hint={tr.peakHint}
           />
+          <FieldNumber
+            label="Cycle time" unit="s"
+            value={cycleTime} onChange={setCycleTime}
+            min={0} step={10}
+            hint="Optional — full hoist cycle (s). Leave blank to use ED class only."
+          />
+          <FieldNumber
+            label="Braking time" unit="s"
+            value={brakeTime} onChange={setBrakeTime}
+            min={0} step={1}
+            hint="Optional — braking active per cycle (s). Pairs with cycle time."
+          />
         </div>
 
         <button className="btn-primary" onClick={handleCalc}
@@ -103,6 +121,7 @@ export default function BrakingResistorPage() {
             { label: tr.resRtarget,value: `${result.rTargetOhm} Ω`, accent: true },
             { label: tr.resPpeak,  value: `${result.pPeakKw} kW` },
             { label: tr.resPcont,  value: `${result.pContKw} kW`, accent: true },
+            ...(result.edActualPct !== undefined ? [{ label: "Actual duty (ED)", value: `${result.edActualPct}%` }] : []),
             { label: tr.resPart,   value: result.part, accent: true },
             { label: tr.resWiring, value: result.wiring },
           ]}
