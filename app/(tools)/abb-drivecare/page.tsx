@@ -460,24 +460,24 @@ export default function AbbDriveCarePage() {
         @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
         :root {
-          --dark: #191816; 
-          --dark-2: #242220; 
-          --light: #fcfbfa; 
-          --light-2: #f7f5f0;
-          --gray: #807d77; 
-          --border: #e6e3db; 
+          --dark: #0f172a; 
+          --dark-2: #1e293b; 
+          --light: #f8fafc; 
+          --light-2: #f1f5f9;
+          --gray: #64748b; 
+          --border: #cbd5e1; 
           --orange: #cc5500; 
-          --orange-lt: #fdf5f0;
-          --green: #3b6622; 
-          --green-lt: #eff7ea; 
-          --red: #b33939; 
-          --red-lt: #fdf1f1;
-          --amber: #946910; 
-          --amber-lt: #fef8eb; 
-          --blue: #1b4d75; 
-          --blue-lt: #f2f7fc;
+          --orange-lt: #fff5f5;
+          --green: #16a34a; 
+          --green-lt: #f0fdf4; 
+          --red: #dc2626; 
+          --red-lt: #fef2f2;
+          --amber: #d97706; 
+          --amber-lt: #fffbeb; 
+          --blue: #2563eb; 
+          --blue-lt: #eff6ff;
           --font-h: 'Plus Jakarta Sans', Arial, sans-serif; 
-          --font-b: 'Newsreader', Georgia, serif;
+          --font-b: 'Plus Jakarta Sans', Arial, sans-serif;
           --font-mono: 'Space Mono', monospace;
           --r: 12px; 
           --shadow: 0 4px 12px rgba(25, 24, 22, 0.03), 0 1px 3px rgba(25, 24, 22, 0.02);
@@ -1191,9 +1191,9 @@ export default function AbbDriveCarePage() {
 
       {/* ═══ SIGNATURES ════════════════════════════════════════════════════════ */}
       <div className="section-box" style={{ marginTop: 30 }}>
-        <div style={{ background: "var(--dark)", padding: "13px 20px" }}>
-          <h3 style={{ fontFamily: "var(--font-h)", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#fff", margin: 0 }}>
-            {lang === "id" ? "Tanda Tangan" : "Signatures"}
+        <div className="sec-head">
+          <h3 className="sec-title">
+            {lang === "id" ? "5. Tanda Tangan" : "5. Signatures"}
           </h3>
         </div>
         <div className="sig-grid">
