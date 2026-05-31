@@ -1075,7 +1075,7 @@ export default function PanelLayoutPage() {
                         letterSpacing: "0.04em", border: "1px solid",
                         cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
                         background: activeCategory === c ? "var(--accent)" : "transparent",
-                        color: activeCategory === c ? "#000" : "var(--muted)",
+                        color: activeCategory === c ? "var(--bg)" : "var(--muted)",
                         borderColor: activeCategory === c ? "var(--accent)" : "var(--border)",
                         transition: "all 0.15s ease"
                       }}
