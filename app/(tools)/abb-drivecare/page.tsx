@@ -10,7 +10,8 @@ import {
   X,
   RotateCcw,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  FileText
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -35,7 +36,6 @@ interface CustomerInfo {
   address: string;
   siteName: string;
   siteAddress: string;
-  contactPerson: string;
   phone: string;
   email: string;
   contractNumber: string;
@@ -129,13 +129,13 @@ const VISUAL_ITEMS = [
 ];
 
 const MEASUREMENT_ITEMS = [
-  { id: "m1", en: "Input Bridge Measurement", id_: "Pengukuran Input Bridge" },
-  { id: "m2", en: "Line IGBT Measurement", id_: "Pengukuran IGBT Line" },
-  { id: "m3", en: "INU Motor IGBT Measurement", id_: "Pengukuran IGBT Motor INU" },
-  { id: "m4", en: "Temperature Sensor Measurement", id_: "Pengukuran Sensor Suhu" },
-  { id: "m5", en: "Brake Chopper Measurement", id_: "Pengukuran Brake Chopper" },
-  { id: "m6", en: "Charging Resistor Measurement", id_: "Pengukuran Resistor Charging" },
-  { id: "m7", en: "Charging Capacitor Measurement", id_: "Pengukuran Kapasitor Charging" },
+  { id: "m1", en: "Input Bridge Measurement", id_: "Pengukuran Input Bridge", refEn: "Diode Test: 0.3 - 0.7 V | R: > 1 MΩ", refId: "Uji Diode: 0.3 - 0.7 V | R: > 1 MΩ" },
+  { id: "m2", en: "Line IGBT Measurement", id_: "Pengukuran IGBT Line", refEn: "Diode Test: 0.3 - 0.7 V | R: > 1 MΩ", refId: "Uji Diode: 0.3 - 0.7 V | R: > 1 MΩ" },
+  { id: "m3", en: "INU Motor IGBT Measurement", id_: "Pengukuran IGBT Motor INU", refEn: "Diode Test: 0.3 - 0.7 V | R: > 1 MΩ", refId: "Uji Diode: 0.3 - 0.7 V | R: > 1 MΩ" },
+  { id: "m4", en: "Temperature Sensor Measurement", id_: "Pengukuran Sensor Suhu", refEn: "NTC / PT100 (At Room Temp)", refId: "NTC / PT100 (Suhu Ruang)" },
+  { id: "m5", en: "Brake Chopper Measurement", id_: "Pengukuran Brake Chopper", refEn: "Diode Test: 0.3 - 0.7 V | R: > 1 MΩ", refId: "Uji Diode: 0.3 - 0.7 V | R: > 1 MΩ" },
+  { id: "m6", en: "Charging Resistor Measurement", id_: "Pengukuran Resistor Charging", refEn: "R: ~10 - 150 Ω", refId: "R: ~10 - 150 Ω" },
+  { id: "m7", en: "Charging Capacitor Measurement", id_: "Pengukuran Kapasitor Charging", refEn: "Charging Behavior / > 1 MΩ", refId: "Kondisi Charging / R: > 1 MΩ" },
 ];
 
 const SERVICE_ACTION_ITEMS = [
@@ -158,7 +158,7 @@ const COMPANY_EMAIL = "Email : info@ptts.co.id";
 function createInitialState(): ReportState {
   return {
     reportDate: new Date().toISOString().split("T")[0]!,
-    customer: { country: "", abbUnit: "", companyName: "", address: "", siteName: "", siteAddress: "", contactPerson: "", phone: "", email: "", contractNumber: "", jobNumber: "", poNumber: "" },
+    customer: { country: "", abbUnit: "", companyName: "", address: "", siteName: "", siteAddress: "", phone: "", email: "", contractNumber: "", jobNumber: "", poNumber: "" },
     provider: { serviceEngineer: "", engineerEmail: "" },
     equipment: { assetName: "", serialNumber: "", shortTypeCode: "", longTypeCode: "", application: "", firmwareVersion: "", commissioningDate: "", dateOfEvent: "", partNumber: "", customerEquipmentId: "" },
     environment: { cleanliness: "", corrosiveGasRisk: "", vibrationLevel: "", airConditioning: "", electricalRoom: "", temperature: "", humidity: "", altitude: "", comments: "" },
@@ -227,23 +227,47 @@ function FieldRow({ label, value, onChange, placeholder }: { label: string; valu
   );
 }
 
-function StatusSelect({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: { val: string; label: string }[] }) {
-  const getStyleClass = () => {
-    if (!value) return "empty";
-    if (value === "dirty" || value === "high" || value === "fail") return "fail";
-    if (value === "medium") return "warn";
+interface RadioOption {
+  val: string;
+  label: string;
+  id?: string;
+}
+
+function StatusRadioGroup({
+  value,
+  onChange,
+  options,
+  lang,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: RadioOption[];
+  lang: string;
+}) {
+  const getBtnClass = (val: string) => {
+    if (val === "dirty" || val === "fail" || val === "high" || val === "no" || val === "not_done") return "fail";
+    if (val === "medium" || val === "unknown") return "warn";
+    if (val === "na") return "na";
     return "pass";
   };
 
   return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className={`status-select ${getStyleClass()}`}
-    >
-      <option value="">—</option>
-      {options.map(o => <option key={o.val} value={o.val}>{o.label}</option>)}
-    </select>
+    <div className="status-radio-group">
+      {options.map((o) => {
+        const isSelected = value === o.val;
+        const btnClass = getBtnClass(o.val);
+        return (
+          <button
+            key={o.val}
+            type="button"
+            className={`status-radio-btn ${isSelected ? `selected ${btnClass}` : ""}`}
+            onClick={() => onChange(isSelected ? "" : o.val)}
+          >
+            {lang === "id" && o.id ? o.id : o.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -355,6 +379,63 @@ export default function AbbDriveCarePage() {
     }
   };
 
+  const applyTemplate = () => {
+    const msg = lang === "id"
+      ? "Apakah Anda yakin ingin mengisi formulir dengan template standar ABB? Ini akan menimpa data status dan pengukuran saat ini."
+      : "Are you sure you want to load the standard ABB template? This will overwrite the current status and measurement values.";
+    if (confirm(msg)) {
+      const nextReport = {
+        ...report,
+        environment: {
+          ...report.environment,
+          cleanliness: "clean" as TriStatus,
+          corrosiveGasRisk: "low" as RiskLevel,
+          vibrationLevel: "normal" as VibrationLevel,
+          airConditioning: "yes" as YesNoUnknown,
+          electricalRoom: "yes" as YesNo,
+          temperature: "25°C",
+          humidity: "50% RH",
+          altitude: "50 m",
+          comments: lang === "id" 
+            ? "Kondisi lingkungan ruang elektrikal bersih, ber-AC, dan normal."
+            : "Electrical room environment is clean, air-conditioned, and normal."
+        },
+        visual: {
+          ...report.visual,
+          vi1: { ...(report.visual.vi1 || {}), status: "clean" as InspectionStatus, comments: lang === "id" ? "Kondisi bersih" : "Clean condition", images: report.visual.vi1?.images || [] },
+          vi2: { ...(report.visual.vi2 || {}), status: "clean" as InspectionStatus, comments: lang === "id" ? "Kondisi bersih" : "Clean condition", images: report.visual.vi2?.images || [] },
+          vi3: { ...(report.visual.vi3 || {}), status: "clean" as InspectionStatus, comments: lang === "id" ? "Tidak ada korosi" : "No corrosion", images: report.visual.vi3?.images || [] },
+          vi4: { ...(report.visual.vi4 || {}), status: "done" as InspectionStatus, comments: lang === "id" ? "Putaran normal, bersih" : "Normal rotation, clean", images: report.visual.vi4?.images || [] },
+          vi5: { ...(report.visual.vi5 || {}), status: "done" as InspectionStatus, comments: lang === "id" ? "Kencang sesuai standar" : "Tightened to standard", images: report.visual.vi5?.images || [] },
+          vi6: { ...(report.visual.vi6 || {}), status: "done" as InspectionStatus, comments: lang === "id" ? "Kondisi solderan baik" : "Soldering condition good", images: report.visual.vi6?.images || [] },
+          vi7: { ...(report.visual.vi7 || {}), status: "done" as InspectionStatus, comments: lang === "id" ? "Bebas dari debu dan kotoran" : "Dust-free and clean", images: report.visual.vi7?.images || [] },
+        },
+        measurements: {
+          ...report.measurements,
+          m1: { status: "pass" as PassFailNa, value: "0.52 V", comments: lang === "id" ? "Nilai normal" : "Normal value" },
+          m2: { status: "pass" as PassFailNa, value: "0.53 V", comments: lang === "id" ? "Nilai normal" : "Normal value" },
+          m3: { status: "pass" as PassFailNa, value: "0.51 V", comments: lang === "id" ? "Nilai normal" : "Normal value" },
+          m4: { status: "pass" as PassFailNa, value: "24°C", comments: lang === "id" ? "Suhu ruang" : "Room temp" },
+          m5: { status: "pass" as PassFailNa, value: "0.52 V", comments: lang === "id" ? "Nilai normal" : "Normal value" },
+          m6: { status: "pass" as PassFailNa, value: "47 Ω", comments: lang === "id" ? "Sesuai spesifikasi" : "Within specification" },
+          m7: { status: "pass" as PassFailNa, value: "> 1 MΩ", comments: lang === "id" ? "Kondisi pengisian baik" : "Charging condition good" },
+        },
+        serviceActions: {
+          ...report.serviceActions,
+          sa1: { status: "na" as DoneNotNa, materialCode: "", comments: "N/A" },
+          sa2: { status: "na" as DoneNotNa, materialCode: "", comments: "N/A" },
+          sa3: { status: "na" as DoneNotNa, materialCode: "", comments: "N/A" },
+          sa4: { status: "na" as DoneNotNa, materialCode: "", comments: "N/A" },
+          sa5: { status: "na" as DoneNotNa, materialCode: "", comments: "N/A" },
+          sa6: { status: "na" as DoneNotNa, materialCode: "", comments: "N/A" },
+          sa7: { status: "na" as DoneNotNa, materialCode: "", comments: "N/A" },
+          sa8: { status: "na" as DoneNotNa, materialCode: "", comments: "N/A" },
+        }
+      };
+      save(nextReport);
+    }
+  };
+
   const toggleSection = (key: string) => {
     setCollapsedSections(prev => {
       const next = { ...prev };
@@ -364,13 +445,13 @@ export default function AbbDriveCarePage() {
     });
   };
 
-  const triOptions = [{ val: "clean", label: "Clean" }, { val: "medium", label: "Medium" }, { val: "dirty", label: "Dirty" }];
-  const doneOptions = [{ val: "done", label: "Done" }, { val: "not_done", label: "Not Done" }, { val: "na", label: "N/A" }];
-  const passOptions = [{ val: "pass", label: "Pass" }, { val: "fail", label: "Fail" }, { val: "na", label: "N/A" }];
-  const riskOptions = [{ val: "low", label: "Low" }, { val: "medium", label: "Medium" }, { val: "high", label: "High" }];
-  const vibOptions = [{ val: "normal", label: "Normal" }, { val: "high", label: "High" }, { val: "unknown", label: "Unknown" }];
-  const ynuOptions = [{ val: "yes", label: "Yes" }, { val: "no", label: "No" }, { val: "unknown", label: "Unknown" }];
-  const ynOptions = [{ val: "yes", label: "Yes" }, { val: "no", label: "No" }];
+  const triOptions = [{ val: "clean", label: "Clean", id: "Bersih" }, { val: "medium", label: "Medium", id: "Sedang" }, { val: "dirty", label: "Dirty", id: "Kotor" }];
+  const doneOptions = [{ val: "done", label: "Done", id: "Selesai" }, { val: "not_done", label: "Not Done", id: "Belum" }, { val: "na", label: "N/A", id: "N/A" }];
+  const passOptions = [{ val: "pass", label: "Pass", id: "Baik" }, { val: "fail", label: "Fail", id: "Gagal" }, { val: "na", label: "N/A", id: "N/A" }];
+  const riskOptions = [{ val: "low", label: "Low", id: "Rendah" }, { val: "medium", label: "Medium", id: "Sedang" }, { val: "high", label: "High", id: "Tinggi" }];
+  const vibOptions = [{ val: "normal", label: "Normal", id: "Normal" }, { val: "high", label: "High", id: "Tinggi" }, { val: "unknown", label: "Unknown", id: "Unknown" }];
+  const ynuOptions = [{ val: "yes", label: "Yes", id: "Ya" }, { val: "no", label: "No", id: "Tidak" }, { val: "unknown", label: "Unknown", id: "Unknown" }];
+  const ynOptions = [{ val: "yes", label: "Yes", id: "Ya" }, { val: "no", label: "No", id: "Tidak" }];
 
   return (
     <div className="page" style={{ padding: "28px 20px 100px", maxWidth: 900, margin: "0 auto" }}>
@@ -534,44 +615,128 @@ export default function AbbDriveCarePage() {
           background: #fff;
         }
         
-        .status-select { 
-          font-family: var(--font-h); 
-          font-size: 11.5px; 
-          font-weight: 600; 
-          padding: 6px 12px; 
-          border-radius: 8px; 
-          border: 1.5px solid var(--border); 
-          outline: none; 
-          cursor: pointer; 
-          min-width: 110px; 
-          transition: all 0.2s ease;
+        .status-radio-group {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
         }
-        .status-select.empty {
-          background: var(--light); 
+        .status-radio-btn {
+          font-family: var(--font-h);
+          font-size: 11px;
+          font-weight: 700;
+          padding: 6px 14px;
+          border-radius: 8px;
+          border: 1.5px solid var(--border);
+          background: var(--light);
           color: var(--gray);
-          border-color: var(--border);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          outline: none;
+          user-select: none;
         }
-        .status-select.fail {
-          background: var(--red-lt); 
-          color: var(--red); 
-          border-color: rgba(179, 57, 57, 0.2);
+        .status-radio-btn:hover {
+          border-color: var(--gray);
+          color: var(--dark);
         }
-        .status-select.warn {
-          background: var(--amber-lt); 
-          color: var(--amber); 
-          border-color: rgba(148, 105, 16, 0.2);
+        .status-radio-btn.selected.pass {
+          background: var(--green-lt);
+          border-color: var(--green);
+          color: var(--green);
         }
-        .status-select.pass {
-          background: var(--green-lt); 
-          color: var(--green); 
-          border-color: rgba(59, 102, 34, 0.2);
+        .status-radio-btn.selected.fail {
+          background: var(--red-lt);
+          border-color: var(--red);
+          color: var(--red);
+        }
+        .status-radio-btn.selected.warn {
+          background: var(--amber-lt);
+          border-color: var(--amber);
+          color: var(--amber);
+        }
+        .status-radio-btn.selected.na {
+          background: var(--blue-lt);
+          border-color: var(--blue);
+          color: var(--blue);
+        }
+        .ref-note {
+          font-family: var(--font-mono);
+          font-size: 10px;
+          color: var(--gray);
+          font-weight: normal;
+          margin-left: 6px;
         }
 
-        /* Image grid */
-        .img-grid { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-        .img-thumb { position: relative; width: 80px; height: 60px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
-        .img-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .img-thumb .img-del { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
+        /* Image grid and cards */
+        .img-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 16px;
+          margin-top: 12px;
+        }
+        .img-item-wrap {
+          display: flex;
+          flex-direction: column;
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          background: var(--light-2);
+          overflow: hidden;
+          box-shadow: var(--shadow);
+          transition: transform 0.2s ease;
+        }
+        .img-item-wrap:hover {
+          transform: translateY(-2px);
+        }
+        .img-thumb {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 4 / 3;
+          background: #000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .img-thumb img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+        }
+        .img-del {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          background: rgba(0, 0, 0, 0.65);
+          color: #fff;
+          border: none;
+          border-radius: 50%;
+          width: 24px;
+          height: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          font-size: 11px;
+          transition: background 0.15s;
+          z-index: 10;
+        }
+        .img-del:hover {
+          background: var(--red);
+        }
+        .img-caption-input {
+          padding: 8px 12px;
+          border: none;
+          border-top: 1px solid var(--border);
+          background: #fff;
+          outline: none;
+          font-family: var(--font-h);
+          font-size: 11px;
+          font-weight: 600;
+          color: var(--dark);
+          text-align: center;
+          transition: background 0.2s ease;
+        }
+        .img-caption-input:focus {
+          background: var(--orange-lt);
+        }
 
         /* Static PTTS address */
         .ptts-address { font-family: var(--font-b); font-size: 13.5px; color: var(--dark); line-height: 1.7; padding: 20px 24px; background: var(--light-2); border-top: 1px solid var(--border); }
@@ -679,7 +844,10 @@ export default function AbbDriveCarePage() {
           .u-input, .rpt-table input, .sig-input { border-bottom: none !important; font-weight: bold !important; background: transparent !important; background-image: none !important; }
           .rpt-table textarea { border: none !important; background: transparent !important; padding: 0 !important; font-weight: bold !important; }
           input, select, textarea { background-image: none !important; background-color: transparent !important; }
-          .status-select { border: 1px solid #999 !important; -webkit-appearance: none; appearance: none; background: transparent !important; background-image: none !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+          .status-radio-btn:not(.selected) { display: none !important; }
+          .status-radio-btn.selected { background: transparent !important; border: 1.5px solid #000 !important; color: #000 !important; padding: 3px 8px !important; font-size: 11px !important; font-weight: bold !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .img-item-wrap { border: 1.5px solid #000 !important; break-inside: avoid !important; page-break-inside: avoid !important; }
+          .img-caption-input { border: none !important; font-weight: bold !important; font-size: 11px !important; text-align: center !important; }
           .sig-grid { page-break-inside: avoid; }
           @page { margin: 1.5cm; }
           .rpt-table { page-break-inside: auto; }
@@ -723,6 +891,10 @@ export default function AbbDriveCarePage() {
           <Printer size={16} />
           {lang === "id" ? "Cetak / PDF" : "Print / PDF"}
         </button>
+        <button className="btn btn-outline" onClick={applyTemplate} style={{ borderColor: "var(--orange)", color: "var(--orange)" }}>
+          <FileText size={16} />
+          {lang === "id" ? "Isi Template ABB" : "Load ABB Template"}
+        </button>
         <button className="btn btn-outline" onClick={clearForm}>
           <RotateCcw size={16} />
           {lang === "id" ? "Kosongkan" : "Clear Form"}
@@ -740,7 +912,6 @@ export default function AbbDriveCarePage() {
             <FieldRow label={lang === "id" ? "Alamat" : "Address"} value={report.customer.address} onChange={(v) => updateCustomer("address", v)} />
             <FieldRow label={lang === "id" ? "Nama Site" : "Site Name"} value={report.customer.siteName} onChange={(v) => updateCustomer("siteName", v)} />
             <FieldRow label={lang === "id" ? "Alamat Site" : "Site Address"} value={report.customer.siteAddress} onChange={(v) => updateCustomer("siteAddress", v)} />
-            <FieldRow label={lang === "id" ? "Kontak" : "Contact Person"} value={report.customer.contactPerson} onChange={(v) => updateCustomer("contactPerson", v)} />
             <FieldRow label={lang === "id" ? "Telepon" : "Phone"} value={report.customer.phone} onChange={(v) => updateCustomer("phone", v)} />
             <FieldRow label="Email" value={report.customer.email} onChange={(v) => updateCustomer("email", v)} />
             <FieldRow label={lang === "id" ? "Nomor Kontrak" : "Contract Number"} value={report.customer.contractNumber} onChange={(v) => updateCustomer("contractNumber", v)} />
@@ -795,16 +966,49 @@ export default function AbbDriveCarePage() {
         {!collapsedSections["s31"] && (
           <div style={{ padding: "16px 20px" }}>
             <table className="rpt-table">
-              <thead><tr><th style={{ width: "55%" }}>{"Parameter"}</th><th>{"Status"}</th></tr></thead>
+              <thead><tr><th style={{ width: "45%" }}>{"Parameter"}</th><th>{lang === "id" ? "Status / Nilai" : "Status / Value"}</th></tr></thead>
               <tbody>
-                <tr><td className="td-label">{lang === "id" ? "Kebersihan Lingkungan" : "Cleanliness of Environment"}</td><td><StatusSelect value={report.environment.cleanliness} onChange={(v) => updateEnvironment("cleanliness", v)} options={triOptions} /></td></tr>
-                <tr><td className="td-label">{lang === "id" ? "Risiko Gas Korosif" : "Risk Level for Corrosive Gases"}</td><td><StatusSelect value={report.environment.corrosiveGasRisk} onChange={(v) => updateEnvironment("corrosiveGasRisk", v)} options={riskOptions} /></td></tr>
-                <tr><td className="td-label">{lang === "id" ? "Tingkat Getaran" : "Vibration Level"}</td><td><StatusSelect value={report.environment.vibrationLevel} onChange={(v) => updateEnvironment("vibrationLevel", v)} options={vibOptions} /></td></tr>
-                <tr><td className="td-label">{lang === "id" ? "AC dengan Pendingin" : "Air Conditioning with Cooling"}</td><td><StatusSelect value={report.environment.airConditioning} onChange={(v) => updateEnvironment("airConditioning", v)} options={ynuOptions} /></td></tr>
-                <tr><td className="td-label">{lang === "id" ? "Ruang Elektrikal" : "Electrical Room"}</td><td><StatusSelect value={report.environment.electricalRoom} onChange={(v) => updateEnvironment("electricalRoom", v)} options={ynOptions} /></td></tr>
-                <tr><td className="td-label">{lang === "id" ? "Suhu" : "Temperature"}</td><td><input type="text" value={report.environment.temperature} onChange={(e) => updateEnvironment("temperature", e.target.value)} placeholder="e.g. 32°C" /></td></tr>
-                <tr><td className="td-label">{lang === "id" ? "Kelembapan" : "Humidity"}</td><td><input type="text" value={report.environment.humidity} onChange={(e) => updateEnvironment("humidity", e.target.value)} placeholder="e.g. 65%" /></td></tr>
-                <tr><td className="td-label">{lang === "id" ? "Ketinggian" : "Altitude"}</td><td><input type="text" value={report.environment.altitude} onChange={(e) => updateEnvironment("altitude", e.target.value)} placeholder="e.g. 15 m" /></td></tr>
+                <tr>
+                  <td className="td-label">{lang === "id" ? "Kebersihan Lingkungan" : "Cleanliness of Environment"}</td>
+                  <td><StatusRadioGroup value={report.environment.cleanliness} onChange={(v) => updateEnvironment("cleanliness", v)} options={triOptions} lang={lang} /></td>
+                </tr>
+                <tr>
+                  <td className="td-label">{lang === "id" ? "Risiko Gas Korosif" : "Risk Level for Corrosive Gases"}</td>
+                  <td><StatusRadioGroup value={report.environment.corrosiveGasRisk} onChange={(v) => updateEnvironment("corrosiveGasRisk", v)} options={riskOptions} lang={lang} /></td>
+                </tr>
+                <tr>
+                  <td className="td-label">{lang === "id" ? "Tingkat Getaran" : "Vibration Level"}</td>
+                  <td><StatusRadioGroup value={report.environment.vibrationLevel} onChange={(v) => updateEnvironment("vibrationLevel", v)} options={vibOptions} lang={lang} /></td>
+                </tr>
+                <tr>
+                  <td className="td-label">{lang === "id" ? "AC dengan Pendingin" : "Air Conditioning with Cooling"}</td>
+                  <td><StatusRadioGroup value={report.environment.airConditioning} onChange={(v) => updateEnvironment("airConditioning", v)} options={ynuOptions} lang={lang} /></td>
+                </tr>
+                <tr>
+                  <td className="td-label">{lang === "id" ? "Ruang Elektrikal" : "Electrical Room"}</td>
+                  <td><StatusRadioGroup value={report.environment.electricalRoom} onChange={(v) => updateEnvironment("electricalRoom", v)} options={ynOptions} lang={lang} /></td>
+                </tr>
+                <tr>
+                  <td className="td-label">
+                    {lang === "id" ? "Suhu" : "Temperature"}
+                    <span className="ref-note">{lang === "id" ? "(Acuan: < 40°C)" : "(Ref: < 40°C)"}</span>
+                  </td>
+                  <td><input type="text" value={report.environment.temperature} onChange={(e) => updateEnvironment("temperature", e.target.value)} placeholder="e.g. 32°C" /></td>
+                </tr>
+                <tr>
+                  <td className="td-label">
+                    {lang === "id" ? "Kelembapan" : "Humidity"}
+                    <span className="ref-note">{lang === "id" ? "(Acuan: < 85% RH)" : "(Ref: < 85% RH)"}</span>
+                  </td>
+                  <td><input type="text" value={report.environment.humidity} onChange={(e) => updateEnvironment("humidity", e.target.value)} placeholder="e.g. 65%" /></td>
+                </tr>
+                <tr>
+                  <td className="td-label">
+                    {lang === "id" ? "Ketinggian" : "Altitude"}
+                    <span className="ref-note">{lang === "id" ? "(Acuan: < 1000 m)" : "(Ref: < 1000 m)"}</span>
+                  </td>
+                  <td><input type="text" value={report.environment.altitude} onChange={(e) => updateEnvironment("altitude", e.target.value)} placeholder="e.g. 15 m" /></td>
+                </tr>
               </tbody>
             </table>
             <div style={{ marginTop: 12 }}>
@@ -861,7 +1065,7 @@ export default function AbbDriveCarePage() {
                   return (
                     <tr key={item.id}>
                       <td className="td-label">{lang === "id" ? item.id_ : item.en}</td>
-                      <td><StatusSelect value={row.status} onChange={(v) => updateVisual(item.id, "status", v)} options={item.type === "tri" ? triOptions : doneOptions} /></td>
+                      <td><StatusRadioGroup value={row.status} onChange={(v: string) => updateVisual(item.id, "status", v)} options={item.type === "tri" ? triOptions : doneOptions} lang={lang} /></td>
                       <td><input type="text" value={row.comments} onChange={(e) => updateVisual(item.id, "comments", e.target.value)} placeholder="..." /></td>
                       <td className="no-print">
                         {(row.images || []).length < 3 && (
@@ -883,14 +1087,31 @@ export default function AbbDriveCarePage() {
               const row = (Reflect.get(report.visual, item.id) as VisualRow | undefined);
               if (!row || !row.images || row.images.length === 0) return null;
               return (
-                <div key={`img-${item.id}`} style={{ padding: "8px 12px", borderTop: "1px solid var(--border)" }}>
-                  <div style={{ fontFamily: "var(--font-h)", fontSize: 10, fontWeight: 700, color: "var(--gray)", marginBottom: 4 }}>{lang === "id" ? item.id_ : item.en}</div>
+                <div key={`img-${item.id}`} style={{ padding: "16px 20px", borderTop: "1px solid var(--border)" }}>
+                  <div style={{ fontFamily: "var(--font-h)", fontSize: 11, fontWeight: 700, color: "var(--dark)", marginBottom: 8 }}>{lang === "id" ? item.id_ : item.en}</div>
                   <div className="img-grid">
                     {row.images.map((img, idx) => (
-                      <div className="img-thumb" key={idx}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={img.url} alt={img.caption} />
-                        <button className="img-del no-print" onClick={() => removeImage(item.id, idx)}><X size={10} /></button>
+                      <div className="img-item-wrap" key={idx}>
+                        <div className="img-thumb">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={img.url} alt={img.caption} />
+                          <button className="img-del no-print" onClick={() => removeImage(item.id, idx)}><X size={12} /></button>
+                        </div>
+                        <input
+                          type="text"
+                          className="img-caption-input"
+                          value={img.caption}
+                          onChange={(e) => {
+                            const current = Reflect.get(report.visual, item.id) as VisualRow;
+                            const nextImages = (current.images || []).map((imgObj, i) =>
+                              i === idx ? { ...imgObj, caption: e.target.value } : imgObj
+                            );
+                            const nextVisual = { ...report.visual };
+                            Reflect.set(nextVisual, item.id, { ...current, images: nextImages });
+                            save({ ...report, visual: nextVisual });
+                          }}
+                          placeholder={lang === "id" ? "Keterangan foto..." : "Caption..."}
+                        />
                       </div>
                     ))}
                   </div>
@@ -921,8 +1142,15 @@ export default function AbbDriveCarePage() {
                 const row = (Reflect.get(report.measurements, item.id) as MeasurementRowData | undefined) || { status: "" as PassFailNa, value: "", comments: "" };
                 return (
                   <tr key={item.id}>
-                    <td className="td-label">{lang === "id" ? item.id_ : item.en}</td>
-                    <td><StatusSelect value={row.status} onChange={(v) => updateMeasurement(item.id, "status", v)} options={passOptions} /></td>
+                    <td className="td-label">
+                      {lang === "id" ? item.id_ : item.en}
+                      {item.refEn && (
+                        <div className="ref-note" style={{ display: "block", marginTop: 4, marginLeft: 0 }}>
+                          {lang === "id" ? item.refId : item.refEn}
+                        </div>
+                      )}
+                    </td>
+                    <td><StatusRadioGroup value={row.status} onChange={(v: string) => updateMeasurement(item.id, "status", v)} options={passOptions} lang={lang} /></td>
                     <td><input type="text" value={row.value} onChange={(e) => updateMeasurement(item.id, "value", e.target.value)} placeholder="—" /></td>
                     <td><input type="text" value={row.comments} onChange={(e) => updateMeasurement(item.id, "comments", e.target.value)} placeholder="..." /></td>
                   </tr>
@@ -950,7 +1178,7 @@ export default function AbbDriveCarePage() {
                 return (
                   <tr key={item.id}>
                     <td className="td-label">{lang === "id" ? item.id_ : item.en}</td>
-                    <td><StatusSelect value={row.status} onChange={(v) => updateServiceAction(item.id, "status", v)} options={doneOptions} /></td>
+                    <td><StatusRadioGroup value={row.status} onChange={(v: string) => updateServiceAction(item.id, "status", v)} options={doneOptions} lang={lang} /></td>
                     <td><input type="text" value={row.materialCode} onChange={(e) => updateServiceAction(item.id, "materialCode", e.target.value)} placeholder="—" /></td>
                     <td><input type="text" value={row.comments} onChange={(e) => updateServiceAction(item.id, "comments", e.target.value)} placeholder="..." /></td>
                   </tr>
