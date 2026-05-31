@@ -38,6 +38,18 @@ const PREVIEW_LIMIT   = 10;
 const historyKey   = (tool: ToolId) => `dummv:history:${tool}`;
 const histogramKey = (tool: ToolId) => `dummv:histogram:${tool}`;
 
+// Stable-reference cache for snapshot reads — required so consumers using
+// useSyncExternalStore get a referentially-equal value when nothing has
+// changed (otherwise React 19 throws "getSnapshot should be cached" and
+// the render crashes, leaving the page blank).
+let _snapshotVersion = 0;
+const _snapshotCache = new Map<string, CalcSnapshot[]>();
+const EMPTY_SNAPSHOTS: CalcSnapshot[] = [];
+
+export function bumpSnapshotVersion(): void {
+  _snapshotVersion += 1;
+}
+
 function isClient(): boolean {
   return typeof window !== "undefined" && typeof localStorage !== "undefined";
 }
@@ -72,6 +84,7 @@ export function pushSnapshot(snap: Omit<CalcSnapshot, "id" | "createdAt">): Calc
   const next = [full, ...list].slice(0, MAX_HISTORY);
   writeJSON(historyKey(snap.tool), next);
   bumpHistogram(snap.tool, snap.inputs);
+  bumpSnapshotVersion();
   // Notify same-tab subscribers (storage event only fires cross-tab).
   if (isClient()) {
     window.dispatchEvent(new CustomEvent("calc-snapshot-saved", { detail: { tool: snap.tool } }));
@@ -79,15 +92,36 @@ export function pushSnapshot(snap: Omit<CalcSnapshot, "id" | "createdAt">): Calc
   return full;
 }
 
-/** Most recent snapshots for a tool. */
+/** Most recent snapshots for a tool. Returns a NEW array on every call. */
 export function listSnapshots(tool: ToolId, limit = PREVIEW_LIMIT): CalcSnapshot[] {
   return readJSON<CalcSnapshot[]>(historyKey(tool), []).slice(0, limit);
+}
+
+/**
+ * Stable-reference variant for use inside React `useSyncExternalStore`.
+ * Returns the SAME array instance on repeated calls until something
+ * mutates the store (pushSnapshot/clearHistory/external storage event
+ * that bumps the version). Empty results return a shared frozen array.
+ */
+export function listSnapshotsStable(tool: ToolId, limit = PREVIEW_LIMIT): CalcSnapshot[] {
+  const cacheKey = `${tool}:${limit}:${_snapshotVersion}`;
+  const cached = _snapshotCache.get(cacheKey);
+  if (cached) return cached;
+  // Evict stale entries for this (tool,limit) — keeps the map bounded.
+  for (const k of _snapshotCache.keys()) {
+    if (k.startsWith(`${tool}:${limit}:`) && k !== cacheKey) _snapshotCache.delete(k);
+  }
+  const fresh = listSnapshots(tool, limit);
+  const stable = fresh.length === 0 ? EMPTY_SNAPSHOTS : fresh;
+  _snapshotCache.set(cacheKey, stable);
+  return stable;
 }
 
 export function clearHistory(tool: ToolId): void {
   if (!isClient()) return;
   localStorage.removeItem(historyKey(tool));
   localStorage.removeItem(histogramKey(tool));
+  bumpSnapshotVersion();
 }
 
 function bumpHistogram(tool: ToolId, inputs: Record<string, unknown>): void {

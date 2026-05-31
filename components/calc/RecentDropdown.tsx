@@ -2,17 +2,27 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { History, ChevronDown } from "lucide-react";
-import { listSnapshots, type CalcSnapshot, type ToolId } from "@/lib/state-store";
+import {
+  listSnapshotsStable,
+  bumpSnapshotVersion,
+  type CalcSnapshot,
+  type ToolId,
+} from "@/lib/state-store";
 
-// Subscribe to storage changes (other tabs) and a custom "calc-snapshot-saved"
-// event we dispatch from the store when a new snapshot is pushed in this tab.
+const EMPTY_LIST: CalcSnapshot[] = [];
+
+// Subscribe to storage changes (other tabs) and the same-tab "calc-snapshot-saved"
+// event dispatched by pushSnapshot. For cross-tab storage events we also bump the
+// version so listSnapshotsStable returns a fresh array.
 function subscribeSnapshots(cb: () => void): () => void {
   if (typeof window === "undefined") return () => {};
-  window.addEventListener("storage", cb);
-  window.addEventListener("calc-snapshot-saved", cb);
+  const onStorage = () => { bumpSnapshotVersion(); cb(); };
+  const onSaved = () => cb();
+  window.addEventListener("storage", onStorage);
+  window.addEventListener("calc-snapshot-saved", onSaved);
   return () => {
-    window.removeEventListener("storage", cb);
-    window.removeEventListener("calc-snapshot-saved", cb);
+    window.removeEventListener("storage", onStorage);
+    window.removeEventListener("calc-snapshot-saved", onSaved);
   };
 }
 
@@ -31,11 +41,13 @@ export default function RecentDropdown({ tool, onRestore }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Sync read from localStorage with cross-tab + same-tab change subscription.
-  // Server snapshot is always empty (no storage) so SSR and first client render match.
+  // listSnapshotsStable returns a stable reference until something mutates the
+  // store (required by useSyncExternalStore — otherwise React 19 throws
+  // "getSnapshot should be cached" and the whole page render crashes).
   const items = useSyncExternalStore<CalcSnapshot[]>(
     subscribeSnapshots,
-    () => listSnapshots(tool, 5),
-    () => [],
+    () => listSnapshotsStable(tool, 5),
+    () => EMPTY_LIST,
   );
 
   // Click-outside to close
