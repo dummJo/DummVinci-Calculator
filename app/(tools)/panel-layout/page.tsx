@@ -918,7 +918,7 @@ export default function PanelLayoutPage() {
                 onClick={() => setViewMode("inner")}
                 style={{
                   background: viewMode === "inner" ? "var(--accent)" : "transparent",
-                  color: viewMode === "inner" ? "#000" : "var(--fg)",
+                  color: viewMode === "inner" ? "var(--bg)" : "var(--fg)",
                   border: "none", padding: "6px 16px", borderRadius: 6,
                   fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
                   display: "flex", alignItems: "center", gap: 8
@@ -930,7 +930,7 @@ export default function PanelLayoutPage() {
                 onClick={() => setViewMode("outer")}
                 style={{
                   background: viewMode === "outer" ? "var(--accent)" : "transparent",
-                  color: viewMode === "outer" ? "#000" : "var(--fg)",
+                  color: viewMode === "outer" ? "var(--bg)" : "var(--fg)",
                   border: "none", padding: "6px 16px", borderRadius: 6,
                   fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
                   display: "flex", alignItems: "center", gap: 8
@@ -942,7 +942,7 @@ export default function PanelLayoutPage() {
                 onClick={() => setViewMode("sld")}
                 style={{
                   background: viewMode === "sld" ? "var(--accent)" : "transparent",
-                  color: viewMode === "sld" ? "#000" : "var(--fg)",
+                  color: viewMode === "sld" ? "var(--bg)" : "var(--fg)",
                   border: "none", padding: "6px 16px", borderRadius: 6,
                   fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
                   display: "flex", alignItems: "center", gap: 8
@@ -1879,7 +1879,7 @@ export default function PanelLayoutPage() {
                              </label>
                            </div>
 
-                           <button onClick={() => { setShowMetadataForm(false); window.print(); }} style={{ background: "var(--accent)", color: "#000", border: "none", padding: "10px", fontWeight: 900, fontSize: 11, marginTop: 8, cursor: "pointer", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                           <button onClick={() => { setShowMetadataForm(false); window.print(); }} style={{ background: "var(--accent)", color: "var(--bg)", border: "none", padding: "10px", fontWeight: 900, fontSize: 11, marginTop: 8, cursor: "pointer", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                              <Printer size={16} /> PLOT TO PDF
                            </button>
                         </div>
