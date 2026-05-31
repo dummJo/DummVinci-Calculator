@@ -894,3 +894,41 @@ input[type="number"] {
     transform: none !important;
   }
 }
+
+/* ─── Buttery smooth 120Hz+ scrolling & GPU-acceleration optimizations ─── */
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior-y: contain;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Force GPU Layer Promotion to eliminate main-thread paint bottlenecks on 120Hz+ ProMotion displays */
+.vinci-card,
+.result-card-enter,
+.telegram-glass,
+.more-overlay,
+.changelog-card,
+.modal-overlay,
+.feedback-modal {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
+}
+
+/* Optimize browser painting for offscreen contents in complex tools/scroll lists */
+.calc-shell-layout,
+.modules-grid,
+.bom-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 150px;
+}
+

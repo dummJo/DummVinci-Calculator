@@ -130,14 +130,16 @@ export function simulatePid(params: PidParams): PidResult {
   // Better settling time calc: look backwards from the end
   let lastUnsettledIdx = steps - 1;
   for (let i = steps - 1; i >= 0; i--) {
-    if (Math.abs(data[i].pv - setpoint) > refMag * 0.02) {
+    const pt = data.at(i);
+    if (pt && Math.abs(pt.pv - setpoint) > refMag * 0.02) {
       lastUnsettledIdx = i;
       break;
     }
   }
   
-  if (lastUnsettledIdx < steps - 1) {
-    settlingTime = data[lastUnsettledIdx + 1].t;
+  const nextPt = data.at(lastUnsettledIdx + 1);
+  if (lastUnsettledIdx < steps - 1 && nextPt) {
+    settlingTime = nextPt.t;
   } else {
     // Never settled
     settlingTime = -1;

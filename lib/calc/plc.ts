@@ -145,7 +145,7 @@ export interface PlcResult {
 
 export function sizePlcModules(input: PlcInput): PlcResult {
   const warnings: string[] = [];
-  const cpu = CPU_CATALOG[input.cpuModel];
+  const cpu = Reflect.get(CPU_CATALOG, input.cpuModel) as CpuSpec;
   const smLib = cpu.series === "S7-1200" ? SM_1200 : SM_1500;
   const margin = 1 + input.sparePct / 100;
 

@@ -95,7 +95,7 @@ export default function CablePage() {
       concept={tc.concept}
     >
       <div className="vinci-card" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        <div className="sec-label"><span>LOAD & TOPOLOGY</span></div>
+        <div className="sec-label"><span>{tc.secLoad.toUpperCase()}</span></div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           <FieldKwAmp
@@ -132,7 +132,7 @@ export default function CablePage() {
         </div>
 
         <div style={{ height: 1, background: "var(--glass-border)", marginBottom: 20 }} />
-        <div className="sec-label"><span>ENVIRONMENT & INSTALLATION</span></div>
+        <div className="sec-label"><span>{tc.secInstall.toUpperCase()}</span></div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
           <FieldSelect
@@ -164,10 +164,10 @@ export default function CablePage() {
             min={0.5} max={10} step={0.5} hint={tc.vdropHint}
           />
           <FieldNumber
-            label="Grouped circuits"
+            label={tc.groupedCircuits}
             value={groupedCircuits} onChange={setGroupedCircuits}
             min={1} max={20} step={1}
-            hint="Number of circuits touching together (IEC 60364-5-52 Table B.52.20)"
+            hint={tc.groupedCircuitsHint}
           />
           <FieldNumber
             label={tc.pf}
@@ -179,8 +179,8 @@ export default function CablePage() {
         <div style={{ marginTop: 4, padding: 16, background: "rgba(var(--accent-rgb), 0.08)", border: "1px solid rgba(var(--accent-rgb), 0.2)", borderRadius: 16, display: "flex", gap: 12 }}>
           <div style={{ color: "var(--accent)", marginTop: 2 }}><Info size={18} /></div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>CODE: {tc.methodLegend[install as keyof typeof tc.methodLegend].title}</span>
-            <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>{tc.methodLegend[install as keyof typeof tc.methodLegend].desc}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{tc.codePrefix}{(Reflect.get(tc.methodLegend, install) || tc.methodLegend.air).title}</span>
+            <span style={{ fontSize: 12, color: "var(--fg)", lineHeight: 1.5, opacity: 0.9 }}>{(Reflect.get(tc.methodLegend, install) || tc.methodLegend.air).desc}</span>
           </div>
         </div>
 
@@ -212,7 +212,7 @@ export default function CablePage() {
       {result && (
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12, alignItems: "center" }}>
           <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-            Calculated per
+            {tc.calculatedPer}
           </span>
           <StandardsRef code="iec60364-cable-ampacity" />
           <StandardsRef code="iec60364-vdrop" />

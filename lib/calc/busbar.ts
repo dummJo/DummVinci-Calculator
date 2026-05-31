@@ -71,12 +71,15 @@ export function sizeBusbar(input: BusbarInput): BusbarResult {
 
   const options: BusbarOption[] = [];
   for (let i = safeIndex; i < Math.min(safeIndex + 3, BARS.length); i++) {
-    const [bh, bt, bmm2] = BARS[i];
-    options.push({
-      h: bh, t: bt, mm2: bmm2,
-      capacityA: Math.round(perBarCapacity * bmm2 * nBars),
-      config: nBars === 2 ? "2 × " : undefined,
-    });
+    const bar = BARS.at(i);
+    if (bar) {
+      const [bh, bt, bmm2] = bar;
+      options.push({
+        h: bh, t: bt, mm2: bmm2,
+        capacityA: Math.round(perBarCapacity * bmm2 * nBars),
+        config: nBars === 2 ? "2 × " : undefined,
+      });
+    }
   }
 
   const dimPrefix = nBars === 2 ? "2 × " : "";

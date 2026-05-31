@@ -16,13 +16,7 @@ import type { StarterInput, StarterResult, StarterType, Voltage } from "@/lib/ca
 import { useToolHistory } from "@/lib/use-tool-history";
 import { Zap, ShieldCheck, CircuitBoard, AlertTriangle, CheckCircle, Copy } from "lucide-react";
 
-const CATEGORY_STYLES: Record<string, { bg: string; border: string; color: string; label: string }> = {
-  MPCB:      { bg: "rgba(var(--accent-rgb), 0.1)",  border: "rgba(var(--accent-rgb), 0.3)",  color: "var(--accent)", label: "MPCB" },
-  CONTACTOR: { bg: "rgba(59,130,246,0.1)",  border: "rgba(59,130,246,0.3)",  color: "#60a5fa",       label: "Contactor" },
-  KIT:       { bg: "rgba(168,85,247,0.1)",  border: "rgba(168,85,247,0.3)",  color: "#c084fc",       label: "Compact Kit" },
-  TIMER:     { bg: "rgba(34,197,94,0.1)",   border: "rgba(34,197,94,0.3)",   color: "#4ade80",       label: "Timer" },
-  AUXILIARY: { bg: "rgba(251,146,60,0.1)",  border: "rgba(251,146,60,0.3)",  color: "#fb923c",       label: "Auxiliary" },
-};
+// Category styles helper is defined locally inside StarterPage component to support i18n
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -39,6 +33,18 @@ function CopyButton({ text }: { text: string }) {
 export default function StarterPage() {
   const { t } = useLang();
   const ts = t.starter;
+
+  const getCategoryStyle = useCallback((category: string) => {
+    const defaultStyle = { bg: "rgba(251,146,60,0.1)", border: "rgba(251,146,60,0.3)", color: "#fb923c", label: ts.catAuxiliary };
+    const stylesMap: Record<string, { bg: string; border: string; color: string; label: string }> = {
+      MPCB:      { bg: "rgba(var(--accent-rgb), 0.1)",  border: "rgba(var(--accent-rgb), 0.3)",  color: "var(--accent)", label: ts.catMpcb },
+      CONTACTOR: { bg: "rgba(59,130,246,0.1)",  border: "rgba(59,130,246,0.3)",  color: "#60a5fa",       label: ts.catContactor },
+      KIT:       { bg: "rgba(168,85,247,0.1)",  border: "rgba(168,85,247,0.3)",  color: "#c084fc",       label: ts.catKit },
+      TIMER:     { bg: "rgba(34,197,94,0.1)",   border: "rgba(34,197,94,0.3)",   color: "#4ade80",       label: ts.catTimer },
+      AUXILIARY: defaultStyle,
+    };
+    return Reflect.get(stylesMap, category) || defaultStyle;
+  }, [ts]);
   const [motorKw, setMotorKw]       = useState("15");
   const [voltage, setVoltage]       = useState<Voltage>(400);
   const [flaOverride, setFlaOverride] = useState("");
@@ -138,10 +144,10 @@ export default function StarterPage() {
             hint={ts.motorKwHint} />
           <FieldSelect label={ts.voltage} value={String(voltage)} onChange={v => setVoltage(parseInt(v) as Voltage)}
             options={[
-              { value: "400", label: "400 V (TN-S/TNS Indonesia)" },
-              { value: "415", label: "415 V (legacy 50Hz grid)" },
-              { value: "690", label: "690 V (MV switchgear)" },
-              { value: "230", label: "230 V (single-phase equiv.)" },
+              { value: "400", label: ts.v400Desc },
+              { value: "415", label: ts.v415Desc },
+              { value: "690", label: ts.v690Desc },
+              { value: "230", label: ts.v230Desc },
             ]} />
           <FieldNumber label={ts.flaOverride} value={flaOverride} onChange={setFlaOverride} min={0}
             hint={ts.flaHint} />
@@ -204,7 +210,7 @@ export default function StarterPage() {
               {[
                 { label: ts.mpcbFrame,   value: result.mpcbFrame },
                 { label: ts.mpcbPart,    value: result.mpcbPartNo },
-                { label: ts.mpcbClass,   value: "Class 10A (motor standard)" },
+                { label: ts.mpcbClass,   value: ts.mpcbClassValue },
                 { label: ts.mpcbIcu,     value: `${result.icuKa} kA` },
                 { label: ts.mpcbFla,     value: `${result.fla} A` },
                 { label: ts.mpcbSet,     value: result.mpcbSetA },
@@ -227,7 +233,7 @@ export default function StarterPage() {
                     { label: ts.flaFull,     value: `${result.fla} A`,                             note: ts.flaNote },
                     { label: ts.starCurrent, value: `${(result.fla / Math.sqrt(3)).toFixed(1)} A`, note: ts.starNote },
                     { label: ts.inrushStar,  value: `≈ ${(result.fla * 2).toFixed(0)} A`,          note: ts.inrushNote },
-                    { label: "Timer",        value: `${result.timerSec} s`,                        note: "Y→Δ transition" },
+                    { label: ts.timerLabel,  value: `${result.timerSec} s`,                        note: ts.timerNote },
                   ].map(row => (
                     <div key={row.label} style={{ padding: "10px 12px", background: "rgba(255,255,255,0.04)", borderRadius: 10 }}>
                       <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--muted)", marginBottom: 3 }}>{row.label}</div>
@@ -245,12 +251,12 @@ export default function StarterPage() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <div className="sec-label" style={{ marginBottom: 0 }}><span>{ts.resBom}</span></div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", opacity: 0.7 }}>
-                {result.starterType === "STAR_DELTA" ? "3RA2 Compact Kit + Auxiliaries" : "3RT2 DOL + Auxiliaries"}
+                {result.starterType === "STAR_DELTA" ? ts.bomTypeSd : ts.bomTypeDol}
               </div>
             </div>
 
             {result.bom.map((item, i) => {
-              const style = CATEGORY_STYLES[item.category];
+              const style = getCategoryStyle(item.category);
               return (
                 <div key={i} className="bom-row" style={{ background: style.bg, borderColor: style.border }}>
                   <div className="bom-header">
@@ -281,24 +287,28 @@ export default function StarterPage() {
           <div className="vinci-card result-card-enter" style={{ marginTop: 16 }}>
             <div className="sec-label"><span>{ts.resWiring}</span></div>
             <div className="wiring-tip">
-              {result.starterType === "DOL" ? (
-                <>
-                  <div>🟢 <strong>PLC DO → KM1 coil</strong> — Motor START command (latch after AUX NO confirmed)</div>
-                  <div>🔵 <strong>KM1 AUX 1NO → PLC DI</strong> — Motor RUN feedback (interlock condition)</div>
-                  <div>🟠 <strong>3RV2901-2A 1NC → PLC DI</strong> — MPCB TRIP/FAULT feedback (alarm logic)</div>
-                  <div>🔴 <strong>E-Stop → MPCB handle / KM1 coil circuit</strong> — hardwired safety, independent of PLC</div>
-                </>
-              ) : (
-                <>
-                  <div>🟢 <strong>PLC DO → KM1 + KM2</strong> — energise simultaneously at START (star mode)</div>
-                  <div>⏱ <strong>Timer {result.timerSec}s expires → KM2 drops OUT</strong> — star contactor releases</div>
-                  <div>⚡ <strong>50ms dead-time → KM3 energises</strong> — delta contactor closes (PLC interlock or hardware timer)</div>
-                  <div>🔵 <strong>KM1 AUX 1NO → PLC DI</strong> — motor energised feedback</div>
-                  <div>🟣 <strong>KM3 AUX 1NO → PLC DI</strong> — delta mode confirmed (enable full-load permissive)</div>
-                  <div>🟠 <strong>3RV2901-2A 1NC → PLC DI</strong> — MPCB TRIP alarm</div>
-                  <div>🔴 <strong>E-Stop → drop ALL contactors</strong> — KM1+KM2+KM3 coil circuit</div>
-                </>
-              )}
+              {result.starterType === "DOL"
+                ? ts.wiringDol.map((line, idx) => {
+                    const emojis = ["🟢", "🔵", "🟠", "🔴"];
+                    const emoji = emojis[idx] || "▪️";
+                    const parts = line.split(" — ");
+                    return (
+                      <div key={idx}>
+                        {emoji} <strong>{parts[0]}</strong> {parts[1] ? `— ${parts[1]}` : ""}
+                      </div>
+                    );
+                  })
+                : ts.wiringSd(result.timerSec).map((line, idx) => {
+                    const emojis = ["🟢", "⏱", "⚡", "🔵", "🟣", "🟠", "🔴"];
+                    const emoji = emojis[idx] || "▪️";
+                    const parts = line.split(" — ");
+                    return (
+                      <div key={idx}>
+                        {emoji} <strong>{parts[0]}</strong> {parts[1] ? `— ${parts[1]}` : ""}
+                      </div>
+                    );
+                  })
+              }
             </div>
           </div>
 

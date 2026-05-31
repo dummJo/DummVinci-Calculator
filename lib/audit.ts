@@ -27,9 +27,9 @@ function normalise(inputs: Record<string, unknown>): string {
   const keys = Object.keys(inputs).sort();
   const obj: Record<string, unknown> = {};
   for (const k of keys) {
-    const v = inputs[k];
+    const v = Reflect.get(inputs, k);
     if (v === undefined || v === null || v === "") continue;
-    obj[k] = v;
+    Reflect.set(obj, k, v);
   }
   return JSON.stringify(obj);
 }

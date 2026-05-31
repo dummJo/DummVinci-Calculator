@@ -14,7 +14,7 @@ import { STANDARD_REFS, type StandardRefCode } from "@/lib/standards-refs";
  */
 export default function StandardsRef({ code }: { code: StandardRefCode }) {
   const [open, setOpen] = useState(false);
-  const ref = STANDARD_REFS[code];
+  const ref = Reflect.get(STANDARD_REFS, code) as typeof STANDARD_REFS[keyof typeof STANDARD_REFS] | undefined;
   const popId = useId();
   if (!ref) return null;
 

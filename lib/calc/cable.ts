@@ -113,7 +113,7 @@ export function sizeCable(input: CableInput): CableResult {
   const grouped = Math.max(1, input.groupedCircuits ?? 1);
   const groupK = groupingFactor(grouped);
   const table = input.insulation === "PVC" ? AMPACITY_PVC_CU : AMPACITY_XLPE_CU;
-  const k = INSTALL_DERATE[input.install] * ambientDerate(input.ambientC, input.insulation) * groupK;
+  const k = (Reflect.get(INSTALL_DERATE, input.install) as number) * ambientDerate(input.ambientC, input.insulation) * groupK;
 
   const sizes = input.insulation === "PVC" ? SORTED_MM2_PVC : SORTED_MM2_XLPE;
   const warnings: string[] = [];
@@ -122,7 +122,7 @@ export function sizeCable(input: CableInput): CableResult {
     // Defend against stale table sync — `table[s]` typed `number` but is really `number | undefined`
     // under noUncheckedIndexedAccess. A NaN here silently disables the size and returns the
     // "no cable" fallback with no error — make it explicit instead.
-    const iz = table[s];
+    const iz = Reflect.get(table, s) as number | undefined;
     if (iz == null) continue;
     const derated = iz * k;
     // 25% margin on table Iz vs Ib — conservative vs minimum compliance; verify with PUIL / project QA.

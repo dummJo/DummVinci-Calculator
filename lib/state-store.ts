@@ -129,7 +129,7 @@ function bumpHistogram(tool: ToolId, inputs: Record<string, unknown>): void {
   const now = Date.now();
   for (const [field, value] of Object.entries(inputs)) {
     if (value === undefined || value === null || value === "") continue;
-    const bucket = histo[field] ?? [];
+    const bucket = (Reflect.get(histo, field) as HistogramEntry[] | undefined) ?? [];
     const match = bucket.find(e => valueKey(e.value) === valueKey(value));
     if (match) {
       match.count += 1;
@@ -137,7 +137,7 @@ function bumpHistogram(tool: ToolId, inputs: Record<string, unknown>): void {
     } else {
       bucket.push({ value, count: 1, lastUsed: now });
     }
-    histo[field] = bucket;
+    Reflect.set(histo, field, bucket);
   }
   writeJSON(histogramKey(tool), histo);
 }
@@ -157,7 +157,7 @@ export function getSmartDefaults(tool: ToolId): Record<string, unknown> {
     fresh.sort((a, b) =>
       b.count !== a.count ? b.count - a.count : b.lastUsed - a.lastUsed
     );
-    out[field] = fresh[0].value;
+    Reflect.set(out, field, fresh[0].value);
   }
   return out;
 }

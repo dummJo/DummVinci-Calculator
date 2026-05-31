@@ -302,7 +302,7 @@ export default function PanelLayoutPage() {
     const boundsH = isOuter ? activeEnc.extH : activeEnc.h;
 
     // Smart placement: next to last selected item OR last added item
-    const referenceItem = items.find(i => selectedIds.includes(i.id)) || items[items.length - 1];
+    const referenceItem = items.find(i => selectedIds.includes(i.id)) || items.at(-1);
 
     if (referenceItem) {
       startX = referenceItem.x + referenceItem.w + gap;
@@ -1988,7 +1988,7 @@ export default function PanelLayoutPage() {
 
       </div>
       
-      <style dangerouslySetInnerHTML={{__html: `
+      <style>{`
         @media print {
           @page {
             size: ${exportSettings.paperSize} ${exportSettings.orientation};
@@ -2011,7 +2011,7 @@ export default function PanelLayoutPage() {
           
           .no-print { display: none !important; }
         }
-      `}} />
+      `}</style>
       <Footer />
     </CalcShell>
   );
