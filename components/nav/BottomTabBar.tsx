@@ -92,6 +92,7 @@ export default function BottomTabBar() {
   }, [showMore]);
 
   // Esc to close changelog modal — keyboard-accessible dismiss.
+  // Esc to close changelog modal — keyboard-accessible dismiss.
   useEffect(() => {
     if (!showChangelog) return;
     const onKey = (e: KeyboardEvent) => {
@@ -100,6 +101,36 @@ export default function BottomTabBar() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [showChangelog]);
+
+  // Auto-hide on scroll-down, reveal on scroll-up. Always visible near the top.
+  // Respects prefers-reduced-motion via the global CSS rule (the translate
+  // transition is suppressed there, so the bar still hides but without animation).
+  const [hiddenByScroll, setHiddenByScroll] = useState(false);
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const y = window.scrollY;
+        const delta = y - lastY;
+        // Ignore tiny jitters; always show near the top.
+        if (Math.abs(delta) < 6) { lastY = y; return; }
+        if (y < 80) setHiddenByScroll(false);
+        else if (delta > 0) setHiddenByScroll(true);
+        else setHiddenByScroll(false);
+        lastY = y;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+  // Keep the bar visible while a modal/overlay is open so the user can dismiss it.
+  const isHidden = hiddenByScroll && !showMore && !showChangelog;
 
   return (
     <>
@@ -592,6 +623,7 @@ export default function BottomTabBar() {
       <nav
         ref={navRef}
         aria-label="Main navigation"
+        aria-hidden={isHidden}
         className="telegram-glass"
         style={{
           position: "fixed",
@@ -602,6 +634,11 @@ export default function BottomTabBar() {
           margin: "0 auto",
           height: 72,
           borderRadius: 36,
+          transform: isHidden
+            ? "translateY(calc(100% + 32px + env(safe-area-inset-bottom, 0px)))"
+            : "translateY(0)",
+          transition: "transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)",
+          pointerEvents: isHidden ? "none" : "auto",
           zIndex: 100,
           padding: "0 10px",
         }}
