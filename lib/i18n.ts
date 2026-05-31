@@ -9,7 +9,7 @@ export const T = {
     nav: {
       home: "Home", unified: "Fast", cable: "Cable", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Brake", panel: "Panel", support: "ABB Support",
-      plc: "PLC", starter: "Starter", pid: "PID Sim", convert: "Convert", tutorials: "Tutorials", skfMicrolog: "SKF Learn", more: "More", close: "Close", changelog: "What's New",
+      plc: "PLC", starter: "Starter", pid: "PID Sim", convert: "Convert", tutorials: "Tutorials", skfMicrolog: "SKF Learn", abbDriveCare: "DriveCare Doc", more: "More", close: "Close", changelog: "What's New",
       brandDumm: "Dumm", brandVinci: "Vinci", brandCalculator: "Tools",
     },
     common: {
@@ -141,6 +141,10 @@ export const T = {
           knowledgeBase: "PTTS Knowledge Base",
           skfMicrologLabel: "SKF Microlog",
           byDummVinci: "By DummVinci · DummVinci Tools",
+        },
+        abbDriveCare: {
+          title: "ABB DriveCare PDF Gen",
+          desc: "Generate professional ABB VSD Preventive Maintenance PDF reports with image attachments and automated captions.",
         },
       },
     },
@@ -566,7 +570,7 @@ export const T = {
     nav: {
       home: "Beranda", unified: "Fast Sizing", cable: "Sizing Kabel", drive: "Sizing VSD", breaker: "Proteksi Breaker",
       busbar: "Sizing Busbar", brake: "Braking Resistor", panel: "Pendinginan Panel", support: "ABB Support",
-      plc: "Sizing PLC", starter: "Starter Motor", pid: "Simulator PID", convert: "Konverter Unit", tutorials: "Panduan Pengujian", skfMicrolog: "SKF Microlog Learn", more: "Lainnya", close: "Tutup", changelog: "Informasi Pembaruan",
+      plc: "Sizing PLC", starter: "Starter Motor", pid: "Simulator PID", convert: "Konverter Unit", tutorials: "Panduan Pengujian", skfMicrolog: "SKF Microlog Learn", abbDriveCare: "Dokumen DriveCare", more: "Lainnya", close: "Tutup", changelog: "Informasi Pembaruan",
       brandDumm: "Dumm", brandVinci: "Vinci", brandCalculator: "Tools",
     },
     common: {
@@ -698,6 +702,10 @@ export const T = {
           knowledgeBase: "Basis Pengetahuan PTTS",
           skfMicrologLabel: "SKF Microlog",
           byDummVinci: "Oleh DummVinci · DummVinci Tools",
+        },
+        abbDriveCare: {
+          title: "Generator PDF ABB DriveCare",
+          desc: "Buat laporan PDF Pemeliharaan Preventif (PM) ABB VSD secara profesional dengan lampiran gambar dan takarir otomatis.",
         },
       },
     },

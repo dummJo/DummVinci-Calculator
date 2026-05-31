@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   MoreHorizontal,
   Cable, Zap, X, History, Sparkles, AlertCircle, BookOpen,
-  Settings2, ShieldPlus, Repeat, MonitorPlay, ZapOff, Columns, BoxSelect, Waves, Power, LineChart, Home, HardDrive
+  Settings2, ShieldPlus, Repeat, MonitorPlay, ZapOff, Columns, BoxSelect, Waves, Power, LineChart, Home, HardDrive, FileText
 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { clsx } from "clsx";
@@ -27,6 +27,7 @@ function getNavLabel(key: string, t: { nav: Record<string, string> }): string {
     case "convert": return t.nav.convert;
     case "tutorials": return t.nav.tutorials;
     case "skfMicrolog": return t.nav.skfMicrolog;
+    case "abbDriveCare": return t.nav.abbDriveCare;
     default: return "";
   }
 }
@@ -75,6 +76,7 @@ export default function BottomTabBar() {
     { href: "/convert",          key: "convert", Icon: Repeat       },
     { href: "/tutorials",        key: "tutorials", Icon: MonitorPlay   },
     { href: "/skf-microlog",     key: "skfMicrolog", Icon: BookOpen      },
+    { href: "/abb-drivecare",    key: "abbDriveCare", Icon: FileText    },
   ];
 
   const allTabs = [...MAIN_TABS, ...UTILITY_TABS];
