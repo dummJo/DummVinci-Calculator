@@ -202,34 +202,44 @@ const STORAGE_KEY = "ptts_drivecare_report_v2";
 
 function SectionHeader({ id, title, collapsed, onToggle }: { id: string; title: string; collapsed: boolean; onToggle: (id: string) => void }) {
   return (
-    <div
-      className="sec-head"
-      style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 20px", background: "var(--dark)", color: "#fff", cursor: "pointer", userSelect: "none" }}
-      onClick={() => onToggle(id)}
-    >
-      <span className="sec-icon no-print">{collapsed ? "➕" : "➖"}</span>
-      <h3 style={{ fontFamily: "var(--font-h)", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", flex: 1, margin: 0 }}>{title}</h3>
-      <span className="no-print">{collapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}</span>
+    <div className="sec-head" onClick={() => onToggle(id)}>
+      <span className="sec-icon no-print">{collapsed ? "✦" : "▼"}</span>
+      <h3 className="sec-title">{title}</h3>
+      <span className="sec-chev no-print">
+        {collapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+      </span>
     </div>
   );
 }
 
 function FieldRow({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
-    <div className="unit-field" style={{ padding: "10px 20px" }}>
-      <div className="u-label" style={{ fontFamily: "var(--font-h)", fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gray)" }}>{label}</div>
-      <input type="text" className="u-input" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder || ""} style={{ width: "100%", border: "none", borderBottom: "1.5px dashed var(--border)", background: "transparent", outline: "none", fontSize: 13, fontWeight: 600, color: "var(--dark)", padding: "2px 0 4px", fontFamily: "var(--font-h)" }} />
+    <div className="unit-field">
+      <div className="u-label">{label}</div>
+      <input
+        type="text"
+        className="u-input"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder || ""}
+      />
     </div>
   );
 }
 
 function StatusSelect({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: { val: string; label: string }[] }) {
+  const getStyleClass = () => {
+    if (!value) return "empty";
+    if (value === "dirty" || value === "high" || value === "fail") return "fail";
+    if (value === "medium") return "warn";
+    return "pass";
+  };
+
   return (
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="status-select"
-      style={{ fontFamily: "var(--font-h)", fontSize: 11, fontWeight: 600, padding: "4px 8px", borderRadius: 6, border: "1.5px solid var(--border)", background: value ? (value === "dirty" || value === "high" || value === "fail" ? "var(--red-lt)" : value === "medium" ? "var(--amber-lt)" : "var(--green-lt)") : "var(--light)", color: value ? (value === "dirty" || value === "high" || value === "fail" ? "var(--red)" : value === "medium" ? "var(--amber)" : "var(--green)") : "var(--gray)", outline: "none", cursor: "pointer", minWidth: 100 }}
+      className={`status-select ${getStyleClass()}`}
     >
       <option value="">—</option>
       {options.map(o => <option key={o.val} value={o.val}>{o.label}</option>)}
@@ -366,31 +376,196 @@ export default function AbbDriveCarePage() {
     <div className="page" style={{ padding: "28px 20px 100px", maxWidth: 900, margin: "0 auto" }}>
       {/* ─── Styles ─────────────────────────────────────────────────────────── */}
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
         :root {
-          --dark: #0f0f0e; --dark-2: #1c1c1a; --light: #faf9f5; --light-2: #f2f0e8;
-          --gray: #8a8880; --border: #d8d5cc; --orange: #c95f32; --orange-lt: #f5e8e1;
-          --green: #4a6b35; --green-lt: #e4edd9; --red: #a83228; --red-lt: #f5e0dd;
-          --amber: #8a6010; --amber-lt: #f5ecd4; --blue: #2a5c8a; --blue-lt: #ddeaf5;
-          --font-h: 'Poppins', Arial, sans-serif; --font-b: 'Lora', Georgia, serif;
-          --font-mono: 'SFMono-Regular','Menlo','Consolas', monospace;
-          --r: 10px; --shadow: 0 1px 4px rgba(0,0,0,0.09), 0 1px 2px rgba(0,0,0,0.06);
+          --dark: #191816; 
+          --dark-2: #242220; 
+          --light: #fcfbfa; 
+          --light-2: #f7f5f0;
+          --gray: #807d77; 
+          --border: #e6e3db; 
+          --orange: #cc5500; 
+          --orange-lt: #fdf5f0;
+          --green: #3b6622; 
+          --green-lt: #eff7ea; 
+          --red: #b33939; 
+          --red-lt: #fdf1f1;
+          --amber: #946910; 
+          --amber-lt: #fef8eb; 
+          --blue: #1b4d75; 
+          --blue-lt: #f2f7fc;
+          --font-h: 'Plus Jakarta Sans', Arial, sans-serif; 
+          --font-b: 'Newsreader', Georgia, serif;
+          --font-mono: 'Space Mono', monospace;
+          --r: 12px; 
+          --shadow: 0 4px 12px rgba(25, 24, 22, 0.03), 0 1px 3px rgba(25, 24, 22, 0.02);
         }
+        
         .kop { display: block; margin-bottom: 0; padding: 20px 0 0; }
         .kop-divider { border: none; border-top: 2.5px solid var(--dark); margin: 8px 0 0; }
         .kop-sub-divider { border: none; border-top: 1px solid var(--border); margin: 3px 0 0; }
-        .section-box { margin-bottom: 22px; border: 1px solid var(--border); border-radius: var(--r); background: #fff; box-shadow: var(--shadow); overflow: hidden; }
+        .section-box { margin-bottom: 24px; border: 1px solid var(--border); border-radius: var(--r); background: #fff; box-shadow: var(--shadow); overflow: hidden; }
         .unit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
-        .unit-field { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+        
+        .sec-head { 
+          display: flex; 
+          align-items: center; 
+          gap: 12px; 
+          padding: 16px 24px; 
+          background: var(--light-2); 
+          border-bottom: 1.5px solid var(--border);
+          cursor: pointer; 
+          user-select: none;
+          transition: background 0.2s ease;
+        }
+        .sec-head:hover {
+          background: var(--border);
+        }
+        .sec-icon {
+          font-family: var(--font-mono);
+          font-size: 11px;
+          color: var(--orange);
+          font-weight: 700;
+        }
+        .sec-title {
+          font-family: var(--font-h); 
+          font-size: 12.5px; 
+          font-weight: 700; 
+          text-transform: uppercase; 
+          letter-spacing: 0.08em; 
+          color: var(--dark); 
+          flex: 1; 
+          margin: 0;
+        }
+        .sec-chev {
+          color: var(--gray);
+          display: flex;
+          align-items: center;
+        }
+        
+        .unit-field { 
+          padding: 16px 24px; 
+          border-bottom: 1px solid var(--border); 
+          border-right: 1px solid var(--border); 
+          background: #fff;
+          transition: background 0.2s ease;
+        }
+        .unit-field:hover {
+          background: var(--light-2);
+        }
         .unit-field:nth-child(even) { border-right: none; }
-
+        .u-label { 
+          font-family: var(--font-h); 
+          font-size: 9px; 
+          font-weight: 800; 
+          letter-spacing: 0.12em; 
+          text-transform: uppercase; 
+          color: var(--gray); 
+          margin-bottom: 6px; 
+        }
+        .u-input { 
+          width: 100%; 
+          border: none; 
+          border-bottom: 1.5px solid var(--border); 
+          background: transparent; 
+          outline: none; 
+          font-size: 14px; 
+          font-weight: 600; 
+          color: var(--dark); 
+          padding: 4px 0; 
+          font-family: var(--font-h);
+          transition: border-color 0.2s ease;
+        }
+        .u-input:focus { 
+          border-color: var(--orange); 
+        }
+        
         /* Tables */
-        .rpt-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-        .rpt-table th { font-family: var(--font-h); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); padding: 8px 12px; text-align: left; border-bottom: 2px solid var(--border); background: var(--light-2); }
-        .rpt-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .rpt-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .rpt-table th { 
+          font-family: var(--font-h); 
+          font-size: 9.5px; 
+          font-weight: 800; 
+          letter-spacing: 0.1em; 
+          text-transform: uppercase; 
+          color: var(--gray); 
+          padding: 12px 18px; 
+          text-align: left; 
+          border-bottom: 2px solid var(--border); 
+          background: var(--light-2); 
+        }
+        .rpt-table td { padding: 12px 18px; border-bottom: 1px solid var(--border); vertical-align: middle; font-family: var(--font-b); }
         .rpt-table tr:last-child td { border-bottom: none; }
-        .rpt-table .td-label { font-family: var(--font-h); font-weight: 600; font-size: 12.5px; color: var(--dark); min-width: 200px; }
-        .rpt-table input, .rpt-table textarea { font-family: var(--font-h); font-size: 12px; font-weight: 500; color: var(--dark); border: none; border-bottom: 1px dashed var(--border); background: transparent; outline: none; padding: 2px 0; width: 100%; }
-        .rpt-table textarea { resize: vertical; min-height: 24px; height: 28px; }
+        .rpt-table .td-label { font-family: var(--font-h); font-weight: 600; font-size: 13px; color: var(--dark); min-width: 200px; }
+        .rpt-table input { 
+          font-family: var(--font-h); 
+          font-size: 13px; 
+          font-weight: 500; 
+          color: var(--dark); 
+          border: none; 
+          border-bottom: 1.5px solid var(--border); 
+          background: transparent; 
+          outline: none; 
+          padding: 4px 0; 
+          width: 100%; 
+          transition: border-color 0.2s ease;
+        }
+        .rpt-table input:focus {
+          border-color: var(--orange);
+        }
+        .rpt-table textarea { 
+          font-family: var(--font-b); 
+          font-size: 13px; 
+          font-weight: 500; 
+          color: var(--dark); 
+          border: 1.5px solid var(--border); 
+          border-radius: 8px;
+          background: var(--light-2); 
+          outline: none; 
+          padding: 8px 12px; 
+          width: 100%; 
+          resize: vertical; 
+          min-height: 38px; 
+          transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .rpt-table textarea:focus {
+          border-color: var(--orange);
+          background: #fff;
+        }
+        
+        .status-select { 
+          font-family: var(--font-h); 
+          font-size: 11.5px; 
+          font-weight: 600; 
+          padding: 6px 12px; 
+          border-radius: 8px; 
+          border: 1.5px solid var(--border); 
+          outline: none; 
+          cursor: pointer; 
+          min-width: 110px; 
+          transition: all 0.2s ease;
+        }
+        .status-select.empty {
+          background: var(--light); 
+          color: var(--gray);
+          border-color: var(--border);
+        }
+        .status-select.fail {
+          background: var(--red-lt); 
+          color: var(--red); 
+          border-color: rgba(179, 57, 57, 0.2);
+        }
+        .status-select.warn {
+          background: var(--amber-lt); 
+          color: var(--amber); 
+          border-color: rgba(148, 105, 16, 0.2);
+        }
+        .status-select.pass {
+          background: var(--green-lt); 
+          color: var(--green); 
+          border-color: rgba(59, 102, 34, 0.2);
+        }
 
         /* Image grid */
         .img-grid { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
@@ -399,19 +574,98 @@ export default function AbbDriveCarePage() {
         .img-thumb .img-del { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
 
         /* Static PTTS address */
-        .ptts-address { font-family: var(--font-h); font-size: 12px; color: var(--dark); line-height: 1.7; padding: 16px 20px; }
-        .ptts-address strong { font-weight: 700; }
+        .ptts-address { font-family: var(--font-b); font-size: 13.5px; color: var(--dark); line-height: 1.7; padding: 20px 24px; background: var(--light-2); border-top: 1px solid var(--border); }
+        .ptts-address strong { font-family: var(--font-h); font-weight: 700; color: var(--dark); }
 
         /* Signature */
-        .sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 30px 20px; }
+        .sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 30px 24px; }
         .sig-block { text-align: center; }
         .sig-label { font-family: var(--font-h); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray); margin-bottom: 6px; }
-        .sig-line { border-bottom: 1px solid var(--dark); width: 200px; margin: 60px auto 6px; }
-        .sig-input { font-family: var(--font-h); font-size: 12px; font-weight: 600; color: var(--dark); border: none; border-bottom: 1px dashed var(--border); background: transparent; outline: none; text-align: center; width: 200px; margin: 4px auto; display: block; }
+        .sig-line { border-bottom: 1.5px solid var(--dark); width: 200px; margin: 60px auto 6px; }
+        .sig-input { font-family: var(--font-h); font-size: 13px; font-weight: 600; color: var(--dark); border: none; border-bottom: 1.5px dashed var(--border); background: transparent; outline: none; text-align: center; width: 200px; margin: 4px auto; display: block; transition: border-color 0.2s ease; }
+        .sig-input:focus { border-color: var(--orange); }
+
+        /* Header block */
+        .hd { margin: 20px 0 28px; padding-bottom: 22px; border-bottom: 1.5px solid var(--border); }
+        .hd-label { font-family: var(--font-h); font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange); margin-bottom: 8px; }
+        .hd-title { font-family: var(--font-h); font-size: 26px; font-weight: 800; letter-spacing: -0.025em; color: var(--dark); margin-bottom: 5px; }
+        .hd-date-row { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+        .hd-date-label { font-family: var(--font-h); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); }
+        .hd-date-input { border: none; border-bottom: 1.5px solid var(--border); background: transparent; outline: none; font-size: 13px; font-weight: 600; color: var(--dark); padding: 2px 4px; font-family: var(--font-h); transition: border-color 0.2s ease; }
+        .hd-date-input:focus { border-color: var(--orange); }
+
+        .form-textarea {
+          font-family: var(--font-b); 
+          font-size: 13.5px; 
+          font-weight: 500; 
+          color: var(--dark); 
+          border: 1.5px solid var(--border); 
+          border-radius: 8px;
+          background: var(--light-2); 
+          outline: none; 
+          padding: 10px 14px; 
+          width: 100%; 
+          resize: vertical; 
+          min-height: 60px; 
+          transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .form-textarea:focus {
+          border-color: var(--orange);
+          background: #fff;
+        }
+
+        .read-only-comments {
+          width: 100%;
+          min-height: 30px;
+          border: none;
+          background: transparent;
+          font-family: var(--font-b);
+          font-size: 13px;
+          color: var(--gray);
+          font-style: italic;
+          resize: none;
+          outline: none;
+        }
+
+        /* Buttons and actions */
+        .actions-row { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+        .btn { 
+          font-family: var(--font-h); 
+          font-size: 12px; 
+          font-weight: 700; 
+          padding: 10px 22px; 
+          border-radius: 8px; 
+          border: 1.5px solid; 
+          cursor: pointer; 
+          transition: all 0.2s ease; 
+          letter-spacing: 0.03em;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .btn-primary { 
+          background: var(--dark); 
+          border-color: var(--dark); 
+          color: #fff; 
+        }
+        .btn-primary:hover { 
+          background: var(--orange); 
+          border-color: var(--orange); 
+        }
+        .btn-outline { 
+          background: #fff; 
+          border-color: var(--border); 
+          color: var(--dark); 
+          box-shadow: var(--shadow); 
+        }
+        .btn-outline:hover { 
+          border-color: var(--gray); 
+          background: var(--light-2);
+        }
 
         /* ─── PRINT ─────────────────────────────────────────────────────────── */
         @media print {
-          html, body { background: #fff !important; background-image: none !important; color: #000 !important; font-family: 'Lora', Georgia, serif !important; font-size: 11px !important; margin: 0 !important; padding: 0 !important; }
+          html, body { background: #fff !important; background-image: none !important; color: #000 !important; font-family: var(--font-b) !important; font-size: 11px !important; margin: 0 !important; padding: 0 !important; }
           header[aria-label="Site header"], nav, .dv-ascii, [class*="SplashScreen"], [class*="CursorGlow"], [class*="SharedWatermark"], [class*="FeedbackButton"], button[aria-label*="feedback" i], button[aria-label*="theme" i], [data-vercel-speed-insights], script, .drivecare-footer-wrap { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; }
           #app-root { padding-bottom: 0 !important; min-height: auto !important; }
           .page { padding: 0 20px 20px !important; margin: 0 !important; max-width: 100% !important; box-shadow: none !important; }
@@ -421,8 +675,9 @@ export default function AbbDriveCarePage() {
           .kop-divider { border-top: 2.5px solid #000 !important; margin: 6px 0 0 !important; }
           .kop-sub-divider { border-top: 1px solid #999 !important; margin: 3px 0 0 !important; }
           .section-box { page-break-inside: avoid !important; break-inside: avoid !important; box-shadow: none !important; border-color: #ccc !important; }
-          .sec-head { background: #1c1c1a !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; cursor: default !important; }
-          .u-input, .rpt-table input, .rpt-table textarea, .sig-input { border-bottom: none !important; font-weight: bold !important; background: transparent !important; background-image: none !important; }
+          .sec-head { background: var(--light-2) !important; color: var(--dark) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; cursor: default !important; border-bottom: 1.5px solid #000 !important; }
+          .u-input, .rpt-table input, .sig-input { border-bottom: none !important; font-weight: bold !important; background: transparent !important; background-image: none !important; }
+          .rpt-table textarea { border: none !important; background: transparent !important; padding: 0 !important; font-weight: bold !important; }
           input, select, textarea { background-image: none !important; background-color: transparent !important; }
           .status-select { border: 1px solid #999 !important; -webkit-appearance: none; appearance: none; background: transparent !important; background-image: none !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
           .sig-grid { page-break-inside: avoid; }
@@ -436,7 +691,7 @@ export default function AbbDriveCarePage() {
           .unit-field { border-right: none !important; }
           .sig-grid { grid-template-columns: 1fr; gap: 30px; }
           .rpt-table { font-size: 11px; }
-          .rpt-table th, .rpt-table td { padding: 6px 8px; }
+          .rpt-table th, .rpt-table td { padding: 8px 10px; }
         }
       `}</style>
 
@@ -449,29 +704,26 @@ export default function AbbDriveCarePage() {
       </div>
 
       {/* ─── REPORT HEADER ──────────────────────────────────────────────────── */}
-      <div style={{ marginTop: 20, marginBottom: 28, paddingBottom: 16, borderBottom: "1.5px solid var(--border)" }}>
-        <div style={{ fontFamily: "var(--font-h)", fontSize: 10, fontWeight: 700, letterSpacing: "0.18em", color: "var(--orange)", textTransform: "uppercase", marginBottom: 6 }}>
-          {"PTTS DriveCare"}
-        </div>
-        <h1 style={{ fontFamily: "var(--font-h)", fontSize: 24, fontWeight: 800, color: "var(--dark)", margin: "0 0 4px" }}>
+      <div className="hd">
+        <div className="hd-label">{"PTTS DriveCare"}</div>
+        <h1 className="hd-title">
           {lang === "id" ? "Laporan Pemeliharaan Preventif — Field Service" : "Field Service Preventive Maintenance Report"}
         </h1>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
-          <span style={{ fontFamily: "var(--font-h)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gray)" }}>
+        <div className="hd-date-row">
+          <span className="hd-date-label">
             {lang === "id" ? "Tanggal Laporan" : "Report Date"}
           </span>
-          <input type="date" className="u-input" value={report.reportDate} onChange={(e) => save({ ...report, reportDate: e.target.value })}
-            style={{ border: "none", borderBottom: "1.5px dashed var(--border)", background: "transparent", outline: "none", fontSize: 13, fontWeight: 600, color: "var(--dark)", padding: "2px 4px", fontFamily: "var(--font-h)" }} />
+          <input type="date" className="hd-date-input" value={report.reportDate} onChange={(e) => save({ ...report, reportDate: e.target.value })} />
         </div>
       </div>
 
       {/* ─── ACTIONS ROW ────────────────────────────────────────────────────── */}
-      <div className="actions-row no-print" style={{ display: "flex", gap: 10, marginBottom: 24, flexWrap: "wrap" }}>
-        <button className="btn btn-primary" onClick={() => window.print()} style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-h)", fontSize: 12, fontWeight: 700, padding: "9px 20px", borderRadius: 8, border: "1.5px solid var(--dark)", background: "var(--dark)", color: "#fff", cursor: "pointer" }}>
+      <div className="actions-row no-print">
+        <button className="btn btn-primary" onClick={() => window.print()}>
           <Printer size={16} />
           {lang === "id" ? "Cetak / PDF" : "Print / PDF"}
         </button>
-        <button className="btn btn-outline" onClick={clearForm} style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-h)", fontSize: 12, fontWeight: 700, padding: "9px 20px", borderRadius: 8, border: "1.5px solid var(--border)", background: "#fff", color: "#52504c", cursor: "pointer" }}>
+        <button className="btn btn-outline" onClick={clearForm}>
           <RotateCcw size={16} />
           {lang === "id" ? "Kosongkan" : "Clear Form"}
         </button>
@@ -556,8 +808,8 @@ export default function AbbDriveCarePage() {
               </tbody>
             </table>
             <div style={{ marginTop: 12 }}>
-              <div className="u-label" style={{ fontFamily: "var(--font-h)", fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gray)", marginBottom: 4 }}>{lang === "id" ? "Komentar" : "Comments"}</div>
-              <textarea className="u-input" value={report.environment.comments} onChange={(e) => updateEnvironment("comments", e.target.value)} placeholder={lang === "id" ? "Catatan kondisi lingkungan..." : "Environmental condition notes..."} style={{ width: "100%", minHeight: 50, border: "1.5px solid var(--border)", borderRadius: 6, padding: "8px 10px", fontFamily: "var(--font-b)", fontSize: 12.5, color: "var(--dark)", background: "var(--light-2)", outline: "none", resize: "vertical" }} />
+              <div className="u-label">{lang === "id" ? "Komentar" : "Comments"}</div>
+              <textarea className="form-textarea" value={report.environment.comments} onChange={(e) => updateEnvironment("comments", e.target.value)} placeholder={lang === "id" ? "Catatan kondisi lingkungan..." : "Environmental condition notes..."} />
             </div>
           </div>
         )}
@@ -567,14 +819,14 @@ export default function AbbDriveCarePage() {
       <div className="section-box">
         <SectionHeader id="s32" title={lang === "id" ? "3.2 Catatan Kerja Harian" : "3.2 Daily Work Log"} collapsed={!!collapsedSections["s32"]} onToggle={toggleSection} />
         {!collapsedSections["s32"] && (
-          <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
             <div>
-              <div className="u-label" style={{ fontFamily: "var(--font-h)", fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gray)", marginBottom: 4 }}>{lang === "id" ? "Aktivitas yang Dilakukan" : "Activities Performed"}</div>
-              <textarea className="u-input" value={report.workLog.activities} onChange={(e) => updateWorkLog("activities", e.target.value)} placeholder={lang === "id" ? "Deskripsi pekerjaan yang dilakukan..." : "Describe activities performed..."} style={{ width: "100%", minHeight: 80, border: "1.5px solid var(--border)", borderRadius: 6, padding: "8px 10px", fontFamily: "var(--font-b)", fontSize: 12.5, color: "var(--dark)", background: "var(--light-2)", outline: "none", resize: "vertical" }} />
+              <div className="u-label">{lang === "id" ? "Aktivitas yang Dilakukan" : "Activities Performed"}</div>
+              <textarea className="form-textarea" style={{ minHeight: 100 }} value={report.workLog.activities} onChange={(e) => updateWorkLog("activities", e.target.value)} placeholder={lang === "id" ? "Deskripsi pekerjaan yang dilakukan..." : "Describe activities performed..."} />
             </div>
             <div>
-              <div className="u-label" style={{ fontFamily: "var(--font-h)", fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gray)", marginBottom: 4 }}>{lang === "id" ? "Komentar" : "Comments"}</div>
-              <textarea className="u-input" value={report.workLog.comments} onChange={(e) => updateWorkLog("comments", e.target.value)} placeholder={lang === "id" ? "Catatan tambahan..." : "Additional remarks..."} style={{ width: "100%", minHeight: 60, border: "1.5px solid var(--border)", borderRadius: 6, padding: "8px 10px", fontFamily: "var(--font-b)", fontSize: 12.5, color: "var(--dark)", background: "var(--light-2)", outline: "none", resize: "vertical" }} />
+              <div className="u-label">{lang === "id" ? "Komentar" : "Comments"}</div>
+              <textarea className="form-textarea" value={report.workLog.comments} onChange={(e) => updateWorkLog("comments", e.target.value)} placeholder={lang === "id" ? "Catatan tambahan..." : "Additional remarks..."} />
             </div>
           </div>
         )}
@@ -645,9 +897,9 @@ export default function AbbDriveCarePage() {
                 </div>
               );
             })}
-            <div style={{ padding: "12px 20px", borderTop: "1px solid var(--border)" }}>
-              <div className="u-label" style={{ fontFamily: "var(--font-h)", fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gray)", marginBottom: 4 }}>{lang === "id" ? "Komentar Inspeksi Visual" : "Visual Inspection Comments"}</div>
-              <textarea className="u-input" value={Object.values(report.visual).map(v => v.comments).filter(Boolean).join("; ")} readOnly style={{ width: "100%", minHeight: 30, border: "none", background: "transparent", fontFamily: "var(--font-b)", fontSize: 12, color: "var(--dark)", fontStyle: "italic" }} />
+            <div style={{ padding: "16px 24px", borderTop: "1px solid var(--border)" }}>
+              <div className="u-label">{lang === "id" ? "Komentar Inspeksi Visual" : "Visual Inspection Comments"}</div>
+              <textarea className="read-only-comments" value={Object.values(report.visual).map(v => v.comments).filter(Boolean).join("; ")} readOnly />
             </div>
           </div>
         )}
