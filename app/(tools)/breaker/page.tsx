@@ -10,6 +10,8 @@ import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
 import RecentDropdown from "@/components/calc/RecentDropdown";
 import ShareButton from "@/components/share/ShareButton";
+import StandardsRef from "@/components/calc/StandardsRef";
+import AuditFooter from "@/components/calc/AuditFooter";
 import { sizeBreaker, BreakerResult } from "@/lib/calc/breaker";
 import type { Curve, Region } from "@/lib/calc/breaker";
 import { useLang } from "@/lib/i18n";
@@ -198,6 +200,20 @@ export default function BreakerPage() {
             </div>
           )}
         </div>
+      )}
+
+      {result && (
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12, alignItems: "center" }}>
+          <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            Calculated per
+          </span>
+          <StandardsRef code="iec60947-mccb" />
+          <StandardsRef code="iec60898-mcb" />
+        </div>
+      )}
+
+      {result && (
+        <AuditFooter inputs={formInputs} standards="IEC 60947-2 / IEC 60898" />
       )}
 
       <Footnote />

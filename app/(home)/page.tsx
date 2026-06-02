@@ -10,7 +10,8 @@ import { useState, useEffect } from "react";
 
 import {
   LayoutGrid, ChevronRight,
-  ShieldPlus, Repeat, MonitorPlay, LineChart, Activity
+  ShieldPlus, Repeat, MonitorPlay, LineChart, Activity,
+  Bolt, Box, GitFork
 } from "lucide-react";
 
 const SPEC_STRIP = [
@@ -147,6 +148,9 @@ function getCalcMeta(key: string, localeHome: HomeLocale) {
     case "convert": return localeHome.calcs.convert;
     case "tutorials": return localeHome.calcs.tutorials;
     case "skfMicrolog": return localeHome.calcs.skfMicrolog;
+    case "icc": return localeHome.calcs.icc;
+    case "transformer": return localeHome.calcs.transformer;
+    case "selectivity": return localeHome.calcs.selectivity;
     case "abbDriveCare": return localeHome.calcs.abbDriveCare;
     default: return undefined;
   }
@@ -179,6 +183,9 @@ export default function HomePage() {
     { href: "/tutorials",   key: "tutorials", tag: "Guide",     cat: "Info",     Icon: MonitorPlay },
     { href: "/skf-microlog", key: "skfMicrolog", tag: "Vibration", cat: "Learn",   Icon: Activity },
     { href: "/abb-drivecare", key: "abbDriveCare", tag: "PDF Gen", cat: "Doc",   Icon: IconDocument },
+    { href: "/icc",           key: "icc",          tag: "Fault",       cat: "Power",    Icon: Bolt },
+    { href: "/transformer",   key: "transformer",  tag: "kVA Sizing",  cat: "Power",    Icon: Box },
+    { href: "/selectivity",   key: "selectivity",  tag: "Discrim",     cat: "Power",    Icon: GitFork },
   ];
 
   // Group calcs by category in defined order

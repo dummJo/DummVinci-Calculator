@@ -10,6 +10,7 @@ export const T = {
       home: "Home", unified: "Fast", cable: "Cable", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Brake", panel: "Panel", support: "ABB Support",
       plc: "PLC", starter: "Starter", pid: "PID Sim", convert: "Convert", tutorials: "Tutorials", skfMicrolog: "SKF Learn", abbDriveCare: "DriveCare Doc", more: "More", close: "Close", changelog: "What's New",
+      icc: "Icc", transformer: "Trafo", selectivity: "Discrim",
       brandDumm: "PTTS", brandVinci: "Praxis", brandCalculator: "Suite",
     },
     common: {
@@ -166,6 +167,18 @@ export const T = {
         abbDriveCare: {
           title: "ABB DriveCare PDF Gen",
           desc: "Generate professional ABB VSD Preventive Maintenance PDF reports with image attachments and automated captions.",
+        },
+        icc: {
+          title: "Short-circuit Icc",
+          desc: "IEC 60909 fault current. Utility + transformer + cable impedance chain → Icc3, Ip peak, recommended breaker Icu.",
+        },
+        transformer: {
+          title: "Transformer Sizing",
+          desc: "IEC 60076 distribution transformer kVA selection. Standard frame, %Z, regulation, secondary terminal Icc.",
+        },
+        selectivity: {
+          title: "Selectivity Study",
+          desc: "IEC 60947-2 upstream-downstream discrimination. In-ratio rule + electronic trip + manufacturer matrix consult.",
         },
       },
     },
@@ -592,6 +605,7 @@ export const T = {
       home: "Beranda", unified: "Fast Sizing", cable: "Sizing Kabel", drive: "Sizing VSD", breaker: "Proteksi Breaker",
       busbar: "Sizing Busbar", brake: "Braking Resistor", panel: "Pendinginan Panel", support: "ABB Support",
       plc: "Sizing PLC", starter: "Starter Motor", pid: "Simulator PID", convert: "Konverter Unit", tutorials: "Panduan Pengujian", skfMicrolog: "SKF Microlog Learn", abbDriveCare: "Dokumen DriveCare", more: "Lainnya", close: "Tutup", changelog: "Informasi Pembaruan",
+      icc: "Icc", transformer: "Trafo", selectivity: "Diskrim",
       brandDumm: "PTTS", brandVinci: "Praxis", brandCalculator: "Suite",
     },
     common: {
@@ -748,6 +762,18 @@ export const T = {
         abbDriveCare: {
           title: "Generator PDF ABB DriveCare",
           desc: "Buat laporan PDF Pemeliharaan Preventif (PM) ABB VSD secara profesional dengan lampiran gambar dan takarir otomatis.",
+        },
+        icc: {
+          title: "Arus Hubung Singkat Icc",
+          desc: "IEC 60909 — arus gangguan. Rangkaian impedansi utilitas + trafo + kabel → Icc3, Ip puncak, rekomendasi Icu breaker.",
+        },
+        transformer: {
+          title: "Sizing Trafo Distribusi",
+          desc: "IEC 60076 — pemilihan kVA trafo distribusi. Frame standar, %Z, regulasi, dan Icc terminal sekunder.",
+        },
+        selectivity: {
+          title: "Studi Selektivitas",
+          desc: "IEC 60947-2 — diskriminasi breaker upstream-downstream. Aturan rasio In + electronic trip + matrix manufaktur.",
         },
       },
     },

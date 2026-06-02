@@ -9,6 +9,8 @@ import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
 import RecentDropdown from "@/components/calc/RecentDropdown";
 import ShareButton from "@/components/share/ShareButton";
+import StandardsRef from "@/components/calc/StandardsRef";
+import AuditFooter from "@/components/calc/AuditFooter";
 import { sizeBrakingResistor, BrResult } from "@/lib/calc/braking-resistor";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
@@ -150,6 +152,19 @@ export default function BrakingResistorPage() {
           ]}
           warnings={result.warnings}
         />
+      )}
+
+      {result && (
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12, alignItems: "center" }}>
+          <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            Calculated per
+          </span>
+          <StandardsRef code="stahl-br" />
+        </div>
+      )}
+
+      {result && (
+        <AuditFooter inputs={formInputs} standards="STAHL CraneSystems · ABB ACS880 BR" />
       )}
 
       <Footnote />

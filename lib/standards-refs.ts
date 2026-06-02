@@ -66,6 +66,36 @@ export const STANDARD_REFS: Record<string, StandardRef> = {
       "Braking-resistor selection: R between chopper-overcurrent minimum and peak-power maximum; continuous power = peak × ED%. Duty class (15/25/40/60% ED) sets thermal sizing.",
     source: "R-window + ED model in lib/calc/braking-resistor.ts.",
   },
+  "iec60947-starter": {
+    title: "IEC 60947-4-1 (motor-starter)",
+    summary:
+      "Type-2 coordination requirement: protective device (MPCB/contactor) shall withstand fault current without damage that prevents continued service. Star-delta starter uses ~58% of DOL inrush; coordination chart sets contactor/overload selection per AC-3 utilisation category.",
+    source: "Siemens SIRIUS 3RV/3RT selection in lib/calc/starter.ts.",
+  },
+  "siemens-s7-tia": {
+    title: "Siemens SIMATIC S7-1200 / S7-1500 system manuals",
+    summary:
+      "I/O budget per CPU (S7-1200: 8 SM slots, 1600 mA bus; S7-1500: 32 SM slots, 3–10 A bus). Overflow routes to ET 200SP via PROFINET (up to 64 SM per IM 155-6 head). Spare margin ≥ 20 % is standard engineering practice.",
+    source: "CPU catalog + SM allocator in lib/calc/plc.ts (TIA Selection Tool 2024).",
+  },
+  "iec60909-icc": {
+    title: "IEC 60909-0 — short-circuit currents",
+    summary:
+      "Method for calculating prospective short-circuit currents in three-phase a.c. systems. Equivalent voltage source U/√3 at fault location; impedance chain from utility through transformer through cable; peak factor κ ≈ 1.8 for LV systems with R/X ≈ 0.15.",
+    source: "Icc engine in lib/calc/icc.ts (utility MVA + transformer %Z + cable R model).",
+  },
+  "iec60076-trf": {
+    title: "IEC 60076-1 / 60076-2 — power transformers",
+    summary:
+      "Rating, performance, and short-circuit impedance. %Z bands by frame: ≤ 250 kVA → 4 %, 250–630 → 5 %, 800–1250 → 6 %, ≥ 1600 → 7 %. Regulation under load uses simplified Kapp formula: %Z × loading × (cosφ + 0.6 sinφ).",
+    source: "Transformer sizing in lib/calc/transformer.ts; matches ABB / Schneider / Trafindo catalogs.",
+  },
+  "iec60947-selectivity": {
+    title: "IEC 60947-2 §7.2 — selectivity / discrimination",
+    summary:
+      "Classifications of selective tripping (full / partial / none) and method to verify upstream-downstream coordination. Manufacturer matrices (e.g. Siemens 3VA selectivity tables) refine the In-ratio rule-of-thumb (≥ 2.5 → full, 1.6–2.5 → partial) with exact Is values.",
+    source: "Discrimination check in lib/calc/selectivity.ts; Siemens 3VA matrix consult required above ratio 2.5.",
+  },
 };
 
 export type StandardRefCode = keyof typeof STANDARD_REFS;

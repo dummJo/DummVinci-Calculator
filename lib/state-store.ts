@@ -17,7 +17,8 @@
 
 export type ToolId =
   | "cable" | "vsd" | "breaker" | "busbar" | "br" | "starter"
-  | "plc" | "pid" | "panel" | "panel-layout" | "convert" | "unified";
+  | "plc" | "pid" | "panel" | "panel-layout" | "convert" | "unified"
+  | "icc" | "transformer" | "selectivity";
 
 export type CalcSnapshot = {
   id: string;

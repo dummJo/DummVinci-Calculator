@@ -7,6 +7,8 @@ import FieldSelect from "@/components/calc/FieldSelect";
 import ResultCard from "@/components/calc/ResultCard";
 import RecentDropdown from "@/components/calc/RecentDropdown";
 import ShareButton from "@/components/share/ShareButton";
+import StandardsRef from "@/components/calc/StandardsRef";
+import AuditFooter from "@/components/calc/AuditFooter";
 import Footer from "@/components/nav/Footer";
 import { sizePlcModules, CPU_CATALOG } from "@/lib/calc/plc";
 import type { PlcInput, PlcResult, CpuModel } from "@/lib/calc/plc";
@@ -300,6 +302,19 @@ export default function PlcPage() {
             warnings={result.warnings}
           />
         </>
+      )}
+
+      {result && (
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12, alignItems: "center" }}>
+          <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            Calculated per
+          </span>
+          <StandardsRef code="siemens-s7-tia" />
+        </div>
+      )}
+
+      {result && (
+        <AuditFooter inputs={formInputs} standards="Siemens SIMATIC S7-1200/1500 manual" />
       )}
 
       <Footer />
