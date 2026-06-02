@@ -21,7 +21,12 @@ const APP_TAGLINE = "Engineering Suite · by DummVinci";
 const APP_DESC =
   "Dashboard kalkulasi presales engineer: cable sizing, VSD + airflow (ACQ580 / ACS880), MCCB/MCB Siemens, busbar, braking resistor STAHL, panel XLTC / Rittal.";
 
+// Canonical host the app lives on. Drives metadataBase so OG/Twitter image and
+// canonical URLs always point at the live domain. Matches next.config.ts.
+const CANONICAL_HOST = process.env.NEXT_PUBLIC_CANONICAL_HOST ?? "ptts-praxis.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(`https://${CANONICAL_HOST}`),
   applicationName: APP_NAME,
   title: { default: `${APP_NAME} — ${APP_TAGLINE}`, template: `%s · ${APP_NAME}` },
   description: APP_DESC,
