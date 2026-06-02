@@ -109,10 +109,10 @@ export default function BreakerPage() {
           <FieldSelect
             label={tb.poles} value={poles} onChange={v => setPoles(v as "1" | "2" | "3" | "4")}
             options={[
-              { value: "1", label: "1-Pole" },
-              { value: "2", label: "2-Pole" },
-              { value: "3", label: "3-Pole" },
-              { value: "4", label: "4-Pole" },
+              { value: "1", label: tb.polesOptions.p1 },
+              { value: "2", label: tb.polesOptions.p2 },
+              { value: "3", label: tb.polesOptions.p3 },
+              { value: "4", label: tb.polesOptions.p4 },
             ]}
           />
         </div>
@@ -122,15 +122,15 @@ export default function BreakerPage() {
             label={tb.vsdToggle} checked={driveLoad} onChange={setDriveLoad} hint={tb.vsdToggleHint}
           />
           <FieldSelect
-            label="Catalog Preference"
+            label={tb.catalogPref}
             value={preferRegion}
             onChange={v => setPreferRegion(v as Region)}
             options={[
-              { value: "EU", label: "EU — 3VA1/3VA2 European series (priority)" },
-              { value: "IN", label: "IN — 3VJ India/SEA economy series (budget)" },
-              { value: "any", label: "Any — best Icu match regardless of origin" },
+              { value: "EU", label: tb.catalogPrefEu },
+              { value: "IN", label: tb.catalogPrefIn },
+              { value: "any", label: tb.catalogPrefAny },
             ]}
-            hint="EU series has wider accessory ecosystem (ETU, Profibus adapter). 3VJ is IEC-compliant & price-competitive for SEA market."
+            hint={tb.catalogPrefHint}
           />
         </div>
 
@@ -162,8 +162,8 @@ export default function BreakerPage() {
           {result.options.length > 0 && (
             <div className="vinci-card" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--accent)", padding: "4px 8px", border: "1px solid var(--accent)", borderRadius: 12 }}>IEC 60947-2 / 60898</span>
-                <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-heading)", color: "var(--fg)" }}>Supplier Quote Options</span>
+                <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--accent)", padding: "4px 8px", border: "1px solid var(--accent)", borderRadius: 12 }}>{tb.iecStandard}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-heading)", color: "var(--fg)" }}>{tb.supplierQuotes}</span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {result.options.map((opt, i) => (
@@ -185,7 +185,7 @@ export default function BreakerPage() {
 
               {result.equivalents && result.equivalents.length > 0 && (
                 <div style={{ marginTop: 8, paddingTop: 16, borderTop: "1px dashed var(--glass-border)", display: "flex", flexDirection: "column", gap: 10 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: "var(--muted-soft)" }}>Cross-Brand Equivalents (Indent Protection):</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "var(--muted-soft)" }}>{tb.crossBrandEq}</span>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {result.equivalents.map((eq, i) => (
                       <span key={i} style={{ fontSize: 10, fontFamily: "var(--font-mono)", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px", borderRadius: 8, color: "var(--fg)" }}>

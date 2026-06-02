@@ -97,9 +97,20 @@ function IconStarter() {
     </svg>
   );
 }
+function IconDocument() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
+    </svg>
+  );
+}
 
 // ── Category config ────────────────────────────────────────────────────────
-const CATEGORY_ORDER = ["Main", "Starter", "Power", "Panel", "Control", "Learn", "Info"] as const;
+const CATEGORY_ORDER = ["Main", "Starter", "Power", "Panel", "Control", "Doc", "Learn", "Info"] as const;
 function getCategoryLabel(cat: string, lang: string) {
   switch (cat) {
     case "Main": return lang === "id" ? "Mulai Cepat" : "Quick Start";
@@ -107,6 +118,7 @@ function getCategoryLabel(cat: string, lang: string) {
     case "Power": return lang === "id" ? "Distribusi Daya" : "Power Distribution";
     case "Panel": return "Panel & Enclosure";
     case "Control": return lang === "id" ? "Kontrol & Tuning" : "Control & Tuning";
+    case "Doc": return lang === "id" ? "Generator Dokumen" : "Document Generator";
     case "Learn": return lang === "id" ? "Belajar & Referensi" : "Learn & Reference";
     case "Info": return lang === "id" ? "Referensi & Alat" : "Reference & Tools";
     default: return "";
@@ -134,6 +146,7 @@ function getCalcMeta(key: string, localeHome: HomeLocale) {
     case "convert": return localeHome.calcs.convert;
     case "tutorials": return localeHome.calcs.tutorials;
     case "skfMicrolog": return localeHome.calcs.skfMicrolog;
+    case "abbDriveCare": return localeHome.calcs.abbDriveCare;
     default: return undefined;
   }
 }
@@ -164,6 +177,7 @@ export default function HomePage() {
     { href: "/convert",     key: "convert", tag: "Utility",     cat: "Info",     Icon: Repeat },
     { href: "/tutorials",   key: "tutorials", tag: "Guide",     cat: "Info",     Icon: MonitorPlay },
     { href: "/skf-microlog", key: "skfMicrolog", tag: "Vibration", cat: "Learn",   Icon: Activity },
+    { href: "/abb-drivecare", key: "abbDriveCare", tag: "PDF Gen", cat: "Doc",   Icon: IconDocument },
   ];
 
   // Group calcs by category in defined order

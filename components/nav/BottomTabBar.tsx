@@ -92,7 +92,6 @@ export default function BottomTabBar() {
   }, [showMore]);
 
   // Esc to close changelog modal — keyboard-accessible dismiss.
-  // Esc to close changelog modal — keyboard-accessible dismiss.
   useEffect(() => {
     if (!showChangelog) return;
     const onKey = (e: KeyboardEvent) => {

@@ -39,7 +39,7 @@ export default function SplashScreen() {
 
   // Pick a single random scene per mount via a lazy initializer (runs exactly once).
   const [sceneIndex] = useState(() => Math.floor(Math.random() * SCENES.length));
-  const scene = SCENES[sceneIndex];
+  const scene = SCENES.at(sceneIndex)!;
 
   useEffect(() => {
     // Progress ticker — aims to reach 100 by ~1800ms (before fade starts at 2000ms).

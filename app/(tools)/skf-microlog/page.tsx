@@ -64,7 +64,7 @@ const inputStyleBase = {
 
 // Direct map lookup — the data objects are Record<string, T>, so a switch over a
 // hand-maintained key list only risks silently dropping entries when the catalog grows.
-const getModuleIdData = (id: string) => MODULES_ID[id];
+const getModuleIdData = (id: string) => Reflect.get(MODULES_ID, id);
 
 const getTagColor = (tag: string) => {
   switch(tag) {
@@ -79,9 +79,9 @@ const getTagColor = (tag: string) => {
 
 // Previously a switch over keys M1/M2/U1… that do not exist in the data (real keys are
 // A1–L4) — so ~30 of 33 patterns silently fell back to English in Indonesian mode.
-const getDiagnosticPatternIdData = (id: string) => DIAGNOSTIC_PATTERNS_ID[id];
+const getDiagnosticPatternIdData = (id: string) => Reflect.get(DIAGNOSTIC_PATTERNS_ID, id);
 
-const getLearningGoalIdData = (id: string) => LEARNING_GOALS_ID[id];
+const getLearningGoalIdData = (id: string) => Reflect.get(LEARNING_GOALS_ID, id);
 
 // ─── Module Card ──────────────────────────────────────────────────────────────
 function ModuleCard({ mod, onClick, isActive, lang }: { mod: ModuleData; onClick: () => void; isActive: boolean; lang: "en" | "id" }) {

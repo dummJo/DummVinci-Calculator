@@ -302,7 +302,7 @@ export default function PanelLayoutPage() {
     const boundsH = isOuter ? activeEnc.extH : activeEnc.h;
 
     // Smart placement: next to last selected item OR last added item
-    const referenceItem = items.find(i => selectedIds.includes(i.id)) || items[items.length - 1];
+    const referenceItem = items.find(i => selectedIds.includes(i.id)) || items.at(-1);
 
     if (referenceItem) {
       startX = referenceItem.x + referenceItem.w + gap;
@@ -918,7 +918,7 @@ export default function PanelLayoutPage() {
                 onClick={() => setViewMode("inner")}
                 style={{
                   background: viewMode === "inner" ? "var(--accent)" : "transparent",
-                  color: viewMode === "inner" ? "#000" : "var(--fg)",
+                  color: viewMode === "inner" ? "var(--bg)" : "var(--fg)",
                   border: "none", padding: "6px 16px", borderRadius: 6,
                   fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
                   display: "flex", alignItems: "center", gap: 8
@@ -930,7 +930,7 @@ export default function PanelLayoutPage() {
                 onClick={() => setViewMode("outer")}
                 style={{
                   background: viewMode === "outer" ? "var(--accent)" : "transparent",
-                  color: viewMode === "outer" ? "#000" : "var(--fg)",
+                  color: viewMode === "outer" ? "var(--bg)" : "var(--fg)",
                   border: "none", padding: "6px 16px", borderRadius: 6,
                   fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
                   display: "flex", alignItems: "center", gap: 8
@@ -942,7 +942,7 @@ export default function PanelLayoutPage() {
                 onClick={() => setViewMode("sld")}
                 style={{
                   background: viewMode === "sld" ? "var(--accent)" : "transparent",
-                  color: viewMode === "sld" ? "#000" : "var(--fg)",
+                  color: viewMode === "sld" ? "var(--bg)" : "var(--fg)",
                   border: "none", padding: "6px 16px", borderRadius: 6,
                   fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
                   display: "flex", alignItems: "center", gap: 8
@@ -1075,7 +1075,7 @@ export default function PanelLayoutPage() {
                         letterSpacing: "0.04em", border: "1px solid",
                         cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
                         background: activeCategory === c ? "var(--accent)" : "transparent",
-                        color: activeCategory === c ? "#000" : "var(--muted)",
+                        color: activeCategory === c ? "var(--bg)" : "var(--muted)",
                         borderColor: activeCategory === c ? "var(--accent)" : "var(--border)",
                         transition: "all 0.15s ease"
                       }}
@@ -1879,7 +1879,7 @@ export default function PanelLayoutPage() {
                              </label>
                            </div>
 
-                           <button onClick={() => { setShowMetadataForm(false); window.print(); }} style={{ background: "var(--accent)", color: "#000", border: "none", padding: "10px", fontWeight: 900, fontSize: 11, marginTop: 8, cursor: "pointer", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                           <button onClick={() => { setShowMetadataForm(false); window.print(); }} style={{ background: "var(--accent)", color: "var(--bg)", border: "none", padding: "10px", fontWeight: 900, fontSize: 11, marginTop: 8, cursor: "pointer", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                              <Printer size={16} /> PLOT TO PDF
                            </button>
                         </div>
@@ -1988,7 +1988,7 @@ export default function PanelLayoutPage() {
 
       </div>
       
-      <style dangerouslySetInnerHTML={{__html: `
+      <style>{`
         @media print {
           @page {
             size: ${exportSettings.paperSize} ${exportSettings.orientation};
@@ -2011,7 +2011,7 @@ export default function PanelLayoutPage() {
           
           .no-print { display: none !important; }
         }
-      `}} />
+      `}</style>
       <Footer />
     </CalcShell>
   );

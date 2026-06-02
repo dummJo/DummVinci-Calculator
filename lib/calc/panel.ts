@@ -103,7 +103,7 @@ const AC_CATALOG: Array<{ minW: number; rittal: string; xltc: string; nomW: numb
 ];
 
 function pickFan(airflowM3h: number): FanSpec {
-  const entry = [...FAN_CATALOG].reverse().find(f => f.minQ <= airflowM3h) ?? FAN_CATALOG[FAN_CATALOG.length - 1];
+  const entry = [...FAN_CATALOG].reverse().find(f => f.minQ <= airflowM3h) ?? FAN_CATALOG.at(-1)!;
   const areaCm2 = Math.ceil(airflowM3h / 3.6);
   const filterSpec = (where: string): FilterSpec => ({
     airflowM3h,
@@ -125,7 +125,7 @@ function pickFan(airflowM3h: number): FanSpec {
 function pickAc(heatW: number, location: Location): AcSpec {
   // Outdoor: add 15% solar gain estimate + 10% transmission
   const load = location === "outdoor" ? heatW * 1.25 : heatW * 1.05;
-  const entry = AC_CATALOG.find(a => a.nomW >= load) ?? AC_CATALOG[AC_CATALOG.length - 1];
+  const entry = AC_CATALOG.find(a => a.nomW >= load) ?? AC_CATALOG.at(-1)!;
   return {
     heatLoadW: Math.round(load),
     heatLoadBtu: Math.round(load * 3.412),
