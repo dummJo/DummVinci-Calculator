@@ -66,6 +66,18 @@ export const STANDARD_REFS: Record<string, StandardRef> = {
       "Braking-resistor selection: R between chopper-overcurrent minimum and peak-power maximum; continuous power = peak × ED%. Duty class (15/25/40/60% ED) sets thermal sizing.",
     source: "R-window + ED model in lib/calc/braking-resistor.ts.",
   },
+  "iec60947-starter": {
+    title: "IEC 60947-4-1 (motor-starter)",
+    summary:
+      "Type-2 coordination requirement: protective device (MPCB/contactor) shall withstand fault current without damage that prevents continued service. Star-delta starter uses ~58% of DOL inrush; coordination chart sets contactor/overload selection per AC-3 utilisation category.",
+    source: "Siemens SIRIUS 3RV/3RT selection in lib/calc/starter.ts.",
+  },
+  "siemens-s7-tia": {
+    title: "Siemens SIMATIC S7-1200 / S7-1500 system manuals",
+    summary:
+      "I/O budget per CPU (S7-1200: 8 SM slots, 1600 mA bus; S7-1500: 32 SM slots, 3–10 A bus). Overflow routes to ET 200SP via PROFINET (up to 64 SM per IM 155-6 head). Spare margin ≥ 20 % is standard engineering practice.",
+    source: "CPU catalog + SM allocator in lib/calc/plc.ts (TIA Selection Tool 2024).",
+  },
 };
 
 export type StandardRefCode = keyof typeof STANDARD_REFS;

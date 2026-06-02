@@ -8,6 +8,8 @@ import FieldSelect from "@/components/calc/FieldSelect";
 import ResultCard from "@/components/calc/ResultCard";
 import RecentDropdown from "@/components/calc/RecentDropdown";
 import ShareButton from "@/components/share/ShareButton";
+import StandardsRef from "@/components/calc/StandardsRef";
+import AuditFooter from "@/components/calc/AuditFooter";
 import { sizePanel, PanelResult } from "@/lib/calc/panel";
 import type { Location, IpClass, CoolingMode } from "@/lib/calc/panel";
 import { estimatePanelLayout, LayoutResult } from "@/lib/calc/panel-layout";
@@ -344,6 +346,19 @@ export default function PanelPage() {
             </div>
           )}
         </div>
+      )}
+
+      {result && (
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12, alignItems: "center" }}>
+          <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            Calculated per
+          </span>
+          <StandardsRef code="iec60890-panel" />
+        </div>
+      )}
+
+      {result && (
+        <AuditFooter inputs={formInputs} standards="IEC 60890 / IEC 61439-1" />
       )}
 
       <Footnote />

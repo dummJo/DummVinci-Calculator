@@ -10,6 +10,8 @@ import FieldKwAmp from "@/components/calc/FieldKwAmp";
 import ResultCard from "@/components/calc/ResultCard";
 import RecentDropdown from "@/components/calc/RecentDropdown";
 import ShareButton from "@/components/share/ShareButton";
+import StandardsRef from "@/components/calc/StandardsRef";
+import AuditFooter from "@/components/calc/AuditFooter";
 import { sizeVsd, VsdResult, IpRating } from "@/lib/calc/vsd";
 import type { DriveApp, Voltage } from "@/lib/calc/vsd";
 import { useLang } from "@/lib/i18n";
@@ -220,6 +222,19 @@ export default function VsdPage() {
           features={result.keyFeatures}
           featuresLabel={tv.resFeatures}
         />
+      )}
+
+      {result && (
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12, alignItems: "center" }}>
+          <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            Calculated per
+          </span>
+          <StandardsRef code="abb-vsd-derate" />
+        </div>
+      )}
+
+      {result && (
+        <AuditFooter inputs={formInputs} standards="ABB ACQ580/ACS880 HW manual" />
       )}
 
       <Footnote />

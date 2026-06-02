@@ -8,6 +8,8 @@ import FieldNumber from "@/components/calc/FieldNumber";
 import FieldSelect from "@/components/calc/FieldSelect";
 import RecentDropdown from "@/components/calc/RecentDropdown";
 import ShareButton from "@/components/share/ShareButton";
+import StandardsRef from "@/components/calc/StandardsRef";
+import AuditFooter from "@/components/calc/AuditFooter";
 import Footer from "@/components/nav/Footer";
 import Footnote from "@/components/calc/Footnote";
 import { useLang } from "@/lib/i18n";
@@ -324,6 +326,19 @@ export default function StarterPage() {
             </div>
           )}
         </>
+      )}
+
+      {result && (
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12, alignItems: "center" }}>
+          <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            Calculated per
+          </span>
+          <StandardsRef code="iec60947-starter" />
+        </div>
+      )}
+
+      {result && (
+        <AuditFooter inputs={formInputs} standards="IEC 60947-4-1 · Siemens SIRIUS" />
       )}
 
       <Footnote />
