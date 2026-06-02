@@ -644,6 +644,7 @@ export default function BottomTabBar() {
         ref={navRef}
         aria-label="Main navigation"
         aria-hidden={isHidden}
+        inert={isHidden}
         className="telegram-glass"
         style={{
           position: "fixed",

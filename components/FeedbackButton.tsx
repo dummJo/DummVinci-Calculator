@@ -62,9 +62,14 @@ export default function FeedbackButton() {
   function handleSubmit() {
     if (!message.trim()) return;
     const { mailto } = buildMail();
-    window.location.href = mailto;
+    // Fire analytics + flip UI state BEFORE handing the page off to the mail
+    // handler. Some browsers stall script execution while the OS dispatches
+    // mailto:, so doing it the other way around can lose the analytics ping.
     track("feedback-sent", { type });
     setSent(true);
+    // Defer the navigation by a tick so the state update / analytics request
+    // flush onto the wire before the browser context-switches.
+    setTimeout(() => { window.location.href = mailto; }, 0);
     setTimeout(() => { setSent(false); setOpen(false); setMessage(""); }, 1400);
   }
 
