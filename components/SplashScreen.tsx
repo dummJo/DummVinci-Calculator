@@ -234,6 +234,21 @@ export default function SplashScreen() {
           <span style={{ fontWeight: 800, color: "var(--accent)" }}>{t.nav.brandVinci}</span>
         </div>
 
+        {/* Greek glyph — quiet philosophical subline. Marks the brand without crowding the wordmark. */}
+        <div style={{
+          fontFamily: "var(--font-display)",
+          fontSize: 11,
+          fontWeight: 400,
+          letterSpacing: "0.32em",
+          color: "var(--accent)",
+          opacity: 0.55,
+          marginTop: -16,
+          marginBottom: 4,
+          textTransform: "lowercase",
+        }}>
+          {t.home.praxisGlyph}
+        </div>
+
         {/* Verb + percent + loading bar */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
           <div style={{

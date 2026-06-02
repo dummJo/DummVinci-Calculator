@@ -17,7 +17,7 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"], weight: ["30
 const monoFont = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"] });
 
 const APP_NAME = "PTTS Praxis";
-const APP_TAGLINE = "Engineering Suite · by DummVinci";
+const APP_TAGLINE = "Where engineering knowledge becomes spec · by DummVinci";
 const APP_DESC =
   "Dashboard kalkulasi presales engineer: cable sizing, VSD + airflow (ACQ580 / ACS880), MCCB/MCB Siemens, busbar, braking resistor STAHL, panel XLTC / Rittal.";
 

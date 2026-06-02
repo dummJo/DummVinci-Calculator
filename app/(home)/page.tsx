@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import { getRandomQuote, type Quote } from "@/lib/quotes";
+import PraxisModal from "@/components/PraxisModal";
 import { useState, useEffect } from "react";
 
 
@@ -341,9 +342,13 @@ export default function HomePage() {
         >
           {th.heroSubtitle}
         </p>
-        
-        <a 
-          href="https://www.ptts.co.id" 
+
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 14, marginBottom: 10 }}>
+          <PraxisModal />
+        </div>
+
+        <a
+          href="https://www.ptts.co.id"
           target="_blank" 
           rel="noopener noreferrer"
           style={{
