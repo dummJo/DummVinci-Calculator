@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   MoreHorizontal,
   Cable, Zap, X, History, Sparkles, AlertCircle, BookOpen,
-  Settings2, ShieldPlus, Repeat, MonitorPlay, ZapOff, Columns, BoxSelect, Waves, Power, LineChart, Home, HardDrive, FileText
+  Settings2, ShieldPlus, Repeat, MonitorPlay, ZapOff, Columns, BoxSelect, Waves, Power, LineChart, Home, HardDrive
 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { clsx } from "clsx";
@@ -27,7 +27,6 @@ function getNavLabel(key: string, t: { nav: Record<string, string> }): string {
     case "convert": return t.nav.convert;
     case "tutorials": return t.nav.tutorials;
     case "skfMicrolog": return t.nav.skfMicrolog;
-    case "abbDriveCare": return t.nav.abbDriveCare;
     default: return "";
   }
 }
@@ -76,7 +75,6 @@ export default function BottomTabBar() {
     { href: "/convert",          key: "convert", Icon: Repeat       },
     { href: "/tutorials",        key: "tutorials", Icon: MonitorPlay   },
     { href: "/skf-microlog",     key: "skfMicrolog", Icon: BookOpen      },
-    { href: "/abb-drivecare",    key: "abbDriveCare", Icon: FileText    },
   ];
 
   const allTabs = [...MAIN_TABS, ...UTILITY_TABS];
@@ -94,7 +92,6 @@ export default function BottomTabBar() {
   }, [showMore]);
 
   // Esc to close changelog modal — keyboard-accessible dismiss.
-  // Esc to close changelog modal — keyboard-accessible dismiss.
   useEffect(() => {
     if (!showChangelog) return;
     const onKey = (e: KeyboardEvent) => {
@@ -104,25 +101,46 @@ export default function BottomTabBar() {
     return () => window.removeEventListener("keydown", onKey);
   }, [showChangelog]);
 
-  // Auto-hide on scroll-down, reveal on scroll-up. Always visible near the top.
-  // Respects prefers-reduced-motion via the global CSS rule (the translate
-  // transition is suppressed there, so the bar still hides but without animation).
+  // Auto-hide on scroll-down, reveal on scroll-up. Tuned for 120 Hz devices:
+  //   • rAF-coalesced reads, scroll listener is passive
+  //   • cheap 2 px ignore-noise filter + an opposing-direction accumulator
+  //     (need ~10 px of scroll the other way before flipping) so micro-jitter
+  //     while reading doesn't flap the bar
+  //   • transform animation only (compositor path); will-change + translate3d
+  //     keep the nav on its own GPU layer for sub-frame slides
+  //   • prefers-reduced-motion skips the transition globally via the CSS rule
   const [hiddenByScroll, setHiddenByScroll] = useState(false);
   useEffect(() => {
     let lastY = window.scrollY;
+    let accum = 0;      // signed accumulator of scroll deltas since last flip
+    let hidden = false; // mirrors the React state to keep the rAF body sync-free
     let raf = 0;
+    const FLIP_THRESHOLD = 10;   // px of consistent opposite-direction scroll to flip
+    const JITTER = 2;            // px below which a delta is ignored entirely
+    const REVEAL_TOP = 80;       // always show within this many px of the top
+
     const onScroll = () => {
       if (raf) return;
       raf = requestAnimationFrame(() => {
         raf = 0;
         const y = window.scrollY;
         const delta = y - lastY;
-        // Ignore tiny jitters; always show near the top.
-        if (Math.abs(delta) < 6) { lastY = y; return; }
-        if (y < 80) setHiddenByScroll(false);
-        else if (delta > 0) setHiddenByScroll(true);
-        else setHiddenByScroll(false);
         lastY = y;
+        if (y < REVEAL_TOP) {
+          accum = 0;
+          if (hidden) { hidden = false; setHiddenByScroll(false); }
+          return;
+        }
+        if (Math.abs(delta) < JITTER) return;
+        // Reset accumulator on direction change so the user gets crisp
+        // intent-based flips, not lag from accumulated history.
+        if (Math.sign(delta) !== Math.sign(accum)) accum = 0;
+        accum += delta;
+        if (!hidden && accum > FLIP_THRESHOLD) {
+          hidden = true;  accum = 0; setHiddenByScroll(true);
+        } else if (hidden && accum < -FLIP_THRESHOLD) {
+          hidden = false; accum = 0; setHiddenByScroll(false);
+        }
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -626,6 +644,7 @@ export default function BottomTabBar() {
         ref={navRef}
         aria-label="Main navigation"
         aria-hidden={isHidden}
+        inert={isHidden}
         className="telegram-glass"
         style={{
           position: "fixed",
@@ -636,10 +655,15 @@ export default function BottomTabBar() {
           margin: "0 auto",
           height: 72,
           borderRadius: 36,
+          // 3d-translate keeps the nav on its own GPU layer (sub-frame smooth
+          // on 90/120 Hz panels). Apple-style spring-y easing — fast take-off,
+          // soft landing — keeps the slide feeling natural rather than linear.
           transform: isHidden
-            ? "translateY(calc(100% + 32px + env(safe-area-inset-bottom, 0px)))"
-            : "translateY(0)",
-          transition: "transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)",
+            ? "translate3d(0, calc(100% + 32px + env(safe-area-inset-bottom, 0px)), 0)"
+            : "translate3d(0, 0, 0)",
+          transition: "transform 0.22s cubic-bezier(0.32, 0.72, 0, 1)",
+          willChange: "transform",
+          backfaceVisibility: "hidden",
           pointerEvents: isHidden ? "none" : "auto",
           zIndex: 100,
           padding: "0 10px",

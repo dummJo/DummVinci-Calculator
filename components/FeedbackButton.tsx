@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { MessageCircle, X, Send, Bug, Lightbulb, MessageSquare } from "lucide-react";
 import { track } from "@/lib/analytics";
-import { useLang } from "@/lib/i18n";
 
 /**
  * Floating feedback / report-to-admin button.
@@ -18,28 +17,19 @@ import { useLang } from "@/lib/i18n";
 const FEEDBACK_EMAIL = process.env.NEXT_PUBLIC_FEEDBACK_EMAIL ?? "1437yb@gmail.com";
 
 type FeedbackType = "bug" | "feature" | "feedback";
+const TYPE_META: Record<FeedbackType, { label: string; icon: typeof Bug; color: string }> = {
+  bug:      { label: "Bug report",  icon: Bug,            color: "#ef4444" },
+  feature:  { label: "Feature idea", icon: Lightbulb,     color: "#f59e0b" },
+  feedback: { label: "Feedback",     icon: MessageSquare, color: "#3b82f6" },
+};
 
 export default function FeedbackButton() {
-  const { t } = useLang();
-  const tf = t.feedback;
-
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<FeedbackType>("feedback");
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [visible, setVisible] = useState(true);
-
-  const typeMeta = {
-    bug:      { label: tf.typeBug,      icon: Bug,           color: "#ef4444" },
-    feature:  { label: tf.typeFeature,  icon: Lightbulb,     color: "#f59e0b" },
-    feedback: { label: tf.typeFeedback, icon: MessageSquare, color: "#3b82f6" },
-  };
-
-  const getTypeMeta = (t: FeedbackType) => {
-    return Reflect.get(typeMeta, t) || typeMeta.feedback;
-  };
 
   // Esc to close
   useEffect(() => {
@@ -49,46 +39,13 @@ export default function FeedbackButton() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  // Hide on scroll down
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
-    let ticking = false;
-
-    const updateScrollDirection = () => {
-      const scrollY = window.scrollY;
-
-      if (Math.abs(scrollY - lastScrollY) < 10) {
-        ticking = false;
-        return;
-      }
-
-      if (scrollY > lastScrollY && scrollY > 100) {
-        setVisible(false);
-      } else {
-        setVisible(true);
-      }
-      lastScrollY = scrollY > 0 ? scrollY : 0;
-      ticking = false;
-    };
-
-    const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(updateScrollDirection);
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   function buildMail(): { mailto: string; body: string; subject: string } {
-    const subject = `[DummVinci ${getTypeMeta(type).label}] ${message.slice(0, 60) || "(no summary)"}`;
+    const subject = `[DummVinci ${TYPE_META[type].label}] ${message.slice(0, 60) || "(no summary)"}`;
     const meta = typeof window !== "undefined"
       ? `URL: ${window.location.href}\nUA: ${navigator.userAgent}`
       : "";
     const body = [
-      `Type: ${getTypeMeta(type).label}`,
+      `Type: ${TYPE_META[type].label}`,
       name ? `From: ${name}` : "",
       "",
       message || "(no message)",
@@ -105,11 +62,14 @@ export default function FeedbackButton() {
   function handleSubmit() {
     if (!message.trim()) return;
     const { mailto } = buildMail();
-    const link = document.createElement("a");
-    link.href = mailto;
-    link.click();
+    // Fire analytics + flip UI state BEFORE handing the page off to the mail
+    // handler. Some browsers stall script execution while the OS dispatches
+    // mailto:, so doing it the other way around can lose the analytics ping.
     track("feedback-sent", { type });
     setSent(true);
+    // Defer the navigation by a tick so the state update / analytics request
+    // flush onto the wire before the browser context-switches.
+    setTimeout(() => { window.location.href = mailto; }, 0);
     setTimeout(() => { setSent(false); setOpen(false); setMessage(""); }, 1400);
   }
 
@@ -124,13 +84,13 @@ export default function FeedbackButton() {
     } catch { /* clipboard blocked — ignore */ }
   }
 
-  const TypeIcon = getTypeMeta(type).icon;
+  const TypeIcon = TYPE_META[type].icon;
 
   return (
     <>
       <button
         type="button"
-        aria-label={open ? tf.btnAriaClose : tf.btnAriaOpen}
+        aria-label={open ? "Close feedback form" : "Send feedback"}
         aria-expanded={open}
         onClick={() => { setOpen(o => !o); if (!open) track("feedback-open"); }}
         style={{
@@ -150,10 +110,6 @@ export default function FeedbackButton() {
           justifyContent: "center",
           cursor: "pointer",
           boxShadow: "0 8px 20px rgba(0,0,0,0.18), 0 0 0 4px rgba(var(--accent-rgb), 0.05)",
-          opacity: visible || open ? 1 : 0,
-          pointerEvents: visible || open ? "auto" : "none",
-          transform: visible || open ? "translateY(0)" : "translateY(24px)",
-          transition: "opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
         {open ? <X size={18} strokeWidth={2.4} /> : <MessageCircle size={18} strokeWidth={2.4} />}
@@ -204,11 +160,11 @@ export default function FeedbackButton() {
                 letterSpacing: "-0.01em",
                 color: "var(--popout-fg)",
               }}>
-                {tf.title}
+                Report &amp; Feedback
               </h3>
               <button
                 type="button"
-                aria-label={tf.closeAria}
+                aria-label="Close"
                 onClick={() => setOpen(false)}
                 style={{
                   background: "rgba(var(--accent-rgb), 0.06)",
@@ -224,9 +180,9 @@ export default function FeedbackButton() {
             </div>
 
             {/* Type pills */}
-            <div role="radiogroup" aria-label={tf.typeAria} style={{ display: "flex", gap: 6 }}>
-              {(Object.keys(typeMeta) as FeedbackType[]).map(k => {
-                const meta = getTypeMeta(k);
+            <div role="radiogroup" aria-label="Feedback type" style={{ display: "flex", gap: 6 }}>
+              {(Object.keys(TYPE_META) as FeedbackType[]).map(k => {
+                const meta = TYPE_META[k];
                 const active = type === k;
                 const Icon = meta.icon;
                 return (
@@ -265,14 +221,14 @@ export default function FeedbackButton() {
 
             <input
               type="text"
-              placeholder={tf.placeholderName}
+              placeholder="Your name (optional)"
               value={name}
               onChange={e => setName(e.target.value)}
               style={inputStyle}
             />
 
             <textarea
-              placeholder={tf.placeholderMsg(getTypeMeta(type).label)}
+              placeholder={`Describe the ${TYPE_META[type].label.toLowerCase()}…`}
               value={message}
               onChange={e => setMessage(e.target.value)}
               rows={5}
@@ -307,7 +263,7 @@ export default function FeedbackButton() {
                 }}
               >
                 {sent ? <TypeIcon size={14} strokeWidth={2.4} /> : <Send size={14} strokeWidth={2.4} />}
-                {sent ? tf.btnSent : tf.btnSend}
+                {sent ? "Sent — thank you" : "Send via email"}
               </button>
               <button
                 type="button"
@@ -328,7 +284,7 @@ export default function FeedbackButton() {
                   opacity: message.trim() ? 1 : 0.5,
                 }}
               >
-                {copied ? tf.btnCopied : tf.btnCopy}
+                {copied ? "Copied" : "Copy"}
               </button>
             </div>
 
@@ -340,8 +296,8 @@ export default function FeedbackButton() {
               letterSpacing: "0.04em",
               opacity: 0.8,
             }}>
-              {tf.routesTo} <strong style={{ color: "var(--popout-fg)" }}>{FEEDBACK_EMAIL}</strong>.
-              {tf.routesToDesc}
+              Routes to <strong style={{ color: "var(--popout-fg)" }}>{FEEDBACK_EMAIL}</strong>.
+              Your message is sent through your own mail app — nothing is uploaded by the site.
             </p>
           </div>
         </div>
