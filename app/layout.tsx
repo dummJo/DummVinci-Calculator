@@ -16,16 +16,32 @@ import "./globals.css";
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800"] });
 const monoFont = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"] });
 
+const APP_NAME = "PTTS Praxis";
+const APP_TAGLINE = "Engineering Suite · by DummVinci";
+const APP_DESC =
+  "Dashboard kalkulasi presales engineer: cable sizing, VSD + airflow (ACQ580 / ACS880), MCCB/MCB Siemens, busbar, braking resistor STAHL, panel XLTC / Rittal.";
+
 export const metadata: Metadata = {
-  title: "DummVinci Tools - Engineering Suite",
-  description:
-    "Dashboard kalkulasi presales engineer: cable sizing, VSD + airflow (ACQ580 / ACS880), MCCB/MCB Siemens, busbar, braking resistor STAHL, panel XLTC / Rittal.",
+  applicationName: APP_NAME,
+  title: { default: `${APP_NAME} — ${APP_TAGLINE}`, template: `%s · ${APP_NAME}` },
+  description: APP_DESC,
   keywords: [
     "cable sizing calculator", "VSD sizing ACQ580 ACS880", "MCCB Siemens 3VA",
     "braking resistor STAHL", "panel Rittal XLTC", "presales engineer", "ABB drive",
     "Supreme Jembo cable", "busbar sizing", "kalkulator kabel Indonesia",
   ],
   robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    siteName: APP_NAME,
+    title: `${APP_NAME} — ${APP_TAGLINE}`,
+    description: APP_DESC,
+  },
+  twitter: {
+    card: "summary",
+    title: `${APP_NAME} — ${APP_TAGLINE}`,
+    description: APP_DESC,
+  },
 };
 
 export const viewport: Viewport = {

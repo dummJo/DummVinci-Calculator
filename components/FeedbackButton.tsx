@@ -40,7 +40,7 @@ export default function FeedbackButton() {
   }, [open]);
 
   function buildMail(): { mailto: string; body: string; subject: string } {
-    const subject = `[DummVinci ${TYPE_META[type].label}] ${message.slice(0, 60) || "(no summary)"}`;
+    const subject = `[PTTS Praxis ${TYPE_META[type].label}] ${message.slice(0, 60) || "(no summary)"}`;
     const meta = typeof window !== "undefined"
       ? `URL: ${window.location.href}\nUA: ${navigator.userAgent}`
       : "";

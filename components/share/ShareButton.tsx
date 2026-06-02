@@ -30,7 +30,7 @@ export default function ShareButton({ tool, inputs, enabled = true }: Props) {
       // Web Share API where available (mobile native share sheet) — fall back to clipboard.
       const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
       if (nav.share) {
-        await nav.share({ title: "DummVinci calculation", url });
+        await nav.share({ title: "PTTS Praxis calculation", url });
       } else {
         await navigator.clipboard.writeText(url);
       }

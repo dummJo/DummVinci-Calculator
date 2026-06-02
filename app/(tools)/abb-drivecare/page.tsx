@@ -1219,7 +1219,7 @@ export default function AbbDriveCarePage() {
       {/* ─── Footer (hidden on print) ─────────────────────────────────────── */}
       <div className="drivecare-footer-wrap" style={{ textAlign: "center", marginTop: 40 }}>
         <div style={{ fontFamily: "var(--font-h)", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: "var(--gray)", textTransform: "uppercase", marginBottom: 12 }}>
-          {"By DummVinci · DummVinci Calculator"}
+          {"By DummVinci · PTTS Praxis"}
         </div>
         <Footer />
       </div>

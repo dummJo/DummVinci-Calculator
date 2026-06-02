@@ -104,7 +104,7 @@ export default function PanelLayoutPage() {
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [showDimensions, setShowDimensions] = useState(false);
   
-  const [projectName, setProjectName] = useState("DummVinci Industrial Case");
+  const [projectName, setProjectName] = useState("PTTS Praxis Sample Project");
   const [customerName, setCustomerName] = useState("PT Prima Tekindo Tirta Sejahtera");
 
   // Drawing Metadata (IEC standard) — hydrated from localStorage
