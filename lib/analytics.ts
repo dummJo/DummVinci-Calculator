@@ -1,7 +1,7 @@
 // Plausible analytics — privacy-first, cookieless (no consent banner needed).
 //
 // Activation is env-gated: set NEXT_PUBLIC_PLAUSIBLE_DOMAIN to the domain you
-// registered in the Plausible dashboard (e.g. "dummvinci-calc.vercel.app" or a
+// registered in the Plausible dashboard (e.g. "ptts-praxis.vercel.app" or a
 // custom apex). When unset, the <PlausibleScript /> renders nothing and track()
 // is a silent no-op, so this is safe to ship before the account is configured.
 //
