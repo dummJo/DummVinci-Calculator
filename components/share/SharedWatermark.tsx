@@ -45,7 +45,7 @@ export default function SharedWatermark() {
   return (
     <div
       role="status"
-      aria-label="Shared via DummVinci"
+      aria-label="Shared via PTTS Praxis · by DummVinci"
       style={{
         position: "fixed",
         right: 16,
@@ -73,13 +73,14 @@ export default function SharedWatermark() {
         letterSpacing: "-0.01em",
         fontSize: 13,
       }}>
-        <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.7 }}>Dumm</span>
-        <span style={{ fontWeight: 800, color: "var(--accent)" }}>Vinci</span>
+        <span style={{ fontWeight: 300, fontStyle: "italic", opacity: 0.7 }}>PTTS</span>
+        <span style={{ fontWeight: 800, color: "var(--accent)" }}>Praxis</span>
       </span>
       <span style={{ opacity: 0.65 }}>·</span>
       <span style={{ opacity: 0.85, textTransform: "uppercase", letterSpacing: "0.12em" }}>
         Shared calculation
       </span>
+      <span style={{ opacity: 0.55, fontSize: 9 }}>by DummVinci</span>
       <button
         type="button"
         aria-label="Dismiss share banner"

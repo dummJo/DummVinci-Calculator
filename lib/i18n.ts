@@ -10,7 +10,7 @@ export const T = {
       home: "Home", unified: "Fast", cable: "Cable", drive: "Drive", breaker: "Breaker",
       busbar: "Busbar", brake: "Brake", panel: "Panel", support: "ABB Support",
       plc: "PLC", starter: "Starter", pid: "PID Sim", convert: "Convert", tutorials: "Tutorials", skfMicrolog: "SKF Learn", abbDriveCare: "DriveCare Doc", more: "More", close: "Close", changelog: "What's New",
-      brandDumm: "Dumm", brandVinci: "Vinci", brandCalculator: "Tools",
+      brandDumm: "PTTS", brandVinci: "Praxis", brandCalculator: "Suite",
     },
     common: {
       resultLabel: "◈ Result",
@@ -40,7 +40,7 @@ export const T = {
       routesToDesc: "Your message is sent through your own mail app — nothing is uploaded by the site.",
     },
     home: {
-      heroTitle: "DummVinci",
+      heroTitle: "PTTS Praxis",
       heroSub: "Tools",
       heroSubtitle: "Precision Sizing. By DummVinci.",
       secCalculators: "Engineering Tools",
@@ -140,7 +140,7 @@ export const T = {
           learnTab: "LEARN",
           knowledgeBase: "PTTS Knowledge Base",
           skfMicrologLabel: "SKF Microlog",
-          byDummVinci: "By DummVinci · DummVinci Tools",
+          byDummVinci: "By DummVinci · PTTS Praxis",
         },
         abbDriveCare: {
           title: "ABB DriveCare PDF Gen",
@@ -562,7 +562,7 @@ export const T = {
       v24Desc: "V2.4 — Panel layout estimator with Siemens/ABB component library & CAD visuals.",
       v23Desc: "V2.3 — PID loop simulator & electrical measurement guides/tutorials.",
       letsGo: "LET'S GO! 🚀",
-      byDummVinci: "By DummVinci · DummVinci Tools",
+      byDummVinci: "By DummVinci · PTTS Praxis",
       stableVersion: "Stable Production v2.7.0",
     },
   },
@@ -571,7 +571,7 @@ export const T = {
       home: "Beranda", unified: "Fast Sizing", cable: "Sizing Kabel", drive: "Sizing VSD", breaker: "Proteksi Breaker",
       busbar: "Sizing Busbar", brake: "Braking Resistor", panel: "Pendinginan Panel", support: "ABB Support",
       plc: "Sizing PLC", starter: "Starter Motor", pid: "Simulator PID", convert: "Konverter Unit", tutorials: "Panduan Pengujian", skfMicrolog: "SKF Microlog Learn", abbDriveCare: "Dokumen DriveCare", more: "Lainnya", close: "Tutup", changelog: "Informasi Pembaruan",
-      brandDumm: "Dumm", brandVinci: "Vinci", brandCalculator: "Tools",
+      brandDumm: "PTTS", brandVinci: "Praxis", brandCalculator: "Suite",
     },
     common: {
       resultLabel: "◈ Hasil Perhitungan",
@@ -601,7 +601,7 @@ export const T = {
       routesToDesc: "Pesan Anda dikirim melalui aplikasi email Anda sendiri — tidak ada yang diunggah oleh situs.",
     },
     home: {
-      heroTitle: "DummVinci",
+      heroTitle: "PTTS Praxis",
       heroSub: "Tools",
       heroSubtitle: "Sizing Presisi. Oleh DummVinci.",
       secCalculators: "Katalog Tools",
@@ -701,7 +701,7 @@ export const T = {
           learnTab: "BELAJAR",
           knowledgeBase: "Basis Pengetahuan PTTS",
           skfMicrologLabel: "SKF Microlog",
-          byDummVinci: "Oleh DummVinci · DummVinci Tools",
+          byDummVinci: "Oleh DummVinci · PTTS Praxis",
         },
         abbDriveCare: {
           title: "Generator PDF ABB DriveCare",
@@ -1124,7 +1124,7 @@ export const T = {
       v24Desc: "V2.4 — Estimator tata letak panel dengan pustaka komponen Siemens/ABB & representasi CAD.",
       v23Desc: "V2.3 — Simulator loop PID & panduan serta tutorial pengukuran listrik di lapangan.",
       letsGo: "MULAI! 🚀",
-      byDummVinci: "Oleh DummVinci · DummVinci Tools",
+      byDummVinci: "Oleh DummVinci · PTTS Praxis",
       stableVersion: "Produksi Stabil v2.7.0",
     },
   },

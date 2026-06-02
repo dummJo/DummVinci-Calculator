@@ -1,5 +1,5 @@
 "use client";
-// app/page.tsx — DummVinci Calculator Landing Page
+// app/page.tsx — PTTS Praxis Landing Page (by DummVinci)
 import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";

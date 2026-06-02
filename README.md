@@ -1,7 +1,9 @@
-# DummVinci Calculator
+# PTTS Praxis — Engineering Suite
 
 > Professional, high-fidelity engineering calculator and industrial panel estimator.  
-> Engineered by [dummjo.dev](https://dummjo.dev)
+> **PTTS Praxis** · by DummVinci · Engineered by [dummjo.dev](https://dummjo.dev)
+>
+> Product name **PTTS Praxis** · trademark/attribution **by DummVinci** — see [BRAND.md](./BRAND.md).
 
 ---
 
