@@ -39,7 +39,7 @@ export default function BottomTabBar() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const seen = localStorage.getItem("dummvinci_v2_7_seen");
+      const seen = localStorage.getItem("dummvinci_v3_0_seen");
       if (!seen) {
         // slight delay for dramatic effect
         const tid = setTimeout(() => setShowChangelog(true), 800);
@@ -51,7 +51,7 @@ export default function BottomTabBar() {
   const closeChangelog = () => {
     setShowChangelog(false);
     if (typeof window !== "undefined") {
-      localStorage.setItem("dummvinci_v2_7_seen", "true");
+      localStorage.setItem("dummvinci_v3_0_seen", "true");
     }
   };
   const navRef = useRef<HTMLDivElement>(null);
@@ -543,8 +543,8 @@ export default function BottomTabBar() {
               <span>{t.changelog.previousReleases}</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <div className="cl-prev-chip"><b>v2.4</b><span>{t.changelog.v24Desc}</span></div>
-              <div className="cl-prev-chip"><b>v2.3</b><span>{t.changelog.v23Desc}</span></div>
+              <div className="cl-prev-chip"><b>v2.7</b><span>{t.changelog.v24Desc}</span></div>
+              <div className="cl-prev-chip"><b>v2.4</b><span>{t.changelog.v23Desc}</span></div>
             </div>
 
             {/* CTA */}

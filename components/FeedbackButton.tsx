@@ -14,7 +14,7 @@ import { track } from "@/lib/analytics";
  * the user prefers to copy the message instead, the "Copy" fallback puts
  * the formatted body on the clipboard with the recipient address.
  */
-const FEEDBACK_EMAIL = process.env.NEXT_PUBLIC_FEEDBACK_EMAIL ?? "1437yb@gmail.com";
+const FEEDBACK_EMAIL = process.env.NEXT_PUBLIC_FEEDBACK_EMAIL ?? "dummvinci@gmail.com";
 
 type FeedbackType = "bug" | "feature" | "feedback";
 const TYPE_META: Record<FeedbackType, { label: string; icon: typeof Bug; color: string }> = {
