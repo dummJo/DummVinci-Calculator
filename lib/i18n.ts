@@ -42,9 +42,30 @@ export const T = {
     home: {
       heroTitle: "PTTS Praxis",
       heroSub: "Tools",
-      heroSubtitle: "Precision Sizing. By DummVinci.",
+      heroSubtitle: "Knowledge unwrought is potential. Spec is praxis. By DummVinci.",
       secCalculators: "Engineering Tools",
       ctaOpen: "Open Tool",
+      praxisGlyph: "πρᾶξις",
+      praxisTriggerLabel: "Why Praxis?",
+      praxisModal: {
+        title: "πρᾶξις — the heart of the brand",
+        intro:
+          "Praxis is the reminder that knowledge unwrought into action is only potential, and that action without thought is only reaction. Praxis is the meeting point of thinking and doing.",
+        aristotleTitle: "Aristotle's three modes",
+        aristotleTheoria: "Theoria — to observe, to understand, to know.",
+        aristotlePoiesis: "Poiesis — to make, to produce, to specify.",
+        aristotlePraxis:  "Praxis — to act ethically and wisely, with the doing as its own end.",
+        engineeringTitle: "In the language of engineering",
+        engineeringTheoria: "Knowing VSD / cable / IEC 60364 / ABB drives = knowledge.",
+        engineeringPoiesis: "Configuring, sizing, commissioning a plant = practice.",
+        engineeringPraxis:  "Documenting the lesson learned so others advance = mature praxis.",
+        moneyLineLead: "Because in the end —",
+        moneyLine:
+          "Industry does not pay you for what you know. Industry pays you for the problems you can solve.",
+        moneyLineTail: "And that is where the concept of praxis comes alive.",
+        attribution: "Three pillars realised in this tool: Standards Reference (theoria) · Calculation engine (poiesis) · Audit fingerprint & sign-off (praxis).",
+        closeLabel: "Close",
+      },
       calcs: {
         cable: {
           title: "Cable Sizing",
@@ -603,9 +624,30 @@ export const T = {
     home: {
       heroTitle: "PTTS Praxis",
       heroSub: "Tools",
-      heroSubtitle: "Sizing Presisi. Oleh DummVinci.",
+      heroSubtitle: "Ilmu yang tak diwujudkan hanyalah potensi. Spek adalah praxis. Oleh DummVinci.",
       secCalculators: "Katalog Tools",
       ctaOpen: "Buka Tools",
+      praxisGlyph: "πρᾶξις",
+      praxisTriggerLabel: "Apa itu Praxis?",
+      praxisModal: {
+        title: "πρᾶξις — inti dari brand ini",
+        intro:
+          "Praxis adalah pengingat bahwa pengetahuan yang tidak diwujudkan menjadi tindakan hanyalah potensi, dan tindakan tanpa pemikiran hanyalah reaksi. Praxis adalah titik temu antara berpikir dan bertindak.",
+        aristotleTitle: "Tiga modus Aristoteles",
+        aristotleTheoria: "Theoria — mengamati, memahami, mengetahui.",
+        aristotlePoiesis: "Poiesis — menciptakan, memproduksi, menyusun spek.",
+        aristotlePraxis:  "Praxis — bertindak secara etis dan bijaksana, dengan tindakan itu sendiri sebagai tujuan.",
+        engineeringTitle: "Dalam bahasa engineering",
+        engineeringTheoria: "Tahu teori VSD / cable / IEC 60364 / ABB = pengetahuan.",
+        engineeringPoiesis: "Mengkonfigurasi, sizing, commissioning plant = praktik.",
+        engineeringPraxis:  "Mendokumentasikan lesson learned agar orang lain berkembang = praxis yang matang.",
+        moneyLineLead: "Karena pada akhirnya —",
+        moneyLine:
+          "Dunia industri tidak dibayar berdasarkan apa yang Anda ketahui. Dunia industri dibayar berdasarkan masalah yang bisa Anda selesaikan.",
+        moneyLineTail: "Dan di situlah konsep praxis hidup.",
+        attribution: "Tiga pilar diwujudkan di tools ini: Standards Reference (theoria) · Mesin kalkulasi (poiesis) · Audit fingerprint & sign-off (praxis).",
+        closeLabel: "Tutup",
+      },
       calcs: {
         cable: {
           title: "Sizing Kabel",

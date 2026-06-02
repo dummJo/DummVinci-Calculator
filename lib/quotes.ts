@@ -52,6 +52,18 @@ export const QUOTES: Quote[] = [
   { text: "Work like hell. If others put in 40 hours, put in 80.", author: "Elon Musk" },
   { text: "The best code is no code at all.", author: "Jeff Atwood" },
   { text: "Done is better than perfect.", author: "Sheryl Sandberg" },
+
+  // ── πρᾶξις — knowledge made into action ─────────────────────────────────────
+  { text: "Praxis is the meeting point of thinking and doing.", author: "πρᾶξις" },
+  { text: "Knowledge without action is only potential.", author: "πρᾶξις" },
+  { text: "Action without thought is only reaction.", author: "πρᾶξις" },
+  { text: "Industry doesn't pay you for what you know. It pays you for the problems you can solve.", author: "Praxis Engineering" },
+  { text: "Theoria observes, poiesis makes, praxis commits.", author: "after Aristotle" },
+  { text: "For Aristotle, wisdom is not what you know — it is what you do under uncertainty.", author: "after Aristotle, Nicomachean Ethics" },
+  { text: "The philosophers have only interpreted the world in various ways; the point, however, is to change it.", author: "Karl Marx, Theses on Feuerbach" },
+  { text: "Praxis is reflection and action upon the world in order to transform it.", author: "Paulo Freire" },
+  { text: "Firmitas, utilitas, venustas — firm, useful, beautiful. The trinity holds.", author: "Vitruvius, De Architectura" },
+  { text: "A specification is a hypothesis. A signed-off result is a commitment.", author: "Praxis Engineering" },
 ];
 
 export function getRandomQuote(): Quote {
