@@ -5,7 +5,31 @@ import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
 import { getRandomQuote, type Quote } from "@/lib/quotes";
 import PraxisModal from "@/components/PraxisModal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+
+// ── Philosophical rotating taglines ──────────────────────────────────────────
+const HERO_LINES: Record<"en" | "id", string[]> = {
+  en: [
+    "Where engineering knowledge becomes specification",
+    "Precision is not a feature — it is the standard",
+    "From first principles to final installation",
+    "Every watt accounted. Every ampere justified.",
+    "A language of precision for those who build",
+    "IEC-grounded. Field-tested. Consultant-grade.",
+    "The instrument between insight and installation",
+    "Knowledge without form is merely possibility",
+  ],
+  id: [
+    "Di mana pengetahuan rekayasa menjadi spesifikasi",
+    "Presisi bukan fitur — ini adalah standar",
+    "Dari prinsip dasar hingga instalasi akhir",
+    "Setiap watt diperhitungkan. Setiap ampere dijustifikasi.",
+    "Bahasa presisi untuk mereka yang membangun",
+    "Berbasis IEC. Teruji di lapangan. Setara konsultan.",
+    "Jembatan antara wawasan dan instalasi",
+    "Ilmu tanpa wujud hanyalah kemungkinan",
+  ],
+};
 
 
 import {
@@ -160,6 +184,29 @@ export default function HomePage() {
   const { t, lang } = useLang();
   const th = t.home;
   const [heroQuote, setHeroQuote] = useState<Quote | null>(null);
+
+  // Rotating philosophical subtitle
+  const lines = HERO_LINES[lang as "en" | "id"] ?? HERO_LINES.en;
+  const [lineIdx, setLineIdx]     = useState(0);
+  const [lineFade, setLineFade]   = useState(false);
+  const lineTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    // Reset to index 0 on language change without fade flicker
+    setLineIdx(0);
+    setLineFade(false);
+  }, [lang]);
+
+  useEffect(() => {
+    lineTimer.current = setInterval(() => {
+      setLineFade(true);
+      setTimeout(() => {
+        setLineIdx((i: number) => (i + 1) % lines.length);
+        setLineFade(false);
+      }, 380);
+    }, 4800);
+    return () => clearInterval(lineTimer.current!);
+  }, [lines.length]);
 
   useEffect(() => {
     const tid = setTimeout(() => setHeroQuote(getRandomQuote()), 0);
@@ -337,18 +384,74 @@ export default function HomePage() {
         </div>
 
 
-        <p
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "clamp(11px, 1.4vw, 13px)",
-            color: "var(--muted)",
-            letterSpacing: "0.06em",
-            margin: "0 0 16px",
-            lineHeight: 1.4,
-          }}
-        >
-          {th.heroSubtitle}
-        </p>
+        {/* Animated philosophical subtitle */}
+        <div style={{ margin: "0 0 16px", display: "flex", flexDirection: "column", gap: 4 }}>
+          <style>{`
+            @keyframes tagline-in {
+              from { opacity: 0; transform: translateY(4px); }
+              to   { opacity: 1; transform: translateY(0); }
+            }
+          `}</style>
+
+          {/* Rotating phrase */}
+          <p
+            key={lineIdx}
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "clamp(11px, 1.4vw, 13px)",
+              color: "var(--muted)",
+              letterSpacing: "0.06em",
+              margin: 0,
+              lineHeight: 1.45,
+              opacity: lineFade ? 0 : 1,
+              transform: lineFade ? "translateY(-3px)" : "translateY(0)",
+              transition: "opacity 0.38s ease, transform 0.38s ease",
+              animation: !lineFade ? "tagline-in 0.42s ease both" : "none",
+            }}
+          >
+            {lines[lineIdx]}
+          </p>
+
+          {/* Persistent "by DummVinci" anchor */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{
+              width: 18,
+              height: 1,
+              background: "var(--accent)",
+              opacity: 0.45,
+              flexShrink: 0,
+            }} />
+            <span style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "clamp(9px, 1.1vw, 11px)",
+              fontWeight: 600,
+              color: "var(--accent)",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              opacity: 0.8,
+            }}>
+              by DummVinci
+            </span>
+            {/* Dot separator */}
+            <span style={{ color: "var(--accent)", opacity: 0.3, fontSize: 10 }}>·</span>
+            {/* Progress dots */}
+            <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
+              {lines.map((_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    width: i === lineIdx ? 12 : 4,
+                    height: 3,
+                    borderRadius: 2,
+                    background: i === lineIdx ? "var(--accent)" : "var(--muted)",
+                    opacity: i === lineIdx ? 0.8 : 0.25,
+                    transition: "width 0.4s ease, opacity 0.4s ease",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
 
         <div style={{ display: "flex", justifyContent: "center", marginTop: 14, marginBottom: 10 }}>
           <PraxisModal />
