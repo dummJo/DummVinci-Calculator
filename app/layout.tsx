@@ -7,6 +7,7 @@ import DaVinciAscii from "@/components/DaVinciAscii";
 import BottomTabBar from "@/components/nav/BottomTabBar";
 import TopBar from "@/components/nav/TopBar";
 import SplashScreen from "@/components/SplashScreen";
+import PullToRefresh from "@/components/PullToRefresh";
 import SharedWatermark from "@/components/share/SharedWatermark";
 import FeedbackButton from "@/components/FeedbackButton";
 import { PLAUSIBLE_DOMAIN, PLAUSIBLE_SRC } from "@/lib/analytics";
@@ -95,6 +96,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   });});
 }catch(e){}})();`}</Script>
         <SplashScreen />
+        <PullToRefresh />
 
         <CursorGlow />
         <DaVinciAscii />
