@@ -56,26 +56,26 @@ export default function FeedbackButton() {
     setBubbleFading(false);
     setBubbleVisible(true);
 
-    // Cycle through invitation messages every 2.3 s
+    // Cycle through invitation messages every 3.2 s
     let i = 0;
     cycleTimer.current = setInterval(() => {
       i = (i + 1) % INVITE_CYCLE.length;
       setBubbleIdx(i);
-    }, 2300);
+    }, 3200);
 
-    // Fade out after 7 s
+    // Fade out after 10 s
     bubbleTimer.current = setTimeout(() => {
       clearInterval(cycleTimer.current!);
       setBubbleFading(true);
-      setTimeout(() => setBubbleVisible(false), 400);
-    }, 7000);
+      setTimeout(() => setBubbleVisible(false), 550);
+    }, 10000);
   }
 
   function hideBubble() {
     clearTimeout(bubbleTimer.current!);
     clearInterval(cycleTimer.current!);
     setBubbleFading(true);
-    setTimeout(() => setBubbleVisible(false), 300);
+    setTimeout(() => setBubbleVisible(false), 450);
   }
 
   useEffect(() => {
@@ -156,44 +156,44 @@ export default function FeedbackButton() {
       <style>{`
         /* Ring pulse emanating from button */
         @keyframes fb-ring {
-          0%   { box-shadow: var(--fb-base-shadow), 0 0 0 0   rgba(var(--accent-rgb), 0.55); }
-          70%  { box-shadow: var(--fb-base-shadow), 0 0 0 14px rgba(var(--accent-rgb), 0); }
+          0%   { box-shadow: var(--fb-base-shadow), 0 0 0 0   rgba(var(--accent-rgb), 0.5); }
+          70%  { box-shadow: var(--fb-base-shadow), 0 0 0 16px rgba(var(--accent-rgb), 0); }
           100% { box-shadow: var(--fb-base-shadow), 0 0 0 0   rgba(var(--accent-rgb), 0); }
         }
         /* Entry bounce when first appearing */
         @keyframes fb-bounce-in {
-          0%   { transform: scale(0.7); opacity: 0; }
-          55%  { transform: scale(1.12); opacity: 1; }
-          75%  { transform: scale(0.95); }
-          90%  { transform: scale(1.04); }
+          0%   { transform: scale(0.75); opacity: 0; }
+          55%  { transform: scale(1.08); opacity: 1; }
+          78%  { transform: scale(0.97); }
+          92%  { transform: scale(1.02); }
           100% { transform: scale(1); }
         }
         /* Speech-bubble slide in */
         @keyframes fb-slide-in {
-          from { opacity: 0; transform: translateX(12px) scale(0.88); }
+          from { opacity: 0; transform: translateX(14px) scale(0.9); }
           to   { opacity: 1; transform: translateX(0)    scale(1); }
         }
         /* Message swap fade */
         @keyframes fb-msg-in {
-          from { opacity: 0; transform: translateY(5px); }
+          from { opacity: 0; transform: translateY(6px); }
           to   { opacity: 1; transform: translateY(0); }
         }
         /* Hover label slide in */
         @keyframes fb-label-in {
-          from { opacity: 0; transform: translateX(6px); }
+          from { opacity: 0; transform: translateX(8px); }
           to   { opacity: 1; transform: translateX(0); }
         }
         /* Notification dot pulse */
         @keyframes fb-dot {
           0%, 100% { transform: scale(1);    opacity: 1; }
-          50%      { transform: scale(1.4);  opacity: 0.7; }
+          50%      { transform: scale(1.35); opacity: 0.65; }
         }
         /* Gentle idle wiggle to keep attracting attention */
         @keyframes fb-wiggle {
-          0%, 80%, 100% { transform: rotate(0deg); }
-          85%           { transform: rotate(-9deg); }
-          90%           { transform: rotate(8deg); }
-          95%           { transform: rotate(-5deg); }
+          0%, 82%, 100% { transform: rotate(0deg); }
+          86%           { transform: rotate(-7deg); }
+          91%           { transform: rotate(6deg); }
+          96%           { transform: rotate(-3deg); }
         }
       `}</style>
 
@@ -212,9 +212,9 @@ export default function FeedbackButton() {
             gap: 0,
             animation: bubbleFading
               ? "none"
-              : "fb-slide-in 0.35s cubic-bezier(0.34,1.56,0.64,1) both",
+              : "fb-slide-in 0.55s cubic-bezier(0.34,1.56,0.64,1) both",
             opacity: bubbleFading ? 0 : 1,
-            transition: bubbleFading ? "opacity 0.35s ease" : "none",
+            transition: bubbleFading ? "opacity 0.5s ease" : "none",
           }}
         >
           {/* Bubble body */}
@@ -240,7 +240,7 @@ export default function FeedbackButton() {
                 display: "flex",
                 alignItems: "center",
                 gap: 6,
-                animation: "fb-msg-in 0.28s ease both",
+                animation: "fb-msg-in 0.45s ease both",
               }}
             >
               <span style={{ fontSize: 15, lineHeight: 1 }}>{currentInvite.emoji}</span>
@@ -278,7 +278,7 @@ export default function FeedbackButton() {
                     height: 5,
                     borderRadius: 3,
                     background: i === bubbleIdx ? currentInvite.color : "rgba(255,255,255,0.2)",
-                    transition: "width 0.3s ease, background 0.3s ease",
+                    transition: "width 0.5s ease, background 0.5s ease",
                   }}
                 />
               ))}
@@ -310,7 +310,7 @@ export default function FeedbackButton() {
             bottom: bottomBase,
             zIndex: 141,
             pointerEvents: "none",
-            animation: "fb-label-in 0.18s ease both",
+            animation: "fb-label-in 0.3s ease both",
             display: "flex",
             alignItems: "center",
           }}
@@ -374,8 +374,8 @@ export default function FeedbackButton() {
           boxShadow:
             "0 8px 20px rgba(0,0,0,0.18), 0 0 0 4px rgba(var(--accent-rgb), 0.05)",
           animation: isAttentionMode
-            ? "fb-ring 1.4s ease-out infinite, fb-wiggle 4s ease-in-out 1.5s infinite"
-            : "fb-wiggle 4s ease-in-out 12s infinite",
+            ? "fb-ring 2.2s ease-out infinite, fb-wiggle 5s ease-in-out 2s infinite"
+            : "fb-wiggle 5s ease-in-out 14s infinite",
           transition: "background 0.2s ease, color 0.2s ease, transform 0.15s ease",
           transform: hovered && !open ? "scale(1.1)" : "scale(1)",
         }}
@@ -395,7 +395,7 @@ export default function FeedbackButton() {
             borderRadius: "50%",
             background: isAttentionMode ? "#ef4444" : "var(--accent)",
             border: "1.5px solid var(--bg)",
-            animation: isAttentionMode ? "fb-dot 1.1s ease-in-out infinite" : "none",
+            animation: isAttentionMode ? "fb-dot 1.8s ease-in-out infinite" : "none",
             opacity: isAttentionMode ? 1 : 0.6,
             transition: "opacity 0.3s",
           }} />
@@ -437,7 +437,7 @@ export default function FeedbackButton() {
               display: "flex",
               flexDirection: "column",
               gap: 12,
-              animation: "fb-bounce-in 0.45s cubic-bezier(0.34,1.56,0.64,1) both",
+              animation: "fb-bounce-in 0.6s cubic-bezier(0.34,1.56,0.64,1) both",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>

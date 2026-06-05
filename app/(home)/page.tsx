@@ -203,8 +203,8 @@ export default function HomePage() {
       setTimeout(() => {
         setLineIdx((i: number) => (i + 1) % lines.length);
         setLineFade(false);
-      }, 380);
-    }, 4800);
+      }, 520);
+    }, 6500);
     return () => clearInterval(lineTimer.current!);
   }, [lines.length]);
 
@@ -405,8 +405,8 @@ export default function HomePage() {
               lineHeight: 1.45,
               opacity: lineFade ? 0 : 1,
               transform: lineFade ? "translateY(-3px)" : "translateY(0)",
-              transition: "opacity 0.38s ease, transform 0.38s ease",
-              animation: !lineFade ? "tagline-in 0.42s ease both" : "none",
+              transition: "opacity 0.52s ease, transform 0.52s ease",
+              animation: !lineFade ? "tagline-in 0.6s ease both" : "none",
             }}
           >
             {lines[lineIdx]}
@@ -445,7 +445,7 @@ export default function HomePage() {
                     borderRadius: 2,
                     background: i === lineIdx ? "var(--accent)" : "var(--muted)",
                     opacity: i === lineIdx ? 0.8 : 0.25,
-                    transition: "width 0.4s ease, opacity 0.4s ease",
+                    transition: "width 0.55s ease, opacity 0.55s ease",
                   }}
                 />
               ))}
