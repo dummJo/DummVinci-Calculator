@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { MessageCircle, X, Send, Bug, Lightbulb, MessageSquare } from "lucide-react";
 import { track } from "@/lib/analytics";
 
@@ -14,24 +14,18 @@ import { track } from "@/lib/analytics";
  * the user prefers to copy the message instead, the "Copy" fallback puts
  * the formatted body on the clipboard with the recipient address.
  *
- * Attention animation:
- *   – Fires 5 s after mount, repeats every 45 s.
- *   – A speech-bubble tooltip slides in from the right cycling through three
- *     invitation messages while the button pulses a ring.
- *   – Dismissed automatically after 7 s, or immediately when the user opens
- *     the form.
+ * UX: no auto-popup tooltip — the button alone invites interaction via a
+ * slow, subtle "breathing" glow and a gentle notification dot. Opening the
+ * form slides a bottom sheet up from below (no bouncy scale).
  */
 const FEEDBACK_EMAIL = process.env.NEXT_PUBLIC_FEEDBACK_EMAIL ?? "dummvinci@gmail.com";
 
 type FeedbackType = "bug" | "feature" | "feedback";
-
-const TYPE_META: Record<FeedbackType, { label: string; icon: typeof Bug; color: string; invite: string; emoji: string }> = {
-  feedback: { label: "Feedback",     icon: MessageSquare, color: "#3b82f6", invite: "Ada pertanyaan?",  emoji: "💬" },
-  bug:      { label: "Bug report",   icon: Bug,           color: "#ef4444", invite: "Temukan bug?",      emoji: "🐛" },
-  feature:  { label: "Feature idea", icon: Lightbulb,     color: "#f59e0b", invite: "Punya ide baru?",  emoji: "💡" },
+const TYPE_META: Record<FeedbackType, { label: string; icon: typeof Bug; color: string }> = {
+  feedback: { label: "Feedback",     icon: MessageSquare, color: "#3b82f6" },
+  bug:      { label: "Bug report",   icon: Bug,           color: "#ef4444" },
+  feature:  { label: "Feature idea", icon: Lightbulb,     color: "#f59e0b" },
 };
-
-const INVITE_CYCLE: FeedbackType[] = ["feedback", "bug", "feature"];
 
 export default function FeedbackButton() {
   const [open, setOpen]       = useState(false);
@@ -40,58 +34,9 @@ export default function FeedbackButton() {
   const [message, setMessage] = useState("");
   const [sent, setSent]       = useState(false);
   const [copied, setCopied]   = useState(false);
+  const [hovered, setHovered] = useState(false);
 
-  // Attention animation state
-  const [bubbleVisible, setBubbleVisible] = useState(false);
-  const [bubbleIdx, setBubbleIdx]         = useState(0);
-  const [bubbleFading, setBubbleFading]   = useState(false);
-  const [hovered, setHovered]             = useState(false);
-
-  const bubbleTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const cycleTimer   = useRef<ReturnType<typeof setInterval> | null>(null);
-  const repeatTimer  = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  function showBubble() {
-    setBubbleIdx(0);
-    setBubbleFading(false);
-    setBubbleVisible(true);
-
-    // Cycle through invitation messages every 3.2 s
-    let i = 0;
-    cycleTimer.current = setInterval(() => {
-      i = (i + 1) % INVITE_CYCLE.length;
-      setBubbleIdx(i);
-    }, 3200);
-
-    // Fade out after 10 s
-    bubbleTimer.current = setTimeout(() => {
-      clearInterval(cycleTimer.current!);
-      setBubbleFading(true);
-      setTimeout(() => setBubbleVisible(false), 550);
-    }, 10000);
-  }
-
-  function hideBubble() {
-    clearTimeout(bubbleTimer.current!);
-    clearInterval(cycleTimer.current!);
-    setBubbleFading(true);
-    setTimeout(() => setBubbleVisible(false), 450);
-  }
-
-  useEffect(() => {
-    // First appearance: 5 s after mount
-    const firstTimer = setTimeout(showBubble, 5000);
-    // Repeat every 45 s
-    repeatTimer.current = setInterval(showBubble, 45000);
-    return () => {
-      clearTimeout(firstTimer);
-      clearInterval(repeatTimer.current!);
-      clearInterval(cycleTimer.current!);
-      clearTimeout(bubbleTimer.current!);
-    };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Esc to close form
+  // Esc to close
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
@@ -100,7 +45,6 @@ export default function FeedbackButton() {
   }, [open]);
 
   function openForm() {
-    hideBubble();
     setOpen(true);
     track("feedback-open");
   }
@@ -145,206 +89,41 @@ export default function FeedbackButton() {
     } catch { /* clipboard blocked — ignore */ }
   }
 
-  const TypeIcon         = TYPE_META[type].icon;
-  const currentInviteKey = (INVITE_CYCLE[bubbleIdx] ?? "feedback") as FeedbackType;
-  const currentInvite    = TYPE_META[currentInviteKey];
-  const isAttentionMode  = bubbleVisible && !open;
-  const bottomBase      = "calc(112px + env(safe-area-inset-bottom, 0px))";
+  const TypeIcon = TYPE_META[type].icon;
 
   return (
     <>
       <style>{`
-        /* Ring pulse emanating from button */
-        @keyframes fb-ring {
-          0%   { box-shadow: var(--fb-base-shadow), 0 0 0 0   rgba(var(--accent-rgb), 0.5); }
-          70%  { box-shadow: var(--fb-base-shadow), 0 0 0 16px rgba(var(--accent-rgb), 0); }
-          100% { box-shadow: var(--fb-base-shadow), 0 0 0 0   rgba(var(--accent-rgb), 0); }
+        /* Slow, subtle breathing glow — invites without a popup */
+        @keyframes fb-breathe {
+          0%, 100% { box-shadow: var(--fb-base-shadow), 0 0 0 0  rgba(var(--accent-rgb), 0); }
+          50%      { box-shadow: var(--fb-base-shadow), 0 0 0 7px rgba(var(--accent-rgb), 0.12); }
         }
-        /* Entry bounce when first appearing */
-        @keyframes fb-bounce-in {
-          0%   { transform: scale(0.75); opacity: 0; }
-          55%  { transform: scale(1.08); opacity: 1; }
-          78%  { transform: scale(0.97); }
-          92%  { transform: scale(1.02); }
-          100% { transform: scale(1); }
-        }
-        /* Speech-bubble slide in */
-        @keyframes fb-slide-in {
-          from { opacity: 0; transform: translateX(14px) scale(0.9); }
-          to   { opacity: 1; transform: translateX(0)    scale(1); }
-        }
-        /* Message swap fade */
-        @keyframes fb-msg-in {
-          from { opacity: 0; transform: translateY(6px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        /* Hover label slide in */
-        @keyframes fb-label-in {
-          from { opacity: 0; transform: translateX(8px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        /* Notification dot pulse */
+        /* Gentle notification dot pulse */
         @keyframes fb-dot {
-          0%, 100% { transform: scale(1);    opacity: 1; }
-          50%      { transform: scale(1.35); opacity: 0.65; }
+          0%, 100% { transform: scale(1);    opacity: 0.85; }
+          50%      { transform: scale(1.18); opacity: 0.55; }
         }
-        /* Gentle idle wiggle to keep attracting attention */
-        @keyframes fb-wiggle {
-          0%, 82%, 100% { transform: rotate(0deg); }
-          86%           { transform: rotate(-7deg); }
-          91%           { transform: rotate(6deg); }
-          96%           { transform: rotate(-3deg); }
+        /* Bottom sheet slides up — smooth, no overshoot */
+        @keyframes fb-sheet-in {
+          from { transform: translateY(100%); opacity: 0.4; }
+          to   { transform: translateY(0);    opacity: 1; }
+        }
+        /* Backdrop fade */
+        @keyframes fb-backdrop-in {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .fb-fab, .fb-dot, .fb-sheet, .fb-backdrop { animation: none !important; }
         }
       `}</style>
 
-      {/* Speech-bubble invitation */}
-      {isAttentionMode && (
-        <div
-          aria-hidden="true"
-          style={{
-            position: "fixed",
-            right: "calc(16px + 44px + 10px)",
-            bottom: bottomBase,
-            zIndex: 141,
-            pointerEvents: "none",
-            display: "flex",
-            alignItems: "center",
-            gap: 0,
-            animation: bubbleFading
-              ? "none"
-              : "fb-slide-in 0.55s cubic-bezier(0.34,1.56,0.64,1) both",
-            opacity: bubbleFading ? 0 : 1,
-            transition: bubbleFading ? "opacity 0.5s ease" : "none",
-          }}
-        >
-          {/* Bubble body */}
-          <div
-            style={{
-              background: "var(--glass-bg, rgba(20,20,20,0.85))",
-              backdropFilter: "blur(12px) saturate(160%)",
-              WebkitBackdropFilter: "blur(12px) saturate(160%)",
-              border: `1px solid ${currentInvite.color}55`,
-              borderRadius: "12px 12px 4px 12px",
-              padding: "9px 13px",
-              minWidth: 148,
-              boxShadow: `0 8px 24px rgba(0,0,0,0.28), 0 0 0 1px ${currentInvite.color}22`,
-              display: "flex",
-              flexDirection: "column",
-              gap: 3,
-            }}
-          >
-            {/* Cycling message */}
-            <div
-              key={bubbleIdx}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                animation: "fb-msg-in 0.45s ease both",
-              }}
-            >
-              <span style={{ fontSize: 15, lineHeight: 1 }}>{currentInvite.emoji}</span>
-              <span style={{
-                fontFamily: "var(--font-display)",
-                fontSize: 13,
-                fontWeight: 700,
-                color: "var(--parchment, #faf9f5)",
-                letterSpacing: "-0.01em",
-                whiteSpace: "nowrap",
-              }}>
-                {currentInvite.invite}
-              </span>
-            </div>
-
-            {/* Subtitle */}
-            <div style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              color: currentInvite.color,
-              opacity: 0.85,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-            }}>
-              Tap to tell us →
-            </div>
-
-            {/* Progress dots */}
-            <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
-              {INVITE_CYCLE.map((_, i) => (
-                <div
-                  key={i}
-                  style={{
-                    width: i === bubbleIdx ? 14 : 5,
-                    height: 5,
-                    borderRadius: 3,
-                    background: i === bubbleIdx ? currentInvite.color : "rgba(255,255,255,0.2)",
-                    transition: "width 0.5s ease, background 0.5s ease",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Bubble tail → pointing right */}
-          <div style={{
-            width: 0,
-            height: 0,
-            borderTop: "7px solid transparent",
-            borderBottom: "7px solid transparent",
-            borderLeft: `8px solid ${currentInvite.color}55`,
-            marginLeft: -1,
-            alignSelf: "flex-end",
-            marginBottom: 6,
-            filter: "drop-shadow(1px 0 0 rgba(0,0,0,0.1))",
-          }} />
-        </div>
-      )}
-
-      {/* Hover label (desktop) */}
-      {hovered && !open && (
-        <div
-          aria-hidden="true"
-          style={{
-            position: "fixed",
-            right: "calc(16px + 44px + 8px)",
-            bottom: bottomBase,
-            zIndex: 141,
-            pointerEvents: "none",
-            animation: "fb-label-in 0.3s ease both",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <div style={{
-            background: "var(--glass-bg, rgba(20,20,20,0.9))",
-            border: "1px solid rgba(var(--accent-rgb), 0.3)",
-            borderRadius: "8px 8px 4px 8px",
-            padding: "6px 10px",
-            fontFamily: "var(--font-mono)",
-            fontSize: 11,
-            fontWeight: 700,
-            color: "var(--accent)",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            whiteSpace: "nowrap",
-          }}>
-            Feedback / Bug / Idea
-          </div>
-          <div style={{
-            width: 0,
-            height: 0,
-            borderTop: "5px solid transparent",
-            borderBottom: "5px solid transparent",
-            borderLeft: "6px solid rgba(var(--accent-rgb), 0.3)",
-            marginLeft: -1,
-          }} />
-        </div>
-      )}
-
-      {/* Main FAB */}
+      {/* Main FAB — the only resting-state UI */}
       <button
         type="button"
-        aria-label={open ? "Close feedback form" : "Send feedback"}
+        className="fb-fab"
+        aria-label={open ? "Close feedback form" : "Send feedback, report a bug, or ask a question"}
         aria-expanded={open}
         onClick={() => (open ? setOpen(false) : openForm())}
         onMouseEnter={() => setHovered(true)}
@@ -352,15 +131,13 @@ export default function FeedbackButton() {
         style={{
           position: "fixed",
           right: 16,
-          bottom: bottomBase,
+          bottom: "calc(112px + env(safe-area-inset-bottom, 0px))",
           zIndex: 142,
           width: 44,
           height: 44,
           borderRadius: "50%",
           border: "1px solid var(--accent)",
-          background: open
-            ? "var(--accent)"
-            : "var(--glass-bg)",
+          background: open ? "var(--accent)" : "var(--glass-bg)",
           backdropFilter: "var(--glass-blur)",
           WebkitBackdropFilter: "var(--glass-blur)",
           color: open ? "var(--bg)" : "var(--accent)",
@@ -368,43 +145,44 @@ export default function FeedbackButton() {
           alignItems: "center",
           justifyContent: "center",
           cursor: "pointer",
-          // CSS custom prop so fb-ring can reference it
           ["--fb-base-shadow" as string]:
             "0 8px 20px rgba(0,0,0,0.18), 0 0 0 4px rgba(var(--accent-rgb), 0.05)",
           boxShadow:
             "0 8px 20px rgba(0,0,0,0.18), 0 0 0 4px rgba(var(--accent-rgb), 0.05)",
-          animation: isAttentionMode
-            ? "fb-ring 2.2s ease-out infinite, fb-wiggle 5s ease-in-out 2s infinite"
-            : "fb-wiggle 5s ease-in-out 14s infinite",
-          transition: "background 0.2s ease, color 0.2s ease, transform 0.15s ease",
-          transform: hovered && !open ? "scale(1.1)" : "scale(1)",
+          // Slow breathing glow at rest; stops while the form is open.
+          animation: open ? "none" : "fb-breathe 3.6s ease-in-out infinite",
+          transition: "background 0.25s ease, color 0.25s ease, transform 0.2s ease",
+          transform: hovered && !open ? "scale(1.08)" : "scale(1)",
         }}
       >
         {open
           ? <X size={18} strokeWidth={2.4} />
           : <MessageCircle size={18} strokeWidth={2.4} />}
 
-        {/* Notification dot */}
+        {/* Subtle notification dot */}
         {!open && (
-          <span style={{
-            position: "absolute",
-            top: 3,
-            right: 3,
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            background: isAttentionMode ? "#ef4444" : "var(--accent)",
-            border: "1.5px solid var(--bg)",
-            animation: isAttentionMode ? "fb-dot 1.8s ease-in-out infinite" : "none",
-            opacity: isAttentionMode ? 1 : 0.6,
-            transition: "opacity 0.3s",
-          }} />
+          <span
+            className="fb-dot"
+            style={{
+              position: "absolute",
+              top: 3,
+              right: 3,
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              background: "var(--accent)",
+              border: "1.5px solid var(--bg)",
+              animation: "fb-dot 2.6s ease-in-out infinite",
+            }}
+          />
         )}
       </button>
 
-      {/* Form modal */}
+      {/* Form — bottom sheet sliding up from below */}
       {open && (
         <div
+          className="fb-backdrop"
+          data-no-ptr=""
           role="dialog"
           aria-modal="true"
           aria-labelledby="feedback-title"
@@ -413,17 +191,19 @@ export default function FeedbackButton() {
             position: "fixed",
             inset: 0,
             zIndex: 139,
-            background: "rgba(0,0,0,0.45)",
-            backdropFilter: "blur(8px) saturate(140%)",
-            WebkitBackdropFilter: "blur(8px) saturate(140%)",
+            background: "rgba(0,0,0,0.32)",
+            backdropFilter: "blur(5px) saturate(130%)",
+            WebkitBackdropFilter: "blur(5px) saturate(130%)",
             display: "flex",
             alignItems: "flex-end",
             justifyContent: "center",
             padding: 16,
             paddingBottom: "calc(172px + env(safe-area-inset-bottom, 0px))",
+            animation: "fb-backdrop-in 0.3s ease both",
           }}
         >
           <div
+            className="fb-sheet"
             onClick={e => e.stopPropagation()}
             style={{
               width: "100%",
@@ -437,9 +217,23 @@ export default function FeedbackButton() {
               display: "flex",
               flexDirection: "column",
               gap: 12,
-              animation: "fb-bounce-in 0.6s cubic-bezier(0.34,1.56,0.64,1) both",
+              animation: "fb-sheet-in 0.42s cubic-bezier(0.32, 0.72, 0, 1) both",
+              willChange: "transform",
             }}
           >
+            {/* Grab handle — bottom-sheet affordance */}
+            <div
+              aria-hidden="true"
+              style={{
+                width: 36,
+                height: 4,
+                borderRadius: 2,
+                background: "var(--popout-muted)",
+                opacity: 0.35,
+                margin: "-4px auto 4px",
+              }}
+            />
+
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <h3
                 id="feedback-title"

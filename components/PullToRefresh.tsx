@@ -7,6 +7,33 @@ const MAX_PULL_PX = 115;
 
 type Phase = "idle" | "pulling" | "triggered" | "releasing" | "refreshing";
 
+/**
+ * Walk up from the touch target; bail out of pull-to-refresh if the gesture
+ * starts inside a region that owns its own vertical scroll or floats above the
+ * page. Without this, swiping down inside an open menu/popout (e.g. the bottom
+ * "More" overlay or a scrollable modal) — while the page itself sits at the top
+ * — was being misread as a page-refresh pull.
+ */
+function isInExemptRegion(target: EventTarget | null): boolean {
+  let node = target instanceof HTMLElement ? target : null;
+  while (node && node !== document.body && node !== document.documentElement) {
+    // Explicit opt-out hook for any overlay that wants to suppress the gesture.
+    if (node.dataset?.noPtr !== undefined) return true;
+    // Dialogs / modals.
+    const role = node.getAttribute("role");
+    if (role === "dialog" || node.getAttribute("aria-modal") === "true") return true;
+    const cs = window.getComputedStyle(node);
+    // Floating overlays (menus, sheets, popouts) sit on a fixed layer above the
+    // page — a swipe inside them is never a page refresh.
+    if (cs.position === "fixed") return true;
+    // Independently scrollable sub-regions with content to scroll.
+    const oy = cs.overflowY;
+    if ((oy === "auto" || oy === "scroll") && node.scrollHeight - node.clientHeight > 4) return true;
+    node = node.parentElement;
+  }
+  return false;
+}
+
 export default function PullToRefresh() {
   const [pull, setPull] = useState(0);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -37,6 +64,7 @@ export default function PullToRefresh() {
 
   const onTouchStart = useCallback((e: TouchEvent) => {
     if (window.scrollY > 3) return;
+    if (isInExemptRegion(e.target)) return;
     startY.current = e.touches[0].clientY;
     tracking.current = true;
   }, []);
