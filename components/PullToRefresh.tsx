@@ -7,6 +7,33 @@ const MAX_PULL_PX = 115;
 
 type Phase = "idle" | "pulling" | "triggered" | "releasing" | "refreshing";
 
+/**
+ * Walk up from the touch target; bail out of pull-to-refresh if the gesture
+ * starts inside a region that owns its own vertical scroll or floats above the
+ * page. Without this, swiping down inside an open menu/popout (e.g. the bottom
+ * "More" overlay or a scrollable modal) — while the page itself sits at the top
+ * — was being misread as a page-refresh pull.
+ */
+function isInExemptRegion(target: EventTarget | null): boolean {
+  let node = target instanceof HTMLElement ? target : null;
+  while (node && node !== document.body && node !== document.documentElement) {
+    // Explicit opt-out hook for any overlay that wants to suppress the gesture.
+    if (node.dataset?.noPtr !== undefined) return true;
+    // Dialogs / modals.
+    const role = node.getAttribute("role");
+    if (role === "dialog" || node.getAttribute("aria-modal") === "true") return true;
+    const cs = window.getComputedStyle(node);
+    // Floating overlays (menus, sheets, popouts) sit on a fixed layer above the
+    // page — a swipe inside them is never a page refresh.
+    if (cs.position === "fixed") return true;
+    // Independently scrollable sub-regions with content to scroll.
+    const oy = cs.overflowY;
+    if ((oy === "auto" || oy === "scroll") && node.scrollHeight - node.clientHeight > 4) return true;
+    node = node.parentElement;
+  }
+  return false;
+}
+
 export default function PullToRefresh() {
   const [pull, setPull] = useState(0);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -27,8 +54,8 @@ export default function PullToRefresh() {
       return;
     }
     const step = () => {
-      swingT.current += 0.055;
-      setSwing(Math.sin(swingT.current) * 10);
+      swingT.current += 0.028;
+      setSwing(Math.sin(swingT.current) * 7);
       rafRef.current = requestAnimationFrame(step);
     };
     rafRef.current = requestAnimationFrame(step);
@@ -37,6 +64,7 @@ export default function PullToRefresh() {
 
   const onTouchStart = useCallback((e: TouchEvent) => {
     if (window.scrollY > 3) return;
+    if (isInExemptRegion(e.target)) return;
     startY.current = e.touches[0].clientY;
     tracking.current = true;
   }, []);
@@ -62,14 +90,14 @@ export default function PullToRefresh() {
     const p = lastPull.current;
     if (p >= TRIGGER_PX) {
       setPhase("refreshing");
-      setTimeout(() => window.location.reload(), 870);
+      setTimeout(() => window.location.reload(), 1200);
     } else {
       setPhase("releasing");
       setTimeout(() => {
         setPull(0);
         lastPull.current = 0;
         setPhase("idle");
-      }, 480);
+      }, 680);
     }
   }, []);
 
@@ -127,7 +155,7 @@ export default function PullToRefresh() {
           background: "var(--accent)",
           boxShadow: "0 0 8px rgba(var(--accent-rgb), 0.45)",
           opacity: pull > 5 ? 0.9 : 0,
-          transition: "opacity 0.15s",
+          transition: "opacity 0.3s",
           flexShrink: 0,
         }}
       />
@@ -143,7 +171,7 @@ export default function PullToRefresh() {
           flexShrink: 0,
           transition:
             phase === "releasing"
-              ? "height 0.48s cubic-bezier(0.34, 1.56, 0.64, 1)"
+              ? "height 0.68s cubic-bezier(0.34, 1.56, 0.64, 1)"
               : "none",
         }}
       />
@@ -155,7 +183,7 @@ export default function PullToRefresh() {
           opacity: charVisible ? 1 : 0,
           transformOrigin: "center top",
           transform: isRefreshing ? undefined : `rotate(${swing}deg)`,
-          animation: isRefreshing ? "ptr-spin 0.87s ease-in-out forwards" : undefined,
+          animation: isRefreshing ? "ptr-spin 1.2s ease-in-out forwards" : undefined,
           filter: isTriggered
             ? "drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.7))"
             : "drop-shadow(0 2px 4px rgba(0,0,0,0.2))",
@@ -238,7 +266,7 @@ export default function PullToRefresh() {
             textTransform: "uppercase",
             whiteSpace: "nowrap",
             marginTop: 6,
-            animation: "ptr-label-in 0.2s ease-out both",
+            animation: "ptr-label-in 0.4s ease-out both",
           }}
         >
           {isRefreshing ? "Reloading…" : isTriggered ? "Let go!" : "Pull more…"}
