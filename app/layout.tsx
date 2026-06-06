@@ -95,6 +95,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     document.documentElement.classList.remove("no-theme-transition");
   });});
 }catch(e){}})();`}</Script>
+        {/* Register service worker for offline / PWA caching. */}
+        <Script id="sw-register" strategy="afterInteractive">{`
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function(){});
+          }
+        `}</Script>
         <SplashScreen />
         <PullToRefresh />
 
