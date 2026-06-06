@@ -916,7 +916,7 @@ export default function TetrisPage() {
           text-decoration: none;
           cursor: pointer;
           font-family: var(--font-display), sans-serif;
-          transition: background 0.15s ease, transform 0.1s ease;
+          transition: background 0.3s ease, transform 0.22s ease;
         }
         .tetris-back-link:hover, .tetris-fs-btn:hover { background: rgba(var(--accent-rgb), 0.16); }
         .tetris-fs-btn:active, .tetris-back-link:active { transform: scale(0.95); }
@@ -1006,7 +1006,7 @@ export default function TetrisPage() {
           height: var(--cell);
           border-radius: 3px;
           box-sizing: border-box;
-          transition: background 0.04s ease;
+          transition: background 0.1s ease;
         }
         /* Sidebar */
         .tetris-sidebar {
@@ -1062,7 +1062,7 @@ export default function TetrisPage() {
           cursor: pointer;
           font-family: var(--font-display), sans-serif;
           color: var(--fg);
-          transition: background 0.15s ease, transform 0.1s ease;
+          transition: background 0.3s ease, transform 0.22s ease;
           white-space: nowrap;
         }
         .tetris-btn:hover { background: rgba(var(--accent-rgb), 0.16); }
@@ -1086,7 +1086,7 @@ export default function TetrisPage() {
           backdrop-filter: blur(8px) saturate(140%);
           -webkit-backdrop-filter: blur(8px) saturate(140%);
           background: rgba(var(--accent-rgb), 0.10);
-          animation: tetrisOverlayIn 0.22s ease;
+          animation: tetrisOverlayIn 0.5s ease;
           z-index: 10;
         }
         @keyframes tetrisOverlayIn { from { opacity: 0; } to { opacity: 1; } }
@@ -1113,7 +1113,7 @@ export default function TetrisPage() {
           font-size: 0.82rem;
           letter-spacing: 0.06em;
           text-transform: uppercase;
-          transition: opacity 0.15s ease, transform 0.1s ease;
+          transition: opacity 0.3s ease, transform 0.22s ease;
           font-family: var(--font-display), sans-serif;
         }
         .tetris-overlay-btn-primary { background: var(--accent); color: #fff; }

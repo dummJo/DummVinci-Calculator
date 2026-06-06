@@ -307,7 +307,7 @@ export default function Game2048Page() {
           text-decoration: none;
           cursor: pointer;
           font-family: var(--font-display), sans-serif;
-          transition: background 0.15s ease, transform 0.1s ease;
+          transition: background 0.3s ease, transform 0.22s ease;
         }
         .game-back-link:hover, .game-fs-btn:hover { background: rgba(var(--accent-rgb), 0.16); }
         .game-fs-btn:active, .game-back-link:active { transform: scale(0.95); }
@@ -385,7 +385,7 @@ export default function Game2048Page() {
           text-transform: uppercase;
           cursor: pointer;
           font-family: var(--font-display), sans-serif;
-          transition: opacity 0.15s ease, transform 0.1s ease;
+          transition: opacity 0.3s ease, transform 0.22s ease;
           white-space: nowrap;
         }
         .new-game-btn:hover { opacity: 0.85; }
@@ -423,12 +423,12 @@ export default function Game2048Page() {
           justify-content: center;
           font-weight: 900;
           line-height: 1;
-          animation: tileIn 0.12s cubic-bezier(0.2,0.8,0.2,1);
+          animation: tileIn 0.28s cubic-bezier(0.22,1,0.36,1);
           will-change: transform;
         }
         @keyframes tileIn {
-          from { transform: scale(0.7); opacity: 0.5; }
-          to   { transform: scale(1);   opacity: 1;   }
+          from { transform: scale(0.82); opacity: 0.4; }
+          to   { transform: scale(1);    opacity: 1;   }
         }
         .overlay {
           position: absolute;
@@ -442,7 +442,7 @@ export default function Game2048Page() {
           backdrop-filter: blur(8px) saturate(140%);
           -webkit-backdrop-filter: blur(8px) saturate(140%);
           background: rgba(var(--accent-rgb), 0.12);
-          animation: overlayIn 0.28s ease;
+          animation: overlayIn 0.5s ease;
           z-index: 10;
         }
         @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
@@ -461,7 +461,7 @@ export default function Game2048Page() {
           font-size: 0.85rem;
           letter-spacing: 0.06em;
           text-transform: uppercase;
-          transition: opacity 0.15s ease, transform 0.1s ease;
+          transition: opacity 0.3s ease, transform 0.22s ease;
         }
         .overlay-btn-primary { background: var(--accent); color: #fff; }
         .overlay-btn-secondary { background: var(--glass-border); color: var(--fg); }
