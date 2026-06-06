@@ -32,6 +32,7 @@ const GAMES: GameEntry[] = [
     title: "Tetris",
     tagline: "Stack the falling blocks",
     Icon: Boxes,
+    href: "/game/tetris",
     accent: "#4a90d9",
   },
   {
@@ -39,6 +40,7 @@ const GAMES: GameEntry[] = [
     title: "Snake",
     tagline: "Grow without biting your tail",
     Icon: Worm,
+    href: "/game/snake",
     accent: "#3fae6e",
   },
   {
@@ -46,6 +48,7 @@ const GAMES: GameEntry[] = [
     title: "Minesweeper",
     tagline: "Clear the field, flag the mines",
     Icon: Bomb,
+    href: "/game/minesweeper",
     accent: "#d9534f",
   },
   {
@@ -53,6 +56,7 @@ const GAMES: GameEntry[] = [
     title: "Solitaire",
     tagline: "Classic single-player card stack",
     Icon: Spade,
+    href: "/game/solitaire",
     accent: "#6b5b95",
   },
 ];
