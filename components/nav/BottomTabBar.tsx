@@ -6,7 +6,7 @@ import {
   MoreHorizontal,
   Cable, Zap, X, History, Sparkles, AlertCircle, BookOpen,
   Settings2, ShieldPlus, Repeat, MonitorPlay, ZapOff, Columns, BoxSelect, Waves, Power, LineChart, Home, HardDrive,
-  Bolt, Box, GitFork
+  Bolt, Box, GitFork, Gamepad2
 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { clsx } from "clsx";
@@ -31,6 +31,7 @@ function getNavLabel(key: string, t: { nav: Record<string, string> }): string {
     case "icc": return t.nav.icc;
     case "transformer": return t.nav.transformer;
     case "selectivity": return t.nav.selectivity;
+    case "game": return t.nav.game;
     default: return "";
   }
 }
@@ -82,6 +83,7 @@ export default function BottomTabBar() {
     { href: "/convert",          key: "convert", Icon: Repeat       },
     { href: "/tutorials",        key: "tutorials", Icon: MonitorPlay   },
     { href: "/skf-microlog",     key: "skfMicrolog", Icon: BookOpen      },
+    { href: "/game",             key: "game",        Icon: Gamepad2      },
   ];
 
   const allTabs = [...MAIN_TABS, ...UTILITY_TABS];
