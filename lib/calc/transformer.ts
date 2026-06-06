@@ -38,6 +38,10 @@ export interface TransformerResult {
 // IEC standard transformer kVA tiers (covers 25–3150).
 const KVA_CATALOG = [25, 50, 100, 160, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150];
 
+// Floor for denominators so a zero/blank input yields a finite (flagged)
+// result instead of Infinity/NaN.
+const EPS = 1e-9;
+
 // Typical %Z per IEC 60076-5 and major catalogs.
 function impedancePct(kva: number): number {
   if (kva <= 250) return 4;
@@ -52,13 +56,18 @@ export function sizeTransformer(input: TransformerInput): TransformerResult {
   const demand = input.demandFactor ?? 0.85;
   const growth = input.growthFactor ?? 1.15;
 
+  // Reject non-physical inputs: primaryKv and secondaryV are divisors below.
+  if (!(input.loadKw > 0))     warnings.push("Load kW must be > 0 — check input.");
+  if (!(input.primaryKv > 0))  warnings.push("Primary voltage must be > 0 kV — check input.");
+  if (!(input.secondaryV > 0)) warnings.push("Secondary voltage must be > 0 V — check input.");
+
   const loadKva = input.loadKw / Math.max(0.1, pf);
   const designKva = loadKva * demand * growth;
   const selectedKva = KVA_CATALOG.find(v => v >= designKva) ?? KVA_CATALOG[KVA_CATALOG.length - 1];
   const pctZ = impedancePct(selectedKva);
 
-  const primaryAmpsA = (selectedKva * 1000) / (Math.sqrt(3) * input.primaryKv * 1000);
-  const secondaryAmpsA = (selectedKva * 1000) / (Math.sqrt(3) * input.secondaryV);
+  const primaryAmpsA = (selectedKva * 1000) / (Math.sqrt(3) * Math.max(EPS, input.primaryKv * 1000));
+  const secondaryAmpsA = (selectedKva * 1000) / (Math.sqrt(3) * Math.max(EPS, input.secondaryV));
 
   // Simplified regulation ≈ %Z × loading × (cosφ + 0.6 × sinφ)
   // (full-form Kapp series collapsed; conservative for engineering use)
