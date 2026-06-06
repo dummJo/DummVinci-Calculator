@@ -1,4 +1,13 @@
-@AGENTS.md
+# AI Engineering Standards & Brand Identity
+**CRITICAL:** This project enforces strict AI progress standards, UI/UX brand identity, and engineering constraints. 
+Before taking any action, you MUST read and comply with:
+1. `AGENTS.md` (Role, Identity, UI/UX Rules, Project Map)
+2. `standards/AI_ENGINEERING.md` (Code Quality & Handoff Protocols)
+3. `standards/AI_PROGRESS_STANDARDS.md` (Traceability formatting)
+
+Every task completion MUST include the Traceability Stamp (Timestamp Before/After, Duration, Progress Category).
+
+---
 
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph
