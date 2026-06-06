@@ -69,4 +69,14 @@ Periodic syncing of `data/*.json` using headless crawling of:
 
 ---
 
+## 6. Development & Work Traceability
+
+### Standard: Work Duration & Timestamps
+All agent execution summaries, task plans, and walkthrough documents must be stamped for auditability.
+- **Timestamp Before (Waktu Mulai)**: Stamped at the initiation of the task in the format `YYYY-MM-DDTHH:mm:ss±HH:mm`.
+- **Timestamp After (Waktu Selesai)**: Stamped at the completion of the task in the same format.
+- **Duration (Durasi Pengerjaan)**: Total time elapsed, calculated and human-readable (e.g., "3m 45s").
+
+---
+
 > *"Engineered by dummJo · DummVinci Calculator · AI Engineered Standard"*

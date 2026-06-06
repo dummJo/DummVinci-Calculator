@@ -142,6 +142,11 @@ To prevent context overflow and save tokens across models:
 - **No placeholder part codes** — show real code or explain why lookup failed
 - **Mobile-first always** — verify layout at 390 px viewport width before marking done
 - **Trademark on every page** — footer: `"By DummVinci · PTTS Praxis"`
+- **Traceable Work Logs** — every agent-generated walkthrough (`walkthrough.md`), handoff document, or task summary must strictly include:
+  - **Timestamp Before**: Starting date & time (local time format).
+  - **Timestamp After**: Completion date & time.
+  - **Execution Duration**: Total duration of work (e.g. in minutes or seconds).
+  - **Progress Category**: Must align with one or more categories defined in `standards/AI_PROGRESS_STANDARDS.md` (e.g., Documentation, Code Quality).
 
 ---
 
