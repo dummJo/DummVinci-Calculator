@@ -37,6 +37,8 @@ interface DriveFrame {
   requiredAirflow: number;
   h: number; w: number; d: number;
   fuseA: number;
+  /** Optional data-quality note (e.g. unverified/`*`-flagged part code). */
+  note?: string;
 }
 
 export interface VsdResult {
@@ -136,6 +138,7 @@ export function sizeVsd(input: VsdInput): VsdResult {
   if (ambient > 50) warnings.push(`Ambient ${ambient}°C — derate ${Math.round((1 - tempDerate) * 100)}% applied; verify ABB curve for formal submission`);
   if (altitude > 1000) warnings.push(`Altitude ${altitude} m — derate ${Math.round((1 - altDerate) * 100)}% applied per ABB HW manual`);
   if (altitude > 4000) warnings.push("Altitude > 4000 m — ABB special configuration required; contact ABB engineering");
+  if (pick.note) warnings.push(pick.note);
 
   const keyFeatures = getFeatures(pick);
 

@@ -53,12 +53,19 @@ export interface BrResult {
   warnings: string[];
 }
 
+// Floor for the rMin divisor so a zero motor rating yields a finite (flagged)
+// result instead of Infinity.
+const EPS = 1e-9;
+
 export function sizeBrakingResistor(input: BrInput): BrResult {
   const warnings: string[] = [];
   const peak = input.cranePeakFactor ?? 1.5;
   const Udc = input.lineVoltage * 1.35;
   const Uchop = Udc * 1.07;
   const pPeak = input.motorKw * peak;
+
+  // Motor kW is the rMin divisor below; reject zero/blank up front.
+  if (!(input.motorKw > 0)) warnings.push("Motor kW must be > 0 — check input.");
 
   // Derive ED% from actual duty profile when supplied; else use the chosen class.
   let edActualPct: number | undefined;
@@ -74,8 +81,8 @@ export function sizeBrakingResistor(input: BrInput): BrResult {
   }
   const pCont = pPeak * (edForContPower / 100);
 
-  const rMax = (Uchop * Uchop) / (pPeak * 1000);
-  const rMin = (Uchop * Uchop) / (2 * input.motorKw * 1000);
+  const rMax = (Uchop * Uchop) / Math.max(EPS, pPeak * 1000);
+  const rMin = (Uchop * Uchop) / Math.max(EPS, 2 * input.motorKw * 1000);
 
   // Guard the R-window: a user-set peakFactor > 2 collapses rMax below rMin and
   // silently empties the candidate list. Warn the engineer explicitly instead.
@@ -92,6 +99,8 @@ export function sizeBrakingResistor(input: BrInput): BrResult {
     .sort((a, b) => Math.abs(a.ohms - rTarget) - Math.abs(b.ohms - rTarget));
 
   const pick = candidates[0];
+  if (pick)
+    warnings.push("STAHL part code is indicative (marked *) — confirm exact ordering code against the STAHL CraneSystems BR catalog before quoting.");
   if (input.lineVoltage === 690) warnings.push("690V line — BR rated insulation ≥ 1000 V required");
   if (input.edPct >= 40) warnings.push("ED ≥ 40% — use forced-cooled BR enclosure + thermal switch");
 
@@ -104,7 +113,7 @@ export function sizeBrakingResistor(input: BrInput): BrResult {
     pPeakKw: Math.round(pPeak * 10) / 10,
     pContKw: Math.round(pCont * 10) / 10,
     edActualPct: edActualPct !== undefined ? Math.round(edActualPct * 10) / 10 : undefined,
-    part: pick ? `STAHL ${pick.code} — ${pick.ohms} Ω, ${pick.powerKw} kW @ ${pick.edPct}% ED, ${pick.ip}`
+    part: pick ? `STAHL ${pick.code}* — ${pick.ohms} Ω, ${pick.powerKw} kW @ ${pick.edPct}% ED, ${pick.ip}`
       : "No STAHL stock unit matches — request custom / parallel units.",
     wiring: "Connect to ACS880 terminals R+/R- (external BR). Route twisted / shielded, separate from motor cable. Bond thermistor NC loop to DI on FSO or DI6 (external fault).",
     warnings,

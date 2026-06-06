@@ -40,16 +40,29 @@ const RHO = { Cu: 0.0225, Al: 0.036 };
 
 const STANDARD_ICU = [10, 16, 25, 36, 50, 65, 85, 100, 150, 200];
 
+// Floor for denominators so a zero/blank input degrades to a finite (flagged)
+// result instead of propagating Infinity/NaN into every downstream output.
+const EPS = 1e-9;
+
 export function calcIcc(input: IccInput): IccResult {
   const warnings: string[] = [];
   const U = input.secondaryV;
 
+  // Reject non-physical inputs up front: each is a divisor below, so a blank
+  // or zero would otherwise yield Infinity/NaN. Flag clearly, then compute on
+  // floored denominators so the UI shows a finite (obviously-off) number
+  // alongside the warning rather than "Infinity".
+  if (!(input.secondaryV > 0))     warnings.push("Secondary voltage must be > 0 V — check input.");
+  if (!(input.sourceMva > 0))      warnings.push("Source short-circuit MVA must be > 0 — check input.");
+  if (!(input.transformerKva > 0)) warnings.push("Transformer kVA must be > 0 — check input.");
+  if (!(input.transformerZpct > 0)) warnings.push("Transformer %Z must be > 0 — check input.");
+
   // Upstream Z reflected to LV side: U² / S_sc (Ω). S_sc in VA.
-  const zSourceOhm = (U * U) / (input.sourceMva * 1e6);
+  const zSourceOhm = (U * U) / Math.max(EPS, input.sourceMva * 1e6);
   const zSource = zSourceOhm * 1000; // mΩ
 
   // Transformer Z to LV side: (%Z/100) × U² / S_rated
-  const zTrOhm = (input.transformerZpct / 100) * (U * U) / (input.transformerKva * 1000);
+  const zTrOhm = (input.transformerZpct / 100) * (U * U) / Math.max(EPS, input.transformerKva * 1000);
   const zTr = zTrOhm * 1000;
 
   // Cable R (single-conductor, neglect X for LV). Reactance contributes
@@ -61,7 +74,7 @@ export function calcIcc(input: IccInput): IccResult {
   }
 
   const zTotal = zSource + zTr + zCable;
-  const icc3A = (U * 1000) / (Math.sqrt(3) * zTotal); // Icc3 in A
+  const icc3A = (U * 1000) / (Math.sqrt(3) * Math.max(EPS, zTotal)); // Icc3 in A
   const icc3Ka = icc3A / 1000;
 
   // Peak: κ ≈ 1.8 for LV (R/X small), Ip = √2 · κ · Icc

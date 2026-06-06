@@ -1011,7 +1011,7 @@
     "family": "ACS380",
     "variant": "04",
     "ip": "IP20",
-    "code": "ACS380-040S-02A6-4",
+    "code": "ACS380-040S-02A6-4*",
     "frame": "R0",
     "voltage": 400,
     "nominalA": 2.6,
@@ -1021,7 +1021,8 @@
     "h": 223,
     "w": 70,
     "d": 174,
-    "fuseA": 6
+    "fuseA": 6,
+    "note": "* Variant '04' reuses the 040S listing — base part code unverified. Confirm exact type against ABB ACS380 ordering information before quoting."
   },
   {
     "family": "ACS380",
