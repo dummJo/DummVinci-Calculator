@@ -42,15 +42,31 @@ app/                              ← App Router; route groups keep GitHub tidy 
     cable/page.tsx                ← IEC 60364-5-52 / PUIL
     vsd/page.tsx                  ← ABB ACQ580 & ACS880 + airflow
     breaker/page.tsx              ← Siemens 3VA / 5SL / 5SY
-    busbar/page.tsx, unified/, starter/, plc/, pid/, etc.
-    braking-resistor/, panel/, panel-layout/, convert/, tutorials/, abb-support/
+    busbar/page.tsx               ← DIN 43671 busbar sizing
+    unified/                      ← Fast sizing orchestrator
+    starter/                      ← Motor starter (Siemens SIRIUS)
+    plc/                          ← PLC I/O sizing (S7-1200/1500)
+    pid/                          ← PID loop simulator
+    braking-resistor/             ← STAHL / ABB ACS880 BR
+    panel/, panel-layout/         ← Panel & enclosure sizing (IEC 61439)
+    convert/                      ← Unit converter hub
+    tutorials/                    ← Field test guides
+    abb-support/                  ← ABB documentation hub
+    abb-drivecare/                ← ABB DriveCare service tool
+    icc/                          ← Short-circuit calculation
+    selectivity/                  ← Breaker discrimination (IEC 60947-2)
+    transformer/                  ← Distribution transformer sizing (IEC 60076)
+    skf-microlog/                 ← Vibration analysis learning suite
+    game/                         ← Break Room (2048, Snake, Tetris, Minesweeper, Solitaire)
 
 components/
-  calc/                     ← FieldNumber, FieldSelect, FieldToggle, ResultCard, CalcShell
-  nav/                      ← TopBar (logo + trademark), BottomTabBar (mobile sticky, 7 tabs)
+  calc/                     ← FieldNumber, FieldSelect, FieldToggle, ResultCard, CalcShell, AuditFooter
+  nav/                      ← TopBar (logo + trademark), BottomTabBar (mobile sticky)
+  share/                    ← ShareButton, SharedWatermark
 
 lib/calc/                   ← Pure TS calc functions — no side effects, fully testable
 data/                       ← Static JSON product catalogs (ABB, Siemens, STAHL, enclosures)
+standards/                  ← AI engineering & progress standards (AI_ENGINEERING.md, AI_PROGRESS_STANDARDS.md)
 ```
 
 ---
