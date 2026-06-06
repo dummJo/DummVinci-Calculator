@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 export type Lang = "en" | "id";
 
@@ -15,7 +15,7 @@ export const T = {
     },
     common: {
       resultLabel: "◈ Result",
-      managedBy: "◈ By DummVinci",
+      managedBy: "◈ By DummVinci · PTTS Praxis",
       guidanceTheory: "Guidance & Theory",
       yourIp: "Your IP",
       supportedBy: "Supported by PT Prima Tekindo Tirta Sejahtera",
@@ -610,7 +610,7 @@ export const T = {
     },
     common: {
       resultLabel: "◈ Hasil Perhitungan",
-      managedBy: "◈ Oleh DummVinci",
+      managedBy: "◈ Oleh DummVinci · PTTS Praxis",
       guidanceTheory: "Panduan Teknis & Teori",
       yourIp: "IP Anda",
       supportedBy: "Didukung oleh PT Prima Tekindo Tirta Sejahtera",
@@ -1222,21 +1222,29 @@ void _i18nKeyParity;
 export type Translations = _Widen<typeof T.en>;
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
+// Language is client-only persisted state (localStorage), broadcast across hook
+// instances via a "lang-change" event. useSyncExternalStore is the correct
+// primitive here: it renders the deterministic server snapshot ("id") during
+// SSR/hydration — avoiding a mismatch for visitors whose saved lang is "en" —
+// then immediately reconciles to the persisted value on the client.
+function subscribeLang(onChange: () => void) {
+  window.addEventListener("lang-change", onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    window.removeEventListener("lang-change", onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+function getLangSnapshot(): Lang {
+  const saved = localStorage.getItem("lang");
+  return saved === "en" || saved === "id" ? saved : "id";
+}
+function getLangServerSnapshot(): Lang {
+  return "id";
+}
+
 export function useLang() {
-  const [lang, setLangState] = useState<Lang>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("lang") as Lang | null;
-      if (saved === "en" || saved === "id") return saved;
-    }
-    return "id";
-  });
-
-  useEffect(() => {
-
-    const handler = (e: Event) => setLangState((e as CustomEvent<Lang>).detail);
-    window.addEventListener("lang-change", handler);
-    return () => window.removeEventListener("lang-change", handler);
-  }, []);
+  const lang = useSyncExternalStore(subscribeLang, getLangSnapshot, getLangServerSnapshot);
 
   // Keep <html lang> in sync so screen readers use the correct pronunciation.
   useEffect(() => {
@@ -1245,7 +1253,6 @@ export function useLang() {
 
   function setLang(l: Lang) {
     localStorage.setItem("lang", l);
-    setLangState(l);
     window.dispatchEvent(new CustomEvent<Lang>("lang-change", { detail: l }));
   }
 

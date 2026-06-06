@@ -49,7 +49,10 @@ export default function SharedWatermark() {
       style={{
         position: "fixed",
         right: 16,
-        bottom: "calc(116px + env(safe-area-inset-bottom, 0px))",
+        // Stack above the feedback FAB (44px tall @ bottom:112px) so both stay
+        // tappable — they otherwise share this corner and the watermark (z150)
+        // would cover the FAB (z142).
+        bottom: "calc(172px + env(safe-area-inset-bottom, 0px))",
         zIndex: 150,
         display: "flex",
         alignItems: "center",
