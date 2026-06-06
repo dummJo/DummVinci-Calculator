@@ -21,40 +21,40 @@ interface GameEntry {
 const GAMES: GameEntry[] = [
   {
     key: "2048",
-    title: "2048",
-    tagline: "Slide & merge the tiles to 2048",
+    title: "Praxis²⁰⁴⁸",
+    tagline: "Merge ideas until mastery emerges",
     Icon: Grid3x3,
     href: "/game/2048",
     accent: "var(--accent)",
   },
   {
     key: "tetris",
-    title: "Tetris",
-    tagline: "Stack the falling blocks",
+    title: "Ordo Structurae",
+    tagline: "Order from falling chaos — piece by piece",
     Icon: Boxes,
     href: "/game/tetris",
     accent: "#4a90d9",
   },
   {
     key: "snake",
-    title: "Snake",
-    tagline: "Grow without biting your tail",
+    title: "Via Serpentis",
+    tagline: "The path grows with every decision taken",
     Icon: Worm,
     href: "/game/snake",
     accent: "#3fae6e",
   },
   {
     key: "minesweeper",
-    title: "Minesweeper",
-    tagline: "Clear the field, flag the mines",
+    title: "Campus Periculōrum",
+    tagline: "Navigate the unseen — logic over luck",
     Icon: Bomb,
     href: "/game/minesweeper",
     accent: "#d9534f",
   },
   {
     key: "solitaire",
-    title: "Solitaire",
-    tagline: "Classic single-player card stack",
+    title: "Solitūdō Aurea",
+    tagline: "Patience builds the golden sequence",
     Icon: Spade,
     href: "/game/solitaire",
     accent: "#6b5b95",
@@ -183,10 +183,10 @@ export default function GameHubPage() {
       `}</style>
 
       <main className="hub">
-        <div className="hub-eyebrow">◈ Break Room</div>
-        <h1 className="hub-title">Game Lounge</h1>
+        <div className="hub-eyebrow">◈ Ludus Praxis</div>
+        <h1 className="hub-title">Otium Inter Opera</h1>
         <p className="hub-sub">
-          A little downtime between specs. Pick a game — more land here over time.
+          Rest sharpens the mind between specs. Each game is a praxis of logic, patience, and flow.
         </p>
 
         <div className="hub-grid">
