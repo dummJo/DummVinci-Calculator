@@ -78,7 +78,7 @@ function TerminalWidget() {
                 <span>·</span>
               </>
             )}
-            <span>⏱ {time}</span>
+            <span suppressHydrationWarning>⏱ {time}</span>
           </div>
         </>
       ) : (

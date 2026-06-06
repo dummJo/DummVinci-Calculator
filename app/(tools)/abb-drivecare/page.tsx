@@ -860,6 +860,10 @@ export default function AbbDriveCarePage() {
           .sig-grid { grid-template-columns: 1fr; gap: 30px; }
           .rpt-table { font-size: 11px; }
           .rpt-table th, .rpt-table td { padding: 8px 10px; }
+          /* Drop the fixed 200px label column so two-column rows fit a 390px
+             viewport — otherwise the value/input column is clipped by
+             body{overflow-x:hidden} and becomes unreachable on mobile. */
+          .rpt-table .td-label { min-width: 0; }
         }
       `}</style>
 

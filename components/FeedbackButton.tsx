@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MessageCircle, X, Send, Bug, Lightbulb, MessageSquare } from "lucide-react";
 import { track } from "@/lib/analytics";
 
@@ -29,6 +29,7 @@ const TYPE_META: Record<FeedbackType, { label: string; icon: typeof Bug; color: 
 
 export default function FeedbackButton() {
   const [open, setOpen]       = useState(false);
+  const [closing, setClosing] = useState(false);
   const [type, setType]       = useState<FeedbackType>("feedback");
   const [name, setName]       = useState("");
   const [message, setMessage] = useState("");
@@ -36,13 +37,42 @@ export default function FeedbackButton() {
   const [copied, setCopied]   = useState(false);
   const [hovered, setHovered] = useState(false);
 
-  // Esc to close
+  // Duration of the slide-up exit animation; must match fb-sheet-out below.
+  const CLOSE_MS = 360;
+
+  // Track every pending timer so none can fire setState after unmount
+  // (e.g. route change mid slide-out animation).
+  const timers = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  const later = (fn: () => void, ms: number) => {
+    const id = setTimeout(() => { timers.current.delete(id); fn(); }, ms);
+    timers.current.add(id);
+    return id;
+  };
+  useEffect(() => {
+    const pending = timers.current;
+    return () => { pending.forEach(clearTimeout); pending.clear(); };
+  }, []);
+
+  // Animate the sheet up-and-away, then unmount. Idempotent while in flight.
+  function requestClose() {
+    if (closing) return;
+    setClosing(true);
+    later(() => {
+      setOpen(false);
+      setClosing(false);
+    }, CLOSE_MS);
+  }
+
+  // Esc to close (with exit animation)
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") requestClose(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+    // requestClose is stable enough for this effect's lifetime; guarding on
+    // `closing` would re-bind the listener mid-animation needlessly.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, closing]);
 
   function openForm() {
     setOpen(true);
@@ -74,8 +104,8 @@ export default function FeedbackButton() {
     const { mailto } = buildMail();
     track("feedback-sent", { type });
     setSent(true);
-    setTimeout(() => { window.location.href = mailto; }, 0);
-    setTimeout(() => { setSent(false); setOpen(false); setMessage(""); }, 1400);
+    later(() => { window.location.href = mailto; }, 0);
+    later(() => { setSent(false); requestClose(); setMessage(""); }, 1400);
   }
 
   async function handleCopy() {
@@ -85,7 +115,7 @@ export default function FeedbackButton() {
         `To: ${FEEDBACK_EMAIL}\nSubject: ${subject}\n\n${body}`,
       );
       setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
+      later(() => setCopied(false), 1800);
     } catch { /* clipboard blocked — ignore */ }
   }
 
@@ -109,10 +139,19 @@ export default function FeedbackButton() {
           from { transform: translateY(100%); opacity: 0.4; }
           to   { transform: translateY(0);    opacity: 1; }
         }
+        /* Close: lift up and away — accelerating exit, fades as it rises */
+        @keyframes fb-sheet-out {
+          from { transform: translateY(0);      opacity: 1; }
+          to   { transform: translateY(-72px);  opacity: 0; }
+        }
         /* Backdrop fade */
         @keyframes fb-backdrop-in {
           from { opacity: 0; }
           to   { opacity: 1; }
+        }
+        @keyframes fb-backdrop-out {
+          from { opacity: 1; }
+          to   { opacity: 0; }
         }
         @media (prefers-reduced-motion: reduce) {
           .fb-fab, .fb-dot, .fb-sheet, .fb-backdrop { animation: none !important; }
@@ -125,7 +164,7 @@ export default function FeedbackButton() {
         className="fb-fab"
         aria-label={open ? "Close feedback form" : "Send feedback, report a bug, or ask a question"}
         aria-expanded={open}
-        onClick={() => (open ? setOpen(false) : openForm())}
+        onClick={() => (open ? requestClose() : openForm())}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
@@ -186,7 +225,7 @@ export default function FeedbackButton() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="feedback-title"
-          onClick={() => setOpen(false)}
+          onClick={() => requestClose()}
           style={{
             position: "fixed",
             inset: 0,
@@ -199,7 +238,9 @@ export default function FeedbackButton() {
             justifyContent: "center",
             padding: 16,
             paddingBottom: "calc(172px + env(safe-area-inset-bottom, 0px))",
-            animation: "fb-backdrop-in 0.3s ease both",
+            animation: closing
+              ? `fb-backdrop-out ${CLOSE_MS}ms ease both`
+              : "fb-backdrop-in 0.3s ease both",
           }}
         >
           <div
@@ -217,8 +258,10 @@ export default function FeedbackButton() {
               display: "flex",
               flexDirection: "column",
               gap: 12,
-              animation: "fb-sheet-in 0.42s cubic-bezier(0.32, 0.72, 0, 1) both",
-              willChange: "transform",
+              animation: closing
+                ? `fb-sheet-out ${CLOSE_MS}ms cubic-bezier(0.4, 0, 1, 1) both`
+                : "fb-sheet-in 0.42s cubic-bezier(0.32, 0.72, 0, 1) both",
+              willChange: "transform, opacity",
             }}
           >
             {/* Grab handle — bottom-sheet affordance */}
@@ -251,7 +294,7 @@ export default function FeedbackButton() {
               <button
                 type="button"
                 aria-label="Close"
-                onClick={() => setOpen(false)}
+                onClick={() => requestClose()}
                 style={{
                   background: "rgba(var(--accent-rgb), 0.06)",
                   border: "1px solid var(--popout-border)",
