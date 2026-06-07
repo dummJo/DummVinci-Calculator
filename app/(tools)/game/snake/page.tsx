@@ -413,7 +413,7 @@ export default function SnakePage() {
           text-decoration: none;
           cursor: pointer;
           font-family: var(--font-display), sans-serif;
-          transition: background 0.15s ease, transform 0.1s ease;
+          transition: background 0.3s ease, transform 0.22s ease;
         }
         .snake-back-link:hover, .snake-fs-btn:hover {
           background: rgba(var(--accent-rgb), 0.16);
@@ -496,7 +496,7 @@ export default function SnakePage() {
           border-radius: 3px;
           aspect-ratio: 1;
           background: rgba(var(--accent-rgb), 0.05);
-          transition: background 0.05s;
+          transition: background 0.12s;
         }
         .snake-cell.head {
           background: var(--accent);
@@ -509,7 +509,7 @@ export default function SnakePage() {
         .snake-cell.food {
           background: #4cbb8a;
           border-radius: 50%;
-          animation: foodPulse 0.8s ease-in-out infinite;
+          animation: foodPulse 1.4s ease-in-out infinite;
         }
         @keyframes foodPulse {
           0%, 100% { transform: scale(0.82); }
@@ -529,7 +529,7 @@ export default function SnakePage() {
           backdrop-filter: blur(8px) saturate(140%);
           -webkit-backdrop-filter: blur(8px) saturate(140%);
           background: rgba(var(--accent-rgb), 0.12);
-          animation: overlayIn 0.24s ease;
+          animation: overlayIn 0.5s ease;
           z-index: 10;
         }
         @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
@@ -563,7 +563,7 @@ export default function SnakePage() {
           letter-spacing: 0.06em;
           text-transform: uppercase;
           font-family: var(--font-display), sans-serif;
-          transition: opacity 0.15s ease, transform 0.1s ease;
+          transition: opacity 0.3s ease, transform 0.22s ease;
         }
         .overlay-btn-primary { background: var(--accent); color: #fff; }
         .overlay-btn-secondary {
@@ -595,7 +595,7 @@ export default function SnakePage() {
           color: var(--fg);
           cursor: pointer;
           font-family: var(--font-display), sans-serif;
-          transition: background 0.15s ease, transform 0.1s ease;
+          transition: background 0.3s ease, transform 0.22s ease;
         }
         .snake-action-btn:hover { background: rgba(var(--accent-rgb), 0.18); }
         .snake-action-btn:active { transform: scale(0.97); }

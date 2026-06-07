@@ -680,7 +680,7 @@ export default function SolitairePage() {
           text-decoration: none;
           cursor: pointer;
           font-family: var(--font-display), sans-serif;
-          transition: background 0.15s, transform 0.1s;
+          transition: background 0.3s, transform 0.22s;
           background-color: transparent;
         }
         .sol-back-link:hover, .sol-fs-btn:hover { background: rgba(var(--accent-rgb), 0.16); }
@@ -763,7 +763,7 @@ export default function SolitairePage() {
           cursor: pointer;
           font-family: var(--font-display), sans-serif;
           color: var(--fg);
-          transition: background 0.15s, transform 0.1s;
+          transition: background 0.3s, transform 0.22s;
         }
         .sol-btn:hover { background: rgba(var(--accent-rgb), 0.18); }
         .sol-btn:active { transform: scale(0.95); }
@@ -820,7 +820,7 @@ export default function SolitairePage() {
           box-shadow: 0 2px 6px rgba(0,0,0,0.18);
           flex-shrink: 0;
           cursor: pointer;
-          transition: box-shadow 0.12s;
+          transition: box-shadow 0.25s;
           box-sizing: border-box;
         }
         .card-back {
@@ -917,7 +917,7 @@ export default function SolitairePage() {
           gap: 20px;
           background: rgba(0,0,0,0.7);
           backdrop-filter: blur(6px);
-          animation: fadeIn 0.4s ease;
+          animation: fadeIn 0.6s ease;
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .sol-win-card {

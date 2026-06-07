@@ -448,7 +448,7 @@ export default function MinesweeperPage() {
           text-decoration: none;
           cursor: pointer;
           font-family: var(--font-display), sans-serif;
-          transition: background 0.15s ease, transform 0.1s ease;
+          transition: background 0.3s ease, transform 0.22s ease;
         }
         .ms-back-link:hover, .ms-fs-btn:hover { background: rgba(var(--accent-rgb), 0.16); }
         .ms-back-link:active, .ms-fs-btn:active { transform: scale(0.95); }
@@ -498,7 +498,7 @@ export default function MinesweeperPage() {
           text-transform: uppercase;
           cursor: pointer;
           font-family: var(--font-display), sans-serif;
-          transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+          transition: background 0.3s ease, border-color 0.3s ease, transform 0.22s ease;
           white-space: nowrap;
           text-align: center;
         }
@@ -554,7 +554,7 @@ export default function MinesweeperPage() {
           text-transform: uppercase;
           cursor: pointer;
           font-family: var(--font-display), sans-serif;
-          transition: opacity 0.15s ease, transform 0.1s ease;
+          transition: opacity 0.3s ease, transform 0.22s ease;
           white-space: nowrap;
         }
         .ms-new-btn:hover { opacity: 0.85; }
@@ -610,7 +610,7 @@ export default function MinesweeperPage() {
           font-size: 0.85rem;
           line-height: 1;
           cursor: pointer;
-          transition: background 0.08s ease, transform 0.06s ease;
+          transition: background 0.18s ease, transform 0.14s ease;
           /* touch-action: none on individual cells only — do NOT put on board/page */
           touch-action: none;
           -webkit-tap-highlight-color: transparent;
@@ -657,7 +657,7 @@ export default function MinesweeperPage() {
           100% { background: rgba(var(--accent-rgb), 0.04); }
         }
         .ms-board.won .ms-cell.revealed {
-          animation: ms-win-flash 0.8s ease forwards;
+          animation: ms-win-flash 1.2s ease forwards;
         }
 
         /* ── Loss overlay (red tint) ────────────────────────────────────────── */
@@ -668,7 +668,7 @@ export default function MinesweeperPage() {
           background: rgba(220, 38, 38, 0.12);
           pointer-events: none;
           z-index: 5;
-          animation: ms-tint-in 0.3s ease;
+          animation: ms-tint-in 0.5s ease;
         }
         @keyframes ms-tint-in { from { opacity: 0; } to { opacity: 1; } }
 
@@ -683,7 +683,7 @@ export default function MinesweeperPage() {
           font-weight: 700;
           letter-spacing: 0.04em;
           text-align: center;
-          animation: ms-tint-in 0.3s ease;
+          animation: ms-tint-in 0.5s ease;
         }
         .ms-banner.won-banner {
           background: rgba(22, 163, 74, 0.15);
