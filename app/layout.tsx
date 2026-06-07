@@ -7,6 +7,7 @@ import DaVinciAscii from "@/components/DaVinciAscii";
 import BottomTabBar from "@/components/nav/BottomTabBar";
 import TopBar from "@/components/nav/TopBar";
 import SplashScreen from "@/components/SplashScreen";
+import PageTransition from "@/components/PageTransition";
 import PullToRefresh from "@/components/PullToRefresh";
 import SharedWatermark from "@/components/share/SharedWatermark";
 import FeedbackButton from "@/components/FeedbackButton";
@@ -102,6 +103,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           }
         `}</Script>
         <SplashScreen />
+        <PageTransition />
         <PullToRefresh />
 
         <CursorGlow />
