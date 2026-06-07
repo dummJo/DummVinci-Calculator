@@ -4,27 +4,31 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * PageTransition — a mosaic-blur reveal that fires on every App Router route
- * change, with the pixel-art Claude mascot striding across the screen.
+ * PageTransition — an iconic mosaic-ember reveal that fires on every App Router
+ * route change, with the pixel-art Claude mascot striding across a brand glyph.
  *
  * How it works: Next.js App Router navigation is effectively instant (the new
  * page is already painted by the time `usePathname()` updates). So rather than
  * a "cover" we play a *reveal*: an opaque mosaic of `var(--bg)` tiles drops over
- * the fresh page, then dissolves tile-by-tile in a diagonal wave while a soft
- * backdrop blur clears — uncovering the new page. Claude walks through the
- * middle as it clears.
+ * the fresh page, each tile flaring with an accent "ember" glow before it burns
+ * away in a diagonal wave — uncovering the new page. Claude walks through the
+ * middle past a faint πρᾶξις glyph as it clears.
  *
- * The whole overlay is `pointer-events:none` and self-unmounts once the wave
- * finishes, so it never traps taps on the page underneath.
+ * The overlay sits at z-index 99 — ABOVE page content + TopBar (90) but BELOW
+ * the bottom nav (100), feedback (142) and watermark (150) — so the bottom tab
+ * bar stays a crisp, untouched anchor while everything else mosaics away.
+ *
+ * It is `pointer-events:none` and self-unmounts once the wave finishes, so it
+ * never traps taps on the page underneath.
  */
 
-const COLS = 6;
-const ROWS = 10;
+const COLS = 7;
+const ROWS = 11;
 const TILE_COUNT = COLS * ROWS;
 
 // Timing — keep the total snappy so navigation never feels gated.
-const STAGGER_MS = 24;          // per-tile diagonal delay step
-const TILE_ANIM_MS = 440;       // single-tile dissolve duration
+const STAGGER_MS = 20;          // per-tile diagonal delay step
+const TILE_ANIM_MS = 460;       // single-tile ember-dissolve duration
 const MAX_DELAY_MS = (COLS - 1 + ROWS - 1) * STAGGER_MS;
 const TOTAL_MS = MAX_DELAY_MS + TILE_ANIM_MS + 80; // + buffer before unmount
 
@@ -69,35 +73,47 @@ export default function PageTransition() {
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 9990, // above all chrome (nav 100, feedback 142, watermark 150); below splash 9999
+        // Above content + TopBar (90), below bottom nav (100) so the tab bar
+        // stays untouched as a fixed anchor during the transition.
+        zIndex: 99,
         pointerEvents: "none",
         overflow: "hidden",
       }}
     >
       <style>{`
-        @keyframes pt-tile-dissolve {
-          0%   { opacity: 1; transform: scale(1);    filter: blur(0px); }
-          60%  { opacity: 1; }
-          100% { opacity: 0; transform: scale(0.28) rotate(10deg); filter: blur(2px); }
+        @keyframes pt-tile-ember {
+          0%   { opacity: 1; transform: scale(1);
+                 box-shadow: inset 0 0 0 0.5px rgba(var(--accent-rgb), 0.06); }
+          38%  { opacity: 1; transform: scale(0.96);
+                 box-shadow: inset 0 0 14px rgba(var(--accent-rgb), 0.5),
+                             0 0 6px rgba(var(--accent-rgb), 0.35); }
+          100% { opacity: 0; transform: scale(0.22) rotate(12deg);
+                 box-shadow: inset 0 0 0 rgba(var(--accent-rgb), 0); }
         }
         @keyframes pt-blur-clear {
           0%   { opacity: 1; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
           100% { opacity: 0; backdrop-filter: blur(0px);  -webkit-backdrop-filter: blur(0px); }
         }
+        @keyframes pt-glyph-flash {
+          0%   { opacity: 0; transform: scale(0.7); letter-spacing: 0.5em; }
+          30%  { opacity: 0.5; transform: scale(1); letter-spacing: 0.32em; }
+          70%  { opacity: 0.5; }
+          100% { opacity: 0; transform: scale(1.15); letter-spacing: 0.2em; }
+        }
         @keyframes pt-claude-stride {
-          0%   { opacity: 0; transform: translateX(-46px) translateY(0)   scale(0.92); }
+          0%   { opacity: 0; transform: translateX(-50px) translateY(0)   scale(0.92); }
           18%  { opacity: 1; }
-          50%  { transform: translateX(0)     translateY(-5px) scale(1); }
+          50%  { transform: translateX(0)     translateY(-5px) scale(1.05); }
           82%  { opacity: 1; }
-          100% { opacity: 0; transform: translateX(46px)  translateY(0)   scale(0.92); }
+          100% { opacity: 0; transform: translateX(50px)  translateY(0)   scale(0.92); }
         }
         @keyframes pt-claude-bob {
-          0%, 100% { transform: translateY(0)   rotate(-3deg); }
-          50%      { transform: translateY(-3px) rotate(3deg); }
+          0%, 100% { transform: translateY(0)   rotate(-4deg); }
+          50%      { transform: translateY(-3px) rotate(4deg); }
         }
         @keyframes pt-shadow-pulse {
           0%, 100% { opacity: 0.18; transform: scaleX(1); }
-          50%      { opacity: 0.30; transform: scaleX(0.8); }
+          50%      { opacity: 0.32; transform: scaleX(0.78); }
         }
       `}</style>
 
@@ -111,7 +127,7 @@ export default function PageTransition() {
         }}
       />
 
-      {/* Mosaic tile grid */}
+      {/* Mosaic tile grid — each tile flares accent then burns away */}
       <div
         style={{
           position: "absolute",
@@ -130,18 +146,17 @@ export default function PageTransition() {
               key={i}
               style={{
                 background: "var(--bg)",
-                boxShadow: "inset 0 0 0 0.5px rgba(var(--accent-rgb), 0.06)",
                 borderRadius: 3,
                 transformOrigin: "center",
-                willChange: "transform, opacity",
-                animation: `pt-tile-dissolve ${TILE_ANIM_MS}ms cubic-bezier(0.45, 0, 0.55, 1) ${delay}ms both`,
+                willChange: "transform, opacity, box-shadow",
+                animation: `pt-tile-ember ${TILE_ANIM_MS}ms cubic-bezier(0.45, 0, 0.55, 1) ${delay}ms both`,
               }}
             />
           );
         })}
       </div>
 
-      {/* Claude mascot striding across the centre */}
+      {/* Brand glyph + Claude mascot striding across the centre */}
       <div
         style={{
           position: "absolute",
@@ -151,15 +166,36 @@ export default function PageTransition() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 8,
+          gap: 10,
         }}
       >
+        {/* Faint πρᾶξις glyph — the brand signature behind the mascot */}
         <div
           style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            fontFamily: "var(--font-display), serif",
+            fontSize: 28,
+            fontWeight: 400,
+            color: "var(--accent)",
+            textTransform: "lowercase",
+            whiteSpace: "nowrap",
+            pointerEvents: "none",
+            animation: `pt-glyph-flash ${TOTAL_MS}ms ease-out both`,
+          }}
+        >
+          πρᾶξις
+        </div>
+
+        <div
+          style={{
+            position: "relative",
             animation: `pt-claude-stride ${TOTAL_MS}ms cubic-bezier(0.4, 0, 0.2, 1) both`,
           }}
         >
-          <div style={{ animation: "pt-claude-bob 0.38s ease-in-out infinite" }}>
+          <div style={{ animation: "pt-claude-bob 0.36s ease-in-out infinite" }}>
             <svg
               viewBox="-1 -1 12 10"
               width={64}
@@ -167,7 +203,8 @@ export default function PageTransition() {
               style={{
                 shapeRendering: "crispEdges",
                 overflow: "visible",
-                filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.22))",
+                filter:
+                  "drop-shadow(0 0 7px rgba(var(--accent-rgb), 0.55)) drop-shadow(0 4px 8px rgba(0,0,0,0.22))",
               }}
             >
               <defs>
@@ -206,12 +243,12 @@ export default function PageTransition() {
         {/* Little ground shadow that pulses with the stride */}
         <div
           style={{
-            width: 40,
+            width: 42,
             height: 5,
             borderRadius: "50%",
             background: "rgba(var(--accent-rgb), 0.5)",
             filter: "blur(2px)",
-            animation: "pt-shadow-pulse 0.38s ease-in-out infinite",
+            animation: "pt-shadow-pulse 0.36s ease-in-out infinite",
           }}
         />
       </div>
