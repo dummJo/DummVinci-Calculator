@@ -37,30 +37,14 @@ function isInExemptRegion(target: EventTarget | null): boolean {
 export default function PullToRefresh() {
   const [pull, setPull] = useState(0);
   const [phase, setPhase] = useState<Phase>("idle");
-  const [swing, setSwing] = useState(0);
 
   const startY = useRef(0);
   const tracking = useRef(false);
-  const rafRef = useRef<number>(0);
-  const swingT = useRef(0);
   const lastPull = useRef(0);
 
-  // Pendulum swing while hanging
-  useEffect(() => {
-    if (phase !== "pulling" && phase !== "triggered") {
-      cancelAnimationFrame(rafRef.current);
-      swingT.current = 0;
-      setSwing(0);
-      return;
-    }
-    const step = () => {
-      swingT.current += 0.028;
-      setSwing(Math.sin(swingT.current) * 7);
-      rafRef.current = requestAnimationFrame(step);
-    };
-    rafRef.current = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [phase]);
+  // Pendulum swing while hanging is pure CSS (ptr-swing keyframes below).
+  // The previous rAF loop called setState every frame → 60 React renders/sec
+  // for an animation the compositor can run on its own.
 
   const onTouchStart = useCallback((e: TouchEvent) => {
     if (window.scrollY > 3) return;
@@ -144,6 +128,10 @@ export default function PullToRefresh() {
           from { opacity: 0; transform: translateY(-4px); }
           to   { opacity: 0.72; transform: translateY(0); }
         }
+        @keyframes ptr-swing {
+          0%, 100% { transform: rotate(-7deg); }
+          50%      { transform: rotate(7deg); }
+        }
       `}</style>
 
       {/* Grip bar — the bar Claude is hanging from */}
@@ -182,8 +170,9 @@ export default function PullToRefresh() {
           flexShrink: 0,
           opacity: charVisible ? 1 : 0,
           transformOrigin: "center top",
-          transform: isRefreshing ? undefined : `rotate(${swing}deg)`,
-          animation: isRefreshing ? "ptr-spin 1.2s ease-in-out forwards" : undefined,
+          animation: isRefreshing
+            ? "ptr-spin 1.2s ease-in-out forwards"
+            : "ptr-swing 2.2s ease-in-out infinite",
           filter: isTriggered
             ? "drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.7))"
             : "drop-shadow(0 2px 4px rgba(0,0,0,0.2))",

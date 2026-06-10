@@ -8,6 +8,10 @@ import { useEffect } from "react";
  */
 export default function CursorGlow() {
   useEffect(() => {
+    // Touch-only devices never fire mousemove — skip the listener, the DOM
+    // scan, and the closure allocations entirely.
+    if (!window.matchMedia?.("(pointer: fine)").matches) return;
+
     let rafId = 0;
     let lastX = 0;
     let lastY = 0;

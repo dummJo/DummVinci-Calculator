@@ -191,11 +191,15 @@ export default function HomePage() {
   const [lineFade, setLineFade]   = useState(false);
   const lineTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    // Reset to index 0 on language change without fade flicker
+  // Reset to index 0 on language change without fade flicker.
+  // Derived-state-during-render (per React docs) — one pass, no extra
+  // post-commit render, and no set-state-in-effect lint violation.
+  const [prevLang, setPrevLang] = useState(lang);
+  if (prevLang !== lang) {
+    setPrevLang(lang);
     setLineIdx(0);
     setLineFade(false);
-  }, [lang]);
+  }
 
   useEffect(() => {
     lineTimer.current = setInterval(() => {

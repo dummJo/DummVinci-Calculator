@@ -67,4 +67,22 @@ describe("Breaker Selectivity / Discrimination (IEC 60947-2 §7.2)", () => {
     expect(result.rating).toBe("partial");
     expect(result.notes.some(n => n.includes("exceeds selectivity limit"))).toBe(true);
   });
+
+  it("keeps limit at 0 for a 'none' rating even with an electronic upstream trip", () => {
+    // Regression: the electronic-trip branch used to overwrite limitKa to
+    // 0.9 × Icu unconditionally, reporting a 22.5 kA threshold on a pairing
+    // with NO selectivity at any current.
+    const result = checkSelectivity({
+      upstreamKind: "MCCB-electronic",
+      upstreamInA: 30,
+      upstreamIcuKa: 36,
+      downstreamKind: "MCCB-thermomag",
+      downstreamInA: 25, // ratio 1.2 < 1.6 → none
+      downstreamIcuKa: 25,
+      faultIccKa: 10,
+    });
+
+    expect(result.rating).toBe("none");
+    expect(result.selectivityLimitKa).toBe(0);
+  });
 });

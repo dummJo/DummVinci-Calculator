@@ -117,8 +117,10 @@ export function estimatePanelLayout(input: LayoutInput): LayoutResult {
   if (input.vsdFrame !== "none" && input.vsdQty > 0) {
     const dim = VSD_DIM[input.vsdFrame];
     if (dim) {
-      // VSDs stacked vertically (one column per pair for wide frames)
-      const vsdColCount = dim.w > 300 ? 1 : 1; // simplify: single column
+      // Wide frames (R5+, >300 mm) stack in 2 columns when there's more than
+      // one unit — otherwise a 4×R6 bank "needs" ~2.9 m of height and the
+      // result quotes an impossible cabinet. Narrow frames stay single-column.
+      const vsdColCount = dim.w > 300 && input.vsdQty > 1 ? 2 : 1;
       vsdH = Math.ceil(input.vsdQty / vsdColCount) * (dim.h + 30); // 30 mm clearance each
       vsdW = dim.w * vsdColCount;
       breakdown.push({ item: `VSD ${input.vsdFrame} × ${input.vsdQty} (stacked)`, heightMm: vsdH });

@@ -93,10 +93,16 @@ export function sizeBreaker(input: BreakerInput): BreakerResult {
       if (a.nominalA !== b.nominalA) return a.nominalA - b.nominalA;
       // Secondary: smallest Icu (don't over-spec Icu)
       if (a.icuKa !== b.icuKa) return a.icuKa - b.icuKa;
-      // Tertiary: prefer EU over IN if preference is EU
-      if (preferRegion === "EU") return a.region === "EU" ? -1 : 1;
-      if (preferRegion === "IN") return a.region === "IN" ? -1 : 1;
-      return 0;
+      // Tertiary: regional preference. Guard a.region !== b.region — the old
+      // unguarded form returned -1 for two same-region entries, an
+      // inconsistent comparator (cmp(a,b) and cmp(b,a) both -1) that leaves
+      // the order engine-defined.
+      if (a.region !== b.region) {
+        if (preferRegion === "EU") return a.region === "EU" ? -1 : 1;
+        if (preferRegion === "IN") return a.region === "IN" ? -1 : 1;
+      }
+      // Final: part code, so equal-spec candidates always quote identically.
+      return a.code.localeCompare(b.code);
     });
 
   if (allMatches.length === 0) {

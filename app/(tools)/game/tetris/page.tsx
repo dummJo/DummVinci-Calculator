@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
   useState,
@@ -853,8 +854,14 @@ export default function TetrisPage() {
   );
 
   // ── Build render grid ───────────────────────────────────────────────────────
-  const renderGrid = buildRenderGrid(state.board, state.active);
-  const previewGrid = buildPreviewGrid(state.next);
+  // Memoised: cloning the 20×10 board + ghost projection on every render adds
+  // up at high gravity (each TICK re-renders), and immersive/score-only updates
+  // don't change the board at all.
+  const renderGrid = useMemo(
+    () => buildRenderGrid(state.board, state.active),
+    [state.board, state.active]
+  );
+  const previewGrid = useMemo(() => buildPreviewGrid(state.next), [state.next]);
 
   // ── Cell colour helper ──────────────────────────────────────────────────────
   function cellBg(cell: CellRender): string {

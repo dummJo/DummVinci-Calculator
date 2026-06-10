@@ -174,6 +174,10 @@ function mpcbSetSuffix(fla: number, mpcb: MpcbEntry): string {
 
 export function sizeStarter(input: StarterInput): StarterResult {
   const warnings: string[] = [];
+  // Same explicit-reject pattern as icc/transformer: a zero kW (and no
+  // nameplate FLA) would otherwise size everything off FLA = 0 silently.
+  if (!(input.motorKw > 0) && !input.fla)
+    warnings.push("Motor kW must be > 0 — check input.");
   const fla = input.fla ?? estimateFla(input.motorKw, input.voltage);
   const timer = input.timerSec ?? 10;
 

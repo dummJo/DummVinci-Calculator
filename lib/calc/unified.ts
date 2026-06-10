@@ -30,7 +30,10 @@ export interface UnifiedResult {
  * cosφ and η are order-of-magnitude defaults (not IEC 60034 nameplate data) — conservative for pre-select; use motor plate when available.
  */
 export function estimateAmps(kw: number, v: number, pf = 0.85, eff = 0.9): number {
-  return (kw * 1000) / (v * Math.sqrt(3) * pf * eff);
+  // Public helper — floor the divisor so v = 0 from an un-validated caller
+  // yields a huge-but-finite amp figure (downstream range checks flag it)
+  // instead of Infinity propagating through every later stage.
+  return (kw * 1000) / (Math.max(1, v) * Math.sqrt(3) * pf * eff);
 }
 
 export function sizeMotorStarter(input: UnifiedInput): UnifiedResult {

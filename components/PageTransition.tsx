@@ -90,6 +90,10 @@ function buildChars(seed: number): CharData[] {
 }
 
 // ─── Tiny mascot SVG (reuses accent fill + cream outline) ────────────────────
+// ─── Tiny mascot SVG (references the single shared #mc-outline filter) ──────
+// The filter itself is defined ONCE in a hidden <svg> at the overlay root —
+// 52 inline copies of the same `id` violate the duplicate-ID rule and cost
+// 4 filter primitives × 52 instantiations on a single frame.
 function MiniClaude({ size }: { size: number }) {
   return (
     <svg
@@ -98,17 +102,6 @@ function MiniClaude({ size }: { size: number }) {
       height={size}
       style={{ shapeRendering: "crispEdges", overflow: "visible", display: "block" }}
     >
-      <defs>
-        <filter id="mc-outline" x="-50%" y="-50%" width="200%" height="200%">
-          <feMorphology operator="dilate" radius="0.55" in="SourceAlpha" result="d" />
-          <feFlood floodColor="#faf9f5" result="f" />
-          <feComposite in="f" in2="d" operator="in" result="o" />
-          <feMerge>
-            <feMergeNode in="o" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
       <g filter="url(#mc-outline)">
         <rect x="1" y="0" width="8" height="2" fill="var(--accent)" />
         <rect x="0" y="2" width="3" height="1" fill="var(--accent)" />
@@ -134,32 +127,39 @@ export default function PageTransition() {
   const pathname = usePathname();
   const [active, setActive]   = useState(false);
   const [runId, setRunId]     = useState(0);
-  const firstMount = useRef(true);
+  // Derived-state-during-render (React-sanctioned pattern) instead of a
+  // setState-in-effect: avoids the extra commit AND the lint violation.
+  const [prevPath, setPrevPath] = useState(pathname);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (firstMount.current) { firstMount.current = false; return; }
-    if (
+  if (prevPath !== pathname) {
+    setPrevPath(pathname);
+    const reduced =
       typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
-    ) return;
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (!reduced) {
+      setRunId(id => id + 1);
+      setActive(true);
+    }
+  }
 
-    setRunId(id => id + 1);
-    setActive(true);
+  // Arm the self-unmount timer per run (async callback — not a sync set-in-effect).
+  useEffect(() => {
+    if (!active) return;
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setActive(false), TOTAL_MS);
     return () => { if (timer.current) clearTimeout(timer.current); };
-  }, [pathname]);
+  }, [active, runId]);
 
   // Rebuild characters only when runId changes (deterministic per run)
   const chars = useMemo(() => buildChars(runId), [runId]);
 
-  if (!active) return null;
+  // Keyframes are pure functions of chars — memoised so re-renders while the
+  // overlay is live don't re-stringify ~3 KB of CSS for the style tag.
+  const css = useMemo(() => {
+    const rushDuration = RUSH_END - RUSH_START;            // 280 ms
 
-  // Build per-character keyframe CSS + rendered divs
-  const rushDuration  = RUSH_END - RUSH_START;           // 280 ms
-
-  const css = chars.map(c => {
+    return chars.map(c => {
     const inEnd  = Math.min(100, Math.round((c.inDelay + rushDuration) / TOTAL_MS * 100));
     const holdPct = Math.round(HOLD_END / TOTAL_MS * 100);
     const outEnd = Math.min(100, Math.round((c.outDelay + 160) / TOTAL_MS * 100));
@@ -196,7 +196,10 @@ export default function PageTransition() {
         opacity: 0;
       }
     }`;
-  }).join("\n");
+    }).join("\n");
+  }, [chars, runId]);
+
+  if (!active) return null;
 
   // Soft bg overlay that covers the page while chars are present
   const bgFadeInEnd  = Math.round(RUSH_END  / TOTAL_MS * 100);
@@ -224,6 +227,21 @@ export default function PageTransition() {
         ${css}
       `}</style>
 
+      {/* Single shared sticker-outline filter — referenced by all 52 chars */}
+      <svg aria-hidden width={0} height={0} style={{ position: "absolute" }}>
+        <defs>
+          <filter id="mc-outline" x="-50%" y="-50%" width="200%" height="200%">
+            <feMorphology operator="dilate" radius="0.55" in="SourceAlpha" result="d" />
+            <feFlood floodColor="#faf9f5" result="f" />
+            <feComposite in="f" in2="d" operator="in" result="o" />
+            <feMerge>
+              <feMergeNode in="o" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+      </svg>
+
       {/* Semi-opaque background that fills as chars pile up */}
       <div
         style={{
@@ -235,7 +253,11 @@ export default function PageTransition() {
         }}
       />
 
-      {/* Character stampede */}
+      {/* Character stampede. No per-char drop-shadow/will-change: 52 extra
+          filter rasterisations + forced GPU layers visibly drop frames on
+          low-end phones, and the cream sticker outline already provides
+          the separation the glow was for. The transform animation promotes
+          its own compositor layer implicitly. */}
       {chars.map(c => (
         <div
           key={c.id}
@@ -243,8 +265,6 @@ export default function PageTransition() {
             position: "absolute",
             top: 0,
             left: 0,
-            willChange: "transform, opacity",
-            filter: `drop-shadow(0 0 ${Math.round(c.size * 0.18)}px rgba(var(--accent-rgb), 0.55))`,
             animation: `ptc-${runId}-${c.id} ${TOTAL_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1) both`,
           }}
         >
