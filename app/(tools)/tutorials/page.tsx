@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import CalcShell from "@/components/calc/CalcShell";
 import { useLang } from "@/lib/i18n";
 import Footer from "@/components/nav/Footer";
@@ -344,6 +345,33 @@ export default function TutorialsPage() {
 
   return (
     <CalcShell label="Tutorials" title={tt.title} subtitle={tt.subtitle} concept={tt.concept}>
+      <Link href="/tutorials/vsd-challenges" style={{ textDecoration: "none", display: "block", marginBottom: 32 }}>
+        <div style={{
+          padding: "20px 24px",
+          borderRadius: 16,
+          background: "rgba(228,199,89,0.06)",
+          border: "1px solid rgba(228,199,89,0.3)",
+          cursor: "pointer",
+          transition: "border-color 0.2s, background 0.2s",
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", background: "rgba(228,199,89,0.15)", color: "var(--accent)", padding: "3px 8px", borderRadius: 4, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>NEW · ABB VSD</span>
+          </div>
+          <div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 20, color: "var(--accent)", marginBottom: 4 }}>Commissioning Challenge Cards</div>
+            <div style={{ fontSize: 13, color: "var(--fg-soft)", lineHeight: 1.5 }}>Step-by-step commissioning guides with real ABB parameter codes — ACQ580 multipump & ACS880 crane N5050 program</div>
+          </div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {["ACQ580 Simple Run", "ACQ580 Multipump", "ACQ580 Timer", "ACQ580 Analog Scaling", "ACS880 Initial", "ACS880 N5050 Crane"].map(label => (
+              <span key={label} style={{ fontSize: 10, fontFamily: "var(--font-mono)", background: "rgba(255,255,255,0.05)", color: "var(--fg-soft)", padding: "3px 8px", borderRadius: 4, border: "1px solid var(--glass-border)" }}>{label}</span>
+            ))}
+          </div>
+          <div style={{ fontSize: 11, color: "var(--accent)", fontFamily: "var(--font-mono)", marginTop: 4 }}>→ Open Challenge Cards</div>
+        </div>
+      </Link>
       <div style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: 32 }}>
         
         {/* LEFT SIDEBAR MENU */}
