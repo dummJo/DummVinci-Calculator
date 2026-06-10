@@ -1813,6 +1813,270 @@ export const vsdChallenges: VsdChallenge[] = [
     manualRef: "ACS880-N5050 Crane Control Program Application Manual 3AXD10000036193",
     estimatedMinutes: 120,
   },
+  // ── ACQ580 Pump Curve + Sensorless Flow ──────────────────────────────────
+  {
+    id: "acq580-pump-curve",
+    drive: "ACQ580",
+    difficulty: 2,
+    titleEn: "Pump Q-H Curve & Sensorless Flow Calculation",
+    titleId: "Kurva Q-H Pompa & Kalkulasi Aliran Sensorless",
+    objectiveEn:
+      "Enter the pump's H-Q characteristic curve into the ACQ580, activate the sensorless flow calculation, and verify the drive's estimated flow matches a reference measurement — eliminating the need for an external flow meter.",
+    objectiveId:
+      "Memasukkan kurva karakteristik H-Q pompa ke ACQ580, mengaktifkan kalkulasi aliran sensorless, dan memverifikasi estimasi aliran drive sesuai dengan pengukuran referensi — menghilangkan kebutuhan flow meter eksternal.",
+    prerequisitesEn: [
+      "Pump datasheet available: H-Q table at rated speed (min 3 operating points: shutoff, BEP, max flow)",
+      "Pump rated speed (rpm), rated flow (m³/h), rated head (m), and BEP efficiency (%) known",
+      "Motor nameplate data entered and ID run completed (acq580-simple prerequisite)",
+      "Pressure transmitter on discharge side wired to AI1 (for head feedback during calibration)",
+      "Drive Composer Pro connected — group 46 parameter visibility requires engineering-level access",
+    ],
+    prerequisitesId: [
+      "Datasheet pompa tersedia: tabel H-Q pada kecepatan rated (min 3 titik: shutoff, BEP, aliran maksimum)",
+      "Kecepatan rated pompa (rpm), aliran rated (m³/h), head rated (m), dan efisiensi BEP (%) diketahui",
+      "Data nameplate motor sudah diinput dan ID run selesai (prasyarat acq580-simple)",
+      "Transmitter tekanan pada sisi discharge terkabel ke AI1 (untuk feedback head saat kalibrasi)",
+      "Drive Composer Pro terhubung — visibilitas parameter grup 46 memerlukan akses level engineering",
+    ],
+    steps: [
+      {
+        titleEn: "Extract pump datasheet curve points",
+        titleId: "Ekstrak titik kurva dari datasheet pompa",
+        descEn:
+          "From the pump manufacturer's H-Q curve at rated speed, read at least 5 operating points: (1) shutoff head Q=0, (2) 25% rated flow, (3) 50% rated flow / BEP vicinity, (4) rated flow, (5) maximum flow (end of curve). Record head in metres and flow in m³/h. These will be entered directly into ACQ580 parameter group 46.",
+        descId:
+          "Dari kurva H-Q pabrikan pompa pada kecepatan rated, baca minimal 5 titik operasi: (1) shutoff head Q=0, (2) 25% aliran rated, (3) 50% aliran rated / sekitar BEP, (4) aliran rated, (5) aliran maksimum. Catat head dalam meter dan aliran dalam m³/h. Ini akan diinput langsung ke grup parameter 46 ACQ580.",
+      },
+      {
+        titleEn: "Enable sensorless flow function",
+        titleId: "Aktifkan fungsi aliran sensorless",
+        descEn:
+          "Activate the pump curve feature and select the sensorless flow calculation method. Parameter 46.01 arms the feature. Set parameter 46.02 to 'Sensorless' to use motor power + pump curve for flow estimation rather than an AI signal.",
+        descId:
+          "Aktifkan fitur pump curve dan pilih metode kalkulasi aliran sensorless. Parameter 46.01 mengaktifkan fitur ini. Set parameter 46.02 ke 'Sensorless' untuk menggunakan daya motor + kurva pompa sebagai estimasi aliran, bukan sinyal AI.",
+        params: [
+          { code: "46.01", nameEn: "Pump curve enable", nameId: "Aktifkan pump curve", setValue: "Enable", note: "Enables group 46 pump characteristic entry" },
+          { code: "46.02", nameEn: "Flow calculation source", nameId: "Sumber kalkulasi aliran", setValue: "Sensorless", note: "Sensorless = uses motor power + curve; Sensor = uses AI input" },
+          { code: "46.11", nameEn: "Pump rated flow", nameId: "Aliran rated pompa", setValue: "From nameplate", unit: "m³/h", note: "Nominal flow at rated speed and rated head" },
+          { code: "46.12", nameEn: "Pump rated head", nameId: "Head rated pompa", setValue: "From nameplate", unit: "m", note: "Head corresponding to rated flow point" },
+          { code: "46.13", nameEn: "Rated pump speed for curve", nameId: "Kecepatan rated pompa untuk kurva", setValue: "From nameplate", unit: "rpm", note: "Speed at which the H-Q curve was measured" },
+        ],
+      },
+      {
+        titleEn: "Enter H-Q curve — shutoff and low-flow points",
+        titleId: "Input kurva H-Q — titik shutoff dan aliran rendah",
+        descEn:
+          "Enter the first two curve points: point 1 is the shutoff head (H at Q=0, maximum head), and point 2 is the low-flow / pre-BEP operating point. The ACQ580 interpolates between entered points. Accuracy of shutoff head directly affects the sensorless flow estimate at low speeds.",
+        descId:
+          "Input dua titik kurva pertama: titik 1 adalah shutoff head (H pada Q=0, head maksimum), dan titik 2 adalah titik operasi aliran rendah / sebelum BEP. ACQ580 menginterpolasi di antara titik yang diinput. Akurasi shutoff head langsung mempengaruhi estimasi aliran sensorless pada kecepatan rendah.",
+        params: [
+          { code: "46.21", nameEn: "Curve point 1 flow (shutoff)", nameId: "Aliran titik kurva 1 (shutoff)", setValue: "0", unit: "m³/h", note: "Q=0 at shutoff — motor running, valve closed" },
+          { code: "46.22", nameEn: "Curve point 1 head (shutoff)", nameId: "Head titik kurva 1 (shutoff)", setValue: "From datasheet", unit: "m", note: "Maximum head of the pump" },
+          { code: "46.23", nameEn: "Curve point 2 flow", nameId: "Aliran titik kurva 2", setValue: "~25% of rated", unit: "m³/h" },
+          { code: "46.24", nameEn: "Curve point 2 head", nameId: "Head titik kurva 2", setValue: "From datasheet", unit: "m" },
+        ],
+      },
+      {
+        titleEn: "Enter H-Q curve — BEP and high-flow points",
+        titleId: "Input kurva H-Q — titik BEP dan aliran tinggi",
+        descEn:
+          "Enter the BEP (Best Efficiency Point) and the maximum flow point. The BEP is where the pump operates most efficiently; always try to design the system to operate near BEP. The maximum flow point defines the flat end of the curve where head drops sharply.",
+        descId:
+          "Input titik BEP (Best Efficiency Point) dan titik aliran maksimum. BEP adalah di mana pompa beroperasi paling efisien; selalu usahakan sistem beroperasi mendekati BEP. Titik aliran maksimum mendefinisikan ujung datar kurva di mana head turun tajam.",
+        params: [
+          { code: "46.25", nameEn: "Curve point 3 flow (BEP vicinity)", nameId: "Aliran titik kurva 3 (sekitar BEP)", setValue: "~50–60% of rated", unit: "m³/h" },
+          { code: "46.26", nameEn: "Curve point 3 head", nameId: "Head titik kurva 3", setValue: "From datasheet", unit: "m" },
+          { code: "46.27", nameEn: "Curve point 4 flow (rated)", nameId: "Aliran titik kurva 4 (rated)", setValue: "Rated flow from nameplate", unit: "m³/h" },
+          { code: "46.28", nameEn: "Curve point 4 head", nameId: "Head titik kurva 4 (rated)", setValue: "Rated head from nameplate", unit: "m" },
+          { code: "46.29", nameEn: "Curve point 5 flow (max)", nameId: "Aliran titik kurva 5 (maks)", setValue: "Max flow from datasheet", unit: "m³/h" },
+          { code: "46.30", nameEn: "Curve point 5 head", nameId: "Head titik kurva 5 (maks)", setValue: "Head at max flow", unit: "m" },
+        ],
+      },
+      {
+        titleEn: "Enter pump efficiency at BEP",
+        titleId: "Input efisiensi pompa pada BEP",
+        descEn:
+          "The drive uses pump efficiency (η) at BEP to calculate motor power demand at each operating point. This directly improves the accuracy of the sensorless flow estimate. BEP efficiency is found on the pump datasheet performance curve, typically 70–85% for centrifugal pumps.",
+        descId:
+          "Drive menggunakan efisiensi pompa (η) pada BEP untuk menghitung kebutuhan daya motor pada setiap titik operasi. Ini langsung meningkatkan akurasi estimasi aliran sensorless. Efisiensi BEP ada di kurva kinerja datasheet pompa, biasanya 70–85% untuk pompa sentrifugal.",
+        params: [
+          { code: "46.14", nameEn: "Pump efficiency at BEP", nameId: "Efisiensi pompa pada BEP", setValue: "From datasheet (%)", unit: "%", note: "Typical: 72–85% for centrifugal pumps" },
+          { code: "46.15", nameEn: "Fluid density", nameId: "Densitas fluida", setValue: "1000", unit: "kg/m³", note: "1000 for water; adjust for other fluids (e.g. 900 for light oil)" },
+        ],
+      },
+      {
+        titleEn: "Verify sensorless flow estimate at known point",
+        titleId: "Verifikasi estimasi aliran sensorless di titik yang diketahui",
+        descEn:
+          "Run the pump at rated speed with the discharge valve fully open. Read the estimated flow from parameter 01.72 in Drive Composer Pro. Compare against a reference measurement (ultrasonic clamp-on meter, or existing flow meter). Acceptable deviation ≤ ±5% of rated flow at BEP; ±10% acceptable at off-BEP points.",
+        descId:
+          "Jalankan pompa pada kecepatan rated dengan katup discharge terbuka penuh. Baca estimasi aliran dari parameter 01.72 di Drive Composer Pro. Bandingkan dengan pengukuran referensi (ultrasonic clamp-on meter, atau flow meter yang ada). Deviasi yang dapat diterima ≤ ±5% dari aliran rated di BEP; ±10% dapat diterima di titik off-BEP.",
+        params: [
+          { code: "01.72", nameEn: "Estimated flow (actual value, read-only)", nameId: "Estimasi aliran (nilai aktual, baca saja)", setValue: "Monitor", unit: "m³/h", note: "Compare vs reference measurement; target ≤ ±5% at BEP" },
+          { code: "01.73", nameEn: "Estimated head (actual value, read-only)", nameId: "Estimasi head (nilai aktual, baca saja)", setValue: "Monitor", unit: "m", note: "Cross-check against pressure gauge on discharge" },
+        ],
+      },
+      {
+        titleEn: "Apply flow offset calibration if needed",
+        titleId: "Terapkan kalibrasi offset aliran jika diperlukan",
+        descEn:
+          "If estimated flow deviates beyond tolerance, apply a calibration offset or gain correction. Parameter 46.31 (flow gain) multiplies the raw estimate — set it so estimated flow matches reference at BEP. Parameter 46.32 (flow offset) adds a constant correction for systematic bias. Recheck at 50% and 100% speed after calibration.",
+        descId:
+          "Jika estimasi aliran menyimpang lebih dari toleransi, terapkan kalibrasi offset atau koreksi gain. Parameter 46.31 (flow gain) mengalikan estimasi mentah — set agar estimasi aliran sesuai referensi pada BEP. Parameter 46.32 (flow offset) menambah koreksi konstan untuk bias sistematis. Periksa ulang pada 50% dan 100% kecepatan setelah kalibrasi.",
+        params: [
+          { code: "46.31", nameEn: "Flow calculation gain", nameId: "Gain kalkulasi aliran", setValue: "1.0 (adjust ±)", unit: "", note: "1.0 = no correction; 0.95 reduces estimate by 5%" },
+          { code: "46.32", nameEn: "Flow calculation offset", nameId: "Offset kalkulasi aliran", setValue: "0.0", unit: "m³/h", note: "Use only for constant systematic bias at all speeds" },
+        ],
+      },
+      {
+        titleEn: "Set flow-based process alarm and monitoring",
+        titleId: "Set alarm proses berbasis aliran dan monitoring",
+        descEn:
+          "Configure alarms based on estimated flow to detect abnormal conditions: low flow alarm (possible cavitation or closed valve), high flow alarm (overload / runout condition). Wire estimated flow to AO1 (0–10V or 4–20mA) if SCADA logging is required.",
+        descId:
+          "Konfigurasi alarm berdasarkan estimasi aliran untuk mendeteksi kondisi abnormal: alarm aliran rendah (kemungkinan kavitasi atau katup tertutup), alarm aliran tinggi (kelebihan beban / kondisi runout). Hubungkan estimasi aliran ke AO1 (0–10V atau 4–20mA) jika diperlukan logging SCADA.",
+        params: [
+          { code: "46.41", nameEn: "Low flow alarm level", nameId: "Level alarm aliran rendah", setValue: "15–20% of rated", unit: "m³/h", note: "Alarm when flow drops below this — indicates dry run or cavitation risk" },
+          { code: "46.42", nameEn: "Low flow alarm delay", nameId: "Delay alarm aliran rendah", setValue: "5–10", unit: "s", note: "Delay prevents false alarms during start-up transient" },
+          { code: "46.43", nameEn: "High flow alarm level", nameId: "Level alarm aliran tinggi", setValue: "110% of rated", unit: "m³/h", note: "Alarm when pump operates in runout zone (beyond BEP)" },
+          { code: "15.07", nameEn: "AO1 source (for SCADA)", nameId: "Sumber AO1 (untuk SCADA)", setValue: "01.72 (estimated flow)", unit: "", note: "Maps sensorless flow to 4–20 mA analogue output" },
+        ],
+      },
+    ],
+    limitSettings: [
+      { param: "46.11", nameEn: "Rated pump flow", nameId: "Aliran rated pompa", typical: "From nameplate", unit: "m³/h" },
+      { param: "46.12", nameEn: "Rated pump head", nameId: "Head rated pompa", typical: "From nameplate", unit: "m" },
+      { param: "46.14", nameEn: "BEP efficiency", nameId: "Efisiensi BEP", min: "65", max: "90", typical: "75", unit: "%" },
+      { param: "46.15", nameEn: "Fluid density", nameId: "Densitas fluida", typical: "1000", unit: "kg/m³" },
+      { param: "46.31", nameEn: "Flow gain", nameId: "Gain aliran", min: "0.8", max: "1.2", typical: "1.0", unit: "" },
+      { param: "46.41", nameEn: "Low flow alarm", nameId: "Alarm aliran rendah", typical: "15–20% rated", unit: "m³/h" },
+      { param: "46.43", nameEn: "High flow alarm", nameId: "Alarm aliran tinggi", typical: "110% rated", unit: "m³/h" },
+    ],
+    manualRef: "ACQ580 User Manual 3AUA0000085967 — Chapter: Pump Characteristics & Energy Optimization",
+    estimatedMinutes: 50,
+  },
+
+  // ── ACQ580 Anti-Cavitation Tuning ─────────────────────────────────────────
+  {
+    id: "acq580-anti-cavitation",
+    drive: "ACQ580",
+    difficulty: 2,
+    titleEn: "Anti-Cavitation Tuning",
+    titleId: "Tuning Anti-Kavitasi",
+    objectiveEn:
+      "Protect the pump from cavitation damage using a multi-layer strategy: minimum speed limit to prevent low-flow cavitation, suction pressure supervision via AI1, PID output floor, and automatic speed reduction or trip when cavitation is detected — without requiring a dedicated cavitation sensor.",
+    objectiveId:
+      "Melindungi pompa dari kerusakan kavitasi menggunakan strategi multi-lapis: batas kecepatan minimum untuk mencegah kavitasi aliran rendah, supervisi tekanan suction via AI1, lantai output PID, dan pengurangan kecepatan otomatis atau trip saat kavitasi terdeteksi — tanpa memerlukan sensor kavitasi khusus.",
+    prerequisitesEn: [
+      "Pump NPSHr (Net Positive Suction Head required) known from datasheet for the operating flow range",
+      "Suction pressure transmitter (0–10 bar, 4–20 mA) wired to AI2 (separate from discharge AI1)",
+      "Pump Q-H curve entered (acq580-pump-curve challenge completed, or 46.x parameters set)",
+      "Sensorless flow calculation active — parameter 01.72 available as estimated flow",
+      "System filled and vented — no air in suction line before test",
+    ],
+    prerequisitesId: [
+      "NPSHr pompa (Net Positive Suction Head yang diperlukan) diketahui dari datasheet untuk rentang aliran operasi",
+      "Transmitter tekanan suction (0–10 bar, 4–20 mA) terkabel ke AI2 (terpisah dari discharge AI1)",
+      "Kurva Q-H pompa sudah diinput (tantangan acq580-pump-curve selesai, atau parameter 46.x sudah diset)",
+      "Kalkulasi aliran sensorless aktif — parameter 01.72 tersedia sebagai estimasi aliran",
+      "Sistem terisi dan terventilasi — tidak ada udara di jalur suction sebelum pengujian",
+    ],
+    steps: [
+      {
+        titleEn: "Understand cavitation thresholds from datasheet",
+        titleId: "Pahami ambang batas kavitasi dari datasheet",
+        descEn:
+          "Cavitation occurs when local pressure at the pump impeller eye drops below the vapour pressure of the fluid. From the pump datasheet, read NPSHr at each flow point — NPSHr increases steeply at low and high flow extremes. Also identify the minimum recommended flow (Qmin) below which the pump manufacturer prohibits continuous operation. These two values drive all parameter settings in this challenge.",
+        descId:
+          "Kavitasi terjadi ketika tekanan lokal di mata impeller pompa turun di bawah tekanan uap fluida. Dari datasheet pompa, baca NPSHr di setiap titik aliran — NPSHr meningkat tajam pada aliran rendah dan tinggi. Identifikasi juga aliran minimum yang direkomendasikan (Qmin) di mana pabrikan pompa melarang operasi kontinu. Dua nilai ini mendorong semua pengaturan parameter dalam tantangan ini.",
+      },
+      {
+        titleEn: "Set minimum frequency to enforce Qmin",
+        titleId: "Set frekuensi minimum untuk menegakkan Qmin",
+        descEn:
+          "Using the pump affinity law, calculate the speed (frequency) that corresponds to Qmin. Since Q ∝ n, the minimum frequency f_min = 50 × (Qmin / Qrated). Add a 5–10% safety margin above this calculated value. This is the first layer of anti-cavitation protection: the drive never slows below this speed, ensuring minimum flow is always maintained.",
+        descId:
+          "Menggunakan hukum afinitas pompa, hitung kecepatan (frekuensi) yang sesuai dengan Qmin. Karena Q ∝ n, frekuensi minimum f_min = 50 × (Qmin / Qrated). Tambahkan margin keamanan 5–10% di atas nilai yang dihitung. Ini adalah lapisan pertama perlindungan anti-kavitasi: drive tidak pernah melambat di bawah kecepatan ini, memastikan aliran minimum selalu terjaga.",
+        params: [
+          { code: "30.11", nameEn: "Minimum frequency", nameId: "Frekuensi minimum", setValue: "50 × (Qmin/Qrated) + 10% margin", unit: "Hz", note: "Example: Qmin=20m³/h, Qrated=100m³/h → f_min≈50×0.2×1.1=11 Hz" },
+          { code: "40.02", nameEn: "PID output minimum", nameId: "Output minimum PID", setValue: "= 30.11 value", unit: "Hz", note: "Prevents PID from commanding speed below cavitation floor" },
+        ],
+      },
+      {
+        titleEn: "Configure AI2 supervision for suction pressure",
+        titleId: "Konfigurasi supervisi AI2 untuk tekanan suction",
+        descEn:
+          "Scale AI2 to match the suction pressure transmitter range. Set AI2 supervision to alarm when suction pressure (converted from NPSHa = gauge_pressure_abs − vapour_pressure) drops below NPSHr + 0.5 m safety margin. This is the second protection layer: detecting the symptom before damage occurs.",
+        descId:
+          "Skalakan AI2 untuk menyesuaikan rentang transmitter tekanan suction. Set supervisi AI2 untuk alarm ketika tekanan suction (dikonversi dari NPSHa = tekanan_gauge_abs − tekanan_uap) turun di bawah NPSHr + margin keamanan 0,5 m. Ini adalah lapisan perlindungan kedua: mendeteksi gejala sebelum kerusakan terjadi.",
+        params: [
+          { code: "12.25", nameEn: "AI2 unit selection", nameId: "Pilihan unit AI2", setValue: "2 (mA)", note: "4–20 mA for suction pressure transmitter" },
+          { code: "12.27", nameEn: "AI2 min value", nameId: "Nilai min AI2", setValue: "4.0", unit: "mA", note: "4 mA = 0 bar gauge" },
+          { code: "12.28", nameEn: "AI2 max value", nameId: "Nilai maks AI2", setValue: "20.0", unit: "mA", note: "20 mA = transmitter full scale (e.g. 10 bar)" },
+          { code: "12.31", nameEn: "AI2 supervision mode", nameId: "Mode supervisi AI2", setValue: "3 (Below min → Warning)", note: "3 = generates Warning A-xxxx when signal drops below supervision level" },
+          { code: "12.32", nameEn: "AI2 supervision level", nameId: "Level supervisi AI2", setValue: "NPSHr + 0.5 m margin (in % of range)", unit: "%", note: "Convert NPSHr pressure to % of AI2 range; add 5% safety margin" },
+        ],
+      },
+      {
+        titleEn: "Enable automatic speed reduction on suction pressure drop",
+        titleId: "Aktifkan pengurangan kecepatan otomatis saat tekanan suction turun",
+        descEn:
+          "Configure the drive to automatically reduce speed when the suction pressure alarm fires, rather than immediately tripping. This allows the pump to recover: lower speed = lower flow = higher NPSHa. Link the AI2 supervision output to a speed override that reduces output to the Qmin frequency. If pressure does not recover within the delay time, escalate to a fault trip.",
+        descId:
+          "Konfigurasi drive untuk secara otomatis mengurangi kecepatan saat alarm tekanan suction aktif, bukan langsung trip. Ini memungkinkan pompa pulih: kecepatan lebih rendah = aliran lebih rendah = NPSHa lebih tinggi. Hubungkan output supervisi AI2 ke override kecepatan yang mengurangi output ke frekuensi Qmin. Jika tekanan tidak pulih dalam waktu delay, eskalasi ke fault trip.",
+        params: [
+          { code: "20.51", nameEn: "Run permissive 1 source", nameId: "Sumber izin jalan 1", setValue: "AI2 supervision OK (inverted if needed)", note: "Stops drive if suction pressure critically low — last-resort protection" },
+          { code: "21.06", nameEn: "Auto-restart number of trials", nameId: "Jumlah percobaan auto-restart", setValue: "3", note: "After cavitation trip: try restart 3× before permanent fault" },
+          { code: "21.07", nameEn: "Auto-restart time between trials", nameId: "Waktu antar percobaan auto-restart", setValue: "30", unit: "s", note: "30 s wait allows suction condition to recover between attempts" },
+        ],
+      },
+      {
+        titleEn: "Configure dry-run / low-flow detection via estimated flow",
+        titleId: "Konfigurasi deteksi kering / aliran rendah via estimasi aliran",
+        descEn:
+          "Use the sensorless estimated flow (01.72) as a cavitation indicator. If the pump is running at full speed but flow estimate is near zero, this strongly indicates: closed valve, dry run, or severe cavitation. Set parameter 46.41 low-flow alarm to trigger at ≤15% of rated flow when frequency is above 80% of rated — this pattern is physically impossible unless flow is blocked or lost.",
+        descId:
+          "Gunakan estimasi aliran sensorless (01.72) sebagai indikator kavitasi. Jika pompa berjalan pada kecepatan penuh tetapi estimasi aliran mendekati nol, ini sangat mengindikasikan: katup tertutup, dry run, atau kavitasi parah. Set alarm aliran rendah parameter 46.41 untuk memicu pada ≤15% aliran rated ketika frekuensi di atas 80% rated — pola ini secara fisik tidak mungkin kecuali aliran tersumbat atau hilang.",
+        params: [
+          { code: "46.41", nameEn: "Low flow alarm level", nameId: "Level alarm aliran rendah", setValue: "15% of rated flow", unit: "m³/h", note: "Cavitation / dry-run / closed valve indicator when combined with high speed" },
+          { code: "46.42", nameEn: "Low flow alarm delay", nameId: "Delay alarm aliran rendah", setValue: "8", unit: "s", note: "Delay prevents false alarm during start-up ramp" },
+        ],
+      },
+      {
+        titleEn: "Tune the anti-cavitation response with a controlled test",
+        titleId: "Tuning respon anti-kavitasi dengan pengujian terkontrol",
+        descEn:
+          "With the pump running at rated speed: slowly close the suction isolation valve while observing parameters 12.26 (AI2 actual — suction pressure), 01.72 (estimated flow), and 01.02 (drive output current). Watch for current drop concurrent with flow estimate drop — this is the onset of cavitation. Verify that the warning alarm fires before critical pressure is reached. Note the actual pressure values at alarm point for final parameter adjustment.",
+        descId:
+          "Dengan pompa berjalan pada kecepatan rated: perlahan tutup katup isolasi suction sambil mengamati parameter 12.26 (AI2 aktual — tekanan suction), 01.72 (estimasi aliran), dan 01.02 (arus output drive). Perhatikan penurunan arus bersamaan dengan penurunan estimasi aliran — ini adalah awal kavitasi. Verifikasi bahwa alarm peringatan aktif sebelum tekanan kritis tercapai. Catat nilai tekanan aktual pada titik alarm untuk penyesuaian parameter akhir.",
+        params: [
+          { code: "12.26", nameEn: "AI2 actual value (suction pressure, live)", nameId: "Nilai aktual AI2 (tekanan suction, langsung)", setValue: "Monitor", unit: "% / bar", note: "Watch this drop during suction valve closure test" },
+          { code: "01.02", nameEn: "Motor current actual (live)", nameId: "Arus motor aktual (langsung)", setValue: "Monitor", unit: "A", note: "Current drop + flow drop = cavitation onset signature" },
+        ],
+      },
+      {
+        titleEn: "Set final alarm thresholds and document",
+        titleId: "Set ambang batas alarm akhir dan dokumentasikan",
+        descEn:
+          "Based on the controlled test results, fine-tune the AI2 supervision level to fire 10–15% above the actual cavitation onset pressure observed. Set the fault trip threshold 5% below the alarm level as a final backstop. Document all final parameter values in the panel commissioning record — these are site-specific and must be updated if the pump or pipework changes.",
+        descId:
+          "Berdasarkan hasil pengujian terkontrol, sesuaikan level supervisi AI2 agar aktif 10–15% di atas tekanan onset kavitasi aktual yang diamati. Set ambang batas fault trip 5% di bawah level alarm sebagai backstop terakhir. Dokumentasikan semua nilai parameter akhir dalam catatan commissioning panel — ini spesifik lokasi dan harus diperbarui jika pompa atau perpipaan berubah.",
+        params: [
+          { code: "12.32", nameEn: "AI2 supervision level (final tuned)", nameId: "Level supervisi AI2 (akhir setelah tuning)", setValue: "Onset pressure + 10–15% margin", unit: "%", note: "Fine-tune after live cavitation onset test" },
+        ],
+      },
+    ],
+    limitSettings: [
+      { param: "30.11", nameEn: "Min frequency (Qmin floor)", nameId: "Frekuensi min (lantai Qmin)", typical: "50 × (Qmin/Qrated) × 1.1", unit: "Hz" },
+      { param: "40.02", nameEn: "PID output min", nameId: "Output min PID", typical: "Equal to 30.11", unit: "Hz" },
+      { param: "12.32", nameEn: "AI2 supervision level", nameId: "Level supervisi AI2", typical: "NPSHr + 0.5 m (converted to %)", unit: "%" },
+      { param: "21.07", nameEn: "Auto-restart wait time", nameId: "Waktu tunggu auto-restart", min: "20", max: "60", typical: "30", unit: "s" },
+      { param: "46.41", nameEn: "Low flow alarm level", nameId: "Level alarm aliran rendah", typical: "15% of rated", unit: "m³/h" },
+      { param: "46.42", nameEn: "Low flow alarm delay", nameId: "Delay alarm aliran rendah", min: "5", max: "15", typical: "8", unit: "s" },
+    ],
+    manualRef: "ACQ580 User Manual 3AUA0000085967 — Chapters: AI Supervision, PFC Protection, Pump Characteristics",
+    estimatedMinutes: 35,
+  },
 ];
 
 export const challengesByDrive = (drive: "ACQ580" | "ACS880") =>
