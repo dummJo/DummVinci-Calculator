@@ -10,20 +10,20 @@ import type { VsdChallenge } from "@/data/vsd-challenges";
 
 // ─── Philosophical intro quotes ──────────────────────────────────────────────
 const QUOTES_EN = [
-  "The machine speaks through fault codes. Commissioning is the art of listening.",
-  "A drive misconfigured today becomes a production halt tomorrow. Precision is not optional.",
-  "Between the motor's potential and the load's demand lies the commissioning engineer's discipline.",
-  "In the language of drives — every parameter is a covenant. Every setting is a promise to the system.",
-  "Flow cannot be forced into submission. It must be configured, calibrated, and trusted.",
-  "Steel does not forgive gravity. The crane that moves safely does so through deliberate design.",
+  "Every fault code is a confession the machine has been waiting to make. Commissioning is learning to hear it before it must be spoken.",
+  "Cavitation does not announce itself. It carves the impeller in silence, one collapsed bubble at a time — the way neglect carves every system that was never measured.",
+  "A crane holds ten tonnes the way a promise holds its weight: not by strength alone, but by every torque limit written down before the first lift.",
+  "Production does not stop on the day of the fault. It stopped on the day a parameter was left at default — the line simply took months to notice.",
+  "Water remembers every pressure it was promised. The pump that keeps that promise was configured by an engineer who refused to guess.",
+  "Steel obeys gravity every hour of every day, without exception. Your only argument against it is the parameter set. Make it incorruptible.",
 ];
 const QUOTES_ID = [
-  "Mesin berbicara melalui fault code. Commissioning adalah seni mendengarkannya.",
-  "Drive yang salah konfigurasi hari ini adalah henti produksi esok hari. Presisi bukan pilihan.",
-  "Di antara potensi motor dan tuntutan beban, terdapat disiplin engineer commissioning.",
-  "Dalam bahasa drive — setiap parameter adalah perjanjian. Setiap pengaturan adalah janji kepada sistem.",
-  "Aliran tidak bisa dipaksa tunduk. Ia harus dikonfigurasi, dikalibrasi, dan dipercaya.",
-  "Baja tidak mengampuni gravitasi. Crane yang bergerak selamat melakukannya melalui desain yang disengaja.",
+  "Setiap fault code adalah pengakuan yang sudah lama ingin diucapkan mesin. Commissioning adalah belajar mendengarnya sebelum ia terpaksa bicara.",
+  "Kavitasi tidak pernah mengumumkan kedatangannya. Ia mengukir impeller dalam diam, satu gelembung runtuh demi satu — seperti kelalaian mengukir setiap sistem yang tak pernah diukur.",
+  "Crane menahan sepuluh ton seperti janji menahan beratnya: bukan oleh kekuatan semata, melainkan oleh setiap batas torsi yang dituliskan sebelum angkatan pertama.",
+  "Produksi tidak berhenti pada hari fault terjadi. Ia berhenti pada hari sebuah parameter dibiarkan default — lini hanya butuh berbulan-bulan untuk menyadarinya.",
+  "Air mengingat setiap tekanan yang pernah dijanjikan kepadanya. Pompa yang menepati janji itu dikonfigurasi oleh engineer yang menolak menebak.",
+  "Baja menaati gravitasi setiap jam, setiap hari, tanpa kecuali. Satu-satunya bantahanmu adalah parameter set. Jadikan ia tak tergoyahkan.",
 ];
 
 // ─── Domain SVG — ACQ580 "Aqua Protocol" ────────────────────────────────────
@@ -39,12 +39,16 @@ function AquaSVG() {
         <style>{`
           @keyframes aqFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
           @keyframes aqPulse{0%,100%{opacity:0.5}50%{opacity:1}}
+          @keyframes aqDrift{from{stroke-dashoffset:0}to{stroke-dashoffset:-56}}
+          @keyframes aqWave{0%,100%{opacity:0.3}50%{opacity:0.7}}
           .aq-body{animation:aqFloat 4s ease-in-out infinite}
           .aq-ring{animation:aqPulse 2.5s ease-in-out infinite}
+          .aq-orbit{animation:aqDrift 9s linear infinite}
+          .aq-tide{animation:aqWave 5s ease-in-out infinite}
         `}</style>
       </defs>
       <circle cx="100" cy="108" r="82" stroke="rgba(74,158,255,0.12)" strokeWidth="1"/>
-      <circle cx="100" cy="108" r="70" stroke="rgba(74,158,255,0.06)" strokeWidth="1" strokeDasharray="4 3"/>
+      <circle cx="100" cy="108" r="70" stroke="rgba(74,158,255,0.06)" strokeWidth="1" strokeDasharray="4 3" className="aq-orbit"/>
       <circle cx="100" cy="108" r="72" fill="url(#aqGlow)"/>
       <g className="aq-body">
         {/* Head — water-drop rings */}
@@ -88,7 +92,7 @@ function AquaSVG() {
       </g>
       {/* Base waves */}
       <path d="M20 195 Q35 185 50 195 Q65 205 80 195 Q95 185 110 195 Q125 205 140 195 Q155 185 170 195 Q185 205 200 195"
-        stroke="rgba(74,158,255,0.3)" strokeWidth="1.5" fill="none"/>
+        stroke="rgba(74,158,255,0.3)" strokeWidth="1.5" fill="none" className="aq-tide"/>
       <path d="M10 205 Q28 196 46 205 Q64 214 82 205 Q100 196 118 205 Q136 214 154 205 Q172 196 190 205"
         stroke="rgba(74,158,255,0.12)" strokeWidth="1" fill="none"/>
       {/* Floating circuit nodes */}
@@ -112,13 +116,15 @@ function IronSVG() {
         <style>{`
           @keyframes irPulse{0%,100%{opacity:0.55}50%{opacity:1}}
           @keyframes irRay{0%,100%{opacity:0.15}60%{opacity:0.6}}
+          @keyframes irBreathe{0%,100%{opacity:0.5}50%{opacity:1}}
           .ir-body{animation:irPulse 3s ease-in-out infinite}
           .ir-ray{animation:irRay 2s ease-in-out infinite}
+          .ir-frame{animation:irBreathe 6s ease-in-out infinite}
         `}</style>
       </defs>
       {/* Outer octagonal frame */}
       <polygon points="100,20 148,36 174,82 174,130 148,176 100,192 52,176 26,130 26,82 52,36"
-        stroke="rgba(228,199,89,0.18)" strokeWidth="1" fill="url(#irGlow)"/>
+        stroke="rgba(228,199,89,0.18)" strokeWidth="1" fill="url(#irGlow)" className="ir-frame"/>
       {/* Gear ring around head */}
       {[0,30,60,90,120,150,180,210,240,270,300,330].map((deg,i)=>{
         const r=(deg*Math.PI)/180;
@@ -467,28 +473,28 @@ export default function VsdChallengesPage() {
     {
       key: "ACQ580" as const,
       codename: "AQUA PROTOCOL",
-      subtitle: lang === "id" ? "Kodeks Sang Penjaga Air" : "Codex of the Waterkeeper",
+      subtitle: lang === "id" ? "Kodeks Sang Penjaga Air" : "The Waterkeeper's Codex",
       tagline: lang === "id"
-        ? "Di mana tekanan menjadi ketaatan dan aliran menjadi logika. Kuasai urutan multipump. Taklukkan sinyal analog. Jadikan air tunduk pada kehendak."
-        : "Where pressure becomes obedience and flow becomes logic. Master the multipump sequence. Command the analog signal. Make water serve the will.",
+        ? "Air tidak pernah berdebat — ia berkavitasi, ia memukul pipa, ia menemukan katup yang kau lupakan. Pegang setpoint seperti sumpah. Atur barisan multipump bagai estafet pelari. Jadikan tekanan janji yang ditepati di setiap pipa."
+        : "Water does not argue — it cavitates, it hammers, it finds the valve you forgot. Hold the setpoint as a vow. Marshal the multipump line like a relay of runners. Make pressure a promise kept in every pipe.",
       color: "#4a9eff",
       colorBg: "rgba(74,158,255,0.08)",
       colorBorder: "rgba(74,158,255,0.3)",
       Icon: AquaSVG,
-      tag: lang === "id" ? "Domain Air" : "Water Domain",
+      tag: lang === "id" ? "Daulat Air" : "Dominion of Water",
     },
     {
       key: "ACS880" as const,
       codename: "IRON COVENANT",
-      subtitle: lang === "id" ? "Grimoir Sang Penguasa Crane" : "Grimoire of the Crane Master",
+      subtitle: lang === "id" ? "Grimoir Sang Penguasa Crane" : "The Crane Master's Grimoire",
       tagline: lang === "id"
-        ? "Di mana gravitasi adalah lawan dan torsi adalah tameng. Commission hoist. Taklukkan N5050. Jadikan baja bergerak dengan niat."
-        : "Where gravity is the adversary and torque is the shield. Commission the hoist. Tame the N5050. Make steel move with intention.",
+        ? "Gravitasi tidak pernah kalah — ia hanya menunggu rem terbuka terlalu dini. Buktikan torsi sebelum baja meninggalkan tanah. Kendalikan DTC seperti napas yang ditahan. Setiap angkatan adalah perjanjian dengan beban — ditandatangani dalam parameter, ditepati dalam milimeter."
+        : "Gravity has never lost — it only waits for a brake that opens too soon. Prove the torque before the steel leaves the ground. Command DTC like a held breath. Every lift is a treaty with the load — signed in parameters, honored in millimeters.",
       color: "var(--accent)",
       colorBg: "rgba(228,199,89,0.08)",
       colorBorder: "rgba(228,199,89,0.3)",
       Icon: IronSVG,
-      tag: lang === "id" ? "Domain Berat" : "Heavy-Duty Domain",
+      tag: lang === "id" ? "Daulat Besi" : "Dominion of Iron",
     },
   ], [lang]);
 
@@ -504,6 +510,14 @@ export default function VsdChallengesPage() {
         alignItems: "center", justifyContent: "center",
         padding: "40px 24px", textAlign: "center", position: "relative", overflow: "hidden",
       }}>
+        <style>{`
+          @keyframes vsdRise {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .vsd-rise { animation: vsdRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        `}</style>
+
         {/* Background circuit decoration */}
         <svg style={{ position: "fixed", inset: 0, width: "100%", height: "100%", opacity: 0.04, pointerEvents: "none", zIndex: 0 }}
           viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
@@ -517,11 +531,11 @@ export default function VsdChallengesPage() {
         </svg>
 
         <div style={{ position: "relative", zIndex: 1, maxWidth: 600, display: "flex", flexDirection: "column", alignItems: "center", gap: 40 }}>
-          <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--accent)", letterSpacing: "0.3em", textTransform: "uppercase", opacity: 0.8 }}>
+          <div className="vsd-rise" style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--accent)", letterSpacing: "0.3em", textTransform: "uppercase", opacity: 0.8 }}>
             PTTS PRAXIS · ABB VSD · COMMISSIONING DOCTRINE
           </div>
 
-          <div style={{ minHeight: 96, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div className="vsd-rise" style={{ minHeight: 96, display: "flex", alignItems: "center", justifyContent: "center", animationDelay: "0.15s" }}>
             <p style={{
               fontFamily: "var(--font-body)",
               fontSize: "clamp(15px, 3.5vw, 21px)",
@@ -534,7 +548,7 @@ export default function VsdChallengesPage() {
           </div>
 
           {/* Quote progress dots */}
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className="vsd-rise" style={{ display: "flex", gap: 8, animationDelay: "0.3s" }}>
             {quotes.map((_, i) => (
               <div key={i} style={{
                 width: i === quoteIdx ? 20 : 6, height: 6, borderRadius: 3,
@@ -544,7 +558,7 @@ export default function VsdChallengesPage() {
             ))}
           </div>
 
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+          <div className="vsd-rise" style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", animationDelay: "0.45s" }}>
             <button
               onClick={() => setPhase("select")}
               style={{
@@ -554,7 +568,7 @@ export default function VsdChallengesPage() {
                 letterSpacing: "0.12em", textTransform: "uppercase", border: "none",
               }}
             >
-              {lang === "id" ? "MULAI COMMISSIONING →" : "BEGIN COMMISSIONING →"}
+              {lang === "id" ? "MULAI RITUS COMMISSIONING →" : "BEGIN THE COMMISSIONING RITE →"}
             </button>
             <button
               onClick={() => setPhase("challenges")}
@@ -565,11 +579,11 @@ export default function VsdChallengesPage() {
                 letterSpacing: "0.08em", border: "1px solid rgba(255,255,255,0.12)",
               }}
             >
-              {lang === "id" ? "Lewati intro" : "Skip intro"}
+              {lang === "id" ? "Lewati prolog" : "Skip the prologue"}
             </button>
           </div>
 
-          <Link href="/tutorials" style={{ fontSize: 11, color: "var(--muted)", fontFamily: "var(--font-mono)", textDecoration: "none", opacity: 0.55 }}>
+          <Link className="vsd-rise" href="/tutorials" style={{ fontSize: 11, color: "var(--muted)", fontFamily: "var(--font-mono)", textDecoration: "none", opacity: 0.55, animationDelay: "0.6s" }}>
             ← {lang === "id" ? "Kembali ke Panduan Pengujian" : "Back to Testing Tutorials"}
           </Link>
         </div>
@@ -587,13 +601,15 @@ export default function VsdChallengesPage() {
       }}>
         <div style={{ textAlign: "center", marginBottom: 48, zIndex: 1 }}>
           <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--accent)", letterSpacing: "0.3em", textTransform: "uppercase", opacity: 0.7, marginBottom: 16 }}>
-            {lang === "id" ? "PILIH DOMAIN COMMISSIONING" : "SELECT YOUR COMMISSIONING DOMAIN"}
+            {lang === "id" ? "PILIH DOMAIN YANG AKAN KAU PERTANGGUNGJAWABKAN" : "CHOOSE WHAT YOU WILL ANSWER FOR"}
           </div>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px, 6vw, 42px)", color: "var(--fg)", margin: 0, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
-            {lang === "id" ? "Dua Jalan. Satu Misi." : "Two Paths. One Mission."}
+            {lang === "id" ? "Dua Elemen. Satu Sumpah." : "Two Elements. One Oath."}
           </h1>
           <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 12, fontStyle: "italic" }}>
-            {lang === "id" ? "Geser atau klik untuk memilih domain Anda" : "Swipe or click to choose your domain"}
+            {lang === "id"
+              ? "Geser atau klik — domain yang kau pilih akan memilihmu kembali"
+              : "Swipe or click — the domain you choose will choose you back"}
           </p>
         </div>
 
@@ -693,7 +709,7 @@ export default function VsdChallengesPage() {
             onClick={() => setPhase("intro")}
             style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)", opacity: 0.55 }}
           >
-            ← {lang === "id" ? "Kembali ke intro" : "Back to intro"}
+            ← {lang === "id" ? "Kembali ke prolog" : "Return to the prologue"}
           </button>
         </div>
       </div>
