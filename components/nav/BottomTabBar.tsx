@@ -44,7 +44,7 @@ export default function BottomTabBar() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const seen = localStorage.getItem("dummvinci_v3_0_seen");
+      const seen = localStorage.getItem("dummvinci_v3_0_1_seen");
       if (!seen) {
         // slight delay for dramatic effect
         const tid = setTimeout(() => setShowChangelog(true), 800);
@@ -56,7 +56,7 @@ export default function BottomTabBar() {
   const closeChangelog = () => {
     setShowChangelog(false);
     if (typeof window !== "undefined") {
-      localStorage.setItem("dummvinci_v3_0_seen", "true");
+      localStorage.setItem("dummvinci_v3_0_1_seen", "true");
     }
   };
   const navRef = useRef<HTMLDivElement>(null);

@@ -23,10 +23,16 @@ function TerminalWidget() {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Clock
+    // Clock — skip ticks while the tab is hidden: a backgrounded PWA/kiosk
+    // tab was re-rendering this widget 86 400×/day for nobody. Resync once
+    // on the visibilitychange flip back.
     const timer = setInterval(() => {
-      setTime(formatTime());
+      if (!document.hidden) setTime(formatTime());
     }, 1000);
+    const onVisible = () => {
+      if (!document.hidden) setTime(formatTime());
+    };
+    document.addEventListener("visibilitychange", onVisible);
 
     // Same-origin geolocated IP Fetch (bypasses adblockers)
     fetch("/api/ip", { cache: "no-store" })
@@ -40,7 +46,10 @@ function TerminalWidget() {
         setLoading(false);
       });
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, []);
 
   return (

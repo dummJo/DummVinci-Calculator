@@ -60,4 +60,24 @@ describe("Panel Layout Estimator (IEC 61439-1 Annex N)", () => {
     });
     expect(many.dinRailRows).toBeGreaterThan(few.dinRailRows);
   });
+
+  it("stacks wide frames (>300 mm) in 2 columns so a 4×R6 bank fits a real cabinet", () => {
+    // Regression: a dead ternary (`dim.w > 300 ? 1 : 1`) forced single-column
+    // stacking, putting 4 × R6 at ~2.9 m of VSD height — beyond any standard
+    // 2.2 m enclosure.
+    const result = estimatePanelLayout({
+      vsdFrame: "R6",
+      vsdQty: 4,
+      mcbCount3p: 0,
+      mccbCount: 0,
+      mccbFrame: "S",
+      busbarTier: "none",
+      spacePreference: "compact",
+    });
+
+    const vsdRow = result.breakdown.find(b => b.item.startsWith("VSD"));
+    expect(vsdRow).toBeDefined();
+    // 2 columns → ceil(4/2) = 2 levels of (702 + 30) mm = 1464 mm, not 2928 mm.
+    expect(vsdRow!.heightMm).toBeLessThan(2200);
+  });
 });

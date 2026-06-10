@@ -7,6 +7,18 @@
 const CACHE_NAME = "ptts-praxis-v1";
 const OFFLINE_PAGE = "/";
 
+// Eviction cap — without it the cache grows monotonically (every hashed
+// _next/static chunk from every deploy accumulates) until the browser hits
+// storage quota. FIFO trim is enough here: hot assets get re-cached on next use.
+const MAX_CACHE_ENTRIES = 150;
+
+async function trimCache(cache) {
+  const keys = await cache.keys();
+  if (keys.length > MAX_CACHE_ENTRIES) {
+    await Promise.all(keys.slice(0, keys.length - MAX_CACHE_ENTRIES).map((k) => cache.delete(k)));
+  }
+}
+
 // Assets to pre-cache on install (filled by Next.js build hashes at runtime
 // via the SW fetch handler; we just warm the shell here).
 const PRECACHE_URLS = ["/", "/manifest.webmanifest"];
@@ -90,9 +102,10 @@ async function cacheFirst(request) {
   const cached = await caches.match(request);
   if (cached) {
     // Refresh in background so next visit gets fresh asset.
+    // No clone needed: this response is consumed only by cache.put.
     const cache = await caches.open(CACHE_NAME);
     fetch(request).then((res) => {
-      if (res && res.ok) cache.put(request, res);
+      if (res && res.ok) cache.put(request, res).then(() => trimCache(cache));
     }).catch(() => {});
     return cached;
   }
@@ -100,7 +113,7 @@ async function cacheFirst(request) {
     const response = await fetch(request);
     if (response && response.ok) {
       const cache = await caches.open(CACHE_NAME);
-      cache.put(request, response.clone());
+      cache.put(request, response.clone()).then(() => trimCache(cache));
     }
     return response;
   } catch {
@@ -113,7 +126,7 @@ async function networkFirstWithFallback(request) {
     const response = await fetch(request);
     if (response && response.ok) {
       const cache = await caches.open(CACHE_NAME);
-      cache.put(request, response.clone());
+      cache.put(request, response.clone()).then(() => trimCache(cache));
     }
     return response;
   } catch {
@@ -126,10 +139,13 @@ async function networkFirstWithFallback(request) {
 }
 
 async function staleWhileRevalidate(request) {
+  // Defense-in-depth: the fetch handler already filters non-GET, but this
+  // strategy caches whatever reaches it — keep the invariant local too.
+  if (request.method !== "GET") return fetch(request);
   const cache = await caches.open(CACHE_NAME);
   const cached = await cache.match(request);
   const fetchPromise = fetch(request).then((res) => {
-    if (res && res.ok) cache.put(request, res.clone());
+    if (res && res.ok) cache.put(request, res.clone()).then(() => trimCache(cache));
     return res;
   }).catch(() => null);
   return cached ?? (await fetchPromise) ?? new Response("Offline", { status: 503 });

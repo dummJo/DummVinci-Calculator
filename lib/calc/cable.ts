@@ -135,7 +135,9 @@ export function sizeCable(input: CableInput): CableResult {
     const xPerM = reactanceOhmPerKm(s) / 1000;          // Ω/m, reactance
     const sinPhi = Math.sqrt(Math.max(0, 1 - pf * pf));
     const vdropV = factor * input.current * input.lengthM * (rPerM * pf + xPerM * sinPhi);
-    const vdropPct = (vdropV / input.voltage) * 100;
+    // Floor the divisor: voltage ≤ 0 made vdropPct Infinity, which silently
+    // disqualified every size and returned the "no cable" fallback unexplained.
+    const vdropPct = (vdropV / Math.max(1, input.voltage)) * 100;
 
     if (vdropPct > vdropLimit) continue;
 

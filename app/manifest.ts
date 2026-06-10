@@ -13,8 +13,10 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#F5E6DF",
     theme_color: "#F5E6DF",
     icons: [
-      { src: "/logo-dv-ptts.png", sizes: "512x512", type: "image/png", purpose: "any" },
-      { src: "/logo-dv-ptts.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      // Declare the file's REAL dimensions (1000×1000, verified) — the previous
+      // 512/192 entries lied about size, which degrades install-icon scaling on
+      // both platforms. One truthful ≥512px entry satisfies install criteria.
+      { src: "/logo-dv-ptts.png", sizes: "1000x1000", type: "image/png", purpose: "any" },
     ],
   };
 }

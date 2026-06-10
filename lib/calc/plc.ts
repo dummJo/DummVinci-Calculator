@@ -124,6 +124,9 @@ export interface ModuleAlloc {
   channels: number;
   totalChannels: number;
   powerMa: number;
+  /** Catalog bus draw of ONE module — kept explicit so the local/overflow
+   *  power split never has to re-derive it by dividing the total. */
+  perModulePowerMa: number;
 }
 
 export interface PlcResult {
@@ -167,6 +170,7 @@ export function sizePlcModules(input: PlcInput): PlcResult {
       channels: sm.channels,
       totalChannels: qty * sm.channels,
       powerMa: qty * sm.powerMa,
+      perModulePowerMa: sm.powerMa,
     };
   }
 
@@ -192,7 +196,7 @@ export function sizePlcModules(input: PlcInput): PlcResult {
   const totalPowerMa = allocs.reduce((s, m) => {
     const localQty = Math.max(0, Math.min(m.qty, cpu.maxSmSlots - runningQty));
     runningQty += m.qty;
-    return s + localQty * (m.powerMa / Math.max(1, m.qty));
+    return s + localQty * m.perModulePowerMa;
   }, 0);
   const powerOk = totalPowerMa <= cpu.busPowerMa;
 

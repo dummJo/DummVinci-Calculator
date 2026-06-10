@@ -55,12 +55,16 @@ export function checkSelectivity(input: SelectivityInput): SelectivityResult {
   }
 
   // Electronic trip improves outcome by allowing adjustable short-time delay.
+  // Only raise the limit when discrimination actually exists: an In ratio
+  // < 1.6 stays "none" no matter how smart the upstream trip unit is —
+  // unconditionally overwriting limitKa here used to report a 0.9×Icu
+  // threshold on a pairing that has NO selectivity at any current.
   if (input.upstreamKind === "MCCB-electronic" || input.upstreamKind === "ACB") {
     if (rating === "partial") {
       rating = "full";
       notes.push("Electronic trip with short-time delay (STD) upgrades partial → full");
     }
-    limitKa = input.downstreamIcuKa * 0.9;
+    if (rating !== "none") limitKa = input.downstreamIcuKa * 0.9;
   }
 
   // Compare to actual site fault current.

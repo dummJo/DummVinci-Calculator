@@ -55,7 +55,10 @@ export function sizeBusbar(input: BusbarInput): BusbarResult {
   k = Math.max(0.3, k);
 
   // Two-bar parallel arrangement: assembly capacity ≈ 1.6 × single-bar (mutual heating
-  // costs ~20% vs ideal 2×). Previously this factor was folded into the per-bar
+  // costs ~20% vs ideal 2×). The 1.6 assumes edge-oriented bars at ≥ bar-thickness
+  // spacing per DIN 43671 / IEC 61439-1 practice — flat-stacked or tightly-packed
+  // bars couple worse (~1.4–1.5×), hence the spacing warning pushed below.
+  // Previously this factor was folded into the per-bar
   // current-density search, which undersized each bar to ~62% of what a stand-alone
   // bar would have needed. Now we explicitly search per-bar capacity (using only
   // material + environmental k), then double for the total assembly when segmented.
