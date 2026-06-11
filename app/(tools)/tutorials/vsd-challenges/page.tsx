@@ -268,6 +268,152 @@ function CraneEmblem() {
   );
 }
 
+// ─── Unique philosophical art per challenge ──────────────────────────────────
+const ART_AQ = { main: "#7fb8ff", soft: "#aacfff", deep: "#3c70a8", fill: "#cfe4ff", bg: "rgba(127,184,255,0.07)" };
+const ART_IR = { main: "#ffd97a", soft: "#ffe9a8", deep: "#9a7a28", fill: "#e8b94f", bg: "rgba(255,217,122,0.07)" };
+
+const CARD_EPITHETS: Record<string, { en: string; id: string }> = {
+  "acq580-simple":          { en: "“The first drop teaches the river its direction.”",        id: "“Tetes pertama mengajari sungai arah alirnya.”" },
+  "acq580-multipump":       { en: "“No runner carries the relay alone.”",                     id: "“Tak ada pelari yang membawa estafet sendirian.”" },
+  "acq580-timer":           { en: "“Water that knows the hour never wastes the night.”",      id: "“Air yang mengenal waktu tak menyia-nyiakan malam.”" },
+  "acq580-analog":          { en: "“Between 4 and 20 lies the whole truth.”",                 id: "“Di antara 4 dan 20 terbentang seluruh kebenaran.”" },
+  "acq580-pump-curve":      { en: "“The curve is the river's confession, drawn by hand.”",    id: "“Kurva adalah pengakuan sungai, digambar oleh tangan.”" },
+  "acq580-anti-cavitation": { en: "“What collapses in silence must be guarded in advance.”",  id: "“Yang runtuh dalam diam harus dijaga sejak awal.”" },
+  "acs880-initial":         { en: "“Before commanding the iron, let the iron know itself.”",  id: "“Sebelum memerintah besi, biarkan besi mengenal dirinya.”" },
+  "acs880-n5050":           { en: "“The load never touches the ground it was promised above.”", id: "“Beban tak pernah menyentuh tanah yang dijanjikan di atasnya.”" },
+};
+
+function ChallengeArt({ id, isACS }: { id: string; isACS: boolean }) {
+  const C = isACS ? ART_IR : ART_AQ;
+  const base = { viewBox: "0 0 90 90", width: "70%", fill: "none" as const, xmlns: "http://www.w3.org/2000/svg" };
+
+  switch (id) {
+    // "The First Drop" — every system begins with one motion
+    case "acq580-simple": return (
+      <svg {...base}>
+        <path d="M45 10 C45 10 32 28 32 37 a13 13 0 0 0 26 0 C58 28 45 10 45 10 Z" stroke={C.main} strokeWidth="2" fill={C.bg}/>
+        <circle cx="40" cy="34" r="3" stroke={C.soft} strokeWidth="1" opacity="0.7"/>
+        <line x1="45" y1="54" x2="45" y2="60" stroke={C.soft} strokeWidth="1.2" strokeDasharray="2 3" opacity="0.7"/>
+        <ellipse cx="45" cy="68" rx="9" ry="3" stroke={C.main} strokeWidth="1.6"/>
+        <ellipse cx="45" cy="70" rx="19" ry="5.5" stroke={C.soft} strokeWidth="1.1" opacity="0.6"/>
+        <ellipse cx="45" cy="72" rx="30" ry="8" stroke={C.deep} strokeWidth="0.9" opacity="0.4"/>
+      </svg>
+    );
+    // "The Relay" — harmony of many hands
+    case "acq580-multipump": return (
+      <svg {...base}>
+        <path d="M45 22 L67 58 L23 58 Z" stroke={C.deep} strokeWidth="0.9" strokeDasharray="3 3" opacity="0.5"/>
+        {[[45,22],[67,58],[23,58]].map(([x,y], i) => (
+          <g key={i}>
+            <circle cx={x} cy={y} r="12" stroke={C.main} strokeWidth="1.8" fill={C.bg}/>
+            <line x1={x-5} y1={y} x2={x+5} y2={y} stroke={C.soft} strokeWidth="1.2"/>
+            <line x1={x} y1={y-5} x2={x} y2={y+5} stroke={C.soft} strokeWidth="1.2"/>
+            <circle cx={x} cy={y} r="2" fill={C.fill}/>
+          </g>
+        ))}
+        <path d="M14 80 Q24 74 34 80 Q44 86 54 80 Q64 74 74 80" stroke={C.deep} strokeWidth="1.4" fill="none" opacity="0.7"/>
+      </svg>
+    );
+    // "The Hourglass of Water" — water obeying time
+    case "acq580-timer": return (
+      <svg {...base}>
+        <line x1="26" y1="14" x2="64" y2="14" stroke={C.main} strokeWidth="2.4"/>
+        <line x1="26" y1="78" x2="64" y2="78" stroke={C.main} strokeWidth="2.4"/>
+        <path d="M30 14 L30 26 Q30 38 45 46 Q60 38 60 26 L60 14" stroke={C.main} strokeWidth="1.8" fill="none"/>
+        <path d="M30 78 L30 66 Q30 54 45 46 Q60 54 60 66 L60 78" stroke={C.main} strokeWidth="1.8" fill="none"/>
+        <path d="M34 22 Q40 26 45 24 Q51 22 56 25 L56 26 Q56 35 45 42 Q34 35 34 26 Z" fill={C.bg} stroke={C.soft} strokeWidth="0.8"/>
+        <line x1="45" y1="48" x2="45" y2="68" stroke={C.soft} strokeWidth="1" strokeDasharray="1.5 2.5"/>
+        <path d="M37 72 Q41 69 45 72 Q49 75 53 72" stroke={C.soft} strokeWidth="1.2" fill="none"/>
+      </svg>
+    );
+    // "The Balance of Truth" — translating between two worlds (4–20 mA)
+    case "acq580-analog": return (
+      <svg {...base}>
+        <line x1="45" y1="16" x2="45" y2="70" stroke={C.main} strokeWidth="1.8"/>
+        <line x1="33" y1="76" x2="57" y2="76" stroke={C.main} strokeWidth="2"/>
+        <line x1="18" y1="26" x2="72" y2="26" stroke={C.main} strokeWidth="1.8"/>
+        <circle cx="45" cy="21" r="3.5" stroke={C.soft} strokeWidth="1.4"/>
+        <line x1="18" y1="26" x2="18" y2="42" stroke={C.soft} strokeWidth="0.9"/>
+        <line x1="72" y1="26" x2="72" y2="42" stroke={C.soft} strokeWidth="0.9"/>
+        <path d="M8 42 L28 42 Q26 52 18 52 Q10 52 8 42 Z" stroke={C.main} strokeWidth="1.4" fill={C.bg}/>
+        <path d="M62 42 L82 42 Q80 52 72 52 Q64 52 62 42 Z" stroke={C.main} strokeWidth="1.4" fill={C.bg}/>
+        <path d="M18 29 C18 29 14.5 34.5 14.5 37 a3.5 3.5 0 0 0 7 0 C21.5 34.5 18 29 18 29 Z" stroke={C.soft} strokeWidth="1.2" fill={C.bg}/>
+        <path d="M64 36 L68 36 L70 31 L74 41 L76 36 L80 36" stroke={C.soft} strokeWidth="1.2" fill="none"/>
+      </svg>
+    );
+    // "The Cartographer" — mapping the invisible (Q-H curve)
+    case "acq580-pump-curve": return (
+      <svg {...base}>
+        <line x1="18" y1="14" x2="18" y2="72" stroke={C.main} strokeWidth="1.6"/>
+        <line x1="18" y1="72" x2="78" y2="72" stroke={C.main} strokeWidth="1.6"/>
+        <path d="M18 24 Q44 26 58 40 Q70 52 74 68" stroke={C.soft} strokeWidth="2" fill="none"/>
+        <path d="M18 60 Q36 54 50 44 Q62 36 74 22" stroke={C.deep} strokeWidth="1.2" fill="none" strokeDasharray="4 3" opacity="0.7"/>
+        <circle cx="54" cy="42" r="3.5" stroke={C.fill} strokeWidth="1.6"/>
+        <line x1="54" y1="42" x2="54" y2="72" stroke={C.soft} strokeWidth="0.8" strokeDasharray="2 3" opacity="0.6"/>
+        <line x1="18" y1="42" x2="54" y2="42" stroke={C.soft} strokeWidth="0.8" strokeDasharray="2 3" opacity="0.6"/>
+        <path d="M64 10 L58 26 M64 10 L70 26" stroke={C.main} strokeWidth="1.4"/>
+        <circle cx="64" cy="9" r="2.5" stroke={C.main} strokeWidth="1.2"/>
+      </svg>
+    );
+    // "The Silent Shield" — guarding the impeller from collapsing bubbles
+    case "acq580-anti-cavitation": return (
+      <svg {...base}>
+        <path d="M45 12 L70 20 L70 44 Q70 64 45 76 Q20 64 20 44 L20 20 Z" stroke={C.main} strokeWidth="1.8" fill={C.bg}/>
+        <circle cx="45" cy="42" r="13" stroke={C.soft} strokeWidth="1.6"/>
+        {[0, 72, 144, 216, 288].map(d => {
+          const r = (d * Math.PI) / 180;
+          return <path key={d}
+            d={`M45 42 Q ${45 + Math.cos(r) * 16} ${42 + Math.sin(r) * 16} ${45 + Math.cos(r + 0.7) * 11} ${42 + Math.sin(r + 0.7) * 11}`}
+            stroke={C.soft} strokeWidth="1.2" fill="none"/>;
+        })}
+        <circle cx="45" cy="42" r="3" fill={C.fill}/>
+        <circle cx="11" cy="30" r="3" stroke={C.deep} strokeWidth="1" opacity="0.6"/>
+        <path d="M76 25 l5 5 M81 25 l-5 5" stroke={C.deep} strokeWidth="1.1" opacity="0.6"/>
+        <circle cx="80" cy="48" r="2.2" stroke={C.deep} strokeWidth="1" opacity="0.5"/>
+        <path d="M8 50 l5 5 M13 50 l-5 5" stroke={C.deep} strokeWidth="1.1" opacity="0.5"/>
+      </svg>
+    );
+    // "The Awakened Eye" — the machine learning itself (ID run)
+    case "acs880-initial": return (
+      <svg {...base}>
+        <circle cx="45" cy="45" r="22" stroke={C.main} strokeWidth="2"/>
+        {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(d => {
+          const r = (d * Math.PI) / 180;
+          return <line key={d}
+            x1={45 + Math.cos(r) * 22} y1={45 + Math.sin(r) * 22}
+            x2={45 + Math.cos(r) * 28} y2={45 + Math.sin(r) * 28}
+            stroke={C.main} strokeWidth="1.8"/>;
+        })}
+        <path d="M27 45 Q45 30 63 45 Q45 60 27 45 Z" stroke={C.soft} strokeWidth="1.6" fill={C.bg}/>
+        <circle cx="45" cy="45" r="6.5" stroke={C.soft} strokeWidth="1.4"/>
+        <circle cx="45" cy="45" r="2.5" fill={C.fill}/>
+        <line x1="45" y1="6" x2="45" y2="11" stroke={C.deep} strokeWidth="1" opacity="0.7"/>
+        <line x1="45" y1="79" x2="45" y2="84" stroke={C.deep} strokeWidth="1" opacity="0.7"/>
+        <line x1="6" y1="45" x2="11" y2="45" stroke={C.deep} strokeWidth="1" opacity="0.7"/>
+        <line x1="79" y1="45" x2="84" y2="45" stroke={C.deep} strokeWidth="1" opacity="0.7"/>
+      </svg>
+    );
+    // "The Covenant of Gravity" — the load held above the ground by written law
+    case "acs880-n5050": return (
+      <svg {...base}>
+        {[10, 20, 30].map(y => (
+          <ellipse key={y} cx="45" cy={y} rx="3.5" ry="5.5" stroke={C.main} strokeWidth="1.6"/>
+        ))}
+        <path d="M45 36 L45 42 Q34 52 45 59 Q54 64 57 55" stroke={C.main} strokeWidth="2.4" fill="none" strokeLinecap="round"/>
+        <circle cx="45" cy="69" r="11" stroke={C.soft} strokeWidth="1.6"/>
+        <ellipse cx="45" cy="69" rx="11" ry="4.5" stroke={C.soft} strokeWidth="0.8" opacity="0.6"/>
+        <ellipse cx="45" cy="69" rx="4.5" ry="11" stroke={C.soft} strokeWidth="0.8" opacity="0.6"/>
+        <line x1="18" y1="87" x2="72" y2="87" stroke={C.deep} strokeWidth="1.6" opacity="0.8"/>
+        {[24, 36, 48, 60].map(x => (
+          <line key={x} x1={x} y1="87" x2={x - 4} y2="90" stroke={C.deep} strokeWidth="0.8" opacity="0.5"/>
+        ))}
+      </svg>
+    );
+    default:
+      return isACS ? <CraneEmblem/> : <PumpEmblem/>;
+  }
+}
+
 // ─── Difficulty dots ─────────────────────────────────────────────────────────
 function DifficultyDots({ level }: { level: 1 | 2 | 3 }) {
   return (
@@ -1103,7 +1249,7 @@ export default function VsdChallengesPage() {
                   display: "flex", alignItems: "center", justifyContent: "center",
                   position: "relative", overflow: "hidden",
                 }}>
-                  {isACS ? <CraneEmblem/> : <PumpEmblem/>}
+                  <ChallengeArt id={c.id} isACS={isACS}/>
                   {isDone && (
                     <div style={{
                       position: "absolute", inset: 0,
@@ -1134,9 +1280,17 @@ export default function VsdChallengesPage() {
                   borderRadius: 2, padding: "5px 6px",
                   display: "flex", flexDirection: "column", gap: 3,
                 }}>
+                  {CARD_EPITHETS[c.id] && (
+                    <p style={{
+                      margin: 0, fontSize: 7.5, lineHeight: 1.3, color: "#4a3416", fontStyle: "italic",
+                      display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+                    }}>
+                      {lang === "id" ? CARD_EPITHETS[c.id].id : CARD_EPITHETS[c.id].en}
+                    </p>
+                  )}
                   <p style={{
                     margin: 0, fontSize: 8.5, lineHeight: 1.35, color: "#241808",
-                    display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden",
+                    display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
                   }}>
                     {lang === "id" ? c.objectiveId : c.objectiveEn}
                   </p>
