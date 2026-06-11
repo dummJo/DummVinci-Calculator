@@ -231,6 +231,43 @@ function IronSVG() {
   );
 }
 
+// ─── Card art emblems (Yu-Gi-Oh style artwork) ───────────────────────────────
+function PumpEmblem() {
+  return (
+    <svg viewBox="0 0 90 90" width="68%" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="45" cy="38" r="22" stroke="#7fb8ff" strokeWidth="2"/>
+      {[0, 72, 144, 216, 288].map(d => {
+        const r = (d * Math.PI) / 180;
+        return <path key={d}
+          d={`M45 38 Q ${45 + Math.cos(r) * 27} ${38 + Math.sin(r) * 27} ${45 + Math.cos(r + 0.75) * 18} ${38 + Math.sin(r + 0.75) * 18}`}
+          stroke="#aacfff" strokeWidth="1.6" fill="none"/>;
+      })}
+      <circle cx="45" cy="38" r="5" fill="#cfe4ff"/>
+      <path d="M12 70 Q22 63 32 70 Q42 77 52 70 Q62 63 72 70" stroke="#5d9bdc" strokeWidth="2" fill="none"/>
+      <path d="M16 79 Q26 73 36 79 Q46 85 56 79 Q66 73 76 79" stroke="#3c70a8" strokeWidth="1.4" fill="none" opacity="0.7"/>
+    </svg>
+  );
+}
+
+function CraneEmblem() {
+  return (
+    <svg viewBox="0 0 90 90" width="68%" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="45" cy="32" r="15" stroke="#ffd97a" strokeWidth="2"/>
+      {[0, 45, 90, 135, 180, 225, 270, 315].map(d => {
+        const r = (d * Math.PI) / 180;
+        return <line key={d}
+          x1={45 + Math.cos(r) * 15} y1={32 + Math.sin(r) * 15}
+          x2={45 + Math.cos(r) * 20} y2={32 + Math.sin(r) * 20}
+          stroke="#ffd97a" strokeWidth="2"/>;
+      })}
+      <circle cx="45" cy="32" r="5" fill="#ffe9a8"/>
+      <line x1="45" y1="47" x2="45" y2="60" stroke="#e8b94f" strokeWidth="2"/>
+      <path d="M45 60 Q36 70 45 77 Q53 82 56 73" stroke="#e8b94f" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      <line x1="20" y1="85" x2="70" y2="85" stroke="#9a7a28" strokeWidth="2"/>
+    </svg>
+  );
+}
+
 // ─── Difficulty dots ─────────────────────────────────────────────────────────
 function DifficultyDots({ level }: { level: 1 | 2 | 3 }) {
   return (
@@ -247,7 +284,7 @@ function DifficultyDots({ level }: { level: 1 | 2 | 3 }) {
   );
 }
 
-// ─── Challenge detail ─────────────────────────────────────────────────────────
+// ─── Challenge detail — slide-by-slide tutorial wizard ───────────────────────
 function ChallengeDetail({
   challenge, lang, completedIds, onComplete,
 }: {
@@ -256,208 +293,272 @@ function ChallengeDetail({
   completedIds: string[];
   onComplete: (id: string) => void;
 }) {
-  const [openSteps, setOpenSteps] = useState<Record<number, boolean>>({ 0: true });
+  const [slide, setSlide] = useState(0);
   const [checkedPrereqs, setCheckedPrereqs] = useState<Record<number, boolean>>({});
+  const touchX = useRef<number | null>(null);
   const isCompleted = completedIds.includes(challenge.id);
   const prereqs = lang === "id" ? challenge.prerequisitesId : challenge.prerequisitesEn;
   const isACS = challenge.drive === "ACS880";
-  const accent = isACS ? "#4a9eff" : "var(--accent)";
+  const accent = isACS ? "var(--accent)" : "#4a9eff";
+  const accentSoft = isACS ? "rgba(228,199,89,0.3)" : "rgba(74,158,255,0.3)";
+  const accentBg = isACS ? "rgba(228,199,89,0.12)" : "rgba(74,158,255,0.12)";
+
+  // Slide 0 = prerequisites, 1..N = steps, last = limits + sign-off
+  const totalSlides = challenge.steps.length + 2;
+  const isPrereq = slide === 0;
+  const isFinal = slide === totalSlides - 1;
+  const stepIdx = slide - 1;
+  const step = !isPrereq && !isFinal ? challenge.steps[stepIdx] : null;
+
+  const go = (d: number) => setSlide(s => Math.max(0, Math.min(totalSlides - 1, s + d)));
 
   return (
     <div style={{
       background: "rgba(0,0,0,0.35)", borderRadius: 20,
-      border: `1px solid ${isACS ? "rgba(74,158,255,0.25)" : "rgba(228,199,89,0.25)"}`,
-      padding: 28, display: "flex", flexDirection: "column", gap: 24,
+      border: `1px solid ${accentSoft}`,
+      padding: "24px 24px 18px", display: "flex", flexDirection: "column", gap: 18,
     }}>
+      <style>{`@keyframes vsdSlideIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:translateX(0)}}`}</style>
+
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <span style={{
-              fontSize: 9, fontFamily: "var(--font-mono)", fontWeight: 700, letterSpacing: "0.12em",
-              padding: "3px 8px", borderRadius: 4, textTransform: "uppercase",
-              background: isACS ? "rgba(74,158,255,0.15)" : "rgba(228,199,89,0.15)",
-              color: accent,
-            }}>{challenge.drive}</span>
-            <DifficultyDots level={challenge.difficulty}/>
-            <span style={{ fontSize: 10, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
-              ~{challenge.estimatedMinutes} min · {challenge.steps.length} {lang === "id" ? "langkah" : "steps"}
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <span style={{
+            fontSize: 9, fontFamily: "var(--font-mono)", fontWeight: 700, letterSpacing: "0.12em",
+            padding: "3px 8px", borderRadius: 4, textTransform: "uppercase",
+            background: accentBg, color: accent,
+          }}>{challenge.drive}</span>
+          <DifficultyDots level={challenge.difficulty}/>
+          <span style={{ fontSize: 10, color: "var(--muted)", fontFamily: "var(--font-mono)" }}>
+            ~{challenge.estimatedMinutes} min · {challenge.steps.length} {lang === "id" ? "langkah" : "steps"}
+          </span>
+          {isCompleted && (
+            <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#22c55e" }}>
+              ✓ {lang === "id" ? "Selesai" : "Completed"}
+            </span>
+          )}
+        </div>
+        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 19, color: accent, lineHeight: 1.2 }}>
+          {lang === "id" ? challenge.titleId : challenge.titleEn}
+        </h2>
+      </div>
+
+      {/* Slide progress segments */}
+      <div style={{ display: "flex", gap: 4 }}>
+        {Array.from({ length: totalSlides }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setSlide(i)}
+            aria-label={`Slide ${i + 1}`}
+            style={{
+              flex: 1, height: 6, borderRadius: 3, border: "none", cursor: "pointer", padding: 0,
+              background: i <= slide ? accent : "rgba(255,255,255,0.08)",
+              opacity: i === slide ? 1 : i < slide ? 0.4 : 1,
+              transition: "all 0.25s",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Slide content — swipeable */}
+      <div
+        key={slide}
+        onTouchStart={e => { touchX.current = e.touches[0].clientX; }}
+        onTouchEnd={e => {
+          if (touchX.current === null) return;
+          const dx = e.changedTouches[0].clientX - touchX.current;
+          if (Math.abs(dx) > 60) go(dx < 0 ? 1 : -1);
+          touchX.current = null;
+        }}
+        style={{ minHeight: 300, animation: "vsdSlideIn 0.35s ease both", display: "flex", flexDirection: "column", gap: 16 }}
+      >
+        {/* Slide label */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{
+            width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+            background: accent, color: "#000",
+            fontSize: 12, fontWeight: 800, fontFamily: "var(--font-mono)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>{isPrereq ? "✓" : isFinal ? "★" : stepIdx + 1}</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+              {isPrereq
+                ? (lang === "id" ? "Persiapan" : "Preparation")
+                : isFinal
+                  ? (lang === "id" ? "Penyelesaian" : "Completion")
+                  : `${lang === "id" ? "Langkah" : "Step"} ${stepIdx + 1} / ${challenge.steps.length}`}
+            </span>
+            <span style={{ fontSize: 16, fontWeight: 700, color: "var(--fg)", lineHeight: 1.25 }}>
+              {isPrereq
+                ? (lang === "id" ? "Prasyarat sebelum mulai" : "Prerequisites before you begin")
+                : isFinal
+                  ? (lang === "id" ? "Batas, referensi & tanda selesai" : "Limits, references & sign-off")
+                  : (lang === "id" ? step!.titleId : step!.titleEn)}
             </span>
           </div>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 20, color: accent, lineHeight: 1.2 }}>
-            {lang === "id" ? challenge.titleId : challenge.titleEn}
-          </h2>
-          <p style={{ margin: 0, fontSize: 13, color: "var(--fg-soft)", lineHeight: 1.5, maxWidth: 560 }}>
-            {lang === "id" ? challenge.objectiveId : challenge.objectiveEn}
-          </p>
         </div>
-        <button
-          onClick={() => onComplete(challenge.id)}
-          style={{
-            padding: "10px 18px", borderRadius: 10, cursor: "pointer",
-            fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
-            background: isCompleted ? "rgba(34,197,94,0.15)" : "transparent",
-            color: isCompleted ? "#22c55e" : accent,
-            border: `1px solid ${isCompleted ? "rgba(34,197,94,0.4)" : accent}`,
-            transition: "all 0.2s", whiteSpace: "nowrap",
-          }}
-        >
-          {isCompleted
-            ? (lang === "id" ? "✓ Selesai" : "✓ Completed")
-            : (lang === "id" ? "Tandai Selesai" : "Mark Complete")}
-        </button>
-      </div>
 
-      {/* Prerequisites */}
-      <div>
-        <div style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
-          {lang === "id" ? "Prasyarat" : "Prerequisites"}
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {prereqs.map((p, i) => (
-            <label key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", cursor: "pointer" }}>
-              <input
-                type="checkbox"
-                checked={!!checkedPrereqs[i]}
-                onChange={e => setCheckedPrereqs(prev => ({ ...prev, [i]: e.target.checked }))}
-                style={{ marginTop: 3, accentColor: accent }}
-              />
-              <span style={{
-                fontSize: 13, color: checkedPrereqs[i] ? "var(--muted)" : "var(--fg-soft)",
-                lineHeight: 1.4, textDecoration: checkedPrereqs[i] ? "line-through" : "none",
-                transition: "color 0.2s",
-              }}>{p}</span>
-            </label>
-          ))}
-        </div>
-      </div>
+        {/* ── Slide 0: prerequisites checklist ── */}
+        {isPrereq && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingLeft: 4 }}>
+            <p style={{ margin: 0, fontSize: 13, color: "var(--fg-soft)", lineHeight: 1.55 }}>
+              {lang === "id" ? challenge.objectiveId : challenge.objectiveEn}
+            </p>
+            {prereqs.map((p, i) => (
+              <label key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={!!checkedPrereqs[i]}
+                  onChange={e => setCheckedPrereqs(prev => ({ ...prev, [i]: e.target.checked }))}
+                  style={{ marginTop: 3, accentColor: accent }}
+                />
+                <span style={{
+                  fontSize: 13, color: checkedPrereqs[i] ? "var(--muted)" : "var(--fg-soft)",
+                  lineHeight: 1.4, textDecoration: checkedPrereqs[i] ? "line-through" : "none",
+                  transition: "color 0.2s",
+                }}>{p}</span>
+              </label>
+            ))}
+          </div>
+        )}
 
-      {/* Steps accordion */}
-      <div>
-        <div style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
-          {lang === "id" ? "Langkah Commissioning" : "Commissioning Steps"}
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {challenge.steps.map((step, i) => {
-            const open = !!openSteps[i];
-            return (
-              <div key={i} style={{
-                borderRadius: 12, overflow: "hidden", transition: "border-color 0.2s",
-                border: `1px solid ${open
-                  ? (isACS ? "rgba(74,158,255,0.3)" : "rgba(228,199,89,0.3)")
-                  : "rgba(255,255,255,0.05)"}`,
-                background: open ? "rgba(255,255,255,0.025)" : "transparent",
-              }}>
-                <button
-                  onClick={() => setOpenSteps(prev => ({ ...prev, [i]: !open }))}
-                  style={{
-                    width: "100%", padding: "12px 16px", background: "none", border: "none",
-                    cursor: "pointer", display: "flex", gap: 12, alignItems: "center", textAlign: "left",
-                  }}
-                >
-                  <span style={{
-                    width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
-                    background: open ? accent : "rgba(255,255,255,0.08)",
-                    color: open ? "#000" : "var(--muted)",
-                    fontSize: 10, fontWeight: 800, fontFamily: "var(--font-mono)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "all 0.2s",
-                  }}>{i + 1}</span>
-                  <span style={{ fontSize: 14, fontWeight: open ? 700 : 400, color: open ? "var(--fg)" : "var(--fg-soft)", flex: 1 }}>
-                    {lang === "id" ? step.titleId : step.titleEn}
-                  </span>
-                  <span style={{ fontSize: 11, color: "var(--muted)", opacity: 0.5 }}>{open ? "▲" : "▼"}</span>
-                </button>
-                {open && (
-                  <div style={{ padding: "0 16px 16px 50px", display: "flex", flexDirection: "column", gap: 12 }}>
-                    <p style={{ margin: 0, fontSize: 13, color: "var(--fg-soft)", lineHeight: 1.6 }}>
-                      {lang === "id" ? step.descId : step.descEn}
-                    </p>
-                    {step.params && step.params.length > 0 && (
-                      <div style={{ overflowX: "auto" }}>
-                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                          <thead>
-                            <tr>
-                              {["Code", "Parameter", lang === "id" ? "Nilai Set" : "Set Value", "Unit", lang === "id" ? "Catatan" : "Note"].map(h => (
-                                <th key={h} style={{
-                                  padding: "6px 10px", textAlign: "left", fontSize: 9,
-                                  fontFamily: "var(--font-mono)", color: "var(--muted)",
-                                  textTransform: "uppercase", letterSpacing: "0.08em",
-                                  borderBottom: "1px solid rgba(255,255,255,0.06)",
-                                  whiteSpace: "nowrap",
-                                }}>{h}</th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {step.params.map((p, pi) => (
-                              <tr key={pi} style={{ background: pi % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent" }}>
-                                <td style={{ padding: "7px 10px", fontFamily: "var(--font-mono)", color: accent, fontWeight: 700, fontSize: 12, whiteSpace: "nowrap" }}>{p.code}</td>
-                                <td style={{ padding: "7px 10px", color: "var(--fg-soft)" }}>{lang === "id" ? p.nameId : p.nameEn}</td>
-                                <td style={{ padding: "7px 10px", fontFamily: "var(--font-mono)", color: "var(--fg)", fontWeight: 600 }}>{p.setValue}</td>
-                                <td style={{ padding: "7px 10px", color: "var(--muted)", whiteSpace: "nowrap" }}>{p.unit ?? "—"}</td>
-                                <td style={{ padding: "7px 10px", color: "var(--muted)", fontStyle: "italic", fontSize: 11 }}>{p.note ?? "—"}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-                )}
+        {/* ── Step slides ── */}
+        {step && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, paddingLeft: 4 }}>
+            <p style={{ margin: 0, fontSize: 14, color: "var(--fg-soft)", lineHeight: 1.65 }}>
+              {lang === "id" ? step.descId : step.descEn}
+            </p>
+            {step.params && step.params.length > 0 && (
+              <div style={{ overflowX: "auto", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                  <thead>
+                    <tr style={{ background: "rgba(255,255,255,0.03)" }}>
+                      {["Code", "Parameter", lang === "id" ? "Nilai Set" : "Set Value", "Unit", lang === "id" ? "Catatan" : "Note"].map(h => (
+                        <th key={h} style={{
+                          padding: "7px 10px", textAlign: "left", fontSize: 9,
+                          fontFamily: "var(--font-mono)", color: "var(--muted)",
+                          textTransform: "uppercase", letterSpacing: "0.08em",
+                          borderBottom: "1px solid rgba(255,255,255,0.06)",
+                          whiteSpace: "nowrap",
+                        }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {step.params.map((p, pi) => (
+                      <tr key={pi} style={{ background: pi % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent" }}>
+                        <td style={{ padding: "7px 10px", fontFamily: "var(--font-mono)", color: accent, fontWeight: 700, fontSize: 12, whiteSpace: "nowrap" }}>{p.code}</td>
+                        <td style={{ padding: "7px 10px", color: "var(--fg-soft)" }}>{lang === "id" ? p.nameId : p.nameEn}</td>
+                        <td style={{ padding: "7px 10px", fontFamily: "var(--font-mono)", color: "var(--fg)", fontWeight: 600 }}>{p.setValue}</td>
+                        <td style={{ padding: "7px 10px", color: "var(--muted)", whiteSpace: "nowrap" }}>{p.unit ?? "—"}</td>
+                        <td style={{ padding: "7px 10px", color: "var(--muted)", fontStyle: "italic", fontSize: 11 }}>{p.note ?? "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            );
-          })}
-        </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Final slide: limits + manual ref + sign-off ── */}
+        {isFinal && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 18, paddingLeft: 4 }}>
+            {challenge.limitSettings.length > 0 && (
+              <div>
+                <div style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>
+                  {lang === "id" ? "Referensi Pengaturan Batas" : "Limit Settings Reference"}
+                </div>
+                <div style={{ overflowX: "auto", borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                    <thead>
+                      <tr style={{ background: "rgba(255,255,255,0.03)" }}>
+                        {["Code", lang === "id" ? "Nama" : "Name", "Min", "Max", lang === "id" ? "Tipikal" : "Typical", "Unit"].map(h => (
+                          <th key={h} style={{
+                            padding: "8px 12px", textAlign: "left", fontSize: 9,
+                            fontFamily: "var(--font-mono)", color: "var(--muted)",
+                            textTransform: "uppercase", letterSpacing: "0.08em",
+                            borderBottom: "1px solid rgba(255,255,255,0.06)",
+                          }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {challenge.limitSettings.map((ls, i) => (
+                        <tr key={i} style={{ background: i % 2 === 0 ? "rgba(255,255,255,0.015)" : "transparent" }}>
+                          <td style={{ padding: "7px 12px", fontFamily: "var(--font-mono)", color: accent, fontWeight: 700, fontSize: 12 }}>{ls.param}</td>
+                          <td style={{ padding: "7px 12px", color: "var(--fg-soft)" }}>{lang === "id" ? ls.nameId : ls.nameEn}</td>
+                          <td style={{ padding: "7px 12px", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{ls.min ?? "—"}</td>
+                          <td style={{ padding: "7px 12px", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{ls.max ?? "—"}</td>
+                          <td style={{ padding: "7px 12px", color: "var(--fg)", fontFamily: "var(--font-mono)", fontWeight: 600 }}>{ls.typical ?? "—"}</td>
+                          <td style={{ padding: "7px 12px", color: "var(--muted)" }}>{ls.unit ?? "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            <div style={{
+              padding: "10px 14px", borderRadius: 8,
+              background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(255,255,255,0.08)",
+              display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap",
+            }}>
+              <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                {lang === "id" ? "Ref. Manual" : "Manual Ref"}:
+              </span>
+              <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--fg-soft)" }}>{challenge.manualRef}</span>
+            </div>
+
+            <button
+              onClick={() => onComplete(challenge.id)}
+              style={{
+                padding: "14px 24px", borderRadius: 12, cursor: "pointer", alignSelf: "flex-start",
+                fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 800, letterSpacing: "0.1em",
+                background: isCompleted ? "rgba(34,197,94,0.15)" : accent,
+                color: isCompleted ? "#22c55e" : "#000",
+                border: `1px solid ${isCompleted ? "rgba(34,197,94,0.4)" : "transparent"}`,
+                transition: "all 0.2s", textTransform: "uppercase",
+              }}
+            >
+              {isCompleted
+                ? (lang === "id" ? "✓ Selesai — klik untuk batalkan" : "✓ Completed — click to undo")
+                : (lang === "id" ? "Tandai Selesai ★" : "Mark Complete ★")}
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Limit settings */}
-      {challenge.limitSettings.length > 0 && (
-        <div>
-          <div style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
-            {lang === "id" ? "Referensi Pengaturan Batas" : "Limit Settings Reference"}
-          </div>
-          <div style={{ overflowX: "auto", borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-              <thead>
-                <tr style={{ background: "rgba(255,255,255,0.03)" }}>
-                  {["Code", lang === "id" ? "Nama" : "Name", "Min", "Max", lang === "id" ? "Tipikal" : "Typical", "Unit"].map(h => (
-                    <th key={h} style={{
-                      padding: "8px 12px", textAlign: "left", fontSize: 9,
-                      fontFamily: "var(--font-mono)", color: "var(--muted)",
-                      textTransform: "uppercase", letterSpacing: "0.08em",
-                      borderBottom: "1px solid rgba(255,255,255,0.06)",
-                    }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {challenge.limitSettings.map((ls, i) => (
-                  <tr key={i} style={{ background: i % 2 === 0 ? "rgba(255,255,255,0.015)" : "transparent" }}>
-                    <td style={{ padding: "7px 12px", fontFamily: "var(--font-mono)", color: accent, fontWeight: 700, fontSize: 12 }}>{ls.param}</td>
-                    <td style={{ padding: "7px 12px", color: "var(--fg-soft)" }}>{lang === "id" ? ls.nameId : ls.nameEn}</td>
-                    <td style={{ padding: "7px 12px", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{ls.min ?? "—"}</td>
-                    <td style={{ padding: "7px 12px", color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{ls.max ?? "—"}</td>
-                    <td style={{ padding: "7px 12px", color: "var(--fg)", fontFamily: "var(--font-mono)", fontWeight: 600 }}>{ls.typical ?? "—"}</td>
-                    <td style={{ padding: "7px 12px", color: "var(--muted)" }}>{ls.unit ?? "—"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Manual ref */}
+      {/* Slide navigation bar */}
       <div style={{
-        padding: "10px 14px", borderRadius: 8,
-        background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(255,255,255,0.08)",
-        display: "flex", gap: 8, alignItems: "center",
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.06)",
       }}>
-        <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-          {lang === "id" ? "Ref. Manual" : "Manual Ref"}:
+        <button
+          onClick={() => go(-1)}
+          disabled={slide === 0}
+          style={{
+            padding: "10px 18px", borderRadius: 10, cursor: slide === 0 ? "default" : "pointer",
+            background: "transparent", border: "1px solid rgba(255,255,255,0.1)",
+            color: slide === 0 ? "rgba(255,255,255,0.18)" : "var(--fg-soft)",
+            fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
+          }}
+        >← {lang === "id" ? "Sebelumnya" : "Previous"}</button>
+        <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)" }}>
+          {slide + 1} / {totalSlides}
         </span>
-        <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--fg-soft)" }}>{challenge.manualRef}</span>
+        <button
+          onClick={() => go(1)}
+          disabled={isFinal}
+          style={{
+            padding: "10px 18px", borderRadius: 10, cursor: isFinal ? "default" : "pointer",
+            background: isFinal ? "transparent" : accent,
+            border: isFinal ? "1px solid rgba(255,255,255,0.1)" : "1px solid transparent",
+            color: isFinal ? "rgba(255,255,255,0.18)" : "#000",
+            fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 800, letterSpacing: "0.06em",
+          }}
+        >{lang === "id" ? "Berikutnya" : "Next"} →</button>
       </div>
     </div>
   );
@@ -923,43 +1024,131 @@ export default function VsdChallengesPage() {
         }}/>
       </div>
 
-      {/* Challenge cards grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16, marginBottom: 24 }}>
+      {/* Challenge cards grid — Yu-Gi-Oh trading card style */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(185px, 1fr))", gap: 18, marginBottom: 28 }}>
         {domainChallenges.map(c => {
           const isSelected = selectedChallenge?.id === c.id;
           const isDone = completedIds.includes(c.id);
           const isACS = c.drive === "ACS880";
-          const accent = isACS ? "#4a9eff" : "var(--accent)";
           return (
             <button
               key={c.id}
               onClick={() => selectChallenge(c)}
               style={{
-                padding: 20, borderRadius: 16, cursor: "pointer", textAlign: "left",
-                background: isSelected ? (isACS ? "rgba(74,158,255,0.1)" : "rgba(228,199,89,0.1)") : "rgba(255,255,255,0.03)",
-                border: `1.5px solid ${isSelected ? (isACS ? "rgba(74,158,255,0.4)" : "rgba(228,199,89,0.4)") : "rgba(255,255,255,0.06)"}`,
-                boxShadow: isDone ? "0 0 20px rgba(34,197,94,0.08)" : "none",
-                transition: "all 0.2s", position: "relative", overflow: "hidden",
+                aspectRatio: "59 / 86", padding: 0, border: "none", cursor: "pointer",
+                background: "transparent", textAlign: "left", position: "relative",
+                transform: isSelected ? "translateY(-8px) scale(1.04)" : "none",
+                transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1), filter 0.25s",
+                filter: isSelected
+                  ? `drop-shadow(0 14px 28px ${isACS ? "rgba(228,199,89,0.35)" : "rgba(74,158,255,0.35)"})`
+                  : "drop-shadow(0 6px 14px rgba(0,0,0,0.45))",
               }}
             >
-              {isDone && (
-                <div style={{ position: "absolute", top: 0, right: 0, width: 0, height: 0, borderStyle: "solid", borderWidth: "0 36px 36px 0", borderColor: "transparent rgba(34,197,94,0.5) transparent transparent" }}>
-                  <span style={{ position: "absolute", top: 4, right: -28, fontSize: 10, color: "#fff" }}>✓</span>
+              {/* Outer card frame */}
+              <div style={{
+                position: "absolute", inset: 0, borderRadius: 10,
+                background: isACS
+                  ? "linear-gradient(155deg,#caa64b 0%,#9a7a28 45%,#6e5418 100%)"
+                  : "linear-gradient(155deg,#5b8fc9 0%,#2e5f96 45%,#1c3f6b 100%)",
+                border: `1px solid ${isSelected ? (isACS ? "#ffd97a" : "#9cc8ff") : "rgba(0,0,0,0.5)"}`,
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.4)",
+                padding: 7, boxSizing: "border-box",
+                display: "flex", flexDirection: "column", gap: 4,
+              }}>
+                {/* Name bar + attribute orb */}
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 4,
+                  background: "linear-gradient(180deg,#f6eed6,#dcc89a)",
+                  borderRadius: 3, padding: "4px 6px",
+                  border: "1px solid rgba(0,0,0,0.4)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
+                }}>
+                  <span style={{
+                    flex: 1, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10.5,
+                    lineHeight: 1.15, color: "#1c1206",
+                    display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+                  }}>
+                    {lang === "id" ? c.titleId : c.titleEn}
+                  </span>
+                  <div style={{
+                    width: 17, height: 17, borderRadius: "50%", flexShrink: 0,
+                    background: isACS
+                      ? "radial-gradient(circle at 35% 30%,#ffe9a8,#b8860b)"
+                      : "radial-gradient(circle at 35% 30%,#bfe0ff,#1d6fd1)",
+                    border: "1px solid rgba(0,0,0,0.45)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 9, color: "#fff", fontWeight: 900,
+                    textShadow: "0 1px 1px rgba(0,0,0,0.6)",
+                  }}>{isACS ? "⚙" : "≋"}</div>
                 </div>
-              )}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                <DifficultyDots level={c.difficulty}/>
-                <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--muted)" }}>~{c.estimatedMinutes} min</span>
-              </div>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 15, color: isSelected ? accent : "var(--fg)", marginBottom: 8, lineHeight: 1.3 }}>
-                {lang === "id" ? c.titleId : c.titleEn}
-              </div>
-              <p style={{ margin: 0, fontSize: 12, color: "var(--muted)", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                {lang === "id" ? c.objectiveId : c.objectiveEn}
-              </p>
-              <div style={{ marginTop: 12, fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)" }}>
-                {c.steps.length} {lang === "id" ? "langkah" : "steps"}
-                {isSelected && <span style={{ color: accent, marginLeft: 8 }}>▲ {lang === "id" ? "Buka" : "Open"}</span>}
+
+                {/* Level stars */}
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: 2, padding: "0 3px" }}>
+                  {Array.from({ length: c.difficulty }).map((_, i) => (
+                    <span key={i} style={{
+                      fontSize: 11, color: "#ffd34d", lineHeight: 1,
+                      textShadow: "0 0 3px rgba(180,80,0,0.9), 0 1px 1px rgba(0,0,0,0.6)",
+                    }}>★</span>
+                  ))}
+                </div>
+
+                {/* Art box */}
+                <div style={{
+                  flex: 1, minHeight: 0, margin: "0 3px",
+                  border: "2px solid #2a1c08",
+                  boxShadow: "inset 0 0 18px rgba(0,0,0,0.55)",
+                  background: isACS
+                    ? "radial-gradient(circle at 50% 38%, #4a3a14, #181006 75%)"
+                    : "radial-gradient(circle at 50% 38%, #14365c, #07111e 75%)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  position: "relative", overflow: "hidden",
+                }}>
+                  {isACS ? <CraneEmblem/> : <PumpEmblem/>}
+                  {isDone && (
+                    <div style={{
+                      position: "absolute", inset: 0,
+                      background: "linear-gradient(120deg, transparent 30%, rgba(120,255,180,0.12) 50%, transparent 70%)",
+                      display: "flex", alignItems: "flex-start", justifyContent: "flex-end", padding: 4,
+                    }}>
+                      <span style={{
+                        fontSize: 9, background: "rgba(34,197,94,0.85)", color: "#fff",
+                        borderRadius: 3, padding: "1px 5px", fontWeight: 800,
+                      }}>✓</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Type line */}
+                <div style={{
+                  fontFamily: "var(--font-mono)", fontSize: 7, fontWeight: 800, letterSpacing: "0.05em",
+                  color: "#1c1206", background: "linear-gradient(180deg,#f6eed6,#dcc89a)",
+                  border: "1px solid rgba(0,0,0,0.4)", borderRadius: 2, padding: "2px 5px",
+                  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                }}>
+                  [ {isACS ? "IRON / CRANE" : "AQUA / PUMP"} / COMMISSIONING ]
+                </div>
+
+                {/* Effect text box + stats */}
+                <div style={{
+                  background: "#efe4c4", border: "1px solid rgba(0,0,0,0.4)",
+                  borderRadius: 2, padding: "5px 6px",
+                  display: "flex", flexDirection: "column", gap: 3,
+                }}>
+                  <p style={{
+                    margin: 0, fontSize: 8.5, lineHeight: 1.35, color: "#241808",
+                    display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden",
+                  }}>
+                    {lang === "id" ? c.objectiveId : c.objectiveEn}
+                  </p>
+                  <div style={{
+                    borderTop: "1px solid rgba(0,0,0,0.35)", paddingTop: 3,
+                    display: "flex", justifyContent: "flex-end", gap: 9,
+                    fontFamily: "var(--font-mono)", fontSize: 8, fontWeight: 800, color: "#1c1206",
+                  }}>
+                    <span>STEP/{c.steps.length}</span>
+                    <span>MIN/{c.estimatedMinutes}</span>
+                  </div>
+                </div>
               </div>
             </button>
           );
@@ -970,6 +1159,7 @@ export default function VsdChallengesPage() {
       <div ref={detailRef}>
         {selectedChallenge && (
           <ChallengeDetail
+            key={selectedChallenge.id}
             challenge={selectedChallenge}
             lang={lang}
             completedIds={completedIds}
@@ -982,8 +1172,8 @@ export default function VsdChallengesPage() {
 
       <style jsx global>{`
         @media (max-width:640px) {
-          div[style*="repeat(auto-fill, minmax(280px, 1fr))"] {
-            grid-template-columns: 1fr !important;
+          div[style*="repeat(auto-fill, minmax(185px, 1fr))"] {
+            grid-template-columns: repeat(2, 1fr) !important;
           }
         }
       `}</style>
