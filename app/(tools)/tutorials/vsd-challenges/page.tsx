@@ -441,7 +441,7 @@ function ChallengeDetail({
 }) {
   const [slide, setSlide] = useState(0);
   const [checkedPrereqs, setCheckedPrereqs] = useState<Record<number, boolean>>({});
-  const touchX = useRef<number | null>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const isCompleted = completedIds.includes(challenge.id);
   const prereqs = lang === "id" ? challenge.prerequisitesId : challenge.prerequisitesEn;
   const isACS = challenge.drive === "ACS880";
@@ -509,12 +509,18 @@ function ChallengeDetail({
       {/* Slide content — swipeable */}
       <div
         key={slide}
-        onTouchStart={e => { touchX.current = e.touches[0].clientX; }}
+        onTouchStart={e => {
+          // Don't hijack swipes that start inside scrollable tables
+          if ((e.target as HTMLElement).closest("[data-noswipe]")) { touchStart.current = null; return; }
+          touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }}
         onTouchEnd={e => {
-          if (touchX.current === null) return;
-          const dx = e.changedTouches[0].clientX - touchX.current;
-          if (Math.abs(dx) > 60) go(dx < 0 ? 1 : -1);
-          touchX.current = null;
+          if (touchStart.current === null) return;
+          const dx = e.changedTouches[0].clientX - touchStart.current.x;
+          const dy = e.changedTouches[0].clientY - touchStart.current.y;
+          touchStart.current = null;
+          // Only a deliberate horizontal swipe: long distance AND clearly more horizontal than vertical
+          if (Math.abs(dx) > 110 && Math.abs(dx) > Math.abs(dy) * 2) go(dx < 0 ? 1 : -1);
         }}
         style={{ minHeight: 300, animation: "vsdSlideIn 0.35s ease both", display: "flex", flexDirection: "column", gap: 16 }}
       >
@@ -575,7 +581,7 @@ function ChallengeDetail({
               {lang === "id" ? step.descId : step.descEn}
             </p>
             {step.params && step.params.length > 0 && (
-              <div style={{ overflowX: "auto", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)" }}>
+              <div data-noswipe style={{ overflowX: "auto", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                   <thead>
                     <tr style={{ background: "rgba(255,255,255,0.03)" }}>
@@ -615,7 +621,7 @@ function ChallengeDetail({
                 <div style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>
                   {lang === "id" ? "Referensi Pengaturan Batas" : "Limit Settings Reference"}
                 </div>
-                <div style={{ overflowX: "auto", borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div data-noswipe style={{ overflowX: "auto", borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                     <thead>
                       <tr style={{ background: "rgba(255,255,255,0.03)" }}>
