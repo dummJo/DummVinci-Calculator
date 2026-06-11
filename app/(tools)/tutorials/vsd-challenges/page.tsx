@@ -26,155 +26,207 @@ const QUOTES_ID = [
   "Baja menaati gravitasi setiap jam, setiap hari, tanpa kecuali. Satu-satunya bantahanmu adalah parameter set. Jadikan ia tak tergoyahkan.",
 ];
 
-// ─── Domain SVG — ACQ580 "Aqua Protocol" ────────────────────────────────────
+// ─── Domain SVG — ACQ580 "Aqua Protocol" — Da Vinci sketch style ─────────────
 function AquaSVG() {
   return (
-    <svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style={{ width: "100%", maxWidth: 160, height: "auto" }}>
+    <svg viewBox="0 0 200 230" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ width: "100%", maxWidth: 150, height: "auto" }}>
       <defs>
-        <radialGradient id="aqGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#4a9eff" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#4a9eff" stopOpacity="0" />
-        </radialGradient>
         <style>{`
-          @keyframes aqFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-          @keyframes aqPulse{0%,100%{opacity:0.5}50%{opacity:1}}
-          @keyframes aqDrift{from{stroke-dashoffset:0}to{stroke-dashoffset:-56}}
-          @keyframes aqWave{0%,100%{opacity:0.3}50%{opacity:0.7}}
-          .aq-body{animation:aqFloat 4s ease-in-out infinite}
-          .aq-ring{animation:aqPulse 2.5s ease-in-out infinite}
-          .aq-orbit{animation:aqDrift 9s linear infinite}
-          .aq-tide{animation:aqWave 5s ease-in-out infinite}
+          @keyframes aqSkFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+          .aqsk-body{animation:aqSkFloat 5s ease-in-out infinite}
         `}</style>
       </defs>
-      <circle cx="100" cy="108" r="82" stroke="rgba(74,158,255,0.12)" strokeWidth="1"/>
-      <circle cx="100" cy="108" r="70" stroke="rgba(74,158,255,0.06)" strokeWidth="1" strokeDasharray="4 3" className="aq-orbit"/>
-      <circle cx="100" cy="108" r="72" fill="url(#aqGlow)"/>
-      <g className="aq-body">
-        {/* Head — water-drop rings */}
-        <circle cx="100" cy="52" r="22" stroke="#4a9eff" strokeWidth="1.5" fill="rgba(74,158,255,0.07)" className="aq-ring"/>
-        <circle cx="100" cy="52" r="13" stroke="#4a9eff" strokeWidth="1" fill="rgba(74,158,255,0.12)"/>
-        <circle cx="100" cy="52" r="5" fill="#4a9eff" opacity="0.9"/>
-        {/* Tick marks around head */}
-        {[0,60,120,180,240,300].map((deg) => {
-          const r=(deg*Math.PI)/180;
-          return <line key={deg}
-            x1={100+Math.cos(r)*16} y1={52+Math.sin(r)*16}
-            x2={100+Math.cos(r)*22} y2={52+Math.sin(r)*22}
-            stroke="#4a9eff" strokeWidth="1" opacity="0.6"/>;
+      {/* Vitruvian construction circle */}
+      <circle cx="100" cy="112" r="88" stroke="#4a2c08" strokeWidth="0.5" strokeDasharray="2.5 4" opacity="0.28"/>
+      <circle cx="100" cy="112" r="68" stroke="#4a2c08" strokeWidth="0.3" strokeDasharray="1 5" opacity="0.15"/>
+      {/* Proportion guide lines */}
+      <line x1="12" y1="112" x2="188" y2="112" stroke="#6b3f12" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.18"/>
+      <line x1="100" y1="24" x2="100" y2="210" stroke="#6b3f12" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.18"/>
+
+      <g className="aqsk-body">
+        {/* Head — circle construction + cross-hatch shade */}
+        <circle cx="100" cy="46" r="21" stroke="#4a2c08" strokeWidth="1.2" fill="rgba(180,130,60,0.12)"/>
+        <circle cx="100" cy="46" r="11" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.45"/>
+        {/* Cross-hatch right side of head */}
+        <line x1="107" y1="36" x2="119" y2="48" stroke="#6b3f12" strokeWidth="0.5" opacity="0.38"/>
+        <line x1="111" y1="38" x2="121" y2="52" stroke="#6b3f12" strokeWidth="0.5" opacity="0.32"/>
+        <line x1="115" y1="42" x2="121" y2="56" stroke="#6b3f12" strokeWidth="0.5" opacity="0.28"/>
+        {/* Eyes */}
+        <line x1="92" y1="44" x2="96" y2="44" stroke="#4a2c08" strokeWidth="1" strokeLinecap="round"/>
+        <line x1="104" y1="44" x2="108" y2="44" stroke="#4a2c08" strokeWidth="1" strokeLinecap="round"/>
+        {/* Nose bridge */}
+        <path d="M100 44 L100 50" stroke="#4a2c08" strokeWidth="0.7" strokeLinecap="round"/>
+        {/* Mouth */}
+        <path d="M95 53 Q100 56 105 53" stroke="#4a2c08" strokeWidth="0.8" fill="none"/>
+        {/* Measurement ticks around head */}
+        {[0,45,90,135,180,225,270,315].map((deg,i) => {
+          const rad = (deg * Math.PI) / 180;
+          return <line key={i}
+            x1={100 + Math.cos(rad) * 22} y1={46 + Math.sin(rad) * 22}
+            x2={100 + Math.cos(rad) * 26} y2={46 + Math.sin(rad) * 26}
+            stroke="#6b3f12" strokeWidth="0.6" opacity="0.35"/>;
         })}
+
         {/* Neck */}
-        <line x1="100" y1="74" x2="100" y2="87" stroke="#4a9eff" strokeWidth="1.5" strokeLinecap="round"/>
+        <line x1="100" y1="67" x2="100" y2="80" stroke="#4a2c08" strokeWidth="1.4" strokeLinecap="round"/>
+        {/* Collarbone */}
+        <line x1="80" y1="80" x2="120" y2="80" stroke="#4a2c08" strokeWidth="0.8" opacity="0.5"/>
+
+        {/* Torso outline */}
+        <path d="M80 80 L76 136 L100 142 L124 136 L120 80 Z" stroke="#4a2c08" strokeWidth="1" fill="rgba(180,130,60,0.08)"/>
+        {/* Horizontal cross-hatch on torso */}
+        {[0,7,14,21,28,35,42,49].map(y => (
+          <line key={y} x1="80" y1={83+y} x2="120" y2={83+y} stroke="#6b3f12" strokeWidth="0.4" opacity="0.3"/>
+        ))}
+        {/* Vertical cross-hatch */}
+        {[0,8,16,24,32,40].map(x => (
+          <line key={x} x1={82+x} y1="80" x2={82+x} y2="140" stroke="#6b3f12" strokeWidth="0.3" opacity="0.15"/>
+        ))}
+
         {/* Shoulders */}
-        <path d="M100 90 L60 107 L55 120" stroke="#4a9eff" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-        <path d="M100 90 L140 107 L145 120" stroke="#4a9eff" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-        {/* Spine — sine-wave */}
-        <path d="M100 90 Q96 102 100 114 Q104 126 100 138" stroke="#4a9eff" strokeWidth="1.5" fill="none"/>
-        {/* Left arm — trident tips */}
-        <path d="M60 107 Q38 122 32 142" stroke="#4a9eff" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.8"/>
-        <line x1="32" y1="135" x2="32" y2="150" stroke="#4a9eff" strokeWidth="1" opacity="0.7"/>
-        <line x1="27" y1="138" x2="27" y2="150" stroke="#4a9eff" strokeWidth="1" opacity="0.5"/>
-        <line x1="37" y1="138" x2="37" y2="150" stroke="#4a9eff" strokeWidth="1" opacity="0.5"/>
-        <circle cx="32" cy="150" r="2" fill="#4a9eff"/>
-        <circle cx="27" cy="150" r="1.5" fill="#4a9eff" opacity="0.6"/>
-        <circle cx="37" cy="150" r="1.5" fill="#4a9eff" opacity="0.6"/>
-        {/* Right arm — measurement terminal */}
-        <path d="M140 107 Q162 122 168 142" stroke="#4a9eff" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.8"/>
-        <rect x="162" y="136" width="12" height="18" rx="2" stroke="#4a9eff" strokeWidth="1" fill="rgba(74,158,255,0.15)" opacity="0.8"/>
-        <line x1="166" y1="140" x2="170" y2="140" stroke="#4a9eff" strokeWidth="1" opacity="0.6"/>
-        <line x1="166" y1="145" x2="170" y2="145" stroke="#4a9eff" strokeWidth="1" opacity="0.6"/>
+        <path d="M100 83 L62 96 L54 114" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M100 83 L138 96 L146 114" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        {/* Shoulder joint circles */}
+        <circle cx="62" cy="96" r="5" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.5"/>
+        <circle cx="138" cy="96" r="5" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.5"/>
+
+        {/* Left arm — trident */}
+        <path d="M54 114 Q36 130 30 152" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
+        <line x1="30" y1="144" x2="30" y2="160" stroke="#4a2c08" strokeWidth="1.1"/>
+        <line x1="24" y1="147" x2="24" y2="160" stroke="#4a2c08" strokeWidth="0.7" opacity="0.65"/>
+        <line x1="36" y1="147" x2="36" y2="160" stroke="#4a2c08" strokeWidth="0.7" opacity="0.65"/>
+        {/* Trident annotation */}
+        <line x1="30" y1="162" x2="42" y2="162" stroke="#6b3f12" strokeWidth="0.5" opacity="0.3"/>
+
+        {/* Right arm — measurement device */}
+        <path d="M146 114 Q162 130 168 150" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
+        <rect x="162" y="144" width="14" height="20" rx="1" stroke="#4a2c08" strokeWidth="0.9" fill="rgba(180,130,60,0.15)"/>
+        <line x1="165" y1="149" x2="173" y2="149" stroke="#4a2c08" strokeWidth="0.6" opacity="0.55"/>
+        <line x1="165" y1="153" x2="173" y2="153" stroke="#4a2c08" strokeWidth="0.6" opacity="0.55"/>
+        <line x1="165" y1="157" x2="173" y2="157" stroke="#4a2c08" strokeWidth="0.6" opacity="0.55"/>
+        {/* Elbow joint */}
+        <circle cx="146" cy="114" r="4" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.4"/>
+
         {/* Legs */}
-        <line x1="96" y1="138" x2="88" y2="167" stroke="#4a9eff" strokeWidth="1.5" strokeLinecap="round"/>
-        <line x1="104" y1="138" x2="112" y2="167" stroke="#4a9eff" strokeWidth="1.5" strokeLinecap="round"/>
-        {/* Feet — wave lines */}
-        <path d="M80 167 Q84 162 88 167 Q92 172 96 167" stroke="#4a9eff" strokeWidth="1" fill="none" opacity="0.6"/>
-        <path d="M108 167 Q112 162 116 167 Q120 172 124 167" stroke="#4a9eff" strokeWidth="1" fill="none" opacity="0.6"/>
+        <line x1="96" y1="142" x2="86" y2="178" stroke="#4a2c08" strokeWidth="1.4" strokeLinecap="round"/>
+        <line x1="104" y1="142" x2="114" y2="178" stroke="#4a2c08" strokeWidth="1.4" strokeLinecap="round"/>
+        {/* Knee joints */}
+        <circle cx="90" cy="162" r="3.5" stroke="#4a2c08" strokeWidth="0.6" fill="none" opacity="0.4"/>
+        <circle cx="110" cy="162" r="3.5" stroke="#4a2c08" strokeWidth="0.6" fill="none" opacity="0.4"/>
+        {/* Feet — wave */}
+        <path d="M78 178 Q82 173 86 178 Q90 183 94 178" stroke="#4a2c08" strokeWidth="0.9" fill="none"/>
+        <path d="M110 178 Q114 173 118 178 Q122 183 126 178" stroke="#4a2c08" strokeWidth="0.9" fill="none"/>
       </g>
-      {/* Base waves */}
-      <path d="M20 195 Q35 185 50 195 Q65 205 80 195 Q95 185 110 195 Q125 205 140 195 Q155 185 170 195 Q185 205 200 195"
-        stroke="rgba(74,158,255,0.3)" strokeWidth="1.5" fill="none" className="aq-tide"/>
-      <path d="M10 205 Q28 196 46 205 Q64 214 82 205 Q100 196 118 205 Q136 214 154 205 Q172 196 190 205"
-        stroke="rgba(74,158,255,0.12)" strokeWidth="1" fill="none"/>
-      {/* Floating circuit nodes */}
-      {[[22,78],[178,90],[18,140],[182,135],[45,175],[155,175]].map(([cx,cy],i)=>(
-        <circle key={i} cx={cx} cy={cy} r={i%2===0?2:1.5} fill="#4a9eff" opacity={0.35+i*0.05}/>
-      ))}
+
+      {/* Water waves — base */}
+      <path d="M16 202 Q34 193 52 202 Q70 211 88 202 Q106 193 124 202 Q142 211 160 202 Q178 193 196 202"
+        stroke="#4a2c08" strokeWidth="1" fill="none" opacity="0.45"/>
+      <path d="M10 212 Q30 204 50 212 Q70 220 90 212 Q110 204 130 212 Q150 220 170 212 Q190 204 210 212"
+        stroke="#4a2c08" strokeWidth="0.6" fill="none" opacity="0.22"/>
+      {/* Measurement annotation marks */}
+      <line x1="16" y1="195" x2="16" y2="218" stroke="#6b3f12" strokeWidth="0.5" opacity="0.25"/>
+      <line x1="196" y1="195" x2="196" y2="218" stroke="#6b3f12" strokeWidth="0.5" opacity="0.25"/>
+      <line x1="16" y1="202" x2="26" y2="202" stroke="#6b3f12" strokeWidth="0.5" opacity="0.3"/>
     </svg>
   );
 }
 
-// ─── Domain SVG — ACS880 "Iron Covenant" ─────────────────────────────────────
+// ─── Domain SVG — ACS880 "Iron Covenant" — Da Vinci sketch style ─────────────
 function IronSVG() {
   return (
-    <svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style={{ width: "100%", maxWidth: 160, height: "auto" }}>
+    <svg viewBox="0 0 200 230" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ width: "100%", maxWidth: 150, height: "auto" }}>
       <defs>
-        <radialGradient id="irGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#e4c759" stopOpacity="0.22"/>
-          <stop offset="100%" stopColor="#e4c759" stopOpacity="0"/>
-        </radialGradient>
         <style>{`
-          @keyframes irPulse{0%,100%{opacity:0.55}50%{opacity:1}}
-          @keyframes irRay{0%,100%{opacity:0.15}60%{opacity:0.6}}
-          @keyframes irBreathe{0%,100%{opacity:0.5}50%{opacity:1}}
-          .ir-body{animation:irPulse 3s ease-in-out infinite}
-          .ir-ray{animation:irRay 2s ease-in-out infinite}
-          .ir-frame{animation:irBreathe 6s ease-in-out infinite}
+          @keyframes irSkPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+          .irsk-body{animation:irSkPulse 4s ease-in-out infinite}
         `}</style>
       </defs>
-      {/* Outer octagonal frame */}
-      <polygon points="100,20 148,36 174,82 174,130 148,176 100,192 52,176 26,130 26,82 52,36"
-        stroke="rgba(228,199,89,0.18)" strokeWidth="1" fill="url(#irGlow)" className="ir-frame"/>
-      {/* Gear ring around head */}
-      {[0,30,60,90,120,150,180,210,240,270,300,330].map((deg,i)=>{
-        const r=(deg*Math.PI)/180;
-        return <line key={i}
-          x1={100+Math.cos(r)*38} y1={58+Math.sin(r)*38}
-          x2={100+Math.cos(r)*46} y2={58+Math.sin(r)*46}
-          stroke="rgba(228,199,89,0.4)" strokeWidth={i%2===0?"1.5":"1"}/>;
-      })}
-      <circle cx="100" cy="58" r="32" stroke="#e4c759" strokeWidth="1.5" fill="rgba(228,199,89,0.06)" className="ir-body"/>
-      <circle cx="100" cy="58" r="18" stroke="#e4c759" strokeWidth="1" fill="rgba(228,199,89,0.1)"/>
-      {/* Angular visor eyes */}
-      <path d="M86 52 L94 56 L86 60" stroke="#e4c759" strokeWidth="1.5" fill="none"/>
-      <path d="M114 52 L106 56 L114 60" stroke="#e4c759" strokeWidth="1.5" fill="none"/>
-      <line x1="94" y1="66" x2="106" y2="66" stroke="#e4c759" strokeWidth="1" opacity="0.6"/>
-      {/* Neck + crossbar */}
-      <line x1="100" y1="90" x2="100" y2="108" stroke="#e4c759" strokeWidth="2"/>
-      <line x1="93" y1="98" x2="107" y2="98" stroke="#e4c759" strokeWidth="1.5"/>
-      {/* Shoulders — I-beam */}
-      <path d="M100 108 L64 118" stroke="#e4c759" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M100 108 L136 118" stroke="#e4c759" strokeWidth="2" strokeLinecap="round"/>
-      <line x1="60" y1="114" x2="60" y2="124" stroke="#e4c759" strokeWidth="1.5"/>
-      <line x1="140" y1="114" x2="140" y2="124" stroke="#e4c759" strokeWidth="1.5"/>
-      {/* Body — I-beam torso */}
-      <line x1="100" y1="108" x2="100" y2="148" stroke="#e4c759" strokeWidth="2"/>
-      <line x1="92" y1="130" x2="108" y2="130" stroke="#e4c759" strokeWidth="1.5" opacity="0.6"/>
-      {/* Left arm — crane arm + hook */}
-      <path d="M64 118 L40 108 L30 140" stroke="#e4c759" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-      <path d="M30 140 Q22 153 30 161 Q38 169 42 159" stroke="#e4c759" strokeWidth="2" fill="none" strokeLinecap="round"/>
-      <circle cx="30" cy="140" r="2.5" fill="#e4c759"/>
-      {/* Right arm — power terminal */}
-      <path d="M136 118 L160 108 L172 134" stroke="#e4c759" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-      <rect x="166" y="128" width="14" height="20" rx="2" stroke="#e4c759" strokeWidth="1.5" fill="rgba(228,199,89,0.1)"/>
-      <line x1="169" y1="134" x2="177" y2="134" stroke="#e4c759" strokeWidth="1"/>
-      <line x1="169" y1="139" x2="177" y2="139" stroke="#e4c759" strokeWidth="1"/>
-      <line x1="169" y1="144" x2="177" y2="144" stroke="#e4c759" strokeWidth="1"/>
-      {/* Legs — structural */}
-      <path d="M96 148 L84 178" stroke="#e4c759" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M104 148 L116 178" stroke="#e4c759" strokeWidth="2" strokeLinecap="round"/>
-      <line x1="80" y1="178" x2="88" y2="178" stroke="#e4c759" strokeWidth="2"/>
-      <line x1="112" y1="178" x2="120" y2="178" stroke="#e4c759" strokeWidth="2"/>
-      {/* Energy rays */}
-      {[[-28,0],[-20,20],[28,0],[20,20],[-10,-28],[10,-28]].map(([dx,dy],i)=>(
-        <line key={i}
-          x1={100+dx*0.65} y1={130+dy*0.65}
-          x2={100+dx} y2={130+dy}
-          stroke="#e4c759" strokeWidth="1" opacity="0.25" className="ir-ray"/>
-      ))}
-      {/* Base ground line */}
-      <line x1="28" y1="196" x2="172" y2="196" stroke="rgba(228,199,89,0.4)" strokeWidth="2"/>
-      <line x1="18" y1="202" x2="182" y2="202" stroke="rgba(228,199,89,0.12)" strokeWidth="1"/>
+      {/* Construction octagon — da Vinci geometric guide */}
+      <polygon points="100,18 146,34 170,78 170,128 146,172 100,188 54,172 30,128 30,78 54,34"
+        stroke="#4a2c08" strokeWidth="0.5" strokeDasharray="2 4" fill="none" opacity="0.22"/>
+      {/* Proportion guides */}
+      <line x1="14" y1="106" x2="186" y2="106" stroke="#6b3f12" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.16"/>
+      <line x1="100" y1="14" x2="100" y2="206" stroke="#6b3f12" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.16"/>
+
+      <g className="irsk-body">
+        {/* Head — gear construction */}
+        <circle cx="100" cy="48" r="24" stroke="#4a2c08" strokeWidth="1.2" fill="rgba(180,130,60,0.1)"/>
+        <circle cx="100" cy="48" r="14" stroke="#4a2c08" strokeWidth="0.7" fill="rgba(180,130,60,0.06)" opacity="0.6"/>
+        {/* Gear teeth around head */}
+        {[0,30,60,90,120,150,180,210,240,270,300,330].map((deg, i) => {
+          const rad = (deg * Math.PI) / 180;
+          return <line key={i}
+            x1={100 + Math.cos(rad) * 25} y1={48 + Math.sin(rad) * 25}
+            x2={100 + Math.cos(rad) * 31} y2={48 + Math.sin(rad) * 31}
+            stroke="#6b3f12" strokeWidth={i % 2 === 0 ? "1" : "0.6"} opacity="0.45"/>;
+        })}
+        {/* Cross-hatch on head right side */}
+        <line x1="108" y1="36" x2="122" y2="50" stroke="#6b3f12" strokeWidth="0.5" opacity="0.35"/>
+        <line x1="112" y1="38" x2="124" y2="54" stroke="#6b3f12" strokeWidth="0.5" opacity="0.28"/>
+        <line x1="116" y1="42" x2="124" y2="58" stroke="#6b3f12" strokeWidth="0.5" opacity="0.22"/>
+        {/* Angular visor eyes */}
+        <path d="M88 44 L95 48 L88 52" stroke="#4a2c08" strokeWidth="1.2" fill="none"/>
+        <path d="M112 44 L105 48 L112 52" stroke="#4a2c08" strokeWidth="1.2" fill="none"/>
+        <line x1="95" y1="56" x2="105" y2="56" stroke="#4a2c08" strokeWidth="0.8" opacity="0.5"/>
+
+        {/* Neck + I-beam crossbar */}
+        <line x1="100" y1="72" x2="100" y2="88" stroke="#4a2c08" strokeWidth="2" strokeLinecap="round"/>
+        <line x1="90" y1="80" x2="110" y2="80" stroke="#4a2c08" strokeWidth="1.2" opacity="0.6"/>
+
+        {/* Torso — I-beam structural */}
+        <line x1="100" y1="88" x2="100" y2="140" stroke="#4a2c08" strokeWidth="2"/>
+        <line x1="88" y1="116" x2="112" y2="116" stroke="#4a2c08" strokeWidth="1.2" opacity="0.55"/>
+        <line x1="88" y1="88" x2="112" y2="88" stroke="#4a2c08" strokeWidth="1.2" opacity="0.45"/>
+        <line x1="88" y1="140" x2="112" y2="140" stroke="#4a2c08" strokeWidth="1.2" opacity="0.45"/>
+        {/* Cross-hatch on torso flanges */}
+        {[0,7,14,21,28,34,41,48].map(y => (
+          <line key={y} x1="88" y1={90+y} x2="112" y2={90+y} stroke="#6b3f12" strokeWidth="0.4" opacity="0.28"/>
+        ))}
+
+        {/* Shoulders — I-beam */}
+        <path d="M100 92 L66 102" stroke="#4a2c08" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M100 92 L134 102" stroke="#4a2c08" strokeWidth="2" strokeLinecap="round"/>
+        <line x1="62" y1="98" x2="62" y2="108" stroke="#4a2c08" strokeWidth="1.5"/>
+        <line x1="138" y1="98" x2="138" y2="108" stroke="#4a2c08" strokeWidth="1.5"/>
+
+        {/* Left arm — crane arm + hook */}
+        <path d="M66 102 L42 90 L30 126" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
+        {/* Crane hook */}
+        <path d="M30 126 Q20 140 30 150 Q40 160 44 148" stroke="#4a2c08" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+        <circle cx="30" cy="126" r="4" stroke="#4a2c08" strokeWidth="0.8" fill="none" opacity="0.5"/>
+        {/* Load line */}
+        <line x1="36" y1="148" x2="36" y2="165" stroke="#4a2c08" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.4"/>
+        {/* Force vector arrow */}
+        <line x1="36" y1="162" x2="32" y2="158" stroke="#6b3f12" strokeWidth="0.6" opacity="0.35"/>
+        <line x1="36" y1="162" x2="40" y2="158" stroke="#6b3f12" strokeWidth="0.6" opacity="0.35"/>
+
+        {/* Right arm — power terminal */}
+        <path d="M134 102 L158 90 L168 118" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
+        <circle cx="134" cy="102" r="4" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.5"/>
+        <rect x="162" y="112" width="14" height="22" rx="1" stroke="#4a2c08" strokeWidth="0.9" fill="rgba(180,130,60,0.12)"/>
+        <line x1="165" y1="118" x2="173" y2="118" stroke="#4a2c08" strokeWidth="0.6" opacity="0.5"/>
+        <line x1="165" y1="122" x2="173" y2="122" stroke="#4a2c08" strokeWidth="0.6" opacity="0.5"/>
+        <line x1="165" y1="126" x2="173" y2="126" stroke="#4a2c08" strokeWidth="0.6" opacity="0.5"/>
+
+        {/* Legs — structural double-line */}
+        <path d="M96 140 L84 178" stroke="#4a2c08" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M104 140 L116 178" stroke="#4a2c08" strokeWidth="2" strokeLinecap="round"/>
+        {/* Base plates */}
+        <line x1="78" y1="178" x2="92" y2="178" stroke="#4a2c08" strokeWidth="2"/>
+        <line x1="112" y1="178" x2="122" y2="178" stroke="#4a2c08" strokeWidth="2"/>
+        {/* Knee bolts */}
+        <circle cx="87" cy="161" r="3" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.45"/>
+        <circle cx="113" cy="161" r="3" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.45"/>
+      </g>
+
+      {/* Ground lines with annotation */}
+      <line x1="24" y1="194" x2="176" y2="194" stroke="#4a2c08" strokeWidth="1.2" opacity="0.45"/>
+      <line x1="14" y1="200" x2="186" y2="200" stroke="#4a2c08" strokeWidth="0.5" opacity="0.2"/>
+      {/* Structural annotation marks */}
+      <line x1="24" y1="188" x2="24" y2="200" stroke="#6b3f12" strokeWidth="0.5" opacity="0.3"/>
+      <line x1="176" y1="188" x2="176" y2="200" stroke="#6b3f12" strokeWidth="0.5" opacity="0.3"/>
     </svg>
   );
 }
@@ -593,112 +645,224 @@ export default function VsdChallengesPage() {
 
   // ── Select phase ─────────────────────────────────────────────────────────────
   if (phase === "select") {
+    const isDragging = dragStartX !== null;
     return (
       <div style={{
         minHeight: "100svh", display: "flex", flexDirection: "column",
-        alignItems: "center", padding: "48px 16px 48px",
+        alignItems: "center", padding: "44px 0 52px",
         position: "relative", overflow: "hidden",
       }}>
-        <div style={{ textAlign: "center", marginBottom: 48, zIndex: 1 }}>
-          <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--accent)", letterSpacing: "0.3em", textTransform: "uppercase", opacity: 0.7, marginBottom: 16 }}>
-            {lang === "id" ? "PILIH DOMAIN YANG AKAN KAU PERTANGGUNGJAWABKAN" : "CHOOSE WHAT YOU WILL ANSWER FOR"}
+        <style>{`
+          @keyframes sealPulse { 0%,100%{box-shadow:0 2px 8px rgba(139,105,20,0.5),inset 0 1px 0 rgba(255,255,255,0.25)} 50%{box-shadow:0 2px 16px rgba(201,168,76,0.8),inset 0 1px 0 rgba(255,255,255,0.35)} }
+          @keyframes parchRise { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+          .parch-rise { animation: parchRise 0.75s cubic-bezier(0.22,1,0.36,1) both; }
+        `}</style>
+
+        {/* Faint Roman column lines on background */}
+        <svg style={{ position:"fixed", inset:0, width:"100%", height:"100%", opacity:0.025, pointerEvents:"none", zIndex:0 }}
+          viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+          <line x1="80" y1="0" x2="80" y2="600" stroke="#c9a84c" strokeWidth="3"/>
+          <line x1="720" y1="0" x2="720" y2="600" stroke="#c9a84c" strokeWidth="3"/>
+          <rect x="70" y="0" width="20" height="16" fill="#c9a84c"/>
+          <rect x="710" y="0" width="20" height="16" fill="#c9a84c"/>
+          <rect x="70" y="584" width="20" height="16" fill="#c9a84c"/>
+          <rect x="710" y="584" width="20" height="16" fill="#c9a84c"/>
+          {Array.from({length:18}).map((_,i)=>(
+            <line key={i} x1="0" y1={i*34} x2="800" y2={i*34} stroke="#c9a84c" strokeWidth="0.5"/>
+          ))}
+        </svg>
+
+        {/* Header */}
+        <div className="parch-rise" style={{ textAlign:"center", marginBottom:36, zIndex:1, padding:"0 24px" }}>
+          <div style={{ fontSize:8, fontFamily:"var(--font-mono)", color:"#c9a84c", letterSpacing:"0.38em", textTransform:"uppercase", marginBottom:10, opacity:0.7 }}>
+            ✦ CODEX ELECTORUM · ELIGERE DOMINIUM ✦
           </div>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px, 6vw, 42px)", color: "var(--fg)", margin: 0, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+          <h1 style={{ fontFamily:"var(--font-display)", fontSize:"clamp(22px,5.5vw,36px)", color:"var(--fg)", margin:0, lineHeight:1.1, letterSpacing:"-0.02em" }}>
             {lang === "id" ? "Dua Elemen. Satu Sumpah." : "Two Elements. One Oath."}
           </h1>
-          <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 12, fontStyle: "italic" }}>
+          <p style={{ fontSize:12, color:"var(--muted)", marginTop:10, fontStyle:"italic" }}>
             {lang === "id"
-              ? "Geser atau klik — domain yang kau pilih akan memilihmu kembali"
-              : "Swipe or click — the domain you choose will choose you back"}
+              ? "Geser kiri atau kanan — domain yang kau pilih akan memilihmu kembali"
+              : "Swipe left or right — the domain you choose will choose you back"}
           </p>
         </div>
 
-        {/* Swipeable cards */}
+        {/* ═══ SLIDING CAROUSEL ═══ */}
         <div
-          style={{ display: "flex", gap: 20, justifyContent: "center", alignItems: "stretch", flexWrap: "wrap", width: "100%", maxWidth: 860, zIndex: 1 }}
+          className="parch-rise"
+          style={{ width:"100%", maxWidth:400, overflow:"hidden", zIndex:1, animationDelay:"0.12s", cursor: isDragging ? "grabbing" : "grab" }}
           onMouseLeave={handleDragEnd}
           onMouseMove={e => { if (dragStartX !== null) setDragOffset(e.clientX - dragStartX); }}
           onMouseUp={handleDragEnd}
           onTouchEnd={handleDragEnd}
           onTouchMove={e => { if (dragStartX !== null) setDragOffset(e.touches[0].clientX - dragStartX); }}
         >
-          {domains.map((d, idx) => {
-            const isActive = activeDomain === idx;
-            const tiltY = isActive && dragStartX !== null ? dragOffset * 0.04 : 0;
-            return (
-              <div
-                key={d.key}
-                onMouseDown={e => setDragStartX(e.clientX)}
-                onTouchStart={e => setDragStartX(e.touches[0].clientX)}
-                onClick={() => { if (Math.abs(dragOffset) < 10) switchDomain(idx as 0 | 1); }}
-                style={{
-                  flex: "1 1 300px", maxWidth: 380, minHeight: 460,
-                  borderRadius: 24, padding: 32, cursor: "pointer",
-                  background: isActive ? d.colorBg : "rgba(255,255,255,0.02)",
-                  border: `1.5px solid ${isActive ? d.colorBorder : "rgba(255,255,255,0.07)"}`,
-                  boxShadow: isActive
-                    ? `0 0 60px ${d.color === "var(--accent)" ? "rgba(228,199,89,0.15)" : "rgba(74,158,255,0.15)"}, 0 20px 60px rgba(0,0,0,0.4)`
-                    : "0 8px 32px rgba(0,0,0,0.25)",
-                  transform: `scale(${isActive ? 1.02 : 0.955}) rotateY(${tiltY}deg)`,
-                  transition: dragStartX !== null ? "box-shadow 0.1s" : "all 0.4s cubic-bezier(0.34,1.56,0.64,1)",
-                  display: "flex", flexDirection: "column", gap: 20,
-                  opacity: isActive ? 1 : 0.55,
-                  userSelect: "none",
-                  perspective: "1000px",
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{
-                    fontSize: 9, fontFamily: "var(--font-mono)", fontWeight: 700, letterSpacing: "0.15em",
-                    padding: "3px 10px", borderRadius: 4, textTransform: "uppercase",
-                    background: isActive ? `${d.color === "var(--accent)" ? "rgba(228,199,89,0.15)" : "rgba(74,158,255,0.15)"}` : "rgba(255,255,255,0.05)",
-                    color: isActive ? d.color : "var(--muted)",
-                  }}>{d.tag}</span>
-                  {isActive && <div style={{ width: 8, height: 8, borderRadius: "50%", background: d.color, boxShadow: `0 0 12px ${d.color}` }}/>}
-                </div>
+          {/* Sliding track — 200% wide, each card 50% = 100% of viewport */}
+          <div style={{
+            display:"flex",
+            width:"200%",
+            transform:`translateX(calc(${-activeDomain * 50}% + ${dragOffset}px))`,
+            transition: isDragging ? "none" : "transform 0.42s cubic-bezier(0.34,1.56,0.64,1)",
+            willChange:"transform",
+            userSelect:"none",
+          }}>
+            {domains.map((d, idx) => {
+              const isActive = activeDomain === idx;
+              return (
+                <div key={d.key}
+                  style={{ width:"50%", padding:"0 12px", boxSizing:"border-box" }}
+                  onMouseDown={e => setDragStartX(e.clientX)}
+                  onTouchStart={e => setDragStartX(e.touches[0].clientX)}
+                  onClick={() => { if (Math.abs(dragOffset) < 8) switchDomain(idx as 0|1); }}
+                >
+                  {/* ── ROMAN / DA VINCI CARD ── */}
+                  <div style={{
+                    position:"relative",
+                    borderRadius: 3,
+                    background: isActive
+                      ? "linear-gradient(168deg,#f7ead4 0%,#edd9a4 42%,#dcc07a 100%)"
+                      : "linear-gradient(168deg,#2a2010 0%,#1e1808 100%)",
+                    border:`2px solid ${isActive ? "#8b6914" : "rgba(139,105,20,0.22)"}`,
+                    boxShadow: isActive
+                      ? "0 0 0 1px rgba(201,168,76,0.6), 0 12px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.18)"
+                      : "0 4px 20px rgba(0,0,0,0.5)",
+                    padding:"26px 22px 22px",
+                    minHeight:488,
+                    display:"flex", flexDirection:"column", gap:14,
+                    transition: isDragging ? "none" : "box-shadow 0.4s ease",
+                    overflow:"hidden",
+                  }}>
 
-                <div style={{ display: "flex", justifyContent: "center", padding: "8px 0" }}>
-                  <d.Icon/>
-                </div>
+                    {/* ── Corner ornaments via SVG overlay ── */}
+                    <svg style={{ position:"absolute", top:0, left:0, width:"100%", height:"100%", pointerEvents:"none" }}
+                      viewBox="0 0 376 488" preserveAspectRatio="none">
+                      {/* Top-left corner */}
+                      <path d="M7 7 L7 38 M7 7 L38 7" stroke={isActive ? "#7a5a10" : "rgba(139,105,20,0.3)"} strokeWidth="1.8" fill="none"/>
+                      <path d="M13 13 L13 28 M13 13 L28 13" stroke={isActive ? "#c9a84c" : "rgba(201,168,76,0.18)"} strokeWidth="0.8" fill="none"/>
+                      <circle cx="7" cy="7" r="2.5" fill={isActive ? "#8b6914" : "rgba(139,105,20,0.25)"}/>
+                      {/* Top-right corner */}
+                      <path d="M369 7 L369 38 M369 7 L338 7" stroke={isActive ? "#7a5a10" : "rgba(139,105,20,0.3)"} strokeWidth="1.8" fill="none"/>
+                      <path d="M363 13 L363 28 M363 13 L348 13" stroke={isActive ? "#c9a84c" : "rgba(201,168,76,0.18)"} strokeWidth="0.8" fill="none"/>
+                      <circle cx="369" cy="7" r="2.5" fill={isActive ? "#8b6914" : "rgba(139,105,20,0.25)"}/>
+                      {/* Bottom-left corner */}
+                      <path d="M7 481 L7 450 M7 481 L38 481" stroke={isActive ? "#7a5a10" : "rgba(139,105,20,0.3)"} strokeWidth="1.8" fill="none"/>
+                      <path d="M13 475 L13 460 M13 475 L28 475" stroke={isActive ? "#c9a84c" : "rgba(201,168,76,0.18)"} strokeWidth="0.8" fill="none"/>
+                      <circle cx="7" cy="481" r="2.5" fill={isActive ? "#8b6914" : "rgba(139,105,20,0.25)"}/>
+                      {/* Bottom-right corner */}
+                      <path d="M369 481 L369 450 M369 481 L338 481" stroke={isActive ? "#7a5a10" : "rgba(139,105,20,0.3)"} strokeWidth="1.8" fill="none"/>
+                      <path d="M363 475 L363 460 M363 475 L348 475" stroke={isActive ? "#c9a84c" : "rgba(201,168,76,0.18)"} strokeWidth="0.8" fill="none"/>
+                      <circle cx="369" cy="481" r="2.5" fill={isActive ? "#8b6914" : "rgba(139,105,20,0.25)"}/>
+                      {/* Top arch divider */}
+                      <path d="M130 0 Q188 22 246 0" stroke={isActive ? "rgba(139,105,20,0.5)" : "rgba(139,105,20,0.15)"} strokeWidth="1" fill="none"/>
+                      {/* Horizontal rule pair */}
+                      <line x1="18" y1="196" x2="358" y2="196" stroke={isActive ? "rgba(122,90,16,0.4)" : "rgba(139,105,20,0.12)"} strokeWidth="0.9"/>
+                      <line x1="18" y1="199" x2="358" y2="199" stroke={isActive ? "rgba(201,168,76,0.22)" : "rgba(201,168,76,0.06)"} strokeWidth="0.5"/>
+                      {/* Column flutes — left & right decorative */}
+                      <line x1="22" y1="44" x2="22" y2="452" stroke={isActive ? "rgba(139,105,20,0.12)" : "rgba(139,105,20,0.05)"} strokeWidth="0.7"/>
+                      <line x1="354" y1="44" x2="354" y2="452" stroke={isActive ? "rgba(139,105,20,0.12)" : "rgba(139,105,20,0.05)"} strokeWidth="0.7"/>
+                    </svg>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--muted)", letterSpacing: "0.2em", textTransform: "uppercase" }}>{d.key}</div>
-                  <h2 style={{
-                    fontFamily: "var(--font-display)", fontSize: 26, margin: 0, letterSpacing: "-0.01em", lineHeight: 1.1,
-                    color: isActive ? d.color : "var(--fg-soft)",
-                  }}>{d.codename}</h2>
-                  <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--muted)", fontStyle: "italic" }}>{d.subtitle}</div>
-                  <p style={{ fontSize: 13, color: "var(--fg-soft)", lineHeight: 1.6, margin: 0 }}>{d.tagline}</p>
-                </div>
+                    {/* Top row: domain tag + wax seal */}
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", position:"relative", zIndex:1 }}>
+                      <span style={{
+                        fontSize:7.5, fontFamily:"var(--font-mono)", fontWeight:700, letterSpacing:"0.18em",
+                        padding:"3px 8px", borderRadius:2, textTransform:"uppercase",
+                        background: isActive ? "rgba(122,90,16,0.12)" : "rgba(255,255,255,0.04)",
+                        color: isActive ? "#5c3a06" : "rgba(201,168,76,0.4)",
+                        border:`0.5px solid ${isActive ? "rgba(122,90,16,0.45)" : "rgba(201,168,76,0.16)"}`,
+                      }}>{d.tag}</span>
+                      {/* Wax seal */}
+                      <div style={{
+                        width:30, height:30, borderRadius:"50%",
+                        background: isActive
+                          ? "radial-gradient(circle at 38% 36%, #e2c060, #8b6914 70%)"
+                          : "radial-gradient(circle at 38% 36%, rgba(201,168,76,0.2), rgba(139,105,20,0.08))",
+                        border:`1.5px solid ${isActive ? "#7a5a10" : "rgba(139,105,20,0.2)"}`,
+                        boxShadow: isActive ? undefined : "none",
+                        animation: isActive ? "sealPulse 2.8s ease-in-out infinite" : "none",
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                        fontSize:11, color: isActive ? "#2c1400" : "rgba(201,168,76,0.3)",
+                        fontWeight:900, fontFamily:"var(--font-mono)",
+                      }}>{idx === 0 ? "Ⅰ" : "Ⅱ"}</div>
+                    </div>
 
-                <div style={{
-                  marginTop: "auto", paddingTop: 16,
-                  borderTop: `1px solid ${isActive ? (d.color === "var(--accent)" ? "rgba(228,199,89,0.25)" : "rgba(74,158,255,0.25)") : "rgba(255,255,255,0.05)"}`,
-                  display: "flex", justifyContent: "space-between", alignItems: "center",
-                }}>
-                  <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)" }}>
-                    {challengesByDrive(d.key).length} {lang === "id" ? "tantangan" : "challenges"}
-                  </span>
-                  {isActive && (
-                    <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: d.color, fontWeight: 700 }}>
-                      {lang === "id" ? "AKTIF ↗" : "ACTIVE ↗"}
-                    </span>
-                  )}
+                    {/* Da Vinci SVG illustration */}
+                    <div style={{ display:"flex", justifyContent:"center", padding:"2px 0", position:"relative", zIndex:1 }}>
+                      <d.Icon/>
+                    </div>
+
+                    {/* Text block */}
+                    <div style={{ display:"flex", flexDirection:"column", gap:6, position:"relative", zIndex:1 }}>
+                      <div style={{
+                        fontFamily:"var(--font-mono)", fontSize:7.5, letterSpacing:"0.24em", textTransform:"uppercase",
+                        color: isActive ? "#6b4008" : "rgba(201,168,76,0.3)",
+                      }}>{d.key} · CODEX {idx === 0 ? "I" : "II"}</div>
+                      <h2 style={{
+                        fontFamily:"var(--font-display)", fontSize:21, margin:0,
+                        letterSpacing:"-0.01em", lineHeight:1.1,
+                        color: isActive ? "#2c1a0e" : "rgba(201,168,76,0.45)",
+                      }}>{d.codename}</h2>
+                      <div style={{
+                        fontFamily:"var(--font-body)", fontSize:11, fontStyle:"italic",
+                        color: isActive ? "#5c3d1e" : "rgba(201,168,76,0.28)",
+                      }}>{d.subtitle}</div>
+                      <p style={{
+                        fontSize:12, lineHeight:1.6, margin:0,
+                        color: isActive ? "#3d2b1f" : "rgba(201,168,76,0.22)",
+                        display:"-webkit-box", WebkitLineClamp:4, WebkitBoxOrient:"vertical", overflow:"hidden",
+                      }}>{d.tagline}</p>
+                    </div>
+
+                    {/* Footer */}
+                    <div style={{
+                      marginTop:"auto", paddingTop:12, position:"relative", zIndex:1,
+                      borderTop:`1px solid ${isActive ? "rgba(122,90,16,0.35)" : "rgba(139,105,20,0.1)"}`,
+                      display:"flex", justifyContent:"space-between", alignItems:"center",
+                    }}>
+                      <span style={{ fontSize:10, fontFamily:"var(--font-mono)", color: isActive ? "#6b4c30" : "rgba(201,168,76,0.25)" }}>
+                        {challengesByDrive(d.key).length} {lang === "id" ? "tantangan" : "challenges"}
+                      </span>
+                      {isActive && (
+                        <span style={{ fontSize:9, fontFamily:"var(--font-mono)", fontWeight:700, color:"#7a5a10", letterSpacing:"0.12em" }}>
+                          ELECTUS ✦
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
-        <div style={{ marginTop: 40, zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
+        {/* Dot indicators */}
+        <div className="parch-rise" style={{ display:"flex", gap:12, marginTop:18, zIndex:1, alignItems:"center", animationDelay:"0.22s" }}>
+          {domains.map((_, idx) => (
+            <button key={idx} onClick={() => switchDomain(idx as 0|1)} style={{
+              width: activeDomain === idx ? 22 : 7,
+              height: 7, borderRadius: 4,
+              background: activeDomain === idx ? "#c9a84c" : "rgba(201,168,76,0.22)",
+              border: "none", cursor: "pointer", padding: 0,
+              transition: "all 0.32s ease",
+              boxShadow: activeDomain === idx ? "0 0 8px rgba(201,168,76,0.5)" : "none",
+            }}/>
+          ))}
+        </div>
+        <div className="parch-rise" style={{ fontSize:9, fontFamily:"var(--font-mono)", color:"rgba(201,168,76,0.3)", letterSpacing:"0.16em", marginTop:6, zIndex:1, animationDelay:"0.28s" }}>
+          ← SWIPE →
+        </div>
+
+        {/* CTA */}
+        <div className="parch-rise" style={{ marginTop:28, zIndex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:12, animationDelay:"0.34s" }}>
           <button
             onClick={() => setPhase("challenges")}
             style={{
-              padding: "14px 40px", borderRadius: 12, cursor: "pointer",
-              background: activeDomain === 1 ? "var(--accent)" : "#4a9eff",
-              color: "#000",
-              fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 800,
-              letterSpacing: "0.12em", textTransform: "uppercase", border: "none",
+              padding:"13px 34px", borderRadius:3, cursor:"pointer",
+              background:"linear-gradient(155deg,#d4a832,#8b6914)",
+              color:"#1a0e00",
+              fontFamily:"var(--font-mono)", fontSize:11, fontWeight:800,
+              letterSpacing:"0.15em", textTransform:"uppercase", border:"none",
+              boxShadow:"0 4px 22px rgba(139,105,20,0.45), inset 0 1px 0 rgba(255,255,255,0.2)",
             }}
           >
             {lang === "id"
@@ -707,7 +871,7 @@ export default function VsdChallengesPage() {
           </button>
           <button
             onClick={() => setPhase("intro")}
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)", opacity: 0.55 }}
+            style={{ background:"none", border:"none", cursor:"pointer", fontSize:10, fontFamily:"var(--font-mono)", color:"rgba(201,168,76,0.38)", letterSpacing:"0.08em" }}
           >
             ← {lang === "id" ? "Kembali ke prolog" : "Return to the prologue"}
           </button>
