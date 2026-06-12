@@ -12,6 +12,7 @@ export const T = {
       plc: "PLC", starter: "Starter", pid: "PID Sim", convert: "Convert", tutorials: "Tutorials", skfMicrolog: "SKF Learn", abbDriveCare: "DriveCare Doc", more: "More", close: "Close", changelog: "What's New",
       icc: "Icc", transformer: "Trafo", selectivity: "Discrim",
       game: "2048",
+      capacitorKvar: "Cap kVAR",
       brandDumm: "PTTS", brandVinci: "Praxis", brandCalculator: "Suite",
     },
     common: {
@@ -612,6 +613,7 @@ export const T = {
       plc: "Sizing PLC", starter: "Starter Motor", pid: "Simulator PID", convert: "Konverter Unit", tutorials: "Panduan Pengujian", skfMicrolog: "SKF Microlog Learn", abbDriveCare: "Dokumen DriveCare", more: "Lainnya", close: "Tutup", changelog: "Informasi Pembaruan",
       icc: "Icc", transformer: "Trafo", selectivity: "Diskrim",
       game: "2048",
+      capacitorKvar: "Cap kVAR",
       brandDumm: "PTTS", brandVinci: "Praxis", brandCalculator: "Suite",
     },
     common: {

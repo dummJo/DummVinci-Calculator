@@ -26,207 +26,252 @@ const QUOTES_ID = [
   "Baja menaati gravitasi setiap jam, setiap hari, tanpa kecuali. Satu-satunya bantahanmu adalah parameter set. Jadikan ia tak tergoyahkan.",
 ];
 
-// ─── Domain SVG — ACQ580 "Aqua Protocol" — Da Vinci sketch style ─────────────
+// ─── Domain SVG — ACQ580 "Aqua Protocol" — Yu-Gi-Oh water guardian ──────────
 function AquaSVG() {
   return (
-    <svg viewBox="0 0 200 230" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style={{ width: "100%", maxWidth: 150, height: "auto" }}>
+    <svg viewBox="0 0 160 220" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ width: "100%", maxWidth: 148, height: "auto" }}>
       <defs>
+        <radialGradient id="aqYgAura" cx="50%" cy="72%" r="50%">
+          <stop offset="0%" stopColor="#00bfff" stopOpacity="0.45"/>
+          <stop offset="100%" stopColor="#00bfff" stopOpacity="0"/>
+        </radialGradient>
+        <radialGradient id="aqYgGem" cx="38%" cy="34%" r="60%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9"/>
+          <stop offset="45%" stopColor="#00d4ff" stopOpacity="0.85"/>
+          <stop offset="100%" stopColor="#0055aa" stopOpacity="1"/>
+        </radialGradient>
         <style>{`
-          @keyframes aqSkFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-          .aqsk-body{animation:aqSkFloat 5s ease-in-out infinite}
+          @keyframes aqYgFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+          @keyframes aqYgPulse{0%,100%{opacity:0.75}50%{opacity:1}}
+          .aqyg-char{animation:aqYgFloat 4s ease-in-out infinite}
+          .aqyg-glow{animation:aqYgPulse 2s ease-in-out infinite}
         `}</style>
       </defs>
-      {/* Vitruvian construction circle */}
-      <circle cx="100" cy="112" r="88" stroke="#4a2c08" strokeWidth="0.5" strokeDasharray="2.5 4" opacity="0.28"/>
-      <circle cx="100" cy="112" r="68" stroke="#4a2c08" strokeWidth="0.3" strokeDasharray="1 5" opacity="0.15"/>
-      {/* Proportion guide lines */}
-      <line x1="12" y1="112" x2="188" y2="112" stroke="#6b3f12" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.18"/>
-      <line x1="100" y1="24" x2="100" y2="210" stroke="#6b3f12" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.18"/>
+      <ellipse cx="80" cy="174" rx="72" ry="40" fill="url(#aqYgAura)"/>
+      <path d="M12 194 Q80 176 148 194 Q80 212 12 194 Z" fill="#0d4a7a" opacity="0.65"/>
+      <path d="M22 194 Q80 180 138 194" stroke="#4ab8e8" strokeWidth="1.2" fill="none" opacity="0.6"/>
+      <path d="M8 202 Q80 188 152 202" stroke="#2a90c0" strokeWidth="0.7" fill="none" opacity="0.35"/>
 
-      <g className="aqsk-body">
-        {/* Head — circle construction + cross-hatch shade */}
-        <circle cx="100" cy="46" r="21" stroke="#4a2c08" strokeWidth="1.2" fill="rgba(180,130,60,0.12)"/>
-        <circle cx="100" cy="46" r="11" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.45"/>
-        {/* Cross-hatch right side of head */}
-        <line x1="107" y1="36" x2="119" y2="48" stroke="#6b3f12" strokeWidth="0.5" opacity="0.38"/>
-        <line x1="111" y1="38" x2="121" y2="52" stroke="#6b3f12" strokeWidth="0.5" opacity="0.32"/>
-        <line x1="115" y1="42" x2="121" y2="56" stroke="#6b3f12" strokeWidth="0.5" opacity="0.28"/>
-        {/* Eyes */}
-        <line x1="92" y1="44" x2="96" y2="44" stroke="#4a2c08" strokeWidth="1" strokeLinecap="round"/>
-        <line x1="104" y1="44" x2="108" y2="44" stroke="#4a2c08" strokeWidth="1" strokeLinecap="round"/>
-        {/* Nose bridge */}
-        <path d="M100 44 L100 50" stroke="#4a2c08" strokeWidth="0.7" strokeLinecap="round"/>
-        {/* Mouth */}
-        <path d="M95 53 Q100 56 105 53" stroke="#4a2c08" strokeWidth="0.8" fill="none"/>
-        {/* Measurement ticks around head */}
-        {[0,45,90,135,180,225,270,315].map((deg,i) => {
-          const rad = (deg * Math.PI) / 180;
-          return <line key={i}
-            x1={100 + Math.cos(rad) * 22} y1={46 + Math.sin(rad) * 22}
-            x2={100 + Math.cos(rad) * 26} y2={46 + Math.sin(rad) * 26}
-            stroke="#6b3f12" strokeWidth="0.6" opacity="0.35"/>;
-        })}
-
+      <g className="aqyg-char">
+        {/* Robe / lower body */}
+        <path d="M56 98 Q38 140 36 180 Q52 198 80 200 Q108 198 124 180 Q122 140 104 98 Z"
+          fill="#0a4a80" stroke="#2a7ab8" strokeWidth="1.5"/>
+        <path d="M80 100 L80 196" stroke="#3ab0e0" strokeWidth="1.5" opacity="0.4"/>
+        <path d="M42 148 Q60 138 78 148 Q96 158 114 148" stroke="#4ab8e8" strokeWidth="1" fill="none" opacity="0.7"/>
+        <path d="M39 164 Q60 154 80 164 Q100 174 121 164" stroke="#4ab8e8" strokeWidth="0.9" fill="none" opacity="0.6"/>
+        <path d="M40 178 Q62 168 80 178 Q98 188 120 178" stroke="#3ab0e0" strokeWidth="0.8" fill="none" opacity="0.5"/>
+        <path d="M76 115 Q80 111 84 115 L86 130 Q80 133 74 130 Z" fill="#4ab8e8" opacity="0.35"/>
+        {/* Chest armor */}
+        <path d="M52 84 Q80 72 108 84 L113 125 Q80 133 47 125 Z"
+          fill="#1460a8" stroke="#3a9edc" strokeWidth="1.6"/>
+        <path d="M58 88 Q80 81 102 88" stroke="#7acfe8" strokeWidth="0.9" opacity="0.6"/>
+        <path d="M55 114 Q80 110 105 114" stroke="#7acfe8" strokeWidth="0.8" opacity="0.5"/>
+        {/* Chest gem */}
+        <ellipse cx="80" cy="103" rx="9" ry="11" fill="url(#aqYgGem)" className="aqyg-glow"/>
+        <path d="M71 103 L80 92 L89 103 L80 114 Z" stroke="#89ecff" strokeWidth="0.8" fill="none" opacity="0.7"/>
+        <ellipse cx="77" cy="99" rx="3" ry="4" fill="white" opacity="0.45"/>
+        {/* Pauldrons */}
+        <path d="M50 86 Q30 80 24 95 Q22 110 44 106 Q52 102 52 94 Z"
+          fill="#1460a8" stroke="#3a9edc" strokeWidth="1.3"/>
+        <path d="M110 86 Q130 80 136 95 Q138 110 116 106 Q108 102 108 94 Z"
+          fill="#1460a8" stroke="#3a9edc" strokeWidth="1.3"/>
+        <circle cx="32" cy="97" r="3.5" fill="#00aaff" stroke="#4ab8e8" strokeWidth="0.8" className="aqyg-glow"/>
+        <circle cx="128" cy="97" r="3.5" fill="#00aaff" stroke="#4ab8e8" strokeWidth="0.8" className="aqyg-glow"/>
+        {/* Left arm */}
+        <path d="M46 96 Q26 112 18 136" stroke="#1460a8" strokeWidth="11" strokeLinecap="round" fill="none"/>
+        <path d="M46 96 Q26 112 18 136" stroke="#3a9edc" strokeWidth="1.4" fill="none"/>
+        <circle cx="18" cy="138" r="5.5" fill="#1a70b8" stroke="#3a9edc" strokeWidth="1"/>
+        {/* TRIDENT */}
+        <line x1="10" y1="162" x2="10" y2="46" stroke="#3ab0e0" strokeWidth="2.8" strokeLinecap="round"/>
+        <line x1="6" y1="58" x2="10" y2="44" stroke="#00d4ff" strokeWidth="2.5" strokeLinecap="round"/>
+        <line x1="10" y1="44" x2="10" y2="26" stroke="#00d4ff" strokeWidth="2.5" strokeLinecap="round"/>
+        <line x1="14" y1="58" x2="10" y2="44" stroke="#00d4ff" strokeWidth="2.5" strokeLinecap="round"/>
+        <line x1="2" y1="42" x2="10" y2="26" stroke="#00d4ff" strokeWidth="2.2" strokeLinecap="round"/>
+        <line x1="18" y1="42" x2="10" y2="26" stroke="#00d4ff" strokeWidth="2.2" strokeLinecap="round"/>
+        <circle cx="2" cy="41" r="2.5" fill="#00ffff" opacity="0.9" className="aqyg-glow"/>
+        <circle cx="10" cy="25" r="2.5" fill="#00ffff" opacity="0.9" className="aqyg-glow"/>
+        <circle cx="18" cy="41" r="2.5" fill="#00ffff" opacity="0.9" className="aqyg-glow"/>
+        <line x1="4" y1="60" x2="16" y2="60" stroke="#00a8cc" strokeWidth="1.8" strokeLinecap="round"/>
+        <line x1="6" y1="98" x2="14" y2="98" stroke="#3ab0e0" strokeWidth="1" opacity="0.6"/>
+        <line x1="6" y1="112" x2="14" y2="112" stroke="#3ab0e0" strokeWidth="1" opacity="0.6"/>
+        <line x1="6" y1="126" x2="14" y2="126" stroke="#3ab0e0" strokeWidth="1" opacity="0.6"/>
+        {/* Right arm — casting magic */}
+        <path d="M114 96 Q134 90 142 72" stroke="#1460a8" strokeWidth="11" strokeLinecap="round" fill="none"/>
+        <path d="M114 96 Q134 90 142 72" stroke="#3a9edc" strokeWidth="1.4" fill="none"/>
+        <circle cx="143" cy="70" r="5.5" fill="#1a70b8" stroke="#3a9edc" strokeWidth="1"/>
+        {/* Magic orb */}
+        <circle cx="150" cy="58" r="13" fill="#002a55" stroke="#3a9edc" strokeWidth="1.3"/>
+        <circle cx="150" cy="58" r="9" fill="#0080cc" opacity="0.75" className="aqyg-glow"/>
+        <circle cx="150" cy="58" r="5" fill="#00d4ff" opacity="0.9" className="aqyg-glow"/>
+        <circle cx="147" cy="55" r="2" fill="white" opacity="0.8"/>
+        <path d="M158 50 Q164 42 160 34" stroke="#00d4ff" strokeWidth="1" fill="none" opacity="0.65" strokeDasharray="2 2"/>
+        <path d="M160 55 Q170 50 172 42" stroke="#89d4f5" strokeWidth="1" fill="none" opacity="0.5" strokeDasharray="2 2"/>
+        <path d="M154 46 Q154 38 150 30" stroke="#00ffff" strokeWidth="1" fill="none" opacity="0.55" strokeDasharray="2 2"/>
         {/* Neck */}
-        <line x1="100" y1="67" x2="100" y2="80" stroke="#4a2c08" strokeWidth="1.4" strokeLinecap="round"/>
-        {/* Collarbone */}
-        <line x1="80" y1="80" x2="120" y2="80" stroke="#4a2c08" strokeWidth="0.8" opacity="0.5"/>
-
-        {/* Torso outline */}
-        <path d="M80 80 L76 136 L100 142 L124 136 L120 80 Z" stroke="#4a2c08" strokeWidth="1" fill="rgba(180,130,60,0.08)"/>
-        {/* Horizontal cross-hatch on torso */}
-        {[0,7,14,21,28,35,42,49].map(y => (
-          <line key={y} x1="80" y1={83+y} x2="120" y2={83+y} stroke="#6b3f12" strokeWidth="0.4" opacity="0.3"/>
-        ))}
-        {/* Vertical cross-hatch */}
-        {[0,8,16,24,32,40].map(x => (
-          <line key={x} x1={82+x} y1="80" x2={82+x} y2="140" stroke="#6b3f12" strokeWidth="0.3" opacity="0.15"/>
-        ))}
-
-        {/* Shoulders */}
-        <path d="M100 83 L62 96 L54 114" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M100 83 L138 96 L146 114" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-        {/* Shoulder joint circles */}
-        <circle cx="62" cy="96" r="5" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.5"/>
-        <circle cx="138" cy="96" r="5" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.5"/>
-
-        {/* Left arm — trident */}
-        <path d="M54 114 Q36 130 30 152" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
-        <line x1="30" y1="144" x2="30" y2="160" stroke="#4a2c08" strokeWidth="1.1"/>
-        <line x1="24" y1="147" x2="24" y2="160" stroke="#4a2c08" strokeWidth="0.7" opacity="0.65"/>
-        <line x1="36" y1="147" x2="36" y2="160" stroke="#4a2c08" strokeWidth="0.7" opacity="0.65"/>
-        {/* Trident annotation */}
-        <line x1="30" y1="162" x2="42" y2="162" stroke="#6b3f12" strokeWidth="0.5" opacity="0.3"/>
-
-        {/* Right arm — measurement device */}
-        <path d="M146 114 Q162 130 168 150" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
-        <rect x="162" y="144" width="14" height="20" rx="1" stroke="#4a2c08" strokeWidth="0.9" fill="rgba(180,130,60,0.15)"/>
-        <line x1="165" y1="149" x2="173" y2="149" stroke="#4a2c08" strokeWidth="0.6" opacity="0.55"/>
-        <line x1="165" y1="153" x2="173" y2="153" stroke="#4a2c08" strokeWidth="0.6" opacity="0.55"/>
-        <line x1="165" y1="157" x2="173" y2="157" stroke="#4a2c08" strokeWidth="0.6" opacity="0.55"/>
-        {/* Elbow joint */}
-        <circle cx="146" cy="114" r="4" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.4"/>
-
-        {/* Legs */}
-        <line x1="96" y1="142" x2="86" y2="178" stroke="#4a2c08" strokeWidth="1.4" strokeLinecap="round"/>
-        <line x1="104" y1="142" x2="114" y2="178" stroke="#4a2c08" strokeWidth="1.4" strokeLinecap="round"/>
-        {/* Knee joints */}
-        <circle cx="90" cy="162" r="3.5" stroke="#4a2c08" strokeWidth="0.6" fill="none" opacity="0.4"/>
-        <circle cx="110" cy="162" r="3.5" stroke="#4a2c08" strokeWidth="0.6" fill="none" opacity="0.4"/>
-        {/* Feet — wave */}
-        <path d="M78 178 Q82 173 86 178 Q90 183 94 178" stroke="#4a2c08" strokeWidth="0.9" fill="none"/>
-        <path d="M110 178 Q114 173 118 178 Q122 183 126 178" stroke="#4a2c08" strokeWidth="0.9" fill="none"/>
+        <rect x="68" y="64" width="24" height="12" rx="5" fill="#1a70b8" stroke="#3a9edc" strokeWidth="1"/>
+        {/* Head */}
+        <ellipse cx="80" cy="50" rx="23" ry="25" fill="#d4a070"/>
+        <ellipse cx="80" cy="50" rx="23" ry="25" stroke="#b07848" strokeWidth="1.2" fill="none"/>
+        <path d="M57 50 Q57 68 80 74 Q103 68 103 50" fill="#c09060" opacity="0.4"/>
+        {/* Eyes */}
+        <ellipse cx="71" cy="45" rx="5.5" ry="4.5" fill="#004cb8"/>
+        <ellipse cx="89" cy="45" rx="5.5" ry="4.5" fill="#004cb8"/>
+        <ellipse cx="71" cy="45" rx="3.2" ry="2.8" fill="#00aaff" className="aqyg-glow"/>
+        <ellipse cx="89" cy="45" rx="3.2" ry="2.8" fill="#00aaff" className="aqyg-glow"/>
+        <circle cx="69.5" cy="44" r="1.2" fill="white" opacity="0.85"/>
+        <circle cx="87.5" cy="44" r="1.2" fill="white" opacity="0.85"/>
+        <path d="M65 39 Q70 36 76 38" stroke="#4a2800" strokeWidth="1.6" fill="none" strokeLinecap="round"/>
+        <path d="M84 38 Q90 36 95 39" stroke="#4a2800" strokeWidth="1.6" fill="none" strokeLinecap="round"/>
+        <path d="M78 52 Q80 57 82 52" stroke="#b07848" strokeWidth="0.9" fill="none"/>
+        <path d="M72 62 Q80 66 88 62" stroke="#8a5030" strokeWidth="1.3" fill="none"/>
+        {/* Hair */}
+        <path d="M57 40 Q54 20 72 12 Q80 8 88 12 Q106 20 103 40" fill="#18286a" stroke="#243888" strokeWidth="1"/>
+        <path d="M57 40 Q48 62 50 84 Q48 102 52 118" stroke="#18286a" strokeWidth="13" strokeLinecap="round" fill="none"/>
+        <path d="M57 40 Q48 62 50 84 Q48 102 52 118" stroke="#243888" strokeWidth="1.4" fill="none"/>
+        <path d="M103 40 Q112 62 110 84 Q112 102 108 118" stroke="#18286a" strokeWidth="13" strokeLinecap="round" fill="none"/>
+        <path d="M103 40 Q112 62 110 84 Q112 102 108 118" stroke="#243888" strokeWidth="1.4" fill="none"/>
+        {/* Crown */}
+        <path d="M60 27 L64 14 L68 24 L80 8 L92 24 L96 14 L100 27" stroke="#00ccff" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="80" cy="7" r="4.5" fill="#00ffff" stroke="#89ecff" strokeWidth="1.2" className="aqyg-glow"/>
+        <circle cx="64" cy="13" r="2.8" fill="#89d4f5" stroke="#00ccff" strokeWidth="0.8"/>
+        <circle cx="96" cy="13" r="2.8" fill="#89d4f5" stroke="#00ccff" strokeWidth="0.8"/>
+        <path d="M60 27 Q80 22 100 27" stroke="#00a8cc" strokeWidth="1.6" fill="none"/>
       </g>
-
-      {/* Water waves — base */}
-      <path d="M16 202 Q34 193 52 202 Q70 211 88 202 Q106 193 124 202 Q142 211 160 202 Q178 193 196 202"
-        stroke="#4a2c08" strokeWidth="1" fill="none" opacity="0.45"/>
-      <path d="M10 212 Q30 204 50 212 Q70 220 90 212 Q110 204 130 212 Q150 220 170 212 Q190 204 210 212"
-        stroke="#4a2c08" strokeWidth="0.6" fill="none" opacity="0.22"/>
-      {/* Measurement annotation marks */}
-      <line x1="16" y1="195" x2="16" y2="218" stroke="#6b3f12" strokeWidth="0.5" opacity="0.25"/>
-      <line x1="196" y1="195" x2="196" y2="218" stroke="#6b3f12" strokeWidth="0.5" opacity="0.25"/>
-      <line x1="16" y1="202" x2="26" y2="202" stroke="#6b3f12" strokeWidth="0.5" opacity="0.3"/>
+      {/* Water splash fx */}
+      <path d="M5 186 Q18 174 14 162" stroke="#4ab8e8" strokeWidth="1.5" fill="none" opacity="0.55"/>
+      <circle cx="5" cy="172" r="1.5" fill="#00d4ff" opacity="0.5"/>
+      <path d="M155 186 Q142 174 146 162" stroke="#4ab8e8" strokeWidth="1.5" fill="none" opacity="0.55"/>
+      <circle cx="155" cy="172" r="1.5" fill="#00d4ff" opacity="0.5"/>
+      <circle cx="22" cy="145" r="1" fill="#00d4ff" opacity="0.4"/>
+      <circle cx="145" cy="140" r="1" fill="#00d4ff" opacity="0.4"/>
     </svg>
   );
 }
 
-// ─── Domain SVG — ACS880 "Iron Covenant" — Da Vinci sketch style ─────────────
+// ─── Domain SVG — ACS880 "Iron Covenant" — Yu-Gi-Oh iron titan ──────────────
 function IronSVG() {
   return (
-    <svg viewBox="0 0 200 230" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style={{ width: "100%", maxWidth: 150, height: "auto" }}>
+    <svg viewBox="0 0 160 220" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ width: "100%", maxWidth: 148, height: "auto" }}>
       <defs>
+        <radialGradient id="irYgAura" cx="50%" cy="65%" r="52%">
+          <stop offset="0%" stopColor="#ffaa00" stopOpacity="0.4"/>
+          <stop offset="100%" stopColor="#ffaa00" stopOpacity="0"/>
+        </radialGradient>
+        <radialGradient id="irYgCore" cx="38%" cy="35%" r="60%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9"/>
+          <stop offset="40%" stopColor="#ffdd44" stopOpacity="0.9"/>
+          <stop offset="100%" stopColor="#cc6600" stopOpacity="1"/>
+        </radialGradient>
         <style>{`
-          @keyframes irSkPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-          .irsk-body{animation:irSkPulse 4s ease-in-out infinite}
+          @keyframes irYgRise{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+          @keyframes irYgFlare{0%,100%{opacity:0.7}50%{opacity:1}}
+          .iryg-char{animation:irYgRise 5s ease-in-out infinite}
+          .iryg-core{animation:irYgFlare 1.8s ease-in-out infinite}
         `}</style>
       </defs>
-      {/* Construction octagon — da Vinci geometric guide */}
-      <polygon points="100,18 146,34 170,78 170,128 146,172 100,188 54,172 30,128 30,78 54,34"
-        stroke="#4a2c08" strokeWidth="0.5" strokeDasharray="2 4" fill="none" opacity="0.22"/>
-      {/* Proportion guides */}
-      <line x1="14" y1="106" x2="186" y2="106" stroke="#6b3f12" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.16"/>
-      <line x1="100" y1="14" x2="100" y2="206" stroke="#6b3f12" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.16"/>
+      <ellipse cx="80" cy="188" rx="65" ry="28" fill="url(#irYgAura)"/>
+      <rect x="18" y="202" width="124" height="5" rx="2.5" fill="#3a2a04" stroke="#9a7828" strokeWidth="1"/>
+      <rect x="12" y="206" width="136" height="3" rx="1.5" fill="#2a1e02" opacity="0.6"/>
 
-      <g className="irsk-body">
-        {/* Head — gear construction */}
-        <circle cx="100" cy="48" r="24" stroke="#4a2c08" strokeWidth="1.2" fill="rgba(180,130,60,0.1)"/>
-        <circle cx="100" cy="48" r="14" stroke="#4a2c08" strokeWidth="0.7" fill="rgba(180,130,60,0.06)" opacity="0.6"/>
-        {/* Gear teeth around head */}
-        {[0,30,60,90,120,150,180,210,240,270,300,330].map((deg, i) => {
-          const rad = (deg * Math.PI) / 180;
-          return <line key={i}
-            x1={100 + Math.cos(rad) * 25} y1={48 + Math.sin(rad) * 25}
-            x2={100 + Math.cos(rad) * 31} y2={48 + Math.sin(rad) * 31}
-            stroke="#6b3f12" strokeWidth={i % 2 === 0 ? "1" : "0.6"} opacity="0.45"/>;
-        })}
-        {/* Cross-hatch on head right side */}
-        <line x1="108" y1="36" x2="122" y2="50" stroke="#6b3f12" strokeWidth="0.5" opacity="0.35"/>
-        <line x1="112" y1="38" x2="124" y2="54" stroke="#6b3f12" strokeWidth="0.5" opacity="0.28"/>
-        <line x1="116" y1="42" x2="124" y2="58" stroke="#6b3f12" strokeWidth="0.5" opacity="0.22"/>
-        {/* Angular visor eyes */}
-        <path d="M88 44 L95 48 L88 52" stroke="#4a2c08" strokeWidth="1.2" fill="none"/>
-        <path d="M112 44 L105 48 L112 52" stroke="#4a2c08" strokeWidth="1.2" fill="none"/>
-        <line x1="95" y1="56" x2="105" y2="56" stroke="#4a2c08" strokeWidth="0.8" opacity="0.5"/>
-
-        {/* Neck + I-beam crossbar */}
-        <line x1="100" y1="72" x2="100" y2="88" stroke="#4a2c08" strokeWidth="2" strokeLinecap="round"/>
-        <line x1="90" y1="80" x2="110" y2="80" stroke="#4a2c08" strokeWidth="1.2" opacity="0.6"/>
-
-        {/* Torso — I-beam structural */}
-        <line x1="100" y1="88" x2="100" y2="140" stroke="#4a2c08" strokeWidth="2"/>
-        <line x1="88" y1="116" x2="112" y2="116" stroke="#4a2c08" strokeWidth="1.2" opacity="0.55"/>
-        <line x1="88" y1="88" x2="112" y2="88" stroke="#4a2c08" strokeWidth="1.2" opacity="0.45"/>
-        <line x1="88" y1="140" x2="112" y2="140" stroke="#4a2c08" strokeWidth="1.2" opacity="0.45"/>
-        {/* Cross-hatch on torso flanges */}
-        {[0,7,14,21,28,34,41,48].map(y => (
-          <line key={y} x1="88" y1={90+y} x2="112" y2={90+y} stroke="#6b3f12" strokeWidth="0.4" opacity="0.28"/>
+      <g className="iryg-char">
+        {/* Legs */}
+        <path d="M60 152 L50 178 L38 183 L36 198 L58 200 L66 183 L70 156 Z"
+          fill="#222234" stroke="#545470" strokeWidth="1.3"/>
+        <ellipse cx="54" cy="176" rx="9" ry="5.5" fill="#383850" stroke="#707090" strokeWidth="1"/>
+        <path d="M34 196 L62 196 L64 204 L32 204 Z" fill="#303044" stroke="#545470" strokeWidth="1"/>
+        <path d="M100 152 L110 178 L122 183 L124 198 L102 200 L94 183 L90 156 Z"
+          fill="#222234" stroke="#545470" strokeWidth="1.3"/>
+        <ellipse cx="106" cy="176" rx="9" ry="5.5" fill="#383850" stroke="#707090" strokeWidth="1"/>
+        <path d="M126 196 L98 196 L96 204 L128 204 Z" fill="#303044" stroke="#545470" strokeWidth="1"/>
+        {/* Torso */}
+        <path d="M44 92 Q80 80 116 92 L122 152 Q80 163 38 152 Z"
+          fill="#222234" stroke="#4a4a68" strokeWidth="1.8"/>
+        <path d="M50 98 Q80 89 110 98" stroke="#686890" strokeWidth="0.8" opacity="0.7"/>
+        <path d="M46 120 Q80 113 114 120" stroke="#686890" strokeWidth="0.8" opacity="0.6"/>
+        <path d="M44 142 Q80 136 116 142" stroke="#686890" strokeWidth="0.7" opacity="0.5"/>
+        <line x1="80" y1="93" x2="80" y2="155" stroke="#4a4a68" strokeWidth="1" opacity="0.55"/>
+        <path d="M42 144 Q80 138 118 144 L120 155 Q80 163 40 155 Z" fill="#303048" stroke="#565678" strokeWidth="1.2"/>
+        <circle cx="68" cy="150" r="3" fill="#ffcc00" opacity="0.9" className="iryg-core"/>
+        <circle cx="80" cy="150" r="3" fill="#ffcc00" opacity="0.9" className="iryg-core"/>
+        <circle cx="92" cy="150" r="3" fill="#ffcc00" opacity="0.9" className="iryg-core"/>
+        {/* Power core */}
+        <polygon points="80,90 90,104 86,120 74,120 70,104" stroke="#ffcc00" strokeWidth="1.6" fill="#12121e"/>
+        <polygon points="80,90 90,104 86,120 74,120 70,104" fill="url(#irYgCore)" opacity="0.75" className="iryg-core"/>
+        <circle cx="80" cy="105" r="8" fill="#ffaa00" opacity="0.75" className="iryg-core"/>
+        <circle cx="80" cy="105" r="4.5" fill="#ffee88" opacity="0.9" className="iryg-core"/>
+        <circle cx="78.5" cy="103" r="1.8" fill="white" opacity="0.9"/>
+        {[[-16,-6],[-18,0],[-16,6],[16,-6],[18,0],[16,6],[0,-18],[0,18]].map(([dx,dy],i) => (
+          <line key={i} x1={80+dx*0.48} y1={105+dy*0.48} x2={80+dx} y2={105+dy}
+            stroke="#ffcc00" strokeWidth="1.1" opacity="0.5" className="iryg-core"/>
         ))}
-
-        {/* Shoulders — I-beam */}
-        <path d="M100 92 L66 102" stroke="#4a2c08" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M100 92 L134 102" stroke="#4a2c08" strokeWidth="2" strokeLinecap="round"/>
-        <line x1="62" y1="98" x2="62" y2="108" stroke="#4a2c08" strokeWidth="1.5"/>
-        <line x1="138" y1="98" x2="138" y2="108" stroke="#4a2c08" strokeWidth="1.5"/>
-
-        {/* Left arm — crane arm + hook */}
-        <path d="M66 102 L42 90 L30 126" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
-        {/* Crane hook */}
-        <path d="M30 126 Q20 140 30 150 Q40 160 44 148" stroke="#4a2c08" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
-        <circle cx="30" cy="126" r="4" stroke="#4a2c08" strokeWidth="0.8" fill="none" opacity="0.5"/>
-        {/* Load line */}
-        <line x1="36" y1="148" x2="36" y2="165" stroke="#4a2c08" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.4"/>
-        {/* Force vector arrow */}
-        <line x1="36" y1="162" x2="32" y2="158" stroke="#6b3f12" strokeWidth="0.6" opacity="0.35"/>
-        <line x1="36" y1="162" x2="40" y2="158" stroke="#6b3f12" strokeWidth="0.6" opacity="0.35"/>
-
-        {/* Right arm — power terminal */}
-        <path d="M134 102 L158 90 L168 118" stroke="#4a2c08" strokeWidth="1.4" fill="none" strokeLinecap="round"/>
-        <circle cx="134" cy="102" r="4" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.5"/>
-        <rect x="162" y="112" width="14" height="22" rx="1" stroke="#4a2c08" strokeWidth="0.9" fill="rgba(180,130,60,0.12)"/>
-        <line x1="165" y1="118" x2="173" y2="118" stroke="#4a2c08" strokeWidth="0.6" opacity="0.5"/>
-        <line x1="165" y1="122" x2="173" y2="122" stroke="#4a2c08" strokeWidth="0.6" opacity="0.5"/>
-        <line x1="165" y1="126" x2="173" y2="126" stroke="#4a2c08" strokeWidth="0.6" opacity="0.5"/>
-
-        {/* Legs — structural double-line */}
-        <path d="M96 140 L84 178" stroke="#4a2c08" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M104 140 L116 178" stroke="#4a2c08" strokeWidth="2" strokeLinecap="round"/>
-        {/* Base plates */}
-        <line x1="78" y1="178" x2="92" y2="178" stroke="#4a2c08" strokeWidth="2"/>
-        <line x1="112" y1="178" x2="122" y2="178" stroke="#4a2c08" strokeWidth="2"/>
-        {/* Knee bolts */}
-        <circle cx="87" cy="161" r="3" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.45"/>
-        <circle cx="113" cy="161" r="3" stroke="#4a2c08" strokeWidth="0.7" fill="none" opacity="0.45"/>
+        {/* Pauldrons */}
+        <path d="M42 92 Q16 84 10 102 Q8 122 34 118 Q44 114 44 104 Z"
+          fill="#2c2c42" stroke="#565678" strokeWidth="1.6"/>
+        <path d="M42 92 Q24 86 16 100 Q12 112 30 110" stroke="#747494" strokeWidth="0.8" fill="none" opacity="0.7"/>
+        <circle cx="22" cy="103" r="4.5" fill="#ffaa00" opacity="0.8" stroke="#ffcc00" strokeWidth="0.8" className="iryg-core"/>
+        <path d="M118 92 Q144 84 150 102 Q152 122 126 118 Q116 114 116 104 Z"
+          fill="#2c2c42" stroke="#565678" strokeWidth="1.6"/>
+        <path d="M118 92 Q136 86 144 100 Q148 112 130 110" stroke="#747494" strokeWidth="0.8" fill="none" opacity="0.7"/>
+        <circle cx="138" cy="103" r="4.5" fill="#ffaa00" opacity="0.8" stroke="#ffcc00" strokeWidth="0.8" className="iryg-core"/>
+        {/* Left arm — crane */}
+        <path d="M40 102 Q16 114 8 138" stroke="#222234" strokeWidth="13" strokeLinecap="round" fill="none"/>
+        <path d="M40 102 Q16 114 8 138" stroke="#4a4a68" strokeWidth="1.4" fill="none"/>
+        <circle cx="24" cy="118" r="5.5" fill="#303048" stroke="#6a6a8a" strokeWidth="1.2"/>
+        <path d="M8 138 Q4 154 6 168" stroke="#222234" strokeWidth="11" strokeLinecap="round" fill="none"/>
+        <path d="M8 138 Q4 154 6 168" stroke="#4a4a68" strokeWidth="1.4" fill="none"/>
+        <line x1="7" y1="165" x2="7" y2="108" stroke="#8a8aaa" strokeWidth="2"/>
+        <line x1="10" y1="165" x2="10" y2="112" stroke="#6a6a7a" strokeWidth="0.8" opacity="0.5"/>
+        {/* CRANE HOOK — gold */}
+        <path d="M7 165 Q-5 180 4 190 Q14 198 18 186" stroke="#ffcc00" strokeWidth="3.2" fill="none" strokeLinecap="round"/>
+        <circle cx="7" cy="165" r="4" fill="#3a3a52" stroke="#8a8aaa" strokeWidth="1.2"/>
+        <path d="M7 165 Q-5 180 4 190 Q14 198 18 186" stroke="white" strokeWidth="0.8" fill="none" opacity="0.35"/>
+        <circle cx="13" cy="186" r="2" fill="#ffee88" opacity="0.8"/>
+        {/* Right arm — power gauntlet */}
+        <path d="M120 102 Q144 114 152 138" stroke="#222234" strokeWidth="13" strokeLinecap="round" fill="none"/>
+        <path d="M120 102 Q144 114 152 138" stroke="#4a4a68" strokeWidth="1.4" fill="none"/>
+        <circle cx="136" cy="118" r="5.5" fill="#303048" stroke="#6a6a8a" strokeWidth="1.2"/>
+        <path d="M152 138 Q160 152 156 166 Q148 172 140 165 Q134 152 140 140 Z"
+          fill="#2c2c42" stroke="#6a6a88" strokeWidth="1.5"/>
+        <line x1="137" y1="150" x2="158" y2="148" stroke="#545470" strokeWidth="0.8" opacity="0.6"/>
+        <line x1="136" y1="158" x2="156" y2="158" stroke="#545470" strokeWidth="0.8" opacity="0.5"/>
+        <circle cx="148" cy="152" r="7" fill="#ffaa00" opacity="0.32" className="iryg-core"/>
+        <circle cx="148" cy="152" r="4" fill="#ffcc00" opacity="0.55" className="iryg-core"/>
+        <circle cx="148" cy="152" r="1.8" fill="white" opacity="0.7" className="iryg-core"/>
+        {/* Neck */}
+        <rect x="66" y="68" width="28" height="14" rx="4" fill="#222234" stroke="#4a4a68" strokeWidth="1.2"/>
+        <path d="M58 74 Q80 68 102 74 L104 82 Q80 86 56 82 Z" fill="#2c2c42" stroke="#565678" strokeWidth="1.1"/>
+        {/* Helmet */}
+        <path d="M50 60 Q50 30 80 22 Q110 30 110 60 L110 76 Q80 84 50 76 Z"
+          fill="#222234" stroke="#4a4a68" strokeWidth="1.9"/>
+        <path d="M70 22 Q80 12 90 22 L92 34 Q80 30 68 34 Z" fill="#2c2c42" stroke="#565678" strokeWidth="1.3"/>
+        <path d="M74 14 L80 6 L86 14" stroke="#ffcc00" strokeWidth="1.6" fill="none"/>
+        <circle cx="80" cy="5" r="3.5" fill="#ffaa00" stroke="#ffcc00" strokeWidth="1" className="iryg-core"/>
+        {/* Visor */}
+        <path d="M54 52 Q54 66 80 70 Q106 66 106 52 L106 44 Q80 38 54 44 Z"
+          fill="#12121e" stroke="#3a3a58" strokeWidth="1"/>
+        <path d="M57 50 Q80 44 103 50" stroke="#ffcc00" strokeWidth="3" opacity="0.9" strokeLinecap="round" className="iryg-core"/>
+        <path d="M57 50 Q80 44 103 50" stroke="white" strokeWidth="1.2" opacity="0.45" strokeLinecap="round"/>
+        <ellipse cx="70" cy="53" rx="7.5" ry="4.5" fill="#ffaa00" opacity="0.8" className="iryg-core"/>
+        <ellipse cx="90" cy="53" rx="7.5" ry="4.5" fill="#ffaa00" opacity="0.8" className="iryg-core"/>
+        <ellipse cx="70" cy="53" rx="5" ry="3" fill="#ffee44" opacity="0.6" className="iryg-core"/>
+        <ellipse cx="90" cy="53" rx="5" ry="3" fill="#ffee44" opacity="0.6" className="iryg-core"/>
+        {/* Vents */}
+        <line x1="52" y1="58" x2="47" y2="56" stroke="#4a4a68" strokeWidth="1.2"/>
+        <line x1="52" y1="63" x2="47" y2="61" stroke="#4a4a68" strokeWidth="1.2"/>
+        <line x1="52" y1="68" x2="47" y2="66" stroke="#4a4a68" strokeWidth="1.2"/>
+        <line x1="108" y1="58" x2="113" y2="56" stroke="#4a4a68" strokeWidth="1.2"/>
+        <line x1="108" y1="63" x2="113" y2="61" stroke="#4a4a68" strokeWidth="1.2"/>
+        <line x1="108" y1="68" x2="113" y2="66" stroke="#4a4a68" strokeWidth="1.2"/>
+        <path d="M56 36 Q80 30 104 36" stroke="#4a4a68" strokeWidth="0.9" fill="none" opacity="0.6"/>
+        <line x1="80" y1="22" x2="80" y2="38" stroke="#4a4a68" strokeWidth="0.8" opacity="0.5"/>
       </g>
-
-      {/* Ground lines with annotation */}
-      <line x1="24" y1="194" x2="176" y2="194" stroke="#4a2c08" strokeWidth="1.2" opacity="0.45"/>
-      <line x1="14" y1="200" x2="186" y2="200" stroke="#4a2c08" strokeWidth="0.5" opacity="0.2"/>
-      {/* Structural annotation marks */}
-      <line x1="24" y1="188" x2="24" y2="200" stroke="#6b3f12" strokeWidth="0.5" opacity="0.3"/>
-      <line x1="176" y1="188" x2="176" y2="200" stroke="#6b3f12" strokeWidth="0.5" opacity="0.3"/>
+      {/* Ground sparks */}
+      <line x1="28" y1="202" x2="24" y2="195" stroke="#ffcc00" strokeWidth="1.2" opacity="0.4"/>
+      <line x1="42" y1="204" x2="40" y2="197" stroke="#ffcc00" strokeWidth="1" opacity="0.3"/>
+      <line x1="118" y1="202" x2="122" y2="195" stroke="#ffcc00" strokeWidth="1.2" opacity="0.4"/>
+      <line x1="132" y1="204" x2="134" y2="197" stroke="#ffcc00" strokeWidth="1" opacity="0.3"/>
     </svg>
   );
 }
