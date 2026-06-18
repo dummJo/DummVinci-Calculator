@@ -464,35 +464,46 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", marginTop: 14, marginBottom: 10 }}>
+        <style>{`
+          .hero-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin: 14px 0 16px;
+          }
+          @media (min-width: 768px) {
+            .hero-pills { justify-content: flex-end; }
+          }
+        `}</style>
+        <div className="hero-pills">
           <PraxisModal />
+          <a
+            href="https://www.ptts.co.id"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "6px 12px",
+              background: "rgba(29, 78, 216, 0.1)",
+              border: "1px solid rgba(29, 78, 216, 0.3)",
+              borderRadius: "var(--r-pill)",
+              color: "var(--fg)",
+              textDecoration: "none",
+              fontFamily: "var(--font-mono)",
+              fontSize: 11,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              transition: "all 0.2s ease",
+            }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#1d4ed8", boxShadow: "0 0 4px #1d4ed8" }} />
+            Supported by PT Prima Tekindo Tirta Sejahtera
+          </a>
         </div>
-
-        <a
-          href="https://www.ptts.co.id"
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "6px 12px",
-            background: "rgba(29, 78, 216, 0.1)",
-            border: "1px solid rgba(29, 78, 216, 0.3)",
-            borderRadius: "var(--r-pill)",
-            color: "var(--fg)",
-            textDecoration: "none",
-            fontFamily: "var(--font-mono)",
-            fontSize: 11,
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-            transition: "all 0.2s ease",
-            marginBottom: 16
-          }}
-        >
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#1d4ed8", boxShadow: "0 0 4px #1d4ed8" }} />
-          Supported by PT Prima Tekindo Tirta Sejahtera
-        </a>
 
 
         {/* Spec strip (Auto-sliding Marquee) */}
