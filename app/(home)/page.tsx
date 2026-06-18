@@ -325,30 +325,37 @@ export default function HomePage() {
           <h1
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(44px, 8vw, 76px)",
               fontWeight: 400,
               color: "var(--fg)",
-              letterSpacing: "-0.05em",
-              lineHeight: 0.85,
+              letterSpacing: "-0.03em",
+              lineHeight: 1,
               margin: "0 0 16px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
             }}
           >
-            {/* "Dumm" — thin italic, slightly muted */}
+            {/* "PTTS" — thin italic eyebrow, muted */}
             <span
               style={{
                 fontWeight: 300,
                 fontStyle: "italic",
-                opacity: 0.65,
+                fontSize: "clamp(28px, 5vw, 48px)",
+                opacity: 0.55,
+                letterSpacing: "0.04em",
               }}
             >
               {t.nav.brandDumm}
             </span>
-            {/* "Vinci" — extrabold, upright, accent */}
+            {/* "Praxis" — extrabold, accent, dominant */}
             <span
               style={{
                 fontWeight: 800,
                 fontStyle: "normal",
+                fontSize: "clamp(52px, 10vw, 92px)",
                 color: "var(--accent)",
+                letterSpacing: "-0.05em",
+                lineHeight: 0.9,
               }}
             >
               {t.nav.brandVinci}
