@@ -35,22 +35,24 @@ export default function PraxisModal() {
           display: "inline-flex",
           alignItems: "center",
           gap: 8,
-          padding: "8px 14px",
-          borderRadius: 999,
+          padding: "6px 12px",
+          borderRadius: "var(--r-pill)",
           border: "1px solid var(--glass-border)",
           background: "var(--glass-bg)",
           backdropFilter: "var(--glass-blur)",
           WebkitBackdropFilter: "var(--glass-blur)",
           color: "var(--accent)",
-          fontFamily: "var(--font-display)",
-          fontSize: 12,
-          letterSpacing: "0.04em",
+          fontFamily: "var(--font-mono)",
+          fontSize: 11,
+          letterSpacing: "0.05em",
+          textTransform: "uppercase",
           cursor: "pointer",
         }}
       >
         <span style={{
           fontFamily: "var(--font-display)",
           letterSpacing: "0.22em",
+          textTransform: "none",
           opacity: 0.85,
         }}>{t.home.praxisGlyph}</span>
         <span style={{ opacity: 0.7 }}>·</span>
