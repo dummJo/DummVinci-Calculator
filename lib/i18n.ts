@@ -13,6 +13,7 @@ export const T = {
       icc: "Icc", transformer: "Trafo", selectivity: "Discrim",
       game: "2048",
       capacitorKvar: "Cap kVAR",
+      workOrder: "Work Order",
       brandDumm: "PTTS", brandVinci: "Praxis", brandCalculator: "Suite",
     },
     common: {
@@ -634,6 +635,7 @@ export const T = {
       icc: "Icc", transformer: "Trafo", selectivity: "Diskrim",
       game: "2048",
       capacitorKvar: "Cap kVAR",
+      workOrder: "Work Order",
       brandDumm: "PTTS", brandVinci: "Praxis", brandCalculator: "Suite",
     },
     common: {
