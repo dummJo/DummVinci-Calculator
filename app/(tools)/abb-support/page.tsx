@@ -250,7 +250,17 @@ export default function AbbSupportHub() {
             {/* Input card */}
             <div className="vinci-card">
               <div className="sec-label"><span>{ts.secStatusWord.toUpperCase()}</span></div>
-              <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 16, marginTop: 16, alignItems: "end" }}>
+              <style>{`
+                .sw-input-row {
+                  display: grid;
+                  grid-template-columns: 1fr;
+                  gap: 16px;
+                }
+                @media (min-width: 640px) {
+                  .sw-input-row { grid-template-columns: 220px 1fr; }
+                }
+              `}</style>
+              <div className="sw-input-row" style={{ marginTop: 16, alignItems: "end" }}>
 
                 {/* Parameter select */}
                 <div>
@@ -297,10 +307,11 @@ export default function AbbSupportHub() {
                       background: "var(--glass-bg)",
                       border: `1px solid ${validN ? "var(--accent)" : "var(--glass-border)"}`,
                       borderRadius: "var(--r-md)",
-                      padding: "10px 12px",
+                      padding: "16px 18px",
                       color: "var(--fg)",
                       fontFamily: "var(--font-mono)",
-                      fontSize: 18,
+                      fontSize: 24,
+                      fontWeight: 700,
                       outline: "none",
                       boxSizing: "border-box",
                     }}
