@@ -45,10 +45,39 @@ export const metadata: Metadata = {
     description: APP_DESC,
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: `${APP_NAME} — ${APP_TAGLINE}`,
     description: APP_DESC,
   },
+};
+
+// Organization + WebSite structured data, rendered into the static HTML of
+// every page. Company facts match ptts.co.id.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://ptts.co.id/#org",
+      name: "PT Prima Tekindo Tirta Sejahtera",
+      url: "https://ptts.co.id",
+      logo: `https://${CANONICAL_HOST}/logo-dv-ptts.png`,
+      telephone: "+62-21-629-3028",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Jl. Pangeran Jayakarta Ruko 141 Blok A1 No.11",
+        addressLocality: "Jakarta Pusat",
+        postalCode: "10730",
+        addressCountry: "ID",
+      },
+    },
+    {
+      "@type": "WebSite",
+      name: APP_NAME,
+      url: `https://${CANONICAL_HOST}`,
+      publisher: { "@id": "https://ptts.co.id/#org" },
+    },
+  ],
 };
 
 export const viewport: Viewport = {
@@ -74,6 +103,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         `}</style>
       </head>
       <body style={{ position: "relative" }}>
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger -- static, escaped JSON-LD
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+        />
         <Script
           id="theme-init"
           strategy="beforeInteractive"

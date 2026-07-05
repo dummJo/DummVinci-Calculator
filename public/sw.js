@@ -4,7 +4,7 @@
 //   - Navigation (HTML pages): network-first with offline fallback
 //   - External CDN resources: stale-while-revalidate
 
-const CACHE_NAME = "ptts-praxis-v2";
+const CACHE_NAME = "ptts-praxis-v3";
 const OFFLINE_PAGE = "/";
 
 // Eviction cap — without it the cache grows monotonically (every hashed
