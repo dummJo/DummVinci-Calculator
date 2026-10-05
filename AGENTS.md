@@ -17,20 +17,20 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Model Roster & Task Assignment
 
-Route tasks to the right model by specialty:
+Route tasks to the right subagent by specialty:
 
-| Task Type | Primary Model | Fallback |
+| Task Type | Claude Code subagent | Tier |
 | --- | --- | --- |
-| Engineering formula validation (IEC / ABB / STAHL) | **claude-opus-5-5** | chatgpt-oss |
-| UI/UX components, Next.js App Router pages | **claude-sonnet-5-5** | chatgpt-oss |
-| Bulk catalog JSON generation (product tables) | **claude-haiku-4-5** | gemini-flash |
-| Advanced Context / Mass Refactoring (1M+ tokens) | **gemini-pro** | claude-sonnet-5-5 |
-| Code review, security, type safety | **claude-opus-5-5** | chatgpt-oss |
-| SEO metadata, copy, i18n strings | **gemini-pro** | claude-sonnet-5-5 |
-| Rapid scaffolding / boilerplate | **chatgpt-oss** | claude-haiku-4-5 |
-| Architecture decisions, cross-domain reasoning | **claude-opus-5-5** | gemini-pro |
+| Engineering formula validation (IEC / ABB / STAHL) | `dv-engineer` | Opus |
+| UI/UX components, Next.js App Router pages | `dv-builder` | Sonnet |
+| Bulk catalog JSON generation (product tables) | `dv-bulk-worker` | Haiku |
+| Advanced Context / Mass Refactoring (1M tokens) | `dv-builder` | Sonnet (1M context) |
+| Code review, security, type safety | `dv-checker` | Opus |
+| SEO metadata, copy, i18n strings | `dv-builder` | Sonnet |
+| Rapid scaffolding / boilerplate | `dv-builder` | Sonnet |
+| Architecture decisions, cross-domain reasoning | `dv-engineer` | Opus |
 
-> Claude model IDs verified 2026-10-05: `claude-opus-5-5` and `claude-sonnet-5-5` are the current Opus and Sonnet; `claude-haiku-4-5` is still the latest Haiku. `gemini-pro`, `gemini-flash`, and `chatgpt-oss` are unversioned aliases and were left as-is.
+> Subagents come from the dummvinci-harness plugin (see the Boot section in CLAUDE.md). Exact model IDs are pinned in the plugin and listed in the hub's _harness/MODELS.md; do not write model IDs in this repo. Gemini and ChatGPT-OSS are not dispatched from Claude Code; when used, they run manually in their own tools (Gemini CLI reads GEMINI.md).
 
 ---
 
@@ -96,9 +96,9 @@ standards/                  ← AI engineering & progress standards (AI_ENGINEER
 When adding a new calculator, launch 3 agents simultaneously:
 
 ```text
-Agent A (Opus)   → Engineering logic in lib/calc/new-feature.ts
-Agent B (Sonnet) → UI page in app/(tools)/new-feature/page.tsx
-Agent C (Haiku)  → Seed JSON in data/new-feature.json
+Agent A (dv-engineer)    → Engineering logic in lib/calc/new-feature.ts
+Agent B (dv-builder)     → UI page in app/(tools)/new-feature/page.tsx
+Agent C (dv-bulk-worker) → Seed JSON in data/new-feature.json
 ```
 
 ### Pattern 2 — Review Chain
@@ -106,9 +106,9 @@ Agent C (Haiku)  → Seed JSON in data/new-feature.json
 After any significant change:
 
 ```text
-Agent 1 (Haiku)  → Type-check lib/calc/*.ts, report any TS errors
-Agent 2 (Sonnet) → Visual review: does ResultCard show all key outputs with correct accent rows?
-Agent 3 (Opus)   → Engineering review: formulas vs. IEC/ABB/STAHL standard
+Agent 1 (dv-checker) → Type-check lib/calc/*.ts, report any TS errors
+Agent 2 (dv-builder) → Visual review: does ResultCard show all key outputs with correct accent rows?
+Agent 3 (dv-checker) → Engineering review: formulas vs. IEC/ABB/STAHL standard
 ```
 
 ### Pattern 3 — Catalog Expansion
@@ -116,22 +116,32 @@ Agent 3 (Opus)   → Engineering review: formulas vs. IEC/ABB/STAHL standard
 When adding new product families (e.g., 690V drives, new Siemens MCCB frame):
 
 ```text
-Agent A (Haiku)  → Generate raw JSON entries from datasheet values
-Agent B (Opus)   → Cross-validate 3 entries against known reference values
-Agent C (Sonnet) → Update FieldSelect options in affected pages
+Agent A (dv-bulk-worker) → Generate raw JSON entries from datasheet values
+Agent B (dv-engineer)    → Cross-validate 3 entries against known reference values
+Agent C (dv-builder)     → Update FieldSelect options in affected pages
 ```
 
 ---
 
 ## Advanced Orchestration & Subagent Protocol
 
-To maximize productivity and utilize the full spectrum of available models (Gemini Pro, ChatGPT-OSS, Opus, Sonnet, Haiku), the Orchestrator AI (Primary Agent) must strictly follow these advanced collaboration techniques:
+### In Claude Code
 
-### 1. The Orchestrator Role (You)
+- Follow skill `dv-orchestrate` (plugin dummvinci-harness).
+- Give each agent disjoint file ownership, and run a `dv-checker` pass on every maker result.
+- Put all independent Agent calls in one message.
+
+### In Antigravity / Windsurf-style IDEs
+
+The tool names below (browser_subagent, generate_image, run_command, command_status, multi_replace_file_content, grep_search, view_file, replace_file_content) belong to those IDEs and do not exist in Claude Code.
+
+To maximize productivity and utilize the full spectrum of models available in that IDE, the Orchestrator AI (Primary Agent) must strictly follow these advanced collaboration techniques:
+
+#### 1. The Orchestrator Role (You)
 
 As the primary agent, your job is **Orchestration**, not just coding. Break down complex user requests into parallel tracks. If the user requests a new calculator + UI + research, **do not execute them sequentially**.
 
-### 2. Multi-Model Delegation & Subagents
+#### 2. Multi-Model Delegation & Subagents
 
 Whenever possible, utilize specific tools and subagents to offload context-heavy tasks:
 
@@ -139,12 +149,12 @@ Whenever possible, utilize specific tools and subagents to offload context-heavy
 - **`code-review-graph` (Architecture)**: **NEVER** use standard `grep` for complex architecture tracing. ALWAYS use the `code-review-graph` MCP tools (`get_impact_radius`, `query_graph`) to let the graph model analyze the blast radius before refactoring.
 - **`generate_image` (UI/UX Mockups)**: If the user requests a new dashboard layout, use the `generate_image` tool to spawn an image generation model to create a visual mockup *before* writing the CSS.
 
-### 3. Asynchronous & Parallel Execution
+#### 3. Asynchronous & Parallel Execution
 
 - When running long terminal commands (e.g., `npm run build` or `npm run lint` via `run_command` sent to background), **DO NOT WAIT IDLY**. Immediately use `command_status` in parallel with other tool calls (like writing documentation or updating `i18n.ts`).
 - Bundle multiple `multi_replace_file_content` calls together if modifying loosely coupled files (e.g., updating UI components and localized strings simultaneously).
 
-### 4. Tool Prioritization Rules
+#### 4. Tool Prioritization Rules
 
 To prevent context overflow and save tokens across models:
 
