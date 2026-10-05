@@ -21,14 +21,16 @@ Route tasks to the right model by specialty:
 
 | Task Type | Primary Model | Fallback |
 | --- | --- | --- |
-| Engineering formula validation (IEC / ABB / STAHL) | **claude-opus-4-7** | chatgpt-oss |
-| UI/UX components, Next.js App Router pages | **claude-sonnet-4-6** | chatgpt-oss |
+| Engineering formula validation (IEC / ABB / STAHL) | **claude-opus-5-5** | chatgpt-oss |
+| UI/UX components, Next.js App Router pages | **claude-sonnet-5-5** | chatgpt-oss |
 | Bulk catalog JSON generation (product tables) | **claude-haiku-4-5** | gemini-flash |
-| Advanced Context / Mass Refactoring (1M+ tokens) | **gemini-pro** | claude-sonnet-4-6 |
-| Code review, security, type safety | **claude-opus-4-7** | chatgpt-oss |
-| SEO metadata, copy, i18n strings | **gemini-pro** | claude-sonnet-4-6 |
+| Advanced Context / Mass Refactoring (1M+ tokens) | **gemini-pro** | claude-sonnet-5-5 |
+| Code review, security, type safety | **claude-opus-5-5** | chatgpt-oss |
+| SEO metadata, copy, i18n strings | **gemini-pro** | claude-sonnet-5-5 |
 | Rapid scaffolding / boilerplate | **chatgpt-oss** | claude-haiku-4-5 |
-| Architecture decisions, cross-domain reasoning | **claude-opus-4-7** | gemini-pro |
+| Architecture decisions, cross-domain reasoning | **claude-opus-5-5** | gemini-pro |
+
+> Claude model IDs verified 2026-10-05: `claude-opus-5-5` and `claude-sonnet-5-5` are the current Opus and Sonnet; `claude-haiku-4-5` is still the latest Haiku. `gemini-pro`, `gemini-flash`, and `chatgpt-oss` are unversioned aliases and were left as-is.
 
 ---
 
